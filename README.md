@@ -14,7 +14,7 @@ My sincere thanks to [LVL Studio](http://lvlstudio.com) for believing in the Ope
 
 The libraries were designed to minimize dependencies upon each other. However, higher level libraries do build upon lower level ones. For example, *Silphid.Extensions*, which is at the bottom of the stack only depends on Unity and can be used on its own, whereas *Silphid.Showzup*, at the top of the stack, builds upon all three other libraries.
 
-![](SilphidDependencies.png "Dependencies")
+![](Doc/Dependencies.png "Dependencies")
 
 In other words, there is no dependency from lower level libraries to higher level ones, so you may easily strip those higher level libraries in case you don't need them.
 
