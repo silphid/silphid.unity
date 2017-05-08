@@ -181,7 +181,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\UnityProject\Assets\Plugins\WSA" />
-    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
   </Target>
 </Project>

@@ -11,7 +11,7 @@
     <AssemblyName>Silphid.Sequencit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>7</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,7 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
-    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.dll" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
   </Target>
 </Project>

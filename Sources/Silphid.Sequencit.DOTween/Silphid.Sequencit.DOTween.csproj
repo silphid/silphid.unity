@@ -11,7 +11,7 @@
     <AssemblyName>Silphid.Sequencit.DOTween</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>7</LangVersion>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,7 +63,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.DOTween.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
-    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.DOTween.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.DOTween.dll" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.DOTween.pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
   </Target>
 </Project>

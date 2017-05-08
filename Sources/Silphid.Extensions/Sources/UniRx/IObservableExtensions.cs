@@ -112,7 +112,7 @@ namespace Silphid.Extensions
 
         public static IDisposable SubscribeCompletion<T>(this Rx.IObservable<T> This, Action onCompleted)
         {
-            return This.AutoDetach().Subscribe(Observer.Create<T>(_ => { }, ex => throw ex, onCompleted));
+            return This.AutoDetach().Subscribe(Observer.Create<T>(_ => { }, ex => { throw ex; }, onCompleted));
         }
 
         #endregion
