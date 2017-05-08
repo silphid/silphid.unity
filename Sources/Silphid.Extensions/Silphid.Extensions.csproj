@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{503103E3-C216-4C5E-BDA7-3268D401E185}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Silphid.Extensions</RootNamespace>
+    <AssemblyName>Silphid.Extensions</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <LangVersion>7</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sources\DataTypes\HSVColor.cs" />
+    <Compile Include="Sources\DataTypes\ObjectEnum.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\System\ArrayExtensions.cs" />
+    <Compile Include="Sources\System\CollectionExtensions.cs" />
+    <Compile Include="Sources\System\DateTimeExtensions.cs" />
+    <Compile Include="Sources\System\DecimalExtensions.cs" />
+    <Compile Include="Sources\System\DictionaryExtensions.cs" />
+    <Compile Include="Sources\System\FloatExtensions.cs" />
+    <Compile Include="Sources\System\IEnumerableExtensions.cs" />
+    <Compile Include="Sources\System\Int32Extensions.cs" />
+    <Compile Include="Sources\System\IntegerExtensions.cs" />
+    <Compile Include="Sources\System\LongExtensions.cs" />
+    <Compile Include="Sources\System\MemberInfoExtensions.cs" />
+    <Compile Include="Sources\System\ObjectExtensions.cs" />
+    <Compile Include="Sources\System\RandomExtension.cs" />
+    <Compile Include="Sources\System\StringExtensions.cs" />
+    <Compile Include="Sources\System\TimeSpanExtensions.cs" />
+    <Compile Include="Sources\System\TypeExtensions.cs" />
+    <Compile Include="Sources\UniRx\AsyncOperationExtensions.cs" />
+    <Compile Include="Sources\UniRx\IEnumerableExtensions.cs" />
+    <Compile Include="Sources\UniRx\IObservableExtensions.cs" />
+    <Compile Include="Sources\UniRx\IObservableFloatExtensions.cs" />
+    <Compile Include="Sources\UniRx\IObservableQuaternionExtensions.cs" />
+    <Compile Include="Sources\UniRx\IObservableVector2Extensions.cs" />
+    <Compile Include="Sources\UniRx\IObservableVector3Extensions.cs" />
+    <Compile Include="Sources\UniRx\ReactivePropertyExtensions.cs" />
+    <Compile Include="Sources\UniRx\Schedulers\ISchedulerProvider.cs" />
+    <Compile Include="Sources\UniRx\Schedulers\SchedulerProvider.cs" />
+    <Compile Include="Sources\UniRx\Schedulers\TestScheduler.cs" />
+    <Compile Include="Sources\UniRx\Schedulers\TestSchedulerProvider.cs" />
+    <Compile Include="Sources\UniRx\Schedulers\VirtualTimeScheduler.cs" />
+    <Compile Include="Sources\Unity\ColorExtensions.cs" />
+    <Compile Include="Sources\Unity\ComponentExtensions.cs" />
+    <Compile Include="Sources\Unity\GameObjectExtensions.cs" />
+    <Compile Include="Sources\Unity\ImageExtensions.cs" />
+    <Compile Include="Sources\Unity\QuaternionExtensions.cs" />
+    <Compile Include="Sources\Unity\RectExtensions.cs" />
+    <Compile Include="Sources\Unity\RectTransformExtensions.cs" />
+    <Compile Include="Sources\Unity\TransformExtensions.cs" />
+    <Compile Include="Sources\Unity\Vector2Extensions.cs" />
+    <Compile Include="Sources\Unity\Vector3Extensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UniRx\UniRx.csproj">
+      <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
+      <Name>UniRx</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)Silphid.Extensions.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Extensions.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+  </Target>
+</Project>

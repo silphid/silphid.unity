@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UniRx</RootNamespace>
+    <AssemblyName>UniRx</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\E2.WebView.Abstractions\Dependencies\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\E2.WebView.Abstractions\Dependencies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\Asynchronous\WebRequestExtensions.cs" />
+    <Compile Include="Sources\Disposables\BooleanDisposable.cs" />
+    <Compile Include="Sources\Disposables\CancellationDisposable.cs" />
+    <Compile Include="Sources\Disposables\CompositeDisposable.cs" />
+    <Compile Include="Sources\Disposables\DictionaryDisposable.cs" />
+    <Compile Include="Sources\Disposables\Disposable.cs" />
+    <Compile Include="Sources\Disposables\DisposableExtensions.cs" />
+    <Compile Include="Sources\Disposables\ICancelable.cs" />
+    <Compile Include="Sources\Disposables\MultipleAssignmentDisposable.cs" />
+    <Compile Include="Sources\Disposables\RefCountDisposable.cs" />
+    <Compile Include="Sources\Disposables\ScheduledDisposable.cs" />
+    <Compile Include="Sources\Disposables\SerialDisposable.cs" />
+    <Compile Include="Sources\Disposables\SingleAssignmentDisposable.cs" />
+    <Compile Include="Sources\Disposables\StableCompositeDisposable.cs" />
+    <Compile Include="Sources\EventPattern.cs" />
+    <Compile Include="Sources\InternalUtil\AscynLock.cs" />
+    <Compile Include="Sources\InternalUtil\ImmutableList.cs" />
+    <Compile Include="Sources\InternalUtil\ListObserver.cs" />
+    <Compile Include="Sources\InternalUtil\MicroCoroutine.cs" />
+    <Compile Include="Sources\InternalUtil\PriorityQueue.cs" />
+    <Compile Include="Sources\InternalUtil\ReflectionAccessor.cs" />
+    <Compile Include="Sources\InternalUtil\ScheduledItem.cs" />
+    <Compile Include="Sources\InternalUtil\ThreadSafeQueueWorker.cs" />
+    <Compile Include="Sources\Notification.cs" />
+    <Compile Include="Sources\Notifiers\BooleanNotifier.cs" />
+    <Compile Include="Sources\Notifiers\CountNotifier.cs" />
+    <Compile Include="Sources\Notifiers\MessageBroker.cs" />
+    <Compile Include="Sources\Notifiers\ScheduledNotifier.cs" />
+    <Compile Include="Sources\Observable.Aggregate.cs" />
+    <Compile Include="Sources\Observable.Awaiter.cs" />
+    <Compile Include="Sources\Observable.Binding.cs" />
+    <Compile Include="Sources\Observable.Blocking.cs" />
+    <Compile Include="Sources\Observable.Concatenate.cs" />
+    <Compile Include="Sources\Observable.Concurrency.cs" />
+    <Compile Include="Sources\Observable.Conversions.cs" />
+    <Compile Include="Sources\Observable.Creation.cs" />
+    <Compile Include="Sources\Observable.cs" />
+    <Compile Include="Sources\Observable.ErrorHandling.cs" />
+    <Compile Include="Sources\Observable.Events.cs" />
+    <Compile Include="Sources\Observable.FromAsync.cs" />
+    <Compile Include="Sources\Observable.Joins.cs" />
+    <Compile Include="Sources\Observable.Paging.cs" />
+    <Compile Include="Sources\Observable.Time.cs" />
+    <Compile Include="Sources\Observer.cs" />
+    <Compile Include="Sources\Operators\Aggregate.cs" />
+    <Compile Include="Sources\Operators\Amb.cs" />
+    <Compile Include="Sources\Operators\AsObservable.cs" />
+    <Compile Include="Sources\Operators\AsSingleUnitObservable.cs" />
+    <Compile Include="Sources\Operators\AsUnitObservable.cs" />
+    <Compile Include="Sources\Operators\Buffer.cs" />
+    <Compile Include="Sources\Operators\Cast.cs" />
+    <Compile Include="Sources\Operators\Catch.cs" />
+    <Compile Include="Sources\Operators\CombineLatest.cs" />
+    <Compile Include="Sources\Operators\Concat.cs" />
+    <Compile Include="Sources\Operators\ContinueWith.cs" />
+    <Compile Include="Sources\Operators\Create.cs" />
+    <Compile Include="Sources\Operators\DefaultIfEmpty.cs" />
+    <Compile Include="Sources\Operators\Defer.cs" />
+    <Compile Include="Sources\Operators\Delay.cs" />
+    <Compile Include="Sources\Operators\DelaySubscription.cs" />
+    <Compile Include="Sources\Operators\Dematerialize.cs" />
+    <Compile Include="Sources\Operators\Distinct.cs" />
+    <Compile Include="Sources\Operators\DistinctUntilChanged.cs" />
+    <Compile Include="Sources\Operators\Do.cs" />
+    <Compile Include="Sources\Operators\Empty.cs" />
+    <Compile Include="Sources\Operators\Finally.cs" />
+    <Compile Include="Sources\Operators\First.cs" />
+    <Compile Include="Sources\Operators\ForEachAsync.cs" />
+    <Compile Include="Sources\Operators\FromEvent.cs" />
+    <Compile Include="Sources\Operators\GroupBy.cs" />
+    <Compile Include="Sources\Operators\IgnoreElements.cs" />
+    <Compile Include="Sources\Operators\Last.cs" />
+    <Compile Include="Sources\Operators\Materialize.cs" />
+    <Compile Include="Sources\Operators\Merge.cs" />
+    <Compile Include="Sources\Operators\Never.cs" />
+    <Compile Include="Sources\Operators\ObserveOn.cs" />
+    <Compile Include="Sources\Operators\OfType.cs" />
+    <Compile Include="Sources\Operators\OperatorObservableBase.cs" />
+    <Compile Include="Sources\Operators\OperatorObserverBase.cs" />
+    <Compile Include="Sources\Operators\PairWise.cs" />
+    <Compile Include="Sources\Operators\Range.cs" />
+    <Compile Include="Sources\Operators\RefCount.cs" />
+    <Compile Include="Sources\Operators\Repeat.cs" />
+    <Compile Include="Sources\Operators\RepeatSafe.cs" />
+    <Compile Include="Sources\Operators\Return.cs" />
+    <Compile Include="Sources\Operators\Sample.cs" />
+    <Compile Include="Sources\Operators\Scan.cs" />
+    <Compile Include="Sources\Operators\Select.cs" />
+    <Compile Include="Sources\Operators\SelectMany.cs" />
+    <Compile Include="Sources\Operators\SelectWhere.cs" />
+    <Compile Include="Sources\Operators\Single.cs" />
+    <Compile Include="Sources\Operators\Skip.cs" />
+    <Compile Include="Sources\Operators\SkipUntil.cs" />
+    <Compile Include="Sources\Operators\SkipWhile.cs" />
+    <Compile Include="Sources\Operators\Start.cs" />
+    <Compile Include="Sources\Operators\StartWith.cs" />
+    <Compile Include="Sources\Operators\SubscribeOn.cs" />
+    <Compile Include="Sources\Operators\Switch.cs" />
+    <Compile Include="Sources\Operators\Synchronize.cs" />
+    <Compile Include="Sources\Operators\SynchronizedObserver.cs" />
+    <Compile Include="Sources\Operators\Take.cs" />
+    <Compile Include="Sources\Operators\TakeLast.cs" />
+    <Compile Include="Sources\Operators\TakeUntil.cs" />
+    <Compile Include="Sources\Operators\TakeWhile.cs" />
+    <Compile Include="Sources\Operators\Throttle.cs" />
+    <Compile Include="Sources\Operators\ThrottleFirst.cs" />
+    <Compile Include="Sources\Operators\Throw.cs" />
+    <Compile Include="Sources\Operators\TimeInterval.cs" />
+    <Compile Include="Sources\Operators\Timeout.cs" />
+    <Compile Include="Sources\Operators\Timer.cs" />
+    <Compile Include="Sources\Operators\Timestamp.cs" />
+    <Compile Include="Sources\Operators\ToArray.cs" />
+    <Compile Include="Sources\Operators\ToList.cs" />
+    <Compile Include="Sources\Operators\ToObservable.cs" />
+    <Compile Include="Sources\Operators\Wait.cs" />
+    <Compile Include="Sources\Operators\WhenAll.cs" />
+    <Compile Include="Sources\Operators\Where.cs" />
+    <Compile Include="Sources\Operators\WhereSelect.cs" />
+    <Compile Include="Sources\Operators\WithLatestFrom.cs" />
+    <Compile Include="Sources\Operators\Zip.cs" />
+    <Compile Include="Sources\Operators\ZipLatest.cs" />
+    <Compile Include="Sources\Pair.cs" />
+    <Compile Include="Sources\Schedulers\CurrentThreadScheduler.cs" />
+    <Compile Include="Sources\Schedulers\ImmediateScheduler.cs" />
+    <Compile Include="Sources\Schedulers\IScheduler.cs" />
+    <Compile Include="Sources\Schedulers\Scheduler.cs" />
+    <Compile Include="Sources\Schedulers\ThreadPoolScheduler.cs" />
+    <Compile Include="Sources\Subjects\AsyncSubject.cs" />
+    <Compile Include="Sources\Subjects\BehaviorSubject.cs" />
+    <Compile Include="Sources\Subjects\ConnectableObservable.cs" />
+    <Compile Include="Sources\Subjects\ISubject.cs" />
+    <Compile Include="Sources\Subjects\ReplaySubject.cs" />
+    <Compile Include="Sources\Subjects\Subject.cs" />
+    <Compile Include="Sources\Subjects\SubjectExtensions.cs" />
+    <Compile Include="Sources\System\IObservable.cs" />
+    <Compile Include="Sources\System\IObserver.cs" />
+    <Compile Include="Sources\System\IOptimizedObservable.cs" />
+    <Compile Include="Sources\System\IProgress.cs" />
+    <Compile Include="Sources\System\Tuple.cs" />
+    <Compile Include="Sources\System\Unit.cs" />
+    <Compile Include="Sources\Tasks\TaskObservableExtensions.cs" />
+    <Compile Include="Sources\TimeInterval.cs" />
+    <Compile Include="Sources\Timestamped.cs" />
+    <Compile Include="Sources\UnityEngineBridge\AotSafeExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\AsyncOperationExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\CancellationToken.cs" />
+    <Compile Include="Sources\UnityEngineBridge\CoroutineAsyncBridge.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\LogEntry.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\LogEntryExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\Logger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\ObservableDebugExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\ObservableLogger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Diagnostics\UnityDebugSink.cs" />
+    <Compile Include="Sources\UnityEngineBridge\FrameInterval.cs" />
+    <Compile Include="Sources\UnityEngineBridge\InspectableReactiveProperty.cs" />
+    <Compile Include="Sources\UnityEngineBridge\InspectorDisplayDrawer.cs" />
+    <Compile Include="Sources\UnityEngineBridge\LazyTask.cs" />
+    <Compile Include="Sources\UnityEngineBridge\LifetimeDisposableExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\MainThreadDispatcher.cs" />
+    <Compile Include="Sources\UnityEngineBridge\MainThreadScheduler.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Observable.Unity.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ObservableMonoBehaviour.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ObservableWWW.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ObserveExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\BatchFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\DelayFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\DelayFrameSubscription.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\FrameInterval.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\FrameTimeInterval.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\FromCoroutine.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\RepeatUntil.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\SampleFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\SubscribeOnMainThread.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\ThrottleFirstFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\ThrottleFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Operators\TimeoutFrame.cs" />
+    <Compile Include="Sources\UnityEngineBridge\PresenterBase.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ReactiveCollection.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ReactiveCommand.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ReactiveDictionary.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ReactiveProperty.cs" />
+    <Compile Include="Sources\UnityEngineBridge\ScenePlaybackDetector.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Toolkit\ObjectPool.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableAnimatorTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableBeginDragTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableCancelTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableCanvasGroupChangedTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableCollision2DTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableCollisionTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableDeselectTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableDestroyTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableDragTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableDropTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableEnableTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableEndDragTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableEventTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableFixedUpdateTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableInitializePotentialDragTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableLateUpdateTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableMouseTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableMoveTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableParticleTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservablePointerClickTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservablePointerDownTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservablePointerEnterTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservablePointerExitTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservablePointerUpTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableRectTransformTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableScrollTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableSelectTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableStateMachineTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableSubmitTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTransformChangedTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTrigger2DTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTriggerBase.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTriggerExtensions.Component.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTriggerExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableTriggerTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableUpdateSelectedTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableUpdateTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\Triggers\ObservableVisibleTrigger.cs" />
+    <Compile Include="Sources\UnityEngineBridge\TypedMonoBehaviour.cs" />
+    <Compile Include="Sources\UnityEngineBridge\UniRxSynchronizationContext.cs" />
+    <Compile Include="Sources\UnityEngineBridge\UnityEqualityComparer.cs" />
+    <Compile Include="Sources\UnityEngineBridge\UnityEventExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\UnityGraphicExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\UnityUIComponentExtensions.cs" />
+    <Compile Include="Sources\UnityEngineBridge\YieldInstructionCache.cs" />
+    <Compile Include="Sources\UnityWinRTBridge\Thread.cs" />
+    <Compile Include="Sources\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)UniRx.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)UniRx.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+  </Target>
+</Project>

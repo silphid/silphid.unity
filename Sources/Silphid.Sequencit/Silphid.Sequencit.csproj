@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C0716045-F08A-489F-9B7A-25863BC13118}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Silphid.Sequencit</RootNamespace>
+    <AssemblyName>Silphid.Sequencit</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>7</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\CompleteOnDispose.cs" />
+    <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
+    <Compile Include="Sources\Extensions\ISequenceableExtensions.cs" />
+    <Compile Include="Sources\Input\IInputLayer.cs" />
+    <Compile Include="Sources\Input\InputLayer.cs" />
+    <Compile Include="Sources\Interfaces\ISequenceable.cs" />
+    <Compile Include="Sources\Machines\Change.cs" />
+    <Compile Include="Sources\Machines\IMachine.cs" />
+    <Compile Include="Sources\Machines\IMachineExtensions.cs" />
+    <Compile Include="Sources\Machines\IState.cs" />
+    <Compile Include="Sources\Machines\Machine.cs" />
+    <Compile Include="Sources\Machines\MachineBehaviour.cs" />
+    <Compile Include="Sources\Machines\StateBase.cs" />
+    <Compile Include="Sources\Parallel.cs" />
+    <Compile Include="Sources\Sequence.cs" />
+    <Compile Include="Sources\Sequencer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
+      <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
+      <Name>Silphid.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UniRx\UniRx.csproj">
+      <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
+      <Name>UniRx</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)Silphid.Sequencit.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+  </Target>
+</Project>
