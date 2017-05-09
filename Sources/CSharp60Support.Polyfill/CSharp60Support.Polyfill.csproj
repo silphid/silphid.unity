@@ -47,7 +47,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)CSharp60Support.Polyfill.dll" DestinationFolder="..\UnityProject\Assets\Plugins" />
-    <Copy SourceFiles="$(OutDir)CSharp60Support.Polyfill.pdb" DestinationFolder="..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
   </Target>
 </Project>

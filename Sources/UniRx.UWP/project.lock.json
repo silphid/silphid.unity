@@ -22015,10 +22015,10 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\Dev\\E2.WebView\\UniRx.UWP\\UniRx.UWP.csproj",
+      "projectUniqueName": "C:\\Dev\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj",
       "projectName": "UniRx.UWP",
-      "projectPath": "C:\\Dev\\E2.WebView\\UniRx.UWP\\UniRx.UWP.csproj",
-      "projectJsonPath": "C:\\Dev\\E2.WebView\\UniRx.UWP\\project.json",
+      "projectPath": "C:\\Dev\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj",
+      "projectJsonPath": "C:\\Dev\\Silphid.Unity\\Sources\\UniRx.UWP\\project.json",
       "projectStyle": "ProjectJson"
     },
     "dependencies": {

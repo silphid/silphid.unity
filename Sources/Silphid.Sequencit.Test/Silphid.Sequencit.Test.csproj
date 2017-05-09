@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\Libs\nunit.framework.dll</HintPath>
+      <HintPath>..\Dependencies\net35\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -41,10 +41,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\Libs\UnityEngine.dll</HintPath>
+      <HintPath>..\Dependencies\net35\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\Dependencies\net35\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

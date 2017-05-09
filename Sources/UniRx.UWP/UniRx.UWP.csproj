@@ -802,13 +802,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>..\Libs\UWP\UnityEngine.dll</HintPath>
+      <HintPath>..\Dependencies\uap\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\ThirdParties\UniRx\Dlls\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\Dependencies\uap\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="WinRTLegacy">
-      <HintPath>..\..\ThirdParties\UniRx\Dlls\WinRTLegacy.dll</HintPath>
+      <HintPath>..\Dependencies\uap\WinRTLegacy.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
@@ -816,7 +816,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\UnityProject\Assets\Plugins\WSA" />
-    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
   </Target>
 </Project>

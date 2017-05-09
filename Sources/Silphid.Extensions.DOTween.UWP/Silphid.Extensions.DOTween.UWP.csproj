@@ -106,8 +106,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Silphid.Extensions.DOTween\DOTween\DOTweenExtensions.cs">
-      <Link>DOTween\DOTweenExtensions.cs</Link>
+    <Compile Include="..\Silphid.Extensions.DOTween\Sources\DOTweenExtensions.cs">
+      <Link>Sources\DOTweenExtensions.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Silphid.Extensions.DOTween.UWP.rd.xml" />
@@ -119,13 +119,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DOTween">
-      <HintPath>..\Libs\UWP\DOTween.dll</HintPath>
+      <HintPath>..\Dependencies\uap\DOTween.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\Libs\UWP\UnityEngine.dll</HintPath>
+      <HintPath>..\Dependencies\uap\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\Libs\UWP\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\Dependencies\uap\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
