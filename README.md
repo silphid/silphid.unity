@@ -50,10 +50,6 @@ Note that, on the Windows Store Application (WSA) platform, many of C# 6.0 featu
 - UniRx VirtualTimeScheduler and TestScheduler (which Sequencit uses for unit testing)
 - And much, much more!
 
-## To Do
-
-- Submit VirtualTimeScheduler/TestScheduler to UniRx 
-
 # Silphid.Sequencit
 
 *Silphid.Sequencit* extends UniRx with the concept of ISequenceable, for coordinating time-based operations in sequence or in parallel, such as playing a sound effect or animation, performing a transition between two pages or loading data from the net. Following the ReactiveX tradition, all those operations are modeled as IObservable<Unit>.
@@ -64,10 +60,6 @@ Note that, on the Windows Store Application (WSA) platform, many of C# 6.0 featu
 - Sequencer (live sequencing queue)
 - Wait until some disposable is disposed, until some observable's OnNext, for some delay...
 - Extension methods for IObservable<T> and DOTween's Tween
-
-## To Do
-
-- Submit new VirtualTimeScheduler/TestScheduler to UniRx (which Sequencit uses for unit testing).
 
 # Silphid.Loadzup
 
