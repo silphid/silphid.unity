@@ -27,17 +27,21 @@ public class Sequencing1 : MonoBehaviour
     public Vector3 LoadingTextPosition;
 
     private readonly SerialDisposable _serialDisposable = new SerialDisposable();
+    private readonly BoolReactiveProperty _isLoading = new BoolReactiveProperty();
+    private readonly BoolReactiveProperty _isCancelling = new BoolReactiveProperty();
 
 	internal void Awake()
 	{
-	    StartButton.OnClickAsObservable().Subscribe(_ => StartLoading()).AddTo(this);
-	    CancelButton.OnClickAsObservable().Subscribe(_ => CancelLoading()).AddTo(this);
+	    var canStart = _isLoading.Not();
+        StartButton.BindTo(canStart, StartLoading).AddTo(this);
+
+	    var canCancel = _isLoading.And(_isCancelling.Not());
+        CancelButton.BindTo(canCancel, CancelLoading).AddTo(this);
 	}
 
     private void StartLoading()
     {
-        StartButton.interactable = false;
-        CancelButton.interactable = true;
+        _isLoading.Value = true;
 
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
@@ -45,30 +49,32 @@ public class Sequencing1 : MonoBehaviour
                 seq.AddParallel(MoveCubeToLoadingPosition, ShowText);
                 seq.Add(RotateCubeIndefinitely().TakeUntil(FakeLoad()));
                 seq.AddParallel(MoveCubeToNormalPosition, ResetCubeRotation, HideText);
-                seq.AddAction(ResetButtons);
+                seq.AddAction(CleanUp);
             });
     }
 
     private void CancelLoading()
     {
-        CancelButton.interactable = false;
+        _isCancelling.Value = true;
 
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
             {
                 seq.AddParallel(MoveCubeToNormalPosition, ResetCubeRotation, HideText);
-                seq.AddAction(ResetButtons);
+                seq.AddAction(CleanUp);
             });
     }
 
     private Rx.IObservable<Unit> FakeLoad() =>
         Observable.Timer(TimeSpan.FromSeconds(FakeLoadDuration)).AsSingleUnitObservable();
 
-    private void ResetButtons()
+    private void CleanUp()
     {
-        StartButton.interactable = true;
-        CancelButton.interactable = false;
+        _isLoading.Value = false;
+        _isCancelling.Value = false;
     }
+
+    // Rotate cube
 
     private Rx.IObservable<Unit> RotateCubeIndefinitely() =>
         Sequence.Create(
@@ -83,10 +89,14 @@ public class Sequencing1 : MonoBehaviour
     private Rx.IObservable<Unit> ResetCubeRotation() =>
         Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
+    // Move cube
+
     private Rx.IObservable<Unit> MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
     private Rx.IObservable<Unit> MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
     private Rx.IObservable<Unit> MoveCubeTo(Vector3 position) =>
         Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToObservable();
+
+    // Show or hide text
 
     private Rx.IObservable<Unit> ShowText() => ShowHideText(LoadingTextPosition, 1);
     private Rx.IObservable<Unit> HideText() => ShowHideText(NormalTextPosition, 0);
