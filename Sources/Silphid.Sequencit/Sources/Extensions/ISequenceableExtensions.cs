@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UniRx;
 
 namespace Silphid.Sequencit
@@ -18,6 +19,16 @@ namespace Silphid.Sequencit
         public static void AddParallel(this ISequenceable This, Action<Parallel> action)
         {
             This.Add(() => Parallel.Create(action));
+        }
+
+        public static void AddParallel(this ISequenceable This, params Func<UniRx.IObservable<Unit>>[] selectors)
+        {
+            This.Add(() => Parallel.Create(selectors));
+        }
+
+        public static void AddParallel(this ISequenceable This, IEnumerable<UniRx.IObservable<Unit>> observables)
+        {
+            This.Add(() => Parallel.Create(observables));
         }
 
         public static void AddSequence(this ISequenceable This, Action<Sequence> action)
