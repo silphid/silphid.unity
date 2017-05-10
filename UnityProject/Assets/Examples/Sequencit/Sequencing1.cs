@@ -30,7 +30,10 @@ public class Sequencing1 : MonoBehaviour
 
     // Private fields
 
+    // SerialDisposables always dispose their previous disposable when assigning them a new value.
     private readonly SerialDisposable _serialDisposable = new SerialDisposable();
+
+    // ReactiveProperties are observables that store their current value and allow that value to be set.
     private readonly BoolReactiveProperty _isLoading = new BoolReactiveProperty();
     private readonly BoolReactiveProperty _isCancelling = new BoolReactiveProperty();
 
@@ -54,7 +57,10 @@ public class Sequencing1 : MonoBehaviour
     {
         _isLoading.Value = true;
 
-        // SerialDisposable always disposes previous disposable when assigning new value
+        // Sequence.Start() creates a new sequence and passes it to the lambda expression, so we can add steps to it, and then
+        // immediately subscribes to the sequence, which triggers its execution.  That's why it returns an IDisposable,
+        // to allow to unsubscribe from (cancel) the sequence.  Because we reuse the same SerialDisposable for starting and cancelling,
+        // it handles disposing the previous sequence (or cancelling it, if it is still executing).
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
             {
@@ -98,7 +104,6 @@ public class Sequencing1 : MonoBehaviour
     {
         _isCancelling.Value = true;
 
-        // SerialDisposable always disposes previous disposable when assigning a new value to it
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
             {
@@ -107,6 +112,8 @@ public class Sequencing1 : MonoBehaviour
             });
     }
 
+    // Notice that this method's body is specified after a => operator and without a "return" keyword nor braces.
+    // This is the "expression body" syntax introduced in C# 6.0, which can also be used for declaring properties.
     private Rx.IObservable<string> LoadGreeting() =>
         Observable
             .Timer(TimeSpan.FromSeconds(FakeLoadDuration))
@@ -120,6 +127,12 @@ public class Sequencing1 : MonoBehaviour
 
     // Rotate cube
 
+    // Sequence.Create() creates a new sequence and allows to add steps to it but, as opposed to Sequence.Start(), it only returns
+    // it without subscribing to it.  It is the responsability of the caller to subscribe to it, or to pass it up the call chain.
+    // NOTE: It is a very important best practice to preserve the chaining of your observables as much as possible and to avoid
+    // breaking that chain with calls to Subscribe().  As much as possible/reasonable, try to defer the call to Subscribe() to
+    // callers up the chain.  That ensures errors can always bubble up to higher level functions and also that disposing the chain
+    // at a higher level will dispose it completely.
     private Rx.IObservable<Unit> RotateCubeIndefinitely() =>
         Sequence.Create(
                 () => RotateCube(Vector3.up * 180),
@@ -127,6 +140,8 @@ public class Sequencing1 : MonoBehaviour
                 () => RotateCube(Vector3.forward * 180))
             .Repeat();
 
+    // The DOTween extensions return Tween objects, which we convert to an IObservable<Unit> using ToObservable().
+    // Disposing that observable has the effect of killing the underlying Tween (stopping the animation).
     private Rx.IObservable<Unit> RotateCube(Vector3 angle) =>
         Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
