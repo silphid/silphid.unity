@@ -42,10 +42,10 @@ public class Sequencing1 : MonoBehaviour
 	    var canStart = _isLoading.Not();
 	    var canCancel = _isLoading.And(_isCancelling.Not());
 
-        // Binding a button subscribes to its canExecute observable to determine when to enable it or not and
-        // to its click event, in order to execute its action.  It then returns an IDisposable that can be used
-        // to remove the binding, which we then to AddTo(this) so that it gets automatically disposed
-	    // when this component is destroyed. 
+        // BindTo() is a Silphid extension that subscribes the button to a canExecute observable (that determines
+        // whether the button is interactable or not) and to its click event/observable (in order to trigger an action).
+        // It then returns an IDisposable that can be used to remove the binding, which we then AddTo(this) (so that
+        // it gets automatically disposed when this component is destroyed). 
         StartButton.BindTo(canStart, StartLoading).AddTo(this);   
         CancelButton.BindTo(canCancel, CancelLoading).AddTo(this);
     }
@@ -58,7 +58,7 @@ public class Sequencing1 : MonoBehaviour
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
             {
-                // AddParallel is a shorthand that creates a Parallel from given observables and adds it to sequence.
+                // AddParallel() is a shorthand that creates a Parallel from given observables and adds it to sequence.
                 // There are multiple overloads of this method, but this is the most compact, when all your methods are
                 // returning observables.  Note that we are using the Method Group syntax for even more compact code.
                 // For example, instead of passing a "() => ShowText()" lambda, which has the same signature as ShowText(),
@@ -74,11 +74,17 @@ public class Sequencing1 : MonoBehaviour
                 seq.Add(RotateCubeIndefinitely()
                     .TakeUntil(LoadGreeting().Do(x => Debug.Log($"Greeting loaded: {x}"))));
 
-                // This is a more verbose, but much more flexible overload of AddParallel, because it passes the new parallel
+                // This is a more verbose, but much more flexible overload of AddParallel(), because it passes the new parallel
                 // object to the lambda and you therefore have access to all its extensions methods (like AddSequence() in this case).
                 seq.AddParallel(p =>
                 {
-                    p.AddSequence(ResetCubeRotation, MoveCubeToNormalPosition);
+                    p.AddSequence(s =>
+                    {
+                        s.Add(ResetCubeRotation);
+                        s.AddDelay(0.25f);
+                        s.Add(MoveCubeToNormalPosition);
+                    });
+
                     p.Add(HideText);
                 });
 
