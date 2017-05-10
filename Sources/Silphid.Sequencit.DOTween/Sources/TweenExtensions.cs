@@ -31,7 +31,7 @@ namespace Silphid.Sequencit
             });
         }
 
-        public static void Add(this ISequenceable This, Func<Tween> action)
+        public static void AddTween(this ISequenceable This, Func<Tween> action)
         {
             This.Add(() => action().ToObservable());
         }

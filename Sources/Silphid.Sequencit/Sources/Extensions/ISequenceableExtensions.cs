@@ -36,6 +36,16 @@ namespace Silphid.Sequencit
             This.Add(() => Sequence.Create(action));
         }
 
+        public static void AddSequence(this ISequenceable This, params Func<UniRx.IObservable<Unit>>[] selectors)
+        {
+            This.Add(() => Sequence.Create(selectors));
+        }
+
+        public static void AddSequence(this ISequenceable This, IEnumerable<UniRx.IObservable<Unit>> observables)
+        {
+            This.Add(() => Sequence.Create(observables));
+        }
+
         public static void AddAction(this ISequenceable This, Action action)
         {
             This.Add(() =>
