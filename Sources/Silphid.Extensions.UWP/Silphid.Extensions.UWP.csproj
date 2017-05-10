@@ -136,9 +136,6 @@
     <Compile Include="..\Silphid.Extensions\Sources\System\Int32Extensions.cs">
       <Link>Sources\System\Int32Extensions.cs</Link>
     </Compile>
-    <Compile Include="..\Silphid.Extensions\Sources\System\IntegerExtensions.cs">
-      <Link>Sources\System\IntegerExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\Silphid.Extensions\Sources\System\LongExtensions.cs">
       <Link>Sources\System\LongExtensions.cs</Link>
     </Compile>

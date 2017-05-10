@@ -15,7 +15,7 @@ namespace Silphid.Sequencit
             var lastFrame = -1;
 
             return This
-                .Where(x =>
+                .Where(_ =>
                 {
                     if (Time.frameCount != lastFrame)
                     {

@@ -33,12 +33,12 @@ namespace Silphid.Extensions
         /// Returns absolute delta between to values.
         /// </summary>
         [Pure]
-        public static IObservable<float> Distance(this IObservable<float> This, float other) =>
-            This.Select(x => x.Distance(other));
+        public static IObservable<float> Delta(this IObservable<float> This, float other) =>
+            This.Select(x => x.Delta(other));
 
         [Pure]
-        public static IObservable<float> Middle(this IObservable<float> This, float other) =>
-            This.Select(x => x.Middle(other));
+        public static IObservable<float> Average(this IObservable<float> This, float other) =>
+            This.Select(x => x.Average(other));
 
         #endregion
 

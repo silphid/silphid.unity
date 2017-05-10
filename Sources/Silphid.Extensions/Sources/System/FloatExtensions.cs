@@ -31,13 +31,13 @@ namespace Silphid.Extensions
         public static float Fractional(this float This) => This - This.Floor();
 
         /// <summary>
-        /// Returns absolute delta between to values.
+        /// Returns absolute delta between two values.
         /// </summary>
         [Pure]
-        public static float Distance(this float This, float other) => Math.Abs(This - other);
+        public static float Delta(this float This, float other) => Math.Abs(This - other);
 
         [Pure]
-        public static float Middle(this float This, float other) => (This + other) / 2;
+        public static float Average(this float This, float other) => (This + other) / 2;
 
         #endregion
 
@@ -111,15 +111,6 @@ namespace Silphid.Extensions
         /// </summary>
         [Pure]
         public static float Ratio(this float value, float min, float max) => (value - min) / (max - min);
-
-        /// <summary>
-        /// Returns [0, 1] ratio of given value within the [min, max] interval,
-        /// clamped within that interval.
-        /// </summary>
-        [Pure]
-        [Obsolete("Use value.Ratio(min, max).Clamp() instead")]
-        public static float RatioClamp(this float value, float min, float max) =>
-            value.Clamp(min, max).Ratio(min, max);
 
         #endregion
 

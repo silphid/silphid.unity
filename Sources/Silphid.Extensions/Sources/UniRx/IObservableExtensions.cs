@@ -62,8 +62,16 @@ namespace Silphid.Extensions
             This.Where(x => !x).Select(_ => Unit.Default);
 
         [Pure]
-        public static Rx.IObservable<bool> Negate(this Rx.IObservable<bool> This) =>
+        public static Rx.IObservable<bool> Not(this Rx.IObservable<bool> This) =>
             This.Select(x => !x);
+
+        [Pure]
+        public static Rx.IObservable<bool> And(this Rx.IObservable<bool> This, Rx.IObservable<bool> other) =>
+            This.CombineLatest(other, (x, y) => x && y);
+
+        [Pure]
+        public static Rx.IObservable<bool> Or(this Rx.IObservable<bool> This, Rx.IObservable<bool> other) =>
+            This.CombineLatest(other, (x, y) => x || y);
 
         #endregion
 

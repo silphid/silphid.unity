@@ -27,10 +27,10 @@ namespace Silphid.Extensions
             new Vector2(This.x / other.x, This.y / other.y);
 
         [Pure]
-        public static float Distance(this Vector2 This, Vector2 other) => Vector2.Distance(This, other);
+        public static float Delta(this Vector2 This, Vector2 other) => Vector2.Distance(This, other);
 
         [Pure]
-        public static Vector2 Middle(this Vector2 This, Vector2 other) => (This + other) / 2;
+        public static Vector2 Average(this Vector2 This, Vector2 other) => (This + other) / 2;
 
         #endregion
 

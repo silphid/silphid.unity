@@ -6,6 +6,31 @@ namespace Silphid.Extensions
 {
     public static class LongExtensions
     {
+        #region Maths
+
+        [Pure]
+        public static long Sign(this long This) => Math.Sign(This);
+
+        /// <summary>
+        /// Returns absolute value of this value
+        /// </summary>
+        [Pure]
+        public static long Abs(this long value) => Math.Abs(value);
+
+        [Pure]
+        public static long Negate(this long This) => -This;
+
+        /// <summary>
+        /// Returns absolute delta between two values.
+        /// </summary>
+        [Pure]
+        public static long Delta(this long This, long to) => Math.Abs(This - to);
+
+        [Pure]
+        public static long Average(this long This, long other) => (This + other) / 2;
+
+        #endregion
+
         #region Ratio
 
         /// <summary>
@@ -25,23 +50,19 @@ namespace Silphid.Extensions
 
         #endregion
 
-        /// <summary>
-        /// Returns absolute delta between to values.
-        /// </summary>
-        public static long Distance(this long from, long to)
-        {
-            return Math.Abs(from - to);
-        }
+        #region Comparison
 
         /// <summary>
         /// Returns whether value lies within the [min, max] interval
         /// </summary>
-        public static bool IsWithin(this long value, long min, long max)
-        {
-            return min < max
-                ? value >= min && value <= max
-                : value >= max && value <= min;
-        }
+        public static bool IsWithin(this long This, long min, long max) =>
+            min < max
+                ? This >= min && This <= max
+                : This >= max && This <= min;
+
+        #endregion
+
+        #region Clamping
 
         /// <summary>
         /// Returns value clamped to the [min, max] interval
@@ -75,13 +96,9 @@ namespace Silphid.Extensions
             return Math.Min(value, max);
         }
 
-        /// <summary>
-        /// Returns absolute value of this value
-        /// </summary>
-        public static long Abs(this long value)
-        {
-            return Math.Abs(value);
-        }
+        #endregion
+
+        #region Wrapping
 
         /// <summary>
         /// Returns wrapped value in order to fit within [inclusiveMin, exclusiveMax[ range.
@@ -117,6 +134,10 @@ namespace Silphid.Extensions
             return value.Wrap(inclusiveMax + 1);
         }
 
+        #endregion
+
+        #region Formatting
+
         /// <summary>
         /// Returns a string with the invariant culture.
         /// </summary>
@@ -124,5 +145,13 @@ namespace Silphid.Extensions
         {
             return value.ToString(CultureInfo.InvariantCulture);
         }
+
+        public static string ToZeroPaddedString(this long value, long digits)
+        {
+            var format = "{0:D" + digits + "}";
+            return string.Format(format, value);
+        }
+
+        #endregion
     }
 }

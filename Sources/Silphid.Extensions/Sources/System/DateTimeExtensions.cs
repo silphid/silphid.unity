@@ -5,6 +5,21 @@ namespace Silphid.Extensions
 {
     public static class DateTimeExtensions
     {
+        #region Maths
+
+        /// <summary>
+        /// Returns absolute delta between two values.
+        /// </summary>
+        [Pure]
+        public static DateTime Delta(this DateTime This, DateTime other) =>
+            new DateTime(Math.Abs(This.Ticks - other.Ticks));
+
+        [Pure]
+        public static DateTime Average(this DateTime This, DateTime other) =>
+            new DateTime((This.Ticks + other.Ticks) / 2);
+
+        #endregion
+
         #region Ratio
 
         /// <summary>
@@ -14,21 +29,9 @@ namespace Silphid.Extensions
         public static float Ratio(this DateTime value, DateTime min, DateTime max) =>
             value.Ticks.Ratio(min.Ticks, max.Ticks);
 
-        /// <summary>
-        /// Returns [0, 1] ratio of given value within the [min, max] interval,
-        /// clamped within that interval.
-        /// </summary>
-        [Pure]
-        public static float RatioClamp(this DateTime value, DateTime min, DateTime max) =>
-            value.Ticks.Clamp(min.Ticks, max.Ticks).Ratio(min.Ticks, max.Ticks);
-
         #endregion
 
-        /// <summary>
-        /// Returns absolute delta between to values.
-        /// </summary>
-        public static TimeSpan Distance(this DateTime from, DateTime to) =>
-            new TimeSpan(Math.Abs(from.Ticks - to.Ticks));
+        #region Comparison
 
         /// <summary>
         /// Returns whether value lies within the [min, max] interval
@@ -36,23 +39,9 @@ namespace Silphid.Extensions
         public static bool IsWithin(this DateTime value, DateTime min, DateTime max) =>
             value.Ticks.IsWithin(min.Ticks, max.Ticks);
 
-        /// <summary>
-        /// Returns value clamped to the [min, max] interval
-        /// </summary>
-        public static DateTime Clamp(this DateTime value, DateTime min, DateTime max) =>
-            new DateTime(value.Ticks.Clamp(min.Ticks, max.Ticks));
+        #endregion
 
-        /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
-        /// </summary>
-        public static DateTime Minimum(this DateTime value, DateTime min) =>
-            new DateTime(value.Ticks.Minimum(min.Ticks));
-
-        /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
-        /// </summary>
-        public static DateTime Maximum(this DateTime value, DateTime max) =>
-            new DateTime(value.Ticks.Maximum(max.Ticks));
+        #region Wrapping
 
         /// <summary>
         /// Returns wrapped value in order to fit within [inclusiveMin, exclusiveMax[ range.
@@ -65,5 +54,32 @@ namespace Silphid.Extensions
         /// </summary>
         public static DateTime WrapInclusively(this DateTime value, DateTime inclusiveMin, DateTime inclusiveMax) =>
             new DateTime(value.Ticks.WrapInclusively(inclusiveMin.Ticks, inclusiveMax.Ticks));
+
+        #endregion
+
+        #region Clamping
+
+        /// <summary>
+        /// Returns value clamped to the [min, max] interval
+        /// </summary>
+        [Pure]
+        public static DateTime Clamp(this DateTime This, DateTime min, DateTime max) =>
+            new DateTime(This.Ticks.Clamp(min.Ticks, max.Ticks));
+
+        /// <summary>
+        /// Returns value clipped to the [min, +INF] interval
+        /// </summary>
+        [Pure]
+        public static DateTime Minimum(this DateTime value, DateTime min) =>
+            new DateTime(value.Ticks.Minimum(min.Ticks));
+
+        /// <summary>
+        /// Returns value clipped to the [-INF, max] interval
+        /// </summary>
+        [Pure]
+        public static DateTime Maximum(this DateTime value, DateTime max) =>
+            new DateTime(value.Ticks.Maximum(max.Ticks));
+
+        #endregion
     }
 }

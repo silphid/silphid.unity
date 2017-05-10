@@ -25,16 +25,16 @@ namespace Silphid.Extensions
             This.Select(x => x.Multiply(other));
 
         [Pure]
-        public static IObservable<float> Distance(this IObservable<Vector2> This, Vector2 other) =>
-            This.Select(x => x.Distance(other));
+        public static IObservable<float> Delta(this IObservable<Vector2> This, Vector2 other) =>
+            This.Select(x => x.Delta(other));
 
         [Pure]
         public static IObservable<float> Magnitude(this IObservable<Vector2> This) =>
             This.Select(x => x.magnitude);
 
         [Pure]
-        public static IObservable<Vector2> Middle(this IObservable<Vector2> This, Vector2 other) =>
-            This.Select(x => x.Middle(other));
+        public static IObservable<Vector2> Average(this IObservable<Vector2> This, Vector2 other) =>
+            This.Select(x => x.Average(other));
 
         #endregion
 
