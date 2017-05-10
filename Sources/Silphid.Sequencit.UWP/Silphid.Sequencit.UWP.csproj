@@ -107,9 +107,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Silphid.Sequencit\Sources\CompleteOnDispose.cs">
-      <Link>Sources\CompleteOnDispose.cs</Link>
-    </Compile>
     <Compile Include="..\Silphid.Sequencit\Sources\Extensions\IObservableExtensions.cs">
       <Link>Sources\Extensions\IObservableExtensions.cs</Link>
     </Compile>
@@ -154,6 +151,9 @@
     </Compile>
     <Compile Include="..\Silphid.Sequencit\Sources\Sequencer.cs">
       <Link>Sources\Sequencer.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Sequencit\Sources\Suspension.cs">
+      <Link>Sources\Suspension.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Silphid.Sequencit.UWP.rd.xml" />

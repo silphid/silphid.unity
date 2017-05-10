@@ -10,7 +10,7 @@ namespace Silphid.Sequencit
         public static Tween In(this Tween This, ISequenceable sequenceable)
         {
             This.Pause();
-            sequenceable.AddAction(d =>
+            sequenceable.AddSuspension(d =>
             {
                 This.Play();
                 This.OnComplete(d.Dispose);

@@ -55,14 +55,14 @@ namespace Silphid.Sequencit
             });
         }
 
-        public static void AddAction(this ISequenceable This, Action<IDisposable> action)
+        public static void AddSuspension(this ISequenceable This, Action<IDisposable> action)
         {
-            This.Add(() => CompleteOnDispose.Create(x => action(x)));
+            This.Add(() => Suspension.Create(x => action(x)));
         }
 
-        public static IDisposable AddWaitForDispose(this ISequenceable This)
+        public static IDisposable AddSuspension(this ISequenceable This)
         {
-            var complete = new CompleteOnDispose();
+            var complete = new Suspension();
             This.Add(complete);
             return complete;
         }
