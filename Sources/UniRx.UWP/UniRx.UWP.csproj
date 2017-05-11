@@ -236,6 +236,9 @@
     <Compile Include="..\UniRx\Sources\Observable.Time.cs">
       <Link>Sources\Observable.Time.cs</Link>
     </Compile>
+    <Compile Include="..\UniRx\Sources\Observable.Using.cs">
+      <Link>Sources\Observable.Using.cs</Link>
+    </Compile>
     <Compile Include="..\UniRx\Sources\Observer.cs">
       <Link>Sources\Observer.cs</Link>
     </Compile>

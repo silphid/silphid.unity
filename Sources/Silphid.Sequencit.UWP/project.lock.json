@@ -22123,19 +22123,19 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\Dev\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\Silphid.Sequencit.UWP.csproj",
+      "projectUniqueName": "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\Silphid.Sequencit.UWP.csproj",
       "projectName": "Silphid.Sequencit.UWP",
-      "projectPath": "C:\\Dev\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\Silphid.Sequencit.UWP.csproj",
-      "projectJsonPath": "C:\\Dev\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\project.json",
+      "projectPath": "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\Silphid.Sequencit.UWP.csproj",
+      "projectJsonPath": "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\Silphid.Sequencit.UWP\\project.json",
       "projectStyle": "ProjectJson",
       "frameworks": {
         "uap10.0": {
           "projectReferences": {
-            "C:\\Dev\\Silphid.Unity\\Sources\\Silphid.Extensions.UWP\\Silphid.Extensions.UWP.csproj": {
-              "projectPath": "C:\\Dev\\Silphid.Unity\\Sources\\Silphid.Extensions.UWP\\Silphid.Extensions.UWP.csproj"
+            "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\Silphid.Extensions.UWP\\Silphid.Extensions.UWP.csproj": {
+              "projectPath": "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\Silphid.Extensions.UWP\\Silphid.Extensions.UWP.csproj"
             },
-            "C:\\Dev\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj": {
-              "projectPath": "C:\\Dev\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj"
+            "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj": {
+              "projectPath": "C:\\Dev\\Silphid\\Silphid.Unity\\Sources\\UniRx.UWP\\UniRx.UWP.csproj"
             }
           }
         }

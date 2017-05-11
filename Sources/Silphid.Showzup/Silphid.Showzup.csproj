@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9B235C54-6D78-457D-9BF2-72F389A5051A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Silphid.Showzup</RootNamespace>
+    <AssemblyName>Silphid.Showzup</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DOTween">
+      <HintPath>..\Dependencies\net35\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\Dependencies\net35\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Dependencies\net35\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\Attributes\AssetAttribute.cs" />
+    <Compile Include="Sources\Attributes\VariantAttribute.cs" />
+    <Compile Include="Sources\Controls\Control.cs" />
+    <Compile Include="Sources\Controls\IFocusable.cs" />
+    <Compile Include="Sources\Controls\ItemControl.cs" />
+    <Compile Include="Sources\Controls\ListControl.cs" />
+    <Compile Include="Sources\Controls\NavigationControl.cs" />
+    <Compile Include="Sources\Controls\PresenterControlBase.cs" />
+    <Compile Include="Sources\Controls\SelectionControl.cs" />
+    <Compile Include="Sources\Controls\TransitionControl.cs" />
+    <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
+    <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
+    <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
+    <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
+    <Compile Include="Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs" />
+    <Compile Include="Sources\Interfaces\IConstructable.cs" />
+    <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
+    <Compile Include="Sources\Interfaces\IGlobalVariantProvider.cs" />
+    <Compile Include="Sources\Interfaces\IItemPresenter.cs" />
+    <Compile Include="Sources\Interfaces\IListPresenter.cs" />
+    <Compile Include="Sources\Interfaces\ILoadable.cs" />
+    <Compile Include="Sources\Interfaces\INavigationPresenter.cs" />
+    <Compile Include="Sources\Interfaces\IPostHide.cs" />
+    <Compile Include="Sources\Interfaces\IPostShow.cs" />
+    <Compile Include="Sources\Interfaces\IPreHide.cs" />
+    <Compile Include="Sources\Interfaces\IPresenter.cs" />
+    <Compile Include="Sources\Interfaces\IPreShow.cs" />
+    <Compile Include="Sources\Interfaces\ITransitionResolver.cs" />
+    <Compile Include="Sources\Interfaces\IView.cs" />
+    <Compile Include="Sources\Interfaces\IViewLoader.cs" />
+    <Compile Include="Sources\Interfaces\IViewResolver.cs" />
+    <Compile Include="Sources\Navigation\CustomInputModule.cs" />
+    <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
+    <Compile Include="Sources\Phases\CoordinationBase.cs" />
+    <Compile Include="Sources\Phases\CoordinatorBase.cs" />
+    <Compile Include="Sources\Phases\DelayedLoadTransitionCoordination.cs" />
+    <Compile Include="Sources\Phases\DelayedLoadTransitionCoordinator.cs" />
+    <Compile Include="Sources\Phases\ICoordination.cs" />
+    <Compile Include="Sources\Phases\ICoordinator.cs" />
+    <Compile Include="Sources\Phases\ImmediateLoadTransitionCoordination.cs" />
+    <Compile Include="Sources\Phases\ImmediateLoadTransitionCoordinator.cs" />
+    <Compile Include="Sources\Phases\Phase.cs" />
+    <Compile Include="Sources\Phases\PhaseCancelled.cs" />
+    <Compile Include="Sources\Phases\PhaseCancelledException.cs" />
+    <Compile Include="Sources\Phases\PhaseCompleted.cs" />
+    <Compile Include="Sources\Phases\PhaseEvent.cs" />
+    <Compile Include="Sources\Phases\PhaseId.cs" />
+    <Compile Include="Sources\Phases\PhasePerformer.cs" />
+    <Compile Include="Sources\Phases\PhaseStarting.cs" />
+    <Compile Include="Sources\Phases\PhaseState.cs" />
+    <Compile Include="Sources\Transitions\CrossfadeTransition.cs" />
+    <Compile Include="Sources\Transitions\InstantTransition.cs" />
+    <Compile Include="Sources\Transitions\ShiftTransition.cs" />
+    <Compile Include="Sources\Transitions\Transition.cs" />
+    <Compile Include="Sources\Transitions\ZoomTransition.cs" />
+    <Compile Include="Sources\Types\Direction.cs" />
+    <Compile Include="Sources\Types\Nav.cs" />
+    <Compile Include="Sources\Types\Options.cs" />
+    <Compile Include="Sources\Types\Presentation.cs" />
+    <Compile Include="Sources\Types\PushMode.cs" />
+    <Compile Include="Sources\Types\ViewInfo.cs" />
+    <Compile Include="Sources\Types\ViewMapping.cs" />
+    <Compile Include="Sources\Types\ViewNav.cs" />
+    <Compile Include="Sources\View.cs" />
+    <Compile Include="Sources\ViewLoader.cs" />
+    <Compile Include="Sources\ViewModel.cs" />
+    <Compile Include="Sources\ViewResolver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Silphid.Extensions.DOTween\Silphid.Extensions.DOTween.csproj">
+      <Project>{47797ee4-1e8c-4305-9f45-655ca2710a3d}</Project>
+      <Name>Silphid.Extensions.DOTween</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
+      <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
+      <Name>Silphid.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Loadzup\Silphid.Loadzup.csproj">
+      <Project>{dad5df27-9fa3-4f02-96be-e28ea2530f0f}</Project>
+      <Name>Silphid.Loadzup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Sequencit.DOTween\Silphid.Sequencit.DOTween.csproj">
+      <Project>{3364b083-3fa4-4426-97d4-bfe1c2d1d4e8}</Project>
+      <Name>Silphid.Sequencit.DOTween</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Sequencit\Silphid.Sequencit.csproj">
+      <Project>{c0716045-f08a-489f-9b7a-25863bc13118}</Project>
+      <Name>Silphid.Sequencit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UniRx\UniRx.csproj">
+      <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
+      <Name>UniRx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zenject.Usages\Zenject.Usages.csproj">
+      <Project>{e3c6424a-bfe7-4ed4-94ed-1ce34894a180}</Project>
+      <Name>Zenject.Usages</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins" />
+  </Target>
+</Project>

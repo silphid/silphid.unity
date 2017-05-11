@@ -66,25 +66,25 @@
  <HintPath>C:/Program Files/Unity5.5.2f1/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
  </Reference>
  <Reference Include="CSharp60Support.Polyfill">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/CSharp60Support.Polyfill.dll</HintPath>
- </Reference>
- <Reference Include="Silphid.Extensions">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="Silphid.Extensions.DOTween">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Extensions.DOTween.dll</HintPath>
- </Reference>
- <Reference Include="Silphid.Sequencit">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Sequencit.dll</HintPath>
- </Reference>
- <Reference Include="Silphid.Sequencit.DOTween">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Sequencit.DOTween.dll</HintPath>
- </Reference>
- <Reference Include="UniRx">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/UniRx.dll</HintPath>
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/CSharp60Support.Polyfill.dll</HintPath>
  </Reference>
  <Reference Include="DOTween">
- <HintPath>C:/Dev/Silphid.Unity/UnityProject/Assets/Plugins/DOTween.dll</HintPath>
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/DOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="Silphid.Extensions">
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="Silphid.Extensions.DOTween">
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Extensions.DOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="Silphid.Sequencit">
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Sequencit.dll</HintPath>
+ </Reference>
+ <Reference Include="Silphid.Sequencit.DOTween">
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/Silphid.Sequencit.DOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="UniRx">
+ <HintPath>C:/Dev/Silphid/Silphid.Unity/UnityProject/Assets/Plugins/UniRx.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files/Unity5.5.2f1/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

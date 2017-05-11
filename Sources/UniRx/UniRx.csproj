@@ -91,6 +91,7 @@
     <Compile Include="Sources\Observable.Joins.cs" />
     <Compile Include="Sources\Observable.Paging.cs" />
     <Compile Include="Sources\Observable.Time.cs" />
+    <Compile Include="Sources\Observable.Using.cs" />
     <Compile Include="Sources\Observer.cs" />
     <Compile Include="Sources\Operators\Aggregate.cs" />
     <Compile Include="Sources\Operators\Amb.cs" />

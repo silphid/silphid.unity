@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{87F8A39C-B614-4C09-AC31-22750C96C5DB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Silphid.Showzup</RootNamespace>
+    <AssemblyName>Silphid.Showzup</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Silphid.Showzup\Sources\Attributes\AssetAttribute.cs">
+      <Link>Sources\Attributes\AssetAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Attributes\VariantAttribute.cs">
+      <Link>Sources\Attributes\VariantAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\Control.cs">
+      <Link>Sources\Controls\Control.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\IFocusable.cs">
+      <Link>Sources\Controls\IFocusable.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\ItemControl.cs">
+      <Link>Sources\Controls\ItemControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\ListControl.cs">
+      <Link>Sources\Controls\ListControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\NavigationControl.cs">
+      <Link>Sources\Controls\NavigationControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\PresenterControlBase.cs">
+      <Link>Sources\Controls\PresenterControlBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\SelectionControl.cs">
+      <Link>Sources\Controls\SelectionControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\TransitionControl.cs">
+      <Link>Sources\Controls\TransitionControl.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Controls\TransitionParentDestroyedException.cs">
+      <Link>Sources\Controls\TransitionParentDestroyedException.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Extensions\INavigationPresenterExtensions.cs">
+      <Link>Sources\Extensions\INavigationPresenterExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Extensions\IObservableExtensions.cs">
+      <Link>Sources\Extensions\IObservableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Extensions\OptionsExtensions.cs">
+      <Link>Sources\Extensions\OptionsExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs">
+      <Link>Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IConstructable.cs">
+      <Link>Sources\Interfaces\IConstructable.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IDeconstructable.cs">
+      <Link>Sources\Interfaces\IDeconstructable.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IGlobalVariantProvider.cs">
+      <Link>Sources\Interfaces\IGlobalVariantProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IItemPresenter.cs">
+      <Link>Sources\Interfaces\IItemPresenter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IListPresenter.cs">
+      <Link>Sources\Interfaces\IListPresenter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\ILoadable.cs">
+      <Link>Sources\Interfaces\ILoadable.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\INavigationPresenter.cs">
+      <Link>Sources\Interfaces\INavigationPresenter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IPostHide.cs">
+      <Link>Sources\Interfaces\IPostHide.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IPostShow.cs">
+      <Link>Sources\Interfaces\IPostShow.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IPreHide.cs">
+      <Link>Sources\Interfaces\IPreHide.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IPresenter.cs">
+      <Link>Sources\Interfaces\IPresenter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IPreShow.cs">
+      <Link>Sources\Interfaces\IPreShow.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\ITransitionResolver.cs">
+      <Link>Sources\Interfaces\ITransitionResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IView.cs">
+      <Link>Sources\Interfaces\IView.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IViewLoader.cs">
+      <Link>Sources\Interfaces\IViewLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IViewResolver.cs">
+      <Link>Sources\Interfaces\IViewResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Navigation\CustomInputModule.cs">
+      <Link>Sources\Navigation\CustomInputModule.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Navigation\NavigationOrientation.cs">
+      <Link>Sources\Navigation\NavigationOrientation.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\CoordinationBase.cs">
+      <Link>Sources\Phases\CoordinationBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\CoordinatorBase.cs">
+      <Link>Sources\Phases\CoordinatorBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\DelayedLoadTransitionCoordination.cs">
+      <Link>Sources\Phases\DelayedLoadTransitionCoordination.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\DelayedLoadTransitionCoordinator.cs">
+      <Link>Sources\Phases\DelayedLoadTransitionCoordinator.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\ICoordination.cs">
+      <Link>Sources\Phases\ICoordination.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\ICoordinator.cs">
+      <Link>Sources\Phases\ICoordinator.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\ImmediateLoadTransitionCoordination.cs">
+      <Link>Sources\Phases\ImmediateLoadTransitionCoordination.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\ImmediateLoadTransitionCoordinator.cs">
+      <Link>Sources\Phases\ImmediateLoadTransitionCoordinator.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\Phase.cs">
+      <Link>Sources\Phases\Phase.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseCancelled.cs">
+      <Link>Sources\Phases\PhaseCancelled.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseCancelledException.cs">
+      <Link>Sources\Phases\PhaseCancelledException.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseCompleted.cs">
+      <Link>Sources\Phases\PhaseCompleted.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseEvent.cs">
+      <Link>Sources\Phases\PhaseEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseId.cs">
+      <Link>Sources\Phases\PhaseId.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhasePerformer.cs">
+      <Link>Sources\Phases\PhasePerformer.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseStarting.cs">
+      <Link>Sources\Phases\PhaseStarting.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Phases\PhaseState.cs">
+      <Link>Sources\Phases\PhaseState.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Transitions\CrossfadeTransition.cs">
+      <Link>Sources\Transitions\CrossfadeTransition.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Transitions\InstantTransition.cs">
+      <Link>Sources\Transitions\InstantTransition.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Transitions\ShiftTransition.cs">
+      <Link>Sources\Transitions\ShiftTransition.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Transitions\Transition.cs">
+      <Link>Sources\Transitions\Transition.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Transitions\ZoomTransition.cs">
+      <Link>Sources\Transitions\ZoomTransition.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\Direction.cs">
+      <Link>Sources\Types\Direction.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\Nav.cs">
+      <Link>Sources\Types\Nav.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\Options.cs">
+      <Link>Sources\Types\Options.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\Presentation.cs">
+      <Link>Sources\Types\Presentation.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\PushMode.cs">
+      <Link>Sources\Types\PushMode.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\ViewInfo.cs">
+      <Link>Sources\Types\ViewInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\ViewMapping.cs">
+      <Link>Sources\Types\ViewMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\Types\ViewNav.cs">
+      <Link>Sources\Types\ViewNav.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\View.cs">
+      <Link>Sources\View.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\ViewLoader.cs">
+      <Link>Sources\ViewLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\ViewModel.cs">
+      <Link>Sources\ViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Showzup\Sources\ViewResolver.cs">
+      <Link>Sources\ViewResolver.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Silphid.Showzup.UWP.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DOTween">
+      <HintPath>..\Dependencies\uap\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\Dependencies\uap\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Dependencies\uap\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Silphid.Extensions.DOTween.UWP\Silphid.Extensions.DOTween.UWP.csproj">
+      <Project>{925f040c-3513-4d9d-88ab-fb58c7ba8e8e}</Project>
+      <Name>Silphid.Extensions.DOTween.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Extensions.UWP\Silphid.Extensions.UWP.csproj">
+      <Project>{02cce4f5-d0d0-4c6e-b57b-ba3aac581170}</Project>
+      <Name>Silphid.Extensions.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Loadzup.UWP\Silphid.Loadzup.UWP.csproj">
+      <Project>{72380e4d-d61e-4a2a-bca0-87c643abe29c}</Project>
+      <Name>Silphid.Loadzup.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Sequencit.DOTween.UWP\Silphid.Sequencit.DOTween.UWP.csproj">
+      <Project>{550118b3-bc71-4755-a6b5-a3ca5dbcd5bf}</Project>
+      <Name>Silphid.Sequencit.DOTween.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Sequencit.UWP\Silphid.Sequencit.UWP.csproj">
+      <Project>{fe68bf73-a9aa-4dd5-b645-e28daef03e64}</Project>
+      <Name>Silphid.Sequencit.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UniRx.UWP\UniRx.UWP.csproj">
+      <Project>{357854f3-690a-4ca1-bfb0-5c48d030840c}</Project>
+      <Name>UniRx.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zenject.Usages.UWP\Zenject.Usages.UWP.csproj">
+      <Project>{d9df10bc-fa75-4fad-ac30-dd778a225325}</Project>
+      <Name>Zenject.Usages.UWP</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+  </Target>
+</Project>

@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{72380E4D-D61E-4A2A-BCA0-87C643ABE29C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Silphid.Loadzup</RootNamespace>
+    <AssemblyName>Silphid.Loadzup</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Silphid.Loadzup\Sources\Bundle\BundleLoader.cs">
+      <Link>Sources\Bundle\BundleLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Caching\CachedLoader.cs">
+      <Link>Sources\Caching\CachedLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Caching\CachedRequester.cs">
+      <Link>Sources\Caching\CachedRequester.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Caching\CachePolicy.cs">
+      <Link>Sources\Caching\CachePolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Caching\CacheStorage.cs">
+      <Link>Sources\Caching\CacheStorage.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Caching\ICacheStorage.cs">
+      <Link>Sources\Caching\ICacheStorage.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\CompositeConverter.cs">
+      <Link>Sources\CompositeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\CompositeLoader.cs">
+      <Link>Sources\CompositeLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\ContentType.cs">
+      <Link>Sources\ContentType.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Extensions\ILoaderExtensions.cs">
+      <Link>Sources\Extensions\ILoaderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Http\HttpLoader.cs">
+      <Link>Sources\Http\HttpLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Http\HttpRequester.cs">
+      <Link>Sources\Http\HttpRequester.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Http\KnownHttpHeaders.cs">
+      <Link>Sources\Http\KnownHttpHeaders.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Interfaces\IConverter.cs">
+      <Link>Sources\Interfaces\IConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Interfaces\ILoader.cs">
+      <Link>Sources\Interfaces\ILoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Interfaces\IRequester.cs">
+      <Link>Sources\Interfaces\IRequester.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Interfaces\Response.cs">
+      <Link>Sources\Interfaces\Response.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\KnownMediaType.cs">
+      <Link>Sources\KnownMediaType.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Options.cs">
+      <Link>Sources\Options.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\RequestException.cs">
+      <Link>Sources\RequestException.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\Resource\ResourceLoader.cs">
+      <Link>Sources\Resource\ResourceLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\SpriteConverter.cs">
+      <Link>Sources\SpriteConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Silphid.Loadzup\Sources\TextureConverter.cs">
+      <Link>Sources\TextureConverter.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Silphid.Loadzup.UWP.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.2.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Silphid.Extensions.UWP\Silphid.Extensions.UWP.csproj">
+      <Project>{02cce4f5-d0d0-4c6e-b57b-ba3aac581170}</Project>
+      <Name>Silphid.Extensions.UWP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UniRx.UWP\UniRx.UWP.csproj">
+      <Project>{357854f3-690a-4ca1-bfb0-5c48d030840c}</Project>
+      <Name>UniRx.UWP</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>..\Dependencies\uap\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="WinRTLegacy">
+      <HintPath>..\Dependencies\uap\WinRTLegacy.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+  </Target>
+</Project>
