@@ -64,12 +64,11 @@ public class Sequencing1 : MonoBehaviour
         _serialDisposable.Disposable =
             Sequence.Start(seq =>
             {
-                // AddParallel() is a shorthand that creates a Parallel from given observables and adds it to sequence.
-                // There are multiple overloads of this method, but this is the most compact, when all your methods are
-                // returning observables.  Note that we are using the Method Group syntax for even more compact code.
-                // For example, instead of passing a "() => ShowText()" lambda, which has the same signature as ShowText(),
-                // we can only specify the "ShowText" method group.  The important thing to remember is that the ShowText()
-                // method is *not* invoked immediately here, exactly as for lambdas.
+                // AddParallel(...) is a shorthand for Add(Parallel.Create(...)). There are multiple overloads of this method, but
+                // this is the most compact, when all your methods are returning observables.  Note that we are using the Method Group
+                // syntax for even more compact code. For example, instead of passing a "() => ShowText()" lambda, which has the same
+                // signature as ShowText(), we can only specify the "ShowText" method group, without any parenthesis.  The important
+                // thing to remember is that the ShowText() method is *not* invoked immediately here, exactly as for lambdas.
                 seq.AddParallel(MoveCubeToLoadingPosition, ShowText);
 
                 // The TakeUntil() Rx operator allows to start both the RotateCubeIndefinitely() and LoadGreeting() operations,
@@ -112,8 +111,9 @@ public class Sequencing1 : MonoBehaviour
             });
     }
 
-    // Notice that this method's body is specified after a => operator and without a "return" keyword nor braces.
-    // This is the "expression body" syntax introduced in C# 6.0, which can also be used for declaring properties.
+    // This is just a method that fakes an asynchronous loading operation.  In a real application, such a method might load a level,
+    // some prefabs or assets from the web. Notice that this method's body is specified after a => operator and without a "return"
+    // keyword nor braces. This is the "expression body" syntax introduced in C# 6.0, which can also be used for declaring properties.
     private Rx.IObservable<string> LoadGreeting() =>
         Observable
             .Timer(TimeSpan.FromSeconds(FakeLoadDuration))
@@ -140,8 +140,8 @@ public class Sequencing1 : MonoBehaviour
                 () => RotateCube(Vector3.forward * 180))
             .Repeat();
 
-    // The DOTween extensions return Tween objects, which we convert to an IObservable<Unit> using ToObservable().
-    // Disposing that observable has the effect of killing the underlying Tween (stopping the animation).
+    // The DOTween extension methods return Tween objects, which we convert to an IObservable<Unit> using ToObservable().
+    // Disposing that observable has the effect of killing (stopping) the underlying Tween.
     private Rx.IObservable<Unit> RotateCube(Vector3 angle) =>
         Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
