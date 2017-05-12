@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+#if UNITY_WSA && !UNITY_EDITOR
 using System.Reflection;
+#endif
 
 namespace Silphid.Extensions
 {
@@ -26,15 +29,6 @@ namespace Silphid.Extensions
             return This == typeof(T);
         }
 
-        private static Type GetBaseType(this Type This)
-        {
-#if UNITY_WSA && !UNITY_EDITOR
-            return This.GetTypeInfo().BaseType;
-#else
-            return This.BaseType;
-#endif
-        }
-
         public static IEnumerable<Type> Ancestors(this Type type)
         {
             type = type?.GetBaseType();
@@ -53,5 +47,19 @@ namespace Silphid.Extensions
                 type = type.GetBaseType();
             }
         }
+
+#if UNITY_WSA && !UNITY_EDITOR
+        public static Type GetBaseType(this Type This) =>
+            This.GetTypeInfo().BaseType;
+
+        public static IEnumerable<T> GetAttributes<T>(this Type This, bool inherit = true) =>
+            This.GetTypeInfo().GetCustomAttributes(typeof(T), inherit).Cast<T>();
+
+        public static bool IsGenericType(this Type This) =>
+            This.GetTypeInfo().IsGenericType;
+#else
+        public static Type GetBaseType(this Type This) =>
+            This.BaseType;
+#endif
     }
 }

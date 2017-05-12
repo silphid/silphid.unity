@@ -58,7 +58,7 @@ namespace Silphid.Showzup
         private Type GetViewModelType(Type viewType) =>
             viewType
                 .SelfAndAncestors()
-                .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(View<>))
+                .FirstOrDefault(x => x.IsGenericType() && x.GetGenericTypeDefinition() == typeof(View<>))
                 ?.GetGenericArguments()
                 .FirstOrDefault();
 
@@ -157,7 +157,7 @@ namespace Silphid.Showzup
                     return score;
 
                 score--;
-                type = type.BaseType;
+                type = type.GetBaseType();
             }
 
             return ZeroScore;
