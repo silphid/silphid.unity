@@ -131,7 +131,7 @@ public class ISequenceableExtensionsTest
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            s.AddDelay(5f, _scheduler);
+            s.AddInterval(5f, _scheduler);
             s.AddAction(() => _value = 456);
         });
 
@@ -147,7 +147,7 @@ public class ISequenceableExtensionsTest
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            s.AddDelay(TimeSpan.FromTicks(100), _scheduler);
+            s.AddInterval(TimeSpan.FromTicks(100), _scheduler);
             s.AddAction(() => _value = 456);
         });
 

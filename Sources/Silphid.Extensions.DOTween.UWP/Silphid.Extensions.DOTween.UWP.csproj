@@ -118,8 +118,18 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DOTween">
+    <Reference Include="DOTween, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\uap\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween43">
+      <HintPath>..\Dependencies\uap\DOTween43.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween46">
+      <HintPath>..\Dependencies\uap\DOTween46.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween50">
+      <HintPath>..\Dependencies\uap\DOTween50.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Dependencies\uap\UnityEngine.dll</HintPath>

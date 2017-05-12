@@ -20,8 +20,10 @@ namespace Silphid.Sequencit
 
         public static Rx.IObservable<Unit> ToObservable(this Tween This, bool completeTweenOnDispose = false)
         {
+            This.Pause();
             return Observable.Create<Unit>(subscriber =>
             {
+                This.Play();
                 This.OnComplete(() =>
                 {
                     subscriber.OnNext(Unit.Default);

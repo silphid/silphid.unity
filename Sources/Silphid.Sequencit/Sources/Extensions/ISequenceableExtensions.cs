@@ -67,24 +67,24 @@ namespace Silphid.Sequencit
             return complete;
         }
 
-        public static void AddDelay(this ISequenceable This, float seconds)
+        public static void AddInterval(this ISequenceable This, float seconds)
         {
-            This.AddDelay(TimeSpan.FromSeconds(seconds));
+            This.AddInterval(TimeSpan.FromSeconds(seconds));
         }
 
-        public static void AddDelay(this ISequenceable This, float seconds, IScheduler scheduler)
+        public static void AddInterval(this ISequenceable This, float seconds, IScheduler scheduler)
         {
-            This.AddDelay(TimeSpan.FromSeconds(seconds), scheduler);
+            This.AddInterval(TimeSpan.FromSeconds(seconds), scheduler);
         }
 
-        public static void AddDelay(this ISequenceable This, TimeSpan delay)
+        public static void AddInterval(this ISequenceable This, TimeSpan interval)
         {
-            This.AddDelay(delay, Scheduler.DefaultSchedulers.TimeBasedOperations);
+            This.AddInterval(interval, Scheduler.DefaultSchedulers.TimeBasedOperations);
         }
 
-        public static void AddDelay(this ISequenceable This, TimeSpan delay, IScheduler scheduler)
+        public static void AddInterval(this ISequenceable This, TimeSpan interval, IScheduler scheduler)
         {
-            This.Add(Observable.ReturnUnit().Delay(delay, scheduler));
+            This.Add(Observable.ReturnUnit().Delay(interval, scheduler));
         }
     }
 }

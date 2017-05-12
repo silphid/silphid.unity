@@ -33,9 +33,11 @@ namespace Silphid.Showzup
 
         private readonly List<ViewInfo> _viewInfos = new List<ViewInfo>();
         private readonly IGlobalVariantProvider _globalVariantProvider;
+        private readonly Assembly _viewsAssembly;
 
-        public ViewResolver([InjectOptional] IGlobalVariantProvider globalVariantProvider = null)
+        public ViewResolver(Assembly viewsAssembly, [InjectOptional] IGlobalVariantProvider globalVariantProvider = null)
         {
+            _viewsAssembly = viewsAssembly;
             _globalVariantProvider = globalVariantProvider;
         }
 
@@ -63,9 +65,8 @@ namespace Silphid.Showzup
                 .FirstOrDefault();
 
         private IEnumerable<Type> GetAllViewTypes() =>
-            from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
-            from candidateType in domainAssembly.GetTypes()
-            where typeof(IView).IsAssignableFrom(candidateType) && !candidateType.IsAbstract
+            from candidateType in _viewsAssembly.GetTypes()
+            where typeof(IView).IsAssignableFrom(candidateType) && !candidateType.IsAbstract()
             select candidateType;
 
         public ViewInfo Resolve(object input, Options options = null)

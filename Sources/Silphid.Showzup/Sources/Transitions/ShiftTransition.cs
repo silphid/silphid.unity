@@ -46,7 +46,7 @@ namespace Silphid.Showzup
                                  (direction == Direction.Forward ? -1 : 1);
                     offset *= InvertReturn ? -1 : 1;
                     sourceTransform
-                        .DOAnchorPos(offset, duration)
+                        .DOAnchorPos(offset, duration, true)
                         .SetEase(Ease)
                         .SetAutoKill()
                         .In(parallel);

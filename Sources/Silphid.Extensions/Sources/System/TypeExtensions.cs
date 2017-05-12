@@ -57,12 +57,18 @@ namespace Silphid.Extensions
 
         public static bool IsGenericType(this Type This) =>
             This.GetTypeInfo().IsGenericType;
+
+        public static bool IsAbstract(this Type This) =>
+            This.GetTypeInfo().IsAbstract;
 #else
         public static Type GetBaseType(this Type This) =>
             This.BaseType;
 
         public static bool IsGenericType(this Type This) =>
             This.IsGenericType;
+
+        public static bool IsAbstract(this Type This) =>
+            This.IsAbstract;
 #endif
     }
 }
