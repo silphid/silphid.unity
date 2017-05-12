@@ -1202,6 +1202,27 @@ namespace System
 
     [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
     public class Tuple {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3, T4> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3, T4, T5> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3, T4, T5, T6> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3, T4, T5, T6, T7> {}
+
+    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
+    public class Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> {}
 }
 
 #endif

@@ -98,7 +98,7 @@ namespace Silphid.Showzup
             return Observable
                 .WhenAll(
                     Present(presentation),
-                    nav.Step)
+                    nav.Parallel)
                 .DoOnCompleted(() =>
                 {
                     History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushMode());
@@ -163,7 +163,7 @@ namespace Silphid.Showzup
             return Observable
                 .WhenAll(
                     PerformTransition(presentation),
-                    nav.Step)
+                    nav.Parallel)
                 .DoOnCompleted(() =>
                 {
                     History.Value = history;

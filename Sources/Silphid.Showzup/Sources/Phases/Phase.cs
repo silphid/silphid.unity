@@ -6,13 +6,13 @@ namespace Silphid.Showzup
     {
         public PhaseId Id { get; }
         public Presentation Presentation { get; }
-        public Parallel Step { get; }
+        public Parallel Parallel { get; }
 
         public Phase(PhaseId id, Presentation presentation)
         {
             Id = id;
             Presentation = presentation;
-            Step = new Parallel();
+            Parallel = new Parallel();
         }
     }
 }

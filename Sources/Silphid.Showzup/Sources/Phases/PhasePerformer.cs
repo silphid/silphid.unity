@@ -38,7 +38,7 @@ namespace Silphid.Showzup
 
             State = PhaseState.Started;
             _observer.OnNext(new PhaseStarting(Phase));
-            _disposables.Add(Phase.Step.Subscribe(_completedSubject));
+            _disposables.Add(Phase.Parallel.Subscribe(_completedSubject));
         }
 
         public void Cancel()
