@@ -60,6 +60,9 @@ namespace Silphid.Extensions
 #else
         public static Type GetBaseType(this Type This) =>
             This.BaseType;
+
+        public static bool IsGenericType(this Type This) =>
+            This.IsGenericType;
 #endif
     }
 }
