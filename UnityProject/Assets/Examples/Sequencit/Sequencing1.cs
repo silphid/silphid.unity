@@ -41,7 +41,7 @@ public class Sequencing1 : MonoBehaviour
 	{
         // Bind buttons
 
-        // Observables that control whether the buttons are enabled or not.
+        // Observables that control whether the buttons are interactable or not.
 	    var canStart = _isLoading.Not();
 	    var canCancel = _isLoading.And(_isCancelling.Not());
 
