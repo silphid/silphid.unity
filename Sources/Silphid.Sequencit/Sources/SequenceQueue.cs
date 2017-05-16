@@ -6,21 +6,21 @@ using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Sequencer : ISequenceable, IDisposable
+    public class SequenceQueue : ISequencer, IDisposable
     {
         private readonly Queue<Rx.IObservable<Unit>> _observables = new Queue<Rx.IObservable<Unit>>();
         private IDisposable _currentExecution = Disposable.Empty;
         private bool _isStarted;
         private bool _isExecuting;
 
-        public static Sequencer Create(Action<Sequencer> action)
+        public static SequenceQueue Create(Action<SequenceQueue> action)
         {
-            var sequence = new Sequencer();
+            var sequence = new SequenceQueue();
             action(sequence);
             return sequence;
         }
 
-        public static Sequencer Start(Action<Sequencer> action)
+        public static SequenceQueue Start(Action<SequenceQueue> action)
         {
             var sequence = Create(action);
             sequence.Start();

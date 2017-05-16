@@ -41,15 +41,15 @@ namespace Silphid.Sequencit
                 This.OnToggleAsObservable().Subscribe(action),
                 canExecute.BindToInteractable(This));
 
-        public static void In(this Rx.IObservable<Unit> This, ISequenceable sequenceable)
+        public static void In(this Rx.IObservable<Unit> This, ISequencer sequencer)
         {
-            sequenceable.Add(This);
+            sequencer.Add(This);
         }
 
         public static Sequence ToSequence(this IEnumerable<Rx.IObservable<Unit>> This) =>
             Sequence.Create(This);
 
-        public static Parallel ToStep(this IEnumerable<Rx.IObservable<Unit>> This) =>
+        public static Parallel ToParallel(this IEnumerable<Rx.IObservable<Unit>> This) =>
             Parallel.Create(This);
     }
 }

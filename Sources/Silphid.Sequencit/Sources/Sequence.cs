@@ -6,7 +6,7 @@ using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Sequence : ISequenceable, Rx.IObservable<Unit>
+    public class Sequence : ISequencer, Rx.IObservable<Unit>
     {
         private Rx.IObservable<Unit> _observable = Observable.ReturnUnit();
 

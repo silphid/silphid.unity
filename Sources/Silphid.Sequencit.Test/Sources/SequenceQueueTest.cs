@@ -3,15 +3,15 @@ using Silphid.Sequencit;
 using UniRx;
 
 [TestFixture]
-public class SequencerTest : SequenceableTestBase
+public class SequenceQueueTest : SequenceableTestBase
 {
-    private Sequencer _sequencer;
+    private SequenceQueue _sequenceQueue;
 
     [SetUp]
     public override void Setup()
     {
         base.Setup();
-        _sequencer = new Sequencer();
+        _sequenceQueue = new SequenceQueue();
     }
 
     [Test]
@@ -19,41 +19,41 @@ public class SequencerTest : SequenceableTestBase
     {
         Assert.That(_value, Is.EqualTo(0));
 
-        _sequencer.AddAction(() => _value = 123);
+        _sequenceQueue.AddAction(() => _value = 123);
         Assert.That(_value, Is.EqualTo(0));
     }
 
     [Test]
     public void Start_ExecutesAllInstantActionsInstantly()
     {
-        _sequencer.AddAction(() => _value = 1);
-        _sequencer.AddAction(() => _value = 2);
-        _sequencer.AddAction(() => _value = 3);
+        _sequenceQueue.AddAction(() => _value = 1);
+        _sequenceQueue.AddAction(() => _value = 2);
+        _sequenceQueue.AddAction(() => _value = 3);
 
         Assert.That(_value, Is.EqualTo(0));
 
-        _sequencer.Start();
+        _sequenceQueue.Start();
         Assert.That(_value, Is.EqualTo(3));
     }
 
     [Test]
     public void Static_Create_DoesNotStartSequencer()
     {
-        Sequencer.Create(s => s.AddAction(() => _value = 123));
+        SequenceQueue.Create(s => s.AddAction(() => _value = 123));
         Assert.That(_value, Is.EqualTo(0));
     }
 
     [Test]
     public void Static_Start_DoesStartSequencer()
     {
-        Sequencer.Start(s => s.AddAction(() => _value = 123));
+        SequenceQueue.Start(s => s.AddAction(() => _value = 123));
         Assert.That(_value, Is.EqualTo(123));
     }
 
     [Test]
     public void Stop_DisposesCurrentlyExecutingObservable()
     {
-        var seq = Sequencer.Start(s =>
+        var seq = SequenceQueue.Start(s =>
         {
             s.AddAction(() => _value = 1);
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 2));
@@ -83,7 +83,7 @@ public class SequencerTest : SequenceableTestBase
     [Test]
     public void Start_AfterStop_ExecutionResumesInstantlyWithNextItem()
     {
-        var seq = Sequencer.Start(s =>
+        var seq = SequenceQueue.Start(s =>
         {
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
             s.Add(() =>
@@ -120,12 +120,12 @@ public class SequencerTest : SequenceableTestBase
     [Test]
     public void Add_AddedActionIsStartedImmediatelyWhenQueueIsEmpty()
     {
-        _sequencer.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
-        _sequencer.Start();
+        _sequenceQueue.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _sequenceQueue.Start();
         _scheduler.AdvanceTo(10);
         Assert.That(_value, Is.EqualTo(1));
 
-        _sequencer.Add(() =>
+        _sequenceQueue.Add(() =>
         {
             _value = 2;
             return CreateDelay(10).DoOnCompleted(() => _value = 3);
@@ -136,13 +136,13 @@ public class SequencerTest : SequenceableTestBase
     [Test]
     public void Add_AddedActionIsNotStartedWhenSequencerStopped()
     {
-        _sequencer.Start();
-        _sequencer.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _sequenceQueue.Start();
+        _sequenceQueue.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
         _scheduler.AdvanceTo(10);
         Assert.That(_value, Is.EqualTo(1));
 
-        _sequencer.Stop();
-        _sequencer.AddAction(() => _value = 2);
+        _sequenceQueue.Stop();
+        _sequenceQueue.AddAction(() => _value = 2);
         Assert.That(_value, Is.EqualTo(1));
     }
 }

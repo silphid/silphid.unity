@@ -7,10 +7,10 @@ namespace Silphid.Sequencit
 {
     public static class TweenExtensions
     {
-        public static Tween In(this Tween This, ISequenceable sequenceable)
+        public static Tween In(this Tween This, ISequencer sequencer)
         {
             This.Pause();
-            sequenceable.AddSuspension(d =>
+            sequencer.AddSuspension(d =>
             {
                 This.Play();
                 This.OnComplete(d.Dispose);
@@ -33,7 +33,7 @@ namespace Silphid.Sequencit
             });
         }
 
-        public static void AddTween(this ISequenceable This, Func<Tween> action)
+        public static void AddTween(this ISequencer This, Func<Tween> action)
         {
             This.Add(() => action().ToObservable());
         }

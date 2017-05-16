@@ -2,7 +2,7 @@
 
 namespace Silphid.Sequencit
 {
-    public interface ISequenceable
+    public interface ISequencer
     {
         void Add(IObservable<Unit> observable);
     }

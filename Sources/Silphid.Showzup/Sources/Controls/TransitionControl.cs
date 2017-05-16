@@ -106,42 +106,42 @@ namespace Silphid.Showzup
                 });
         }
 
-        private void PreHide(IView view, Options options, ISequenceable seq)
+        private void PreHide(IView view, Options options, ISequencer seq)
         {
             var preHide = view as IPreHide;
             if (preHide != null)
                 seq.AddAction(() => preHide.OnPreHide(options));
         }
 
-        private void PreShow(IView view, Options options, ISequenceable seq)
+        private void PreShow(IView view, Options options, ISequencer seq)
         {
             var preShow = view as IPreShow;
             if (preShow != null)
                 seq.AddAction(() => preShow.OnPreShow(options));
         }
 
-        private void Deconstruct(IView view, Options options, ISequenceable seq)
+        private void Deconstruct(IView view, Options options, ISequencer seq)
         {
             var deconstructable = view as IDeconstructable;
             if (deconstructable != null)
                 seq.Add(() => deconstructable.Deconstruct(options));
         }
 
-        private void Construct(IView view, Options options, ISequenceable seq)
+        private void Construct(IView view, Options options, ISequencer seq)
         {
             var constructable = view as IConstructable;
             if (constructable != null)
                 seq.Add(() => constructable.Construct(options));
         }
 
-        private void PostShow(IView view, Options options, ISequenceable seq)
+        private void PostShow(IView view, Options options, ISequencer seq)
         {
             var postShow = view as IPostShow;
             if (postShow != null)
                 seq.AddAction(() => postShow.OnPostShow(options));
         }
 
-        private void PostHide(IView view, Options options, ISequenceable seq)
+        private void PostHide(IView view, Options options, ISequencer seq)
         {
             var postHide = view as IPostHide;
             if (postHide != null)
