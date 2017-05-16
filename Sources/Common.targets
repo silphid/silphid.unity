@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
+    <PropertyGroup>  
+        <PluginsPath>$(SolutionDir)..\UnityProject\Assets\Plugins</PluginsPath>  
+        <PluginsWsaPath>$(SolutionDir)..\UnityProject\Assets\Plugins\WSA</PluginsWsaPath>  
+    </PropertyGroup>  
+  
+    <Target Name="CopyOutputToPlugins">
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsPath)" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsPath)" />
+    </Target>  
+  
+    <Target Name="CopyOutputToPluginsWsa">
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsWsaPath)" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsWsaPath)" />
+    </Target>  
+</Project>  

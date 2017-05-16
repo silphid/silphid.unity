@@ -205,8 +205,8 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
-    <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="..\..\UnityProject\Assets\Plugins\WSA" />
+    <CallTarget Targets="CopyOutputToPluginsWsa"/>
   </Target>
 </Project>
