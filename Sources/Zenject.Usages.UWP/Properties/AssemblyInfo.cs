@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Zenject.Usages")]
+[assembly: AssemblyTitle("Zenject.Usage")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Zenject.Usages")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("Zenject.Usage")]
+[assembly: AssemblyCopyright("Copyright © 2010-2015 Modest Tree Media  http://www.modesttree.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

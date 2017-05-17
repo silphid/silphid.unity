@@ -7,8 +7,8 @@
     <ProjectGuid>{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zenject.Usages</RootNamespace>
-    <AssemblyName>Zenject.Usages</AssemblyName>
+    <RootNamespace>Zenject.Usage</RootNamespace>
+    <AssemblyName>Zenject.Usage</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -56,6 +56,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPlugins"/>
+    <CallTarget Targets="CopyOutputToPlugins" />
   </Target>
 </Project>

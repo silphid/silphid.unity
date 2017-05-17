@@ -55,8 +55,6 @@
     <Compile Include="Sources\Http\HttpLoader.cs" />
     <Compile Include="Sources\Http\HttpRequester.cs" />
     <Compile Include="Sources\Http\KnownHttpHeaders.cs" />
-    <Compile Include="Sources\Integrations\JsonNetConverter.cs" />
-    <Compile Include="Sources\Integrations\ZenjectContractResolver.cs" />
     <Compile Include="Sources\Interfaces\IConverter.cs" />
     <Compile Include="Sources\Interfaces\ILoader.cs" />
     <Compile Include="Sources\Interfaces\IRequester.cs" />
@@ -81,6 +79,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPlugins"/>
+    <CallTarget Targets="CopyOutputToPlugins" />
   </Target>
 </Project>

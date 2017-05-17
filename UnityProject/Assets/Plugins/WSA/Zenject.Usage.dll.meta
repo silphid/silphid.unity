@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 4c790fd9cf42be342808ea50f608aad8
-timeCreated: 1494597846
+guid: 83b61db7c7f5a5f48a979df25d33e127
+timeCreated: 1495045073
 licenseType: Pro
 PluginImporter:
   serializedVersion: 1
@@ -70,7 +70,7 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: Assets/Plugins/Zenject.Usages.dll
+        PlaceholderPath: Assets/Plugins/Zenject.Usage.dll
         SDK: AnySDK
         ScriptingBackend: AnyScriptingBackend
     iOS:

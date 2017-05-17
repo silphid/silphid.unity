@@ -7,8 +7,8 @@
     <ProjectGuid>{D9DF10BC-FA75-4FAD-AC30-DD778A225325}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zenject.Usages</RootNamespace>
-    <AssemblyName>Zenject.Usages</AssemblyName>
+    <RootNamespace>Zenject.Usage</RootNamespace>
+    <AssemblyName>Zenject.Usage</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.15063.0</TargetPlatformVersion>
@@ -155,6 +155,6 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPluginsWsa"/>
+    <CallTarget Targets="CopyOutputToPluginsWsa" />
   </Target>
 </Project>

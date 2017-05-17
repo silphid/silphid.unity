@@ -360,9 +360,9 @@
       <Project>{357854f3-690a-4ca1-bfb0-5c48d030840c}</Project>
       <Name>UniRx.UWP</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenject.Usages.UWP\Zenject.Usages.UWP.csproj">
+    <ProjectReference Include="..\Zenject.Usages.UWP\Zenject.Usage.UWP.csproj">
       <Project>{d9df10bc-fa75-4fad-ac30-dd778a225325}</Project>
-      <Name>Zenject.Usages.UWP</Name>
+      <Name>Zenject.Usage.UWP</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
@@ -371,6 +371,6 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPluginsWsa"/>
+    <CallTarget Targets="CopyOutputToPluginsWsa" />
   </Target>
 </Project>
