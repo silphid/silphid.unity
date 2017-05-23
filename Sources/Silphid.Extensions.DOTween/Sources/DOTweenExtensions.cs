@@ -10,6 +10,9 @@ namespace Silphid.Extensions
 {
     public static class DOTweenExtensions
     {
+        public static Tween TweenTo(this ReactiveProperty<float> This, float endValue, float duration) =>
+            DOTween.To(() => This.Value, x => This.Value = x, endValue, duration);
+
         public static Tweener DOFade(this Graphic This, float endValue, float duration)
         {
             return

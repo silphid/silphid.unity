@@ -58,5 +58,35 @@ namespace Silphid.Extensions
         }
 
         #endregion
+
+        #region Selection
+
+        public static void Select(this GameObject This)
+        {
+            EventSystem.current.SetSelectedGameObject(This);
+        }
+
+        public static void Select(this Component This)
+        {
+            This.gameObject.Select();
+        }
+
+        public static void SelectDeferred(this GameObject This)
+        {
+            Scheduler.MainThreadEndOfFrame.Schedule(This.Select);
+        }
+
+        public static void SelectDeferred(this Component This)
+        {
+            This.gameObject.SelectDeferred();
+        }
+
+        public static bool IsSelected(this GameObject This) =>
+            EventSystem.current.currentSelectedGameObject == This;
+
+        public static bool IsSelected(this Component This) =>
+            This.gameObject.IsSelected();
+
+        #endregion
     }
 }
