@@ -71,7 +71,6 @@
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
-    <Compile Include="Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
     <Compile Include="Sources\Interfaces\IGlobalVariantProvider.cs" />

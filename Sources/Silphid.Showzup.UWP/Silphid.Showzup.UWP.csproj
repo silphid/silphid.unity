@@ -148,9 +148,6 @@
     <Compile Include="..\Silphid.Showzup\Sources\Extensions\OptionsExtensions.cs">
       <Link>Sources\Extensions\OptionsExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Silphid.Showzup\Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs">
-      <Link>Sources\Integrations\TextMeshPro\IViewTextMeshProExtensions.cs</Link>
-    </Compile>
     <Compile Include="..\Silphid.Showzup\Sources\Interfaces\IConstructable.cs">
       <Link>Sources\Interfaces\IConstructable.cs</Link>
     </Compile>

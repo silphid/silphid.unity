@@ -110,8 +110,8 @@
     <Compile Include="..\Silphid.Sequencit\Sources\Extensions\IObservableExtensions.cs">
       <Link>Sources\Extensions\IObservableExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Silphid.Sequencit\Sources\Extensions\ISequenceableExtensions.cs">
-      <Link>Sources\Extensions\ISequenceableExtensions.cs</Link>
+    <Compile Include="..\Silphid.Sequencit\Sources\Extensions\ISequencerExtensions.cs">
+      <Link>Sources\Extensions\ISequencerExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Silphid.Sequencit\Sources\Input\IInputLayer.cs">
       <Link>Sources\Input\IInputLayer.cs</Link>
@@ -119,8 +119,8 @@
     <Compile Include="..\Silphid.Sequencit\Sources\Input\InputLayer.cs">
       <Link>Sources\Input\InputLayer.cs</Link>
     </Compile>
-    <Compile Include="..\Silphid.Sequencit\Sources\Interfaces\ISequenceable.cs">
-      <Link>Sources\Interfaces\ISequenceable.cs</Link>
+    <Compile Include="..\Silphid.Sequencit\Sources\Interfaces\ISequencer.cs">
+      <Link>Sources\Interfaces\ISequencer.cs</Link>
     </Compile>
     <Compile Include="..\Silphid.Sequencit\Sources\Machines\Change.cs">
       <Link>Sources\Machines\Change.cs</Link>
@@ -149,8 +149,8 @@
     <Compile Include="..\Silphid.Sequencit\Sources\Sequence.cs">
       <Link>Sources\Sequence.cs</Link>
     </Compile>
-    <Compile Include="..\Silphid.Sequencit\Sources\Sequencer.cs">
-      <Link>Sources\Sequencer.cs</Link>
+    <Compile Include="..\Silphid.Sequencit\Sources\SequenceQueue.cs">
+      <Link>Sources\SequenceQueue.cs</Link>
     </Compile>
     <Compile Include="..\Silphid.Sequencit\Sources\Suspension.cs">
       <Link>Sources\Suspension.cs</Link>
@@ -182,6 +182,6 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPluginsWsa"/>
+    <CallTarget Targets="CopyOutputToPluginsWsa" />
   </Target>
 </Project>

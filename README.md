@@ -1,6 +1,6 @@
 # Silphid.Unity
 
-*Silphid.Unity* is a collection of *.NET* libraries for the development of modern, robust and fluid *Unity* applications, with dynamic data-driven UI using a lightweight *MVVM* approach, advanced sequencing and transitioning, as well as asynchronous data loading, caching and conversion.  It is well integrated with [UniRx](https://github.com/neuecc/UniRx), [Zenject](https://github.com/modesttree/Zenject), [DOTween](http://dotween.demigiant.com/), [Json.NET](https://www.assetstore.unity3d.com/en/#!/content/11347) and [Text Mesh Pro](https://www.assetstore.unity3d.com/en/#!/content/84126).
+*Silphid.Unity* is a collection of *.NET* libraries for the development of modern, robust and fluid *Unity* applications, with dynamic data-driven UI using a lightweight *MVVM* approach, advanced sequencing and transitioning, as well as asynchronous data loading, caching and conversion.  It is well integrated with [UniRx](https://github.com/neuecc/UniRx), [Zenject](https://github.com/modesttree/Zenject), [DOTween](http://dotween.demigiant.com/) and [Json.NET](https://www.assetstore.unity3d.com/en/#!/content/11347).
 
 *Silphid.Unity* was inspired by my work of the past 17 years at [Simbioz](http://simbioz.com) and then [LVL Studio](http://lvlstudio.com), initially targeting the WPF framework, but has now been completely redesigned for [Unity](http://unity.com) and the [Reactive Extensions](http://reactivex.io).
 
@@ -178,7 +178,7 @@ For example, *Silphid.Showzup* leverages *Silphid.Loadzup* in order to load view
 - Customizable transition system based on IObservable
     - Built-in transitions for uGUI (crossfade, slide, zoom, instant)
     - The sequencing of transitions allows phases (load/show/transition/hide...) to take as much time as they need.
-- Simple binding extensions for uGUI and TextMeshPro
+- Simple binding extensions for uGUI
 - And much, much more!
 
 ## Under Development
