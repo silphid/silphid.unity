@@ -1,0 +1,47 @@
+# Default namespaces, when none specified
+Namespaces:
+
+    Default: Default.Namespace
+    Transitions : Transitions.Namespace
+    Models: Model.Namespace
+    ViewModels: ViewModels.Namespace
+    Views: ViewModels.Namespace
+    
+Transitions:
+
+-   &MyTransition1
+    Type: SlideTransition
+    Duration: 0.300
+
+-   &MyTransition2
+    Type: SlideTransition
+    Duration: 0.300
+
+Segues:
+
+-   SourceViewModel: SomeViewModel
+    TargetView: SomeView
+    Direction: Forward
+    Transition:
+        <<: *MyTransition1
+        Duration: 0.100
+
+Mappings:
+
+-   Model: Namespace.${Name}Model
+    ViewModel: Namespace.${Name}ViewModel
+
+-   Variants: Platform/iOS+tvOS, Form/Mobile
+    Model: Namespace.${Name}Model
+    ViewModel: Namespace.${Name}ViewModel
+    Resource: res://${Platform}/${Form}/${Name}View
+    Overrides:
+        -   Variants:
+                - Platform/iOS
+                - Platform/tvOS
+                - Form/Mobile
+                - Theme/Default
+            View: Namespace.${Name}View
+            Resource: res://path/${Name}View
+        -   Variants: Platform/iOS
+            View: Namespace.${Name}View
