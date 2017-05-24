@@ -118,10 +118,25 @@ namespace Silphid.Extensions
                 Rx.Tuple.Create(default(TSource), default(TSource)),
                 (acc, current) => Rx.Tuple.Create(acc.Item2, current));
 
-        public static IDisposable SubscribeCompletion<T>(this Rx.IObservable<T> This, Action onCompleted)
-        {
-            return This.AutoDetach().Subscribe(Observer.Create<T>(_ => { }, ex => { throw ex; }, onCompleted));
-        }
+        public static IDisposable SubscribeCompletion<T>(this Rx.IObservable<T> This, Action onCompleted) =>
+            This.AutoDetach().Subscribe(Observer.Create<T>(_ => {}, ex => { throw ex; }, onCompleted));
+
+        /// <summary>
+        /// Waits given delay before emitting each item it receives and cancels that emitting if another item
+        /// is received in the meantime. Very useful for only updating UI when value is stable enough.
+        /// </summary>
+        public static Rx.IObservable<T> LazyThrottle<T>(this Rx.IObservable<T> This, TimeSpan delay) =>
+            Observable.Create<T>(observer =>
+            {
+                var serialDisposable = new SerialDisposable();
+
+                return new CompositeDisposable(
+                    serialDisposable,
+                    This
+                        .Subscribe(x => serialDisposable.Disposable = Observable
+                            .Timer(delay)
+                            .Subscribe(_ => observer.OnNext(x)), observer.OnCompleted));
+            });
 
         #endregion
 
