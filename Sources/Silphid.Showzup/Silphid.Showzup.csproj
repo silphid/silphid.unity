@@ -11,6 +11,7 @@
     <AssemblyName>Silphid.Showzup</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -149,13 +150,13 @@
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenject.Usages\Zenject.Usage.csproj">
+    <ProjectReference Include="..\Zenject.Usage\Zenject.Usage.csproj">
       <Project>{e3c6424a-bfe7-4ed4-94ed-1ce34894a180}</Project>
       <Name>Zenject.Usage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\Common.targets" />
+  <Import Project="$(SolutionDir)Common.targets" />
   <Target Name="AfterBuild">
     <CallTarget Targets="CopyOutputToPlugins" />
   </Target>

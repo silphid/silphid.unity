@@ -71,7 +71,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\Common.targets" />
+  <Import Project="$(SolutionDir)Common.targets" />
   <Target Name="AfterBuild">
     <CallTarget Targets="CopyOutputToPlugins"/>
   </Target>

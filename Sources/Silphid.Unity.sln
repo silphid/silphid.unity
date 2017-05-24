@@ -47,9 +47,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Silphid.Sequencit", "Silphi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Silphid.Showzup", "Silphid.Showzup", "{FE26FD62-B57C-4880-8D92-9B91D2F5659E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage", "Zenject.Usages\Zenject.Usage.csproj", "{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage", "Zenject.Usage\Zenject.Usage.csproj", "{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage.UWP", "Zenject.Usages.UWP\Zenject.Usage.UWP.csproj", "{D9DF10BC-FA75-4FAD-AC30-DD778A225325}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage.UWP", "Zenject.Usage.UWP\Zenject.Usage.UWP.csproj", "{D9DF10BC-FA75-4FAD-AC30-DD778A225325}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

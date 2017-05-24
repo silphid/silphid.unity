@@ -13,8 +13,8 @@ namespace Silphid.Showzup
 
         public Vector2 Offset
         {
-            get => _offset;
-            set => _offset = value;
+            get { return _offset; }
+            set { _offset = value; }
         }
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
