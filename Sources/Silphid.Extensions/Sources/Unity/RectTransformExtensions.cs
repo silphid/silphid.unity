@@ -1,7 +1,7 @@
-﻿using UniRx;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 
 namespace Silphid.Extensions
 {
@@ -17,6 +17,14 @@ namespace Silphid.Extensions
             var corners = new Vector3[4];
             This.GetWorldCorners(corners);
             return corners.Average();
+        }
+
+        public static void Stretch(this RectTransform This)
+        {
+            This.anchorMin = Vector2.zero;
+            This.anchorMax = Vector2.one;
+            This.sizeDelta = Vector2.zero;
+            This.pivot = new Vector2(0.5f, 0.5f);
         }
 
         /// <summary>
