@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
     <PropertyGroup>  
-        <PluginsPath>$(SolutionDir)..\UnityProject\Assets\Plugins</PluginsPath>  
-        <PluginsWsaPath>$(SolutionDir)..\UnityProject\Assets\Plugins\WSA</PluginsWsaPath>  
+        <PluginsPath>$(SolutionDir)..\UnityProject\Assets\Plugins</PluginsPath>
+        <PluginsWsaPath>$(SolutionDir)..\UnityProject\Assets\Plugins\WSA</PluginsWsaPath>
     </PropertyGroup>  
   
     <Target Name="CopyOutputToPlugins">

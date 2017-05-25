@@ -1,11 +1,7 @@
-# Default namespaces, when none specified
-Namespaces:
+Using:
 
-    Default: Default.Namespace
-    Transitions : Transitions.Namespace
-    Models: Model.Namespace
-    ViewModels: ViewModels.Namespace
-    Views: ViewModels.Namespace
+-   TopNamespace.SubNameSpace.*, MyAssembly
+-   TopNamespace.SubNameSpace.*, MyAssembly
     
 Transitions:
 
@@ -22,18 +18,17 @@ Segues:
 -   SourceViewModel: SomeViewModel
     TargetView: SomeView
     Direction: Forward
-    Transition:
-        <<: *MyTransition1
+    Transition: *MyTransition1
         Duration: 0.100
 
 Mappings:
 
--   Model: Namespace.${Name}Model
-    ViewModel: Namespace.${Name}ViewModel
+-   Model: ${Name}Model
+    ViewModel: ${Name}ViewModel
 
 -   Variants: Platform/iOS+tvOS, Form/Mobile
-    Model: Namespace.${Name}Model
-    ViewModel: Namespace.${Name}ViewModel
+    Model: ${Name}Model
+    ViewModel: ${Name}ViewModel
     Resource: res://${Platform}/${Form}/${Name}View
     Overrides:
         -   Variants:
@@ -41,7 +36,7 @@ Mappings:
                 - Platform/tvOS
                 - Form/Mobile
                 - Theme/Default
-            View: Namespace.${Name}View
+            View: ${Name}View
             Resource: res://path/${Name}View
         -   Variants: Platform/iOS
-            View: Namespace.${Name}View
+            View: ${Name}View

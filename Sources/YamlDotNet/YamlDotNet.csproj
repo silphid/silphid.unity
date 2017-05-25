@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{057C0297-852E-4038-A7F5-3104D1862A2F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>YamlDotNet</RootNamespace>
+    <AssemblyName>YamlDotNet</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\Core\AnchorNotFoundException.cs" />
+    <Compile Include="Sources\Core\CharacterAnalyzer.cs" />
+    <Compile Include="Sources\Core\Constants.cs" />
+    <Compile Include="Sources\Core\Cursor.cs" />
+    <Compile Include="Sources\Core\Emitter.cs" />
+    <Compile Include="Sources\Core\EmitterState.cs" />
+    <Compile Include="Sources\Core\Events\AnchorAlias.cs" />
+    <Compile Include="Sources\Core\Events\Comment.cs" />
+    <Compile Include="Sources\Core\Events\DocumentEnd.cs" />
+    <Compile Include="Sources\Core\Events\DocumentStart.cs" />
+    <Compile Include="Sources\Core\Events\EventType.cs" />
+    <Compile Include="Sources\Core\Events\IParsingEventVisitor.cs" />
+    <Compile Include="Sources\Core\Events\MappingEnd.cs" />
+    <Compile Include="Sources\Core\Events\MappingStart.cs" />
+    <Compile Include="Sources\Core\Events\MappingStyle.cs" />
+    <Compile Include="Sources\Core\Events\NodeEvent.cs" />
+    <Compile Include="Sources\Core\Events\ParsingEvent.cs" />
+    <Compile Include="Sources\Core\Events\Scalar.cs" />
+    <Compile Include="Sources\Core\Events\SequenceEnd.cs" />
+    <Compile Include="Sources\Core\Events\SequenceStart.cs" />
+    <Compile Include="Sources\Core\Events\SequenceStyle.cs" />
+    <Compile Include="Sources\Core\Events\StreamEnd.cs" />
+    <Compile Include="Sources\Core\Events\StreamStart.cs" />
+    <Compile Include="Sources\Core\FakeList.cs" />
+    <Compile Include="Sources\Core\ForwardAnchorNotSupportedException.cs" />
+    <Compile Include="Sources\Core\HashCode.cs" />
+    <Compile Include="Sources\Core\IEmitter.cs" />
+    <Compile Include="Sources\Core\ILookAheadBuffer.cs" />
+    <Compile Include="Sources\Core\InsertionQueue.cs" />
+    <Compile Include="Sources\Core\IParser.cs" />
+    <Compile Include="Sources\Core\IScanner.cs" />
+    <Compile Include="Sources\Core\LookAheadBuffer.cs" />
+    <Compile Include="Sources\Core\Mark.cs" />
+    <Compile Include="Sources\Core\MaximumRecursionLevelReachedException.cs" />
+    <Compile Include="Sources\Core\MergingParser.cs" />
+    <Compile Include="Sources\Core\Parser.cs" />
+    <Compile Include="Sources\Core\ParserExtensions.cs" />
+    <Compile Include="Sources\Core\ParserState.cs" />
+    <Compile Include="Sources\Core\RecursionLevel.cs" />
+    <Compile Include="Sources\Core\ScalarStyle.cs" />
+    <Compile Include="Sources\Core\Scanner.cs" />
+    <Compile Include="Sources\Core\SemanticErrorException.cs" />
+    <Compile Include="Sources\Core\SimpleKey.cs" />
+    <Compile Include="Sources\Core\StringLookAheadBuffer.cs" />
+    <Compile Include="Sources\Core\SyntaxErrorException.cs" />
+    <Compile Include="Sources\Core\TagDirectiveCollection.cs" />
+    <Compile Include="Sources\Core\Tokens\Anchor.cs" />
+    <Compile Include="Sources\Core\Tokens\AnchorAlias.cs" />
+    <Compile Include="Sources\Core\Tokens\BlockEnd.cs" />
+    <Compile Include="Sources\Core\Tokens\BlockEntry.cs" />
+    <Compile Include="Sources\Core\Tokens\BlockMappingStart.cs" />
+    <Compile Include="Sources\Core\Tokens\BlockSequenceStart.cs" />
+    <Compile Include="Sources\Core\Tokens\Comment.cs" />
+    <Compile Include="Sources\Core\Tokens\DocumentEnd.cs" />
+    <Compile Include="Sources\Core\Tokens\DocumentStart.cs" />
+    <Compile Include="Sources\Core\Tokens\FlowEntry.cs" />
+    <Compile Include="Sources\Core\Tokens\FlowMappingEnd.cs" />
+    <Compile Include="Sources\Core\Tokens\FlowMappingStart.cs" />
+    <Compile Include="Sources\Core\Tokens\FlowSequenceEnd.cs" />
+    <Compile Include="Sources\Core\Tokens\FlowSequenceStart.cs" />
+    <Compile Include="Sources\Core\Tokens\Key.cs" />
+    <Compile Include="Sources\Core\Tokens\Scalar.cs" />
+    <Compile Include="Sources\Core\Tokens\StreamEnd.cs" />
+    <Compile Include="Sources\Core\Tokens\StreamStart.cs" />
+    <Compile Include="Sources\Core\Tokens\Tag.cs" />
+    <Compile Include="Sources\Core\Tokens\TagDirective.cs" />
+    <Compile Include="Sources\Core\Tokens\Token.cs" />
+    <Compile Include="Sources\Core\Tokens\Value.cs" />
+    <Compile Include="Sources\Core\Tokens\VersionDirective.cs" />
+    <Compile Include="Sources\Core\Version.cs" />
+    <Compile Include="Sources\Core\YamlException.cs" />
+    <Compile Include="Sources\Helpers\ExpressionExtensions.cs" />
+    <Compile Include="Sources\Helpers\GenericCollectionToNonGenericAdapter.cs" />
+    <Compile Include="Sources\Helpers\GenericDictionaryToNonGenericAdapter.cs" />
+    <Compile Include="Sources\Helpers\ITestOutputHelper.cs" />
+    <Compile Include="Sources\Helpers\Portability.cs" />
+    <Compile Include="Sources\RepresentationModel\DocumentLoadingState.cs" />
+    <Compile Include="Sources\RepresentationModel\EmitterState.cs" />
+    <Compile Include="Sources\RepresentationModel\IYamlVisitor.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlAliasNode.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlDocument.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlMappingNode.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlNode.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlNodeIdentityEqualityComparer.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlNodeType.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlScalarNode.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlSequenceNode.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlStream.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlVisitor.cs" />
+    <Compile Include="Sources\RepresentationModel\YamlVisitorBase.cs" />
+    <Compile Include="Sources\Serialization\BuilderSkeleton.cs" />
+    <Compile Include="Sources\Serialization\Converters\DateTimeConverter.cs" />
+    <Compile Include="Sources\Serialization\Converters\GuidConverter.cs" />
+    <Compile Include="Sources\Serialization\Deserializer.cs" />
+    <Compile Include="Sources\Serialization\DeserializerBuilder.cs" />
+    <Compile Include="Sources\Serialization\EmissionPhaseObjectGraphVisitorArgs.cs" />
+    <Compile Include="Sources\Serialization\EventEmitters\ChainedEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\EventEmitters\CustomTagEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\EventEmitters\JsonEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\EventEmitters\TypeAssigningEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\EventEmitters\WriterEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\EventInfo.cs" />
+    <Compile Include="Sources\Serialization\IAliasProvider.cs" />
+    <Compile Include="Sources\Serialization\IEventEmitter.cs" />
+    <Compile Include="Sources\Serialization\INamingConvention.cs" />
+    <Compile Include="Sources\Serialization\INodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\INodeTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\IObjectDescriptor.cs" />
+    <Compile Include="Sources\Serialization\IObjectFactory.cs" />
+    <Compile Include="Sources\Serialization\IObjectGraphTraversalStrategy.cs" />
+    <Compile Include="Sources\Serialization\IObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\IPropertyDescriptor.cs" />
+    <Compile Include="Sources\Serialization\IRegistrationLocationSelectionSyntax.cs" />
+    <Compile Include="Sources\Serialization\ITypeInspector.cs" />
+    <Compile Include="Sources\Serialization\ITypeResolver.cs" />
+    <Compile Include="Sources\Serialization\IValueDeserializer.cs" />
+    <Compile Include="Sources\Serialization\IValuePromise.cs" />
+    <Compile Include="Sources\Serialization\IValueSerializer.cs" />
+    <Compile Include="Sources\Serialization\IYamlConvertible.cs" />
+    <Compile Include="Sources\Serialization\IYamlSerializable.cs" />
+    <Compile Include="Sources\Serialization\IYamlTypeConverter.cs" />
+    <Compile Include="Sources\Serialization\LazyComponentRegistrationList.cs" />
+    <Compile Include="Sources\Serialization\LazyComponentRegistrationListExtensions.cs" />
+    <Compile Include="Sources\Serialization\NamingConventions\CamelCaseNamingConvention.cs" />
+    <Compile Include="Sources\Serialization\NamingConventions\HyphenatedNamingConvention.cs" />
+    <Compile Include="Sources\Serialization\NamingConventions\NullNamingConvention.cs" />
+    <Compile Include="Sources\Serialization\NamingConventions\PascalCaseNamingConvention.cs" />
+    <Compile Include="Sources\Serialization\NamingConventions\UnderscoredNamingConvention.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\ArrayNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\CollectionNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\DictionaryNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\EnumerableNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\NullNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\ObjectNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\ScalarNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\TypeConverterNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\YamlConvertibleNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeDeserializers\YamlSerializableNodeDeserializer.cs" />
+    <Compile Include="Sources\Serialization\NodeTypeResolvers\DefaultContainersNodeTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\NodeTypeResolvers\TagNodeTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\NodeTypeResolvers\TypeNameInTagNodeTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\NodeTypeResolvers\YamlConvertibleTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\NodeTypeResolvers\YamlSerializableTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\Nothing.cs" />
+    <Compile Include="Sources\Serialization\ObjectDescriptor.cs" />
+    <Compile Include="Sources\Serialization\ObjectFactories\DefaultObjectFactory.cs" />
+    <Compile Include="Sources\Serialization\ObjectFactories\LambdaObjectFactory.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphTraversalStrategies\FullObjectGraphTraversalStrategy.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphTraversalStrategies\RoundtripObjectGraphTraversalStrategy.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\AnchorAssigner.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\AnchorAssigningObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\ChainedObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\CustomSerializationObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\DefaultExclusiveObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\EmittingObjectGraphVisitor.cs" />
+    <Compile Include="Sources\Serialization\ObjectGraphVisitors\PreProcessingPhaseObjectGraphVisitorSkeleton.cs" />
+    <Compile Include="Sources\Serialization\PropertyDescriptor.cs" />
+    <Compile Include="Sources\Serialization\SerializationOptions.cs" />
+    <Compile Include="Sources\Serialization\Serializer.cs" />
+    <Compile Include="Sources\Serialization\SerializerBuilder.cs" />
+    <Compile Include="Sources\Serialization\StreamFragment.cs" />
+    <Compile Include="Sources\Serialization\TagMappings.cs" />
+    <Compile Include="Sources\Serialization\TypeInspectors\CachedTypeInspector.cs" />
+    <Compile Include="Sources\Serialization\TypeInspectors\NamingConventionTypeInspector.cs" />
+    <Compile Include="Sources\Serialization\TypeInspectors\ReadableAndWritablePropertiesTypeInspector.cs" />
+    <Compile Include="Sources\Serialization\TypeInspectors\ReadablePropertiesTypeInspector.cs" />
+    <Compile Include="Sources\Serialization\TypeInspectors\TypeInspectorSkeleton.cs" />
+    <Compile Include="Sources\Serialization\TypeResolvers\DynamicTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\TypeResolvers\StaticTypeResolver.cs" />
+    <Compile Include="Sources\Serialization\Utilities\IPostDeserializationCallback.cs" />
+    <Compile Include="Sources\Serialization\Utilities\ObjectAnchorCollection.cs" />
+    <Compile Include="Sources\Serialization\Utilities\ReflectionUtility.cs" />
+    <Compile Include="Sources\Serialization\Utilities\SerializerState.cs" />
+    <Compile Include="Sources\Serialization\Utilities\StringExtensions.cs" />
+    <Compile Include="Sources\Serialization\Utilities\TypeConverter.cs" />
+    <Compile Include="Sources\Serialization\ValueDeserializers\AliasValueDeserializer.cs" />
+    <Compile Include="Sources\Serialization\ValueDeserializers\NodeValueDeserializer.cs" />
+    <Compile Include="Sources\Serialization\YamlAttributeOverrides.cs" />
+    <Compile Include="Sources\Serialization\YamlAttributeOverridesInspector.cs" />
+    <Compile Include="Sources\Serialization\YamlAttributesTypeInspector.cs" />
+    <Compile Include="Sources\Serialization\YamlFormatter.cs" />
+    <Compile Include="Sources\Serialization\YamlIgnoreAttribute.cs" />
+    <Compile Include="Sources\Serialization\YamlMember.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sources\Examples.unity" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sources\Readme.txt" />
+    <Content Include="Sources\YamlDotNet.license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\Common.targets" />
+  <Target Name="AfterBuild">
+    <CallTarget Targets="CopyOutputToPlugins"/>
+  </Target>
+</Project>
