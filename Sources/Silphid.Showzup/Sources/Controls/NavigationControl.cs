@@ -189,7 +189,7 @@ namespace Silphid.Showzup
                 presentation.TargetView,
                 new Parallel(),
                 presentation.Transition,
-                presentation.TransitionDuration);
+                presentation.Duration);
 
             _navigating.OnNext(nav);
             _view.Value = null;

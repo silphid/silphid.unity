@@ -1,34 +1,35 @@
-Using:
+Assemblies:
+-   MyAssembly1
+-   MyAssembly2
 
--   TopNamespace.SubNameSpace.*, MyAssembly
--   TopNamespace.SubNameSpace.*, MyAssembly
+Namespaces:
+-   TopNamespace.SubNameSpace
+-   TopNamespace.SubNameSpace2
     
 Transitions:
-
 -   &MyTransition1
     Type: SlideTransition
     Duration: 0.300
-
 -   &MyTransition2
     Type: SlideTransition
     Duration: 0.300
 
 Segues:
-
--   SourceViewModel: SomeViewModel
+-   SourceViewModel: SomeViewModel | SomeOtherViewModel
     TargetView: SomeView
     Direction: Forward
     Transition: *MyTransition1
         Duration: 0.100
 
-Mappings:
-
--   Model: ${Name}Model
+ViewModels:
+-   Model: ${Name}Model 
     ViewModel: ${Name}ViewModel
+    ViewName: ${Name}
 
--   Variants: Platform/iOS+tvOS, Form/Mobile
-    Model: ${Name}Model
-    ViewModel: ${Name}ViewModel
+Views:
+-   Name: "*"
+    Variants: Platform/iOS+tvOS, Form/Mobile
+    View: ${Name}View
     Resource: res://${Platform}/${Form}/${Name}View
     Overrides:
         -   Variants:

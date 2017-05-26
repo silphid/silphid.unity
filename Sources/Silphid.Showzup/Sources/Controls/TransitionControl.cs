@@ -60,7 +60,7 @@ namespace Silphid.Showzup
         {
             var presentation = base.CreatePresentation(viewModel, sourceView, targetViewType, options);
             presentation.Transition = ResolveTransition(presentation, DefaultTransition);
-            presentation.TransitionDuration = ResolveDuration(presentation.Transition, options);
+            presentation.Duration = ResolveDuration(presentation.Transition, options);
             return presentation;
         }
 
@@ -76,7 +76,7 @@ namespace Silphid.Showzup
             var targetView = presentation.TargetView;
             var options = presentation.Options;
             var transition = presentation.Transition;
-            var duration = presentation.TransitionDuration;
+            var duration = presentation.Duration;
 
             return Sequence.Create(seq =>
             {

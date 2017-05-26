@@ -4,18 +4,18 @@ using Silphid.Extensions;
 
 namespace Silphid.Showzup
 {
-    public class ViewMapping
+    public class Mapping
     {
         public Type ViewModelType { get; }
         public Type ViewType { get; }
-        public Uri Resource { get; }
-        public IEnumerable<string> Variants { get; }
+        public Uri Uri { get; }
+        public List<string> Variants { get; }
 
-        public ViewMapping(Type viewModelType, Type viewType, Uri resource, IEnumerable<string> variants)
+        public Mapping(Type viewModelType, Type viewType, Uri uri, List<string> variants)
         {
             ViewModelType = viewModelType;
             ViewType = viewType;
-            Resource = resource;
+            Uri = uri;
             Variants = variants;
         }
 

@@ -59,6 +59,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Attributes\AssetAttribute.cs" />
     <Compile Include="Sources\Attributes\VariantAttribute.cs" />
+    <Compile Include="Sources\Configs\Config.cs" />
+    <Compile Include="Sources\Configs\Mapping.cs" />
+    <Compile Include="Sources\Configs\Segue.cs" />
+    <Compile Include="Sources\Configs\Variant.cs" />
     <Compile Include="Sources\Controls\Control.cs" />
     <Compile Include="Sources\Controls\IFocusable.cs" />
     <Compile Include="Sources\Controls\ItemControl.cs" />
@@ -87,6 +91,7 @@
     <Compile Include="Sources\Interfaces\ITransitionResolver.cs" />
     <Compile Include="Sources\Interfaces\IView.cs" />
     <Compile Include="Sources\Interfaces\IViewLoader.cs" />
+    <Compile Include="Sources\Interfaces\IViewModel.cs" />
     <Compile Include="Sources\Interfaces\IViewResolver.cs" />
     <Compile Include="Sources\Navigation\CustomInputModule.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
