@@ -1,6 +1,5 @@
 ﻿#if JSON_NET
 
-using System.Net.Mime;
 using System.Text;
 using Newtonsoft.Json;
 

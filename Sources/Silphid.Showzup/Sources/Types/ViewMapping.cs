@@ -21,7 +21,7 @@ namespace Silphid.Showzup
 
         public override string ToString()
         {
-            return $"{ViewModelType} => {ViewType} ({Variants.ToDelimitedString(";")}) {Uri}";
+            return $"{ViewModelType} => {ViewType} ({Variants.ToDelimitedString(";")}) {Resource}";
         }
     }
 }

@@ -253,7 +253,7 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <Import Project="$(SolutionDir)\Common.targets" />
+  <Import Project="$(SolutionDir)Common.targets" />
   <Target Name="AfterBuild">
     <CallTarget Targets="CopyOutputToPluginsWsa"/>
   </Target>

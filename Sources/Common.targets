@@ -1,16 +1,16 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
     <PropertyGroup>  
-        <PluginsPath>$(SolutionDir)..\UnityProject\Assets\Plugins</PluginsPath>
-        <PluginsWsaPath>$(SolutionDir)..\UnityProject\Assets\Plugins\WSA</PluginsWsaPath>
+        <PluginsPath>$(SolutionDir)..\UnityProject\Assets\Plugins</PluginsPath>  
+        <PluginsWsaPath>$(PluginsPath)\WSA</PluginsWsaPath>  
     </PropertyGroup>  
   
     <Target Name="CopyOutputToPlugins">
-        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsPath)" />
-        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsPath)" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsPath)" ContinueOnError="true" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsPath)" ContinueOnError="true" />
     </Target>  
   
     <Target Name="CopyOutputToPluginsWsa">
-        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsWsaPath)" />
-        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsWsaPath)" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsWsaPath)" ContinueOnError="true" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsWsaPath)" ContinueOnError="true" />
     </Target>  
 </Project>  
