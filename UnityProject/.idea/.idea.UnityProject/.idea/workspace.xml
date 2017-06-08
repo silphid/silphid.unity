@@ -50,7 +50,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Granularity.cs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Granularity.cs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/Variants/Granularity.cs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="312">
@@ -62,11 +62,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HomePageViewModel.cs" pinned="false" current-in-tab="false">
+      <file leaf-file-name="HomePageViewModel.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/ViewModels/HomePageViewModel.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="11" column="31" lean-forward="false" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
+            <state relative-caret-position="216">
+              <caret line="9" column="30" lean-forward="false" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
               <folding>
                 <marker date="1496933590000" expanded="true" signature="90:310" ph="{...}" />
                 <marker date="1496933590000" expanded="true" signature="264:308" ph="{...}" />
@@ -356,29 +356,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/Views/HomePage.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" column="37" lean-forward="false" selection-start-line="4" selection-start-column="37" selection-end-line="4" selection-end-column="37" />
-          <folding>
-            <marker date="1496935652000" expanded="true" signature="6:57" ph="..." />
-            <marker date="1496935652000" expanded="true" signature="117:291" ph="{...}" />
-            <marker date="1496935652000" expanded="true" signature="196:289" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/ViewModels/HomePageViewModel.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="11" column="31" lean-forward="false" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
-          <folding>
-            <marker date="1496933590000" expanded="true" signature="90:310" ph="{...}" />
-            <marker date="1496933590000" expanded="true" signature="264:308" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.local/share/JetBrains/Shared/v08/DecompilerCache/decompiler/56843184-D20F-4FFE-851A-8225DDCF1679/62/6e7378f4/VariantGroup`1.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="672">
@@ -429,6 +406,29 @@
           <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
           <folding>
             <marker date="1496949738000" expanded="true" signature="71:548" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/Views/HomePage.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="37" lean-forward="false" selection-start-line="4" selection-start-column="37" selection-end-line="4" selection-end-column="37" />
+          <folding>
+            <marker date="1496935652000" expanded="true" signature="6:57" ph="..." />
+            <marker date="1496935652000" expanded="true" signature="117:291" ph="{...}" />
+            <marker date="1496935652000" expanded="true" signature="196:289" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Examples/Showzup/ViewModels/HomePageViewModel.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="9" column="30" lean-forward="false" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
+          <folding>
+            <marker date="1496933590000" expanded="true" signature="90:310" ph="{...}" />
+            <marker date="1496933590000" expanded="true" signature="264:308" ph="{...}" />
           </folding>
         </state>
       </provider>

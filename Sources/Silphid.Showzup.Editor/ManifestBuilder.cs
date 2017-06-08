@@ -38,7 +38,7 @@ public class ManifestBuilder
         return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
     }
 
-    private static void AddMappings(Manifest manifest, List<IVariant> allVariants)
+    private static void AddMappings(Manifest manifest, VariantSet allVariants)
     {
         var guids = AssetDatabase.FindAssets("t:GameObject", new[] {manifest.PrefabsPath});
         if (guids.Any())
@@ -47,7 +47,7 @@ public class ManifestBuilder
             Debug.Log($"No view prefab could be found in path: {manifest.PrefabsPath}");
     }
 
-    private static void AddMappingsForPrefab(string guid, Manifest manifest, List<IVariant> allVariants)
+    private static void AddMappingsForPrefab(string guid, Manifest manifest, VariantSet allVariants)
     {
         string prefabPath = AssetDatabase.GUIDToAssetPath(guid);
 
@@ -61,17 +61,17 @@ public class ManifestBuilder
             return;
         }
 
-        var assetVariants = GetVariantsFromRelativePath(relativePath, manifest, allVariants).ToList();
+        var assetVariants = GetVariantsFromRelativePath(relativePath, manifest, allVariants);
         
         foreach (var view in views)
             AddMappingForViewType(view.GetType(), relativePath, assetVariants, allVariants, manifest);
     }
 
-    private static void AddMappingForViewType(Type viewType, string relativePath, List<IVariant> assetVariants, List<IVariant> allVariants,
+    private static void AddMappingForViewType(Type viewType, string relativePath, VariantSet assetVariants, VariantSet allVariants,
         Manifest manifest)
     {
         var viewVariants = GetVariantsFromTypeAttributes(viewType, allVariants);
-        var variants = viewVariants.Concat(assetVariants).ToList();
+        var variants = viewVariants.UnionedWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
         
         Debug.Log($"Mapping {viewType} => {uri} ({variants.ToDelimitedString(", ")})");
@@ -97,8 +97,7 @@ public class ManifestBuilder
         return new Uri(uriPrefix + relativePath);
     }
 
-    private static IEnumerable<IVariant> GetVariantsFromRelativePath(string relativePath, Manifest manifest,
-        List<IVariant> allVariants)
+    private static VariantSet GetVariantsFromRelativePath(string relativePath, Manifest manifest, VariantSet allVariants)
     {
         var allTokens = relativePath
             .Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
@@ -111,12 +110,14 @@ public class ManifestBuilder
         return GetVariantsFromNames(variantNames, allVariants);
     }
 
-    private static IEnumerable<IVariant> GetVariantsFromNames(List<string> names, List<IVariant> allVariants)
+    private static VariantSet GetVariantsFromNames(List<string> names, VariantSet allVariants)
     {
-        return allVariants.Where(x => names.Contains(x.Name.ToLower()));
+        return allVariants
+            .Where(x => names.Contains(x.Name.ToLower()))
+            .ToVariantSet();
     }
 
-    private static IEnumerable<IVariant> GetVariantsFromTypeAttributes(Type type, List<IVariant> allVariants)
+    private static VariantSet GetVariantsFromTypeAttributes(Type type, VariantSet allVariants)
     {
         var attributes = type
             .GetAttributes<VariantAttribute>()
@@ -124,12 +125,14 @@ public class ManifestBuilder
             .ToList();
         
         if (!attributes.Any())
-            return new List<IVariant>();
+            return new VariantSet();
 
-        return allVariants.Where(variant => attributes.Contains(variant.Name));
+        return allVariants
+            .Where(variant => attributes.Contains(variant.Name))
+            .ToVariantSet();
     }
 
-    private static List<IVariant> GetVariantsFromAllAssemblies()
+    private static VariantSet GetVariantsFromAllAssemblies()
     {
         return AppDomain.CurrentDomain
             .GetAssemblies()
@@ -138,6 +141,6 @@ public class ManifestBuilder
             .Select(type => type.GetField("Group", BindingFlags.Static | BindingFlags.Public))
             .Where(field => field != null && field.FieldType.IsAssignableTo<IVariantGroup>())
             .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
-            .ToList();
+            .ToVariantSet();
     }
 }

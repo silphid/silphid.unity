@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Silphid.Showzup
 {
@@ -8,9 +7,9 @@ namespace Silphid.Showzup
     {
         public Type Source { get; }
         public Uri Target { get; }
-        public List<IVariant> Variants { get; }
+        public VariantSet Variants { get; }
 
-        public TypeToUriMapping(Type source, Uri target, List<IVariant> variants)
+        public TypeToUriMapping(Type source, Uri target, VariantSet variants)
         {
             Source = source;
             Target = target;
