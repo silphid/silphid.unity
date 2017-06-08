@@ -61,10 +61,14 @@
     <Compile Include="Sources\Attributes\AssetAttribute.cs" />
     <Compile Include="Sources\Attributes\VariantAttribute.cs" />
     <Compile Include="Sources\Configs\Config.cs" />
-    <Compile Include="Sources\Configs\ConfigTest.cs" />
-    <Compile Include="Sources\Configs\Mapping.cs" />
+    <Compile Include="Sources\Configs\IVariant.cs" />
+    <Compile Include="Sources\Configs\IVariantGroup.cs" />
     <Compile Include="Sources\Configs\Segue.cs" />
+    <Compile Include="Sources\Configs\TypeToTypeMapping.cs" />
+    <Compile Include="Sources\Configs\TypeToUriMapping.cs" />
     <Compile Include="Sources\Configs\Variant.cs" />
+    <Compile Include="Sources\Configs\VariantGroup.cs" />
+    <Compile Include="Sources\Configs\Manifest.cs" />
     <Compile Include="Sources\Controls\Control.cs" />
     <Compile Include="Sources\Controls\IFocusable.cs" />
     <Compile Include="Sources\Controls\ItemControl.cs" />

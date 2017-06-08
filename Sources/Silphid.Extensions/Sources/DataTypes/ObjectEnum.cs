@@ -69,43 +69,32 @@ namespace Silphid.Extensions.DataTypes
         #region All
 
         private static List<T> _all;
-
-        public static List<T> All
-        {
-            get
-            {
-                return _all ?? (_all = typeof(T)
-                    .GetFields(BindingFlags.Static | BindingFlags.Public)
-                    .Where(x => x.FieldType.IsAssignableTo<T>())
-                    .Select(x => (T)x.GetValue(null))
-                    .ToList());
-            }
-        }
+        
+        public static List<T> All =>
+            _all ?? (_all = typeof(T)
+                .GetFields(BindingFlags.Static | BindingFlags.Public)
+                .Where(x => x.FieldType.IsAssignableTo<T>())
+                .Select(x => (T) x.GetValue(null))
+                .ToList());
 
         #endregion
 
         #region Nothing
 
         private static T[] _nothing;
-
-        public static T[] Nothing
-        {
-            get { return _nothing ?? (_nothing = new T[] { }); }
-        }
+        
+        public static T[] Nothing =>
+            _nothing ?? (_nothing = new T[] { });
 
         #endregion
 
         #region Static methods
 
-        public static T FromId(int id)
-        {
-            return All.FirstOrDefault(x => x.Id.Equals(id));
-        }
+        public static T FromId(int id) =>
+            All.FirstOrDefault(x => x.Id.Equals(id));
 
-        public static T FromName(string name)
-        {
-            return All.FirstOrDefault(x => x.Name.CaseInsensitiveEquals(name));
-        }
+        public static T FromName(string name) =>
+            All.FirstOrDefault(x => x.Name.CaseInsensitiveEquals(name));
 
         #endregion
 
