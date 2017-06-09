@@ -8,6 +8,8 @@ namespace Silphid.Showzup
     {
         public string PrefabsPath;
         public string UriPrefix;
-        public List<TypeToUriMapping> TypeToUriMappings { get; set; }
+        public List<TypeToTypeMapping> ModelsToViewModels { get; set; }
+        public List<TypeToTypeMapping> ViewModelsToViews { get; set; }
+        public List<TypeToUriMapping> ViewsToPrefabs { get; set; }
     }
 }

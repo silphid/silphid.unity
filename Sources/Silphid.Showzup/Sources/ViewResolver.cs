@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Silphid.Showzup
 {
-    public class ViewResolver : IViewResolver, IInitializable
+    public class ViewResolver : IViewResolver //, IInitializable
     {
         private class Candidate
         {
@@ -26,36 +26,34 @@ namespace Silphid.Showzup
                 $"{ViewInfo} (VariantScore: {VariantScore}, TypeScore: {TypeScore})";
         }
 
-        private const string DefaultCategory = "Default";
         private const int ZeroScore = 0;
         private const int MediumScore = 50;
         private const int HighScore = 100;
 
-        private readonly List<ViewInfo> _viewInfos = new List<ViewInfo>();
-        private readonly IGlobalVariantProvider _globalVariantProvider;
-        private readonly Assembly _viewsAssembly;
+        private readonly Manifest _manifest;
+        private readonly VariantSet _globalVariants;
 
-        public ViewResolver(Assembly viewsAssembly, [InjectOptional] IGlobalVariantProvider globalVariantProvider = null)
+        public ViewResolver(Manifest manifest, [InjectOptional] VariantSet globalVariants = null)
         {
-            _viewsAssembly = viewsAssembly;
-            _globalVariantProvider = globalVariantProvider;
+            _manifest = manifest;
+            _globalVariants = globalVariants ?? VariantSet.Empty;
         }
 
-        public void Initialize()
-        {
-            _viewInfos.AddRange(
-                from viewType in GetAllViewTypes()
-                let viewModelType = GetViewModelType(viewType)
-                let viewVariants = viewType.GetAttributes<VariantAttribute>().Select(x => x.Variant).ToArray()
-                from assetAttribute in viewType.GetAttributes<AssetAttribute>()
-                select new ViewInfo
-                {
-                    ViewModelType = viewModelType,
-                    ViewType = viewType,
-                    Uri = assetAttribute.Uri,
-                    Variants = viewVariants.Concat(assetAttribute.Variants)
-                });
-        }
+//        public void Initialize()
+//        {
+//            _viewInfos.AddRange(
+//                from viewType in GetAllViewTypes()
+//                let viewModelType = GetViewModelType(viewType)
+//                let viewVariants = viewType.GetAttributes<VariantAttribute>().Select(x => x.Variant).ToArray()
+//                from assetAttribute in viewType.GetAttributes<AssetAttribute>()
+//                select new ViewInfo
+//                {
+//                    ViewModelType = viewModelType,
+//                    ViewType = viewType,
+//                    Uri = assetAttribute.Uri,
+//                    Variants = viewVariants.Concat(assetAttribute.Variants)
+//                });
+//        }
 
         private Type GetViewModelType(Type viewType) =>
             viewType
@@ -109,14 +107,13 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveInternal(Type type, string kind, Func<ViewInfo, int> getTypeSpecificity, Options options)
         {
-            var globalVariants = _globalVariantProvider?.Variants ?? Enumerable.Empty<string>();
-            var variants = options.GetVariants().Concat(globalVariants).ToList();
+            var variants = options.GetVariants().UnionWith(_globalVariants);
 
 //            Debug.Log($"#Views# Resolving view for {type} and variants {variants.ToDelimitedString(";")}");
 
             var candidates = (
                     from viewInfo in _viewInfos
-                    let variantScore = GetVariantScore(viewInfo.ViewType.Name, variants.ToList(), viewInfo.Variants.ToList())
+                    let variantScore = GetVariantScore(viewInfo.ViewType.Name, variants, viewInfo.Variants)
                     let viewModelScore = getTypeSpecificity(viewInfo)
                     where viewModelScore != ZeroScore
                     orderby variantScore descending, viewModelScore descending
@@ -136,16 +133,17 @@ namespace Silphid.Showzup
             return resolved.ViewInfo;
         }
 
-        private static int GetVariantScore(string viewTypeName, List<string> requestedVariants, List<string> candidateVariants)
+        private static int GetVariantScore(string viewTypeName, VariantSet requestedVariants, VariantSet candidateVariants)
         {
-            var requiredVariants = requestedVariants.Where(x => x.EndsWith("!")).ToList();
-            var matchedRequiredCount = requiredVariants.Count(candidateVariants.Contains);
-//            Debug.Log($"#Views# {viewTypeName} Required variants: {requiredVariants.Count}  Matched required: {matchedRequiredCount}");
-            if (matchedRequiredCount < requiredVariants.Count)
-                return ZeroScore;
-
-            return requestedVariants.Count(candidateVariants.Contains) * HighScore +
-                   (candidateVariants.Contains(DefaultCategory) ? MediumScore : ZeroScore);
+            throw new NotImplementedException();
+//            var requiredVariants = requestedVariants.Where(x => x.EndsWith("!")).ToList();
+//            var matchedRequiredCount = requiredVariants.Count(candidateVariants.Contains);
+////            Debug.Log($"#Views# {viewTypeName} Required variants: {requiredVariants.Count}  Matched required: {matchedRequiredCount}");
+//            if (matchedRequiredCount < requiredVariants.Count)
+//                return ZeroScore;
+//
+//            return requestedVariants.Count(candidateVariants.Contains) * HighScore +
+//                   (candidateVariants.Contains(DefaultCategory) ? MediumScore : ZeroScore);
         }
 
         private static int GetTypeScore(Type requestedType, Type candidateType)

@@ -8,7 +8,7 @@ namespace Silphid.Showzup
     {
         public Direction Direction { get; set; }
         public PushMode PushMode { get; set; }
-        public List<string> Variants { get; set; } = new List<string>();
+        public VariantSet Variants { get; set; } = VariantSet.Empty;
         public Transition Transition { get; set; }
         public float? TransitionDuration { get; set; }
 

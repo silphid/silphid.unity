@@ -83,9 +83,9 @@
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
+    <Compile Include="Sources\Injection\MicroContainer.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
-    <Compile Include="Sources\Interfaces\IGlobalVariantProvider.cs" />
     <Compile Include="Sources\Interfaces\IItemPresenter.cs" />
     <Compile Include="Sources\Interfaces\IListPresenter.cs" />
     <Compile Include="Sources\Interfaces\ILoadable.cs" />

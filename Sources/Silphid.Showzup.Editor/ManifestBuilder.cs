@@ -23,8 +23,8 @@ public class ManifestBuilder
         var allVariants = GetVariantsFromAllAssemblies();
         Debug.Log($"Detected the following variants: {allVariants.ToDelimitedString(", ")}");
 
-        manifest.TypeToUriMappings.Clear();
-        AddMappings(manifest, allVariants);
+        MapViewsToPrefabs(manifest, allVariants);
+        
         AssetDatabase.SaveAssets();
     }
 
@@ -38,16 +38,20 @@ public class ManifestBuilder
         return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
     }
 
-    private static void AddMappings(Manifest manifest, VariantSet allVariants)
+    #region ViewsToPrefabs
+
+    private static void MapViewsToPrefabs(Manifest manifest, VariantSet allVariants)
     {
+        manifest.ViewsToPrefabs.Clear();
+
         var guids = AssetDatabase.FindAssets("t:GameObject", new[] {manifest.PrefabsPath});
         if (guids.Any())
-            guids.ForEach(x => AddMappingsForPrefab(x, manifest, allVariants));
+            guids.ForEach(x => MapViewsToPrefabWithGuid(x, manifest, allVariants));
         else
             Debug.Log($"No view prefab could be found in path: {manifest.PrefabsPath}");
     }
 
-    private static void AddMappingsForPrefab(string guid, Manifest manifest, VariantSet allVariants)
+    private static void MapViewsToPrefabWithGuid(string guid, Manifest manifest, VariantSet allVariants)
     {
         string prefabPath = AssetDatabase.GUIDToAssetPath(guid);
 
@@ -64,18 +68,18 @@ public class ManifestBuilder
         var assetVariants = GetVariantsFromRelativePath(relativePath, manifest, allVariants);
         
         foreach (var view in views)
-            AddMappingForViewType(view.GetType(), relativePath, assetVariants, allVariants, manifest);
+            MapViewToRelativePath(view.GetType(), relativePath, assetVariants, allVariants, manifest);
     }
 
-    private static void AddMappingForViewType(Type viewType, string relativePath, VariantSet assetVariants, VariantSet allVariants,
+    private static void MapViewToRelativePath(Type viewType, string relativePath, VariantSet assetVariants, VariantSet allVariants,
         Manifest manifest)
     {
         var viewVariants = GetVariantsFromTypeAttributes(viewType, allVariants);
-        var variants = viewVariants.UnionedWith(assetVariants);
+        var variants = viewVariants.UnionWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
         
         Debug.Log($"Mapping {viewType} => {uri} ({variants.ToDelimitedString(", ")})");
-        manifest.TypeToUriMappings.Add(new TypeToUriMapping(viewType, uri, variants));
+        manifest.ViewsToPrefabs.Add(new TypeToUriMapping(viewType, uri, variants));
     }
 
     private static string GetRelativePrefabPath(string prefabPath, string pathToPrefabsInAssets)
@@ -97,6 +101,10 @@ public class ManifestBuilder
         return new Uri(uriPrefix + relativePath);
     }
 
+    #endregion
+
+    #region Variants
+    
     private static VariantSet GetVariantsFromRelativePath(string relativePath, Manifest manifest, VariantSet allVariants)
     {
         var allTokens = relativePath
@@ -143,4 +151,6 @@ public class ManifestBuilder
             .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
             .ToVariantSet();
     }
+
+    #endregion
 }

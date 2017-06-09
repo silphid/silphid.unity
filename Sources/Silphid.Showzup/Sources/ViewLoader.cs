@@ -4,7 +4,6 @@ using Silphid.Loadzup;
 using UniRx;
 using Rx = UniRx;
 using UnityEngine;
-using Zenject;
 using CancellationToken = UniRx.CancellationToken;
 using Object = UnityEngine.Object;
 
@@ -12,12 +11,12 @@ namespace Silphid.Showzup
 {
     public class ViewLoader : IViewLoader
     {
-        [Inject] internal ILoader _loader;
-
+        private readonly ILoader _loader;
         private readonly Action<GameObject> _injectGameObject;
 
-        public ViewLoader(Action<GameObject> injectGameObject)
+        public ViewLoader(ILoader loader, Action<GameObject> injectGameObject)
         {
+            _loader = loader;
             _injectGameObject = injectGameObject;
         }
 

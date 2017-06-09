@@ -1,6 +1,6 @@
 ﻿namespace Silphid.Showzup
 {
-    public class ViewModel<T> : IViewModel
+    public class ViewModel<T> : IViewModel<T>
     {
         public T Model { get; }
         object IViewModel.Model => Model;
