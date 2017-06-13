@@ -9,22 +9,53 @@ namespace Silphid.Showzup.Injection
 {
     public class MicroContainer
     {
-        private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, Type> _types = new Dictionary<Type, Type>();
+        private enum Lifetime
+        {
+            Local,
+            Single
+        }
+        
+        private class Mapping
+        {
+            public Type AbstractType { get; }
+            public Type ConcreteType { get; }
+            public Lifetime Lifetime { get; }
+            public object Singleton { get; set; }
 
-        public void Bind<T>(T instance)
+            public Mapping(Type abstractType, Type concreteType, Lifetime lifetime)
+            {
+                AbstractType = abstractType;
+                ConcreteType = concreteType;
+                Lifetime = lifetime;
+            }
+        }
+        
+        private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
+        private readonly List<Mapping> _mappings = new List<Mapping>();
+
+        public void BindInstance<T>(T instance)
         {
             _instances[typeof(T)] = instance;
         }
 
         public void Bind<T>(Type type)
         {
-            _types[typeof(T)] = type;
+            _mappings.Add(new Mapping(typeof(T), type, Lifetime.Local));
+        }
+
+        public void BindSingle<T>(Type type)
+        {
+            _mappings.Add(new Mapping(typeof(T), type, Lifetime.Single));
         }
 
         public void Bind<T, U>()
         {
             Bind<T>(typeof(U));
+        }
+
+        public void BindSingle<T, U>()
+        {
+            BindSingle<T>(typeof(U));
         }
 
         public object Resolve(Type interfaceType, Dictionary<Type, object> extraBindings = null)
@@ -40,7 +71,7 @@ namespace Silphid.Showzup.Injection
             ResolveExtraBinding(interfaceType, extraBindings) ??
             ResolveInstance(interfaceType) ??
             ResolveType(interfaceType, extraBindings) ??
-            ResolveSelfBoundConcreteType(interfaceType, extraBindings);
+            ResolveDefaultSelfBound(interfaceType, extraBindings);
 
         private static object ResolveExtraBinding(Type interfaceType, Dictionary<Type, object> extraBindings) =>
             extraBindings.GetOptionalValue(interfaceType);
@@ -48,18 +79,24 @@ namespace Silphid.Showzup.Injection
         private object ResolveInstance(Type interfaceType) =>
             _instances.GetOptionalValue(interfaceType);
 
-        private object ResolveType(Type interfaceType, Dictionary<Type, object> extraBindings)
-        {
-            var type = _types.GetOptionalValue(interfaceType);
-            return type != null
-                ? Instantiate(type, extraBindings)
-                : null;
-        }
+        private object ResolveType(Type abstractType, Dictionary<Type, object> extraBindings) =>
+            GetInstance(_mappings.FirstOrDefault(x => x.AbstractType == abstractType), extraBindings);
 
-        private object ResolveSelfBoundConcreteType(Type interfaceType, Dictionary<Type, object> extraBindings) =>
-            !interfaceType.IsAbstract
-                ? Instantiate(interfaceType, extraBindings)
+        private object ResolveDefaultSelfBound(Type abstractType, Dictionary<Type, object> extraBindings) =>
+            !abstractType.IsAbstract
+                ? Instantiate(abstractType, extraBindings)
                 : null;
+
+        private object GetInstance(Mapping mapping, Dictionary<Type, object> extraBindings)
+        {
+            if (mapping == null)
+                return null;
+            
+            if (mapping.Lifetime == Lifetime.Local)
+                return Instantiate(mapping.ConcreteType, extraBindings);
+
+            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcreteType, extraBindings));
+        }
 
         private object Instantiate(Type type, Dictionary<Type, object> extraBindings)
         {

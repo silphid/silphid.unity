@@ -66,7 +66,7 @@ public class ManifestBuilder
         }
         catch (Exception ex)
         {
-            throw new Exception("Failed to determine Model for ViewModel: {viewType.Name}", ex);
+            throw new Exception("Failed to resolve Model for ViewModel: {viewType.Name}", ex);
         }
     }
     
