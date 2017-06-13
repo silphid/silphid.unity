@@ -5,3 +5,4 @@
 /WSABuild/
 /UWP/
 *.csproj
+/.idea/

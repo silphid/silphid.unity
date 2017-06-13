@@ -89,13 +89,16 @@
     <Compile Include="Sources\Interfaces\IItemPresenter.cs" />
     <Compile Include="Sources\Interfaces\IListPresenter.cs" />
     <Compile Include="Sources\Interfaces\ILoadable.cs" />
+    <Compile Include="Sources\Interfaces\IManifest.cs" />
     <Compile Include="Sources\Interfaces\INavigationPresenter.cs" />
     <Compile Include="Sources\Interfaces\IPostHide.cs" />
     <Compile Include="Sources\Interfaces\IPostShow.cs" />
     <Compile Include="Sources\Interfaces\IPreHide.cs" />
     <Compile Include="Sources\Interfaces\IPresenter.cs" />
     <Compile Include="Sources\Interfaces\IPreShow.cs" />
+    <Compile Include="Sources\Interfaces\IScoreEvaluator.cs" />
     <Compile Include="Sources\Interfaces\ITransitionResolver.cs" />
+    <Compile Include="Sources\Interfaces\IVariantProvider.cs" />
     <Compile Include="Sources\Interfaces\IView.cs" />
     <Compile Include="Sources\Interfaces\IViewLoader.cs" />
     <Compile Include="Sources\Interfaces\IViewModel.cs" />
@@ -119,6 +122,7 @@
     <Compile Include="Sources\Phases\PhasePerformer.cs" />
     <Compile Include="Sources\Phases\PhaseStarting.cs" />
     <Compile Include="Sources\Phases\PhaseState.cs" />
+    <Compile Include="Sources\ScoreEvaluator.cs" />
     <Compile Include="Sources\Transitions\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\InstantTransition.cs" />
     <Compile Include="Sources\Transitions\ShiftTransition.cs" />
@@ -132,6 +136,7 @@
     <Compile Include="Sources\Types\ViewInfo.cs" />
     <Compile Include="Sources\Types\ViewMapping.cs" />
     <Compile Include="Sources\Types\ViewNav.cs" />
+    <Compile Include="Sources\VariantProvider.cs" />
     <Compile Include="Sources\View.cs" />
     <Compile Include="Sources\ViewLoader.cs" />
     <Compile Include="Sources\ViewModel.cs" />

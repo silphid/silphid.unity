@@ -16,6 +16,7 @@ namespace Silphid.Showzup
 
         [Inject] internal IViewResolver ViewResolver { get; set; }
         [Inject] internal IViewLoader ViewLoader { get; set; }
+        [Inject] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -66,7 +67,7 @@ namespace Silphid.Showzup
         [Pure]
         public virtual IObservable<IView> Present(object input, Options options = null)
         {
-            options = Options.CloneWithExtraVariants(options, Variants);
+            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             if (!(input is IEnumerable))
                 input = new[] {input};

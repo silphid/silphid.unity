@@ -1,5 +1,5 @@
 ********************************************************************************
-*                        Friday, 09 June 2017 13:21:15                         *
+*                        Tuesday, 13 June 2017 09:23:30                        *
 ********************************************************************************
 CSharpCompilerWrapper.exe version: 2.0.0.0
 Platform: Mac
@@ -11,34 +11,11 @@ Compiler: Microsoft C# 6.0
 - Compilation -----------------------------------------------
 
 Process: /Library/Frameworks/Mono.framework/Commands/mono
-Arguments: "/Users/mfrenette/Dev/Silphid/Silphid.Unity/UnityProject/CSharp60Support/Roslyn/csc.exe" -nostdlib+ -noconfig -nologo -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/mscorlib.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Core.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-3c4e0ca6fd81840ffb9ba6657f90ed8f -debug-
-Exit code: 0
-Elapsed time: 2.77 sec
+Arguments: "/Users/mfrenette/Dev/Silphid/Silphid.Unity/UnityProject/CSharp60Support/Roslyn/csc.exe" -nostdlib+ -noconfig -nologo -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/mscorlib.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Core.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-cc7d5c126069c4e14aa49ada3421dd1d -debug-
+Exit code: 1
+Elapsed time: 3.65 sec
 
 - Compiler output (0 lines):
 
-- Compiler errors (0 lines):
-
-PDB to MDB conversion skipped
-********************************************************************************
-*                        Friday, 09 June 2017 13:21:18                         *
-********************************************************************************
-CSharpCompilerWrapper.exe version: 2.0.0.0
-Platform: Mac
-Target assembly: Assembly-CSharp-Editor.dll
-Project directory: /Users/mfrenette/Dev/Silphid/Silphid.Unity/UnityProject
-Unity 'Data' or 'Frameworks' directory: /Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents
-Compiler: Microsoft C# 6.0
-
-- Compilation -----------------------------------------------
-
-Process: /Library/Frameworks/Mono.framework/Commands/mono
-Arguments: "/Users/mfrenette/Dev/Silphid/Silphid.Unity/UnityProject/CSharp60Support/Roslyn/csc.exe" -nostdlib+ -noconfig -nologo -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/mscorlib.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Core.dll" -r:"/Applications/Unity-5.5.2f1/Unity-5.5.2f1.app/Contents/Mono/lib/mono/2.0/System.Xml.dll" @Temp/UnityTempFile-1daad83e43ad04482850ebeac1b2e307 -debug-
-Exit code: 0
-Elapsed time: 2.21 sec
-
-- Compiler output (0 lines):
-
-- Compiler errors (0 lines):
-
-PDB to MDB conversion skipped
+- Compiler errors (1 line):
+0: Assets/Examples/Showzup/Application/Application.cs(16,23): error CS1501: No overload for method 'Bind' takes 0 arguments

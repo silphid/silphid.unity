@@ -14,5 +14,10 @@ namespace Silphid.Showzup
             Target = target;
             Variants = variants;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Source)}: {Source}, {nameof(Target)}: {Target}, {nameof(Variants)}: {Variants}";
+        }
     }
 }

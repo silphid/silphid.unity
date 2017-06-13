@@ -10,7 +10,8 @@ using Zenject;
 
 namespace Silphid.Showzup
 {
-    public abstract class View<TViewModel> : MonoBehaviour, IView
+    public abstract class View<TViewModel> :
+        MonoBehaviour, IView<TViewModel> where TViewModel : IViewModel
     {
         #region IView members
 

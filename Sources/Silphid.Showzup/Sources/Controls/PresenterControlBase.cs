@@ -1,6 +1,5 @@
 ﻿using System;
 using Silphid.Extensions;
-using Silphid.Sequencit;
 using UniRx;
 using Rx = UniRx;
 using Zenject;
@@ -41,6 +40,7 @@ namespace Silphid.Showzup
 
         [Inject] internal IViewResolver ViewResolver { get; set; }
         [Inject] internal IViewLoader ViewLoader { get; set; }
+        [Inject] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace Silphid.Showzup
 
         public virtual Rx.IObservable<IView> Present(object input, Options options = null)
         {
-            options = Options.CloneWithExtraVariants(options, Variants);
+            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             if (_state == State.Ready)
                 return PresentNow(input, options);

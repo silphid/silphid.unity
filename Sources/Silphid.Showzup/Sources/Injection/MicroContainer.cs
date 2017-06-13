@@ -22,6 +22,11 @@ namespace Silphid.Showzup.Injection
             _types[typeof(T)] = type;
         }
 
+        public void Bind<T, U>()
+        {
+            Bind<T>(typeof(U));
+        }
+
         public object Resolve(Type interfaceType, Dictionary<Type, object> extraBindings = null)
         {
             var instance = ResolveInternal(interfaceType, extraBindings);

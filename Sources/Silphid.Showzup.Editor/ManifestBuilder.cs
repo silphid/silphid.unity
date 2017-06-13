@@ -7,6 +7,7 @@ using Silphid.Extensions;
 using Silphid.Showzup;
 using UnityEditor;
 using UnityEngine;
+using Rx = UniRx;
 
 public class ManifestBuilder
 {
@@ -23,6 +24,8 @@ public class ManifestBuilder
         var allVariants = GetVariantsFromAllAssemblies();
         Debug.Log($"Detected the following variants: {allVariants.ToDelimitedString(", ")}");
 
+        MapModelsToViewModels(manifest, allVariants);
+        MapViewModelsToViews(manifest, allVariants);
         MapViewsToPrefabs(manifest, allVariants);
         
         AssetDatabase.SaveAssets();
@@ -37,6 +40,82 @@ public class ManifestBuilder
         string assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
         return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
     }
+
+    #region ModelsToViewModels
+
+    private static void MapModelsToViewModels(Manifest manifest, VariantSet allVariants)
+    {
+        manifest.ModelsToViewModels.Clear();
+
+        GetAllTypesInAppDomain()
+            .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract)
+            .ForEach(viewModelType => MapModelToViewModel(
+                manifest,
+                GetModelForViewModel(viewModelType), viewModelType,
+                allVariants));
+    }
+
+    private static Type GetModelForViewModel(Type viewModelType)
+    {
+        try
+        {
+            return viewModelType.GetInterfaces()
+                .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
+                .GetGenericArguments()
+                .First();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to determine Model for ViewModel: {viewType.Name}", ex);
+        }
+    }
+    
+    private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType, VariantSet allVariants)
+    {
+        var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
+        Debug.Log($"Mapping Model {modelType} => ViewModel {viewModelType} (Variants: {variants})");
+        manifest.ViewModelsToViews.Add(new TypeToTypeMapping(modelType, viewModelType, variants));
+    }
+
+    #endregion
+
+    #region ViewModelsToViews
+
+    private static void MapViewModelsToViews(Manifest manifest, VariantSet allVariants)
+    {
+        manifest.ViewModelsToViews.Clear();
+
+        GetAllTypesInAppDomain()
+            .Where(type => type.IsAssignableTo<IView>() && !type.IsAbstract)
+            .ForEach(viewType => MapViewModelToView(
+                manifest,
+                GetViewModelForView(viewType), viewType,
+                allVariants));
+    }
+
+    private static Type GetViewModelForView(Type viewType)
+    {
+        try
+        {
+            return viewType.GetInterfaces()
+                .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IView<>))
+                .GetGenericArguments()
+                .First();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to determine ViewModel for View: {viewType.Name}", ex);
+        }
+    }
+    
+    private static void MapViewModelToView(Manifest manifest, Type viewModelType, Type viewType, VariantSet allVariants)
+    {
+        var variants = GetVariantsFromTypes(viewModelType, viewType, allVariants);
+        Debug.Log($"Mapping ViewModel {viewModelType} => View {viewType} (Variants: {variants})");
+        manifest.ViewModelsToViews.Add(new TypeToTypeMapping(viewModelType, viewType, variants));
+    }
+
+    #endregion
 
     #region ViewsToPrefabs
 
@@ -74,11 +153,11 @@ public class ManifestBuilder
     private static void MapViewToRelativePath(Type viewType, string relativePath, VariantSet assetVariants, VariantSet allVariants,
         Manifest manifest)
     {
-        var viewVariants = GetVariantsFromTypeAttributes(viewType, allVariants);
+        var viewVariants = GetVariantsFromType(viewType, allVariants);
         var variants = viewVariants.UnionWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
         
-        Debug.Log($"Mapping {viewType} => {uri} ({variants.ToDelimitedString(", ")})");
+        Debug.Log($"Mapping View {viewType} => Prefab {uri} (Variants: {variants})");
         manifest.ViewsToPrefabs.Add(new TypeToUriMapping(viewType, uri, variants));
     }
 
@@ -125,7 +204,28 @@ public class ManifestBuilder
             .ToVariantSet();
     }
 
-    private static VariantSet GetVariantsFromTypeAttributes(Type type, VariantSet allVariants)
+    private static VariantSet GetVariantsFromAllAssemblies()
+    {
+        return GetAllTypesInAppDomain()
+            .Where(type => type.IsAssignableTo<IVariant>())
+            .Select(type => type.GetField("Group", BindingFlags.Static | BindingFlags.Public))
+            .Where(field => field != null && field.FieldType.IsAssignableTo<IVariantGroup>())
+            .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
+            .ToVariantSet();
+    }
+
+    #endregion
+    
+    #region Helpers
+
+    private static IEnumerable<Type> GetAllTypesInAppDomain()
+    {
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes());
+    }
+
+    private static VariantSet GetVariantsFromType(Type type, VariantSet allVariants)
     {
         var attributes = type
             .GetAttributes<VariantAttribute>()
@@ -140,16 +240,10 @@ public class ManifestBuilder
             .ToVariantSet();
     }
 
-    private static VariantSet GetVariantsFromAllAssemblies()
+    private static VariantSet GetVariantsFromTypes(Type type1, Type type2, VariantSet allVariants)
     {
-        return AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type.IsAssignableTo<IVariant>())
-            .Select(type => type.GetField("Group", BindingFlags.Static | BindingFlags.Public))
-            .Where(field => field != null && field.FieldType.IsAssignableTo<IVariantGroup>())
-            .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
-            .ToVariantSet();
+        return GetVariantsFromType(type1, allVariants)
+            .UnionWith(GetVariantsFromType(type2, allVariants));
     }
 
     #endregion

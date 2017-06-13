@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Silphid.Extensions;
 
 namespace Silphid.Showzup
 {
+    [Serializable]
     public class VariantSet : IEnumerable<IVariant>
     {
         private readonly HashSet<IVariant> _hashSet;
@@ -90,5 +93,8 @@ namespace Silphid.Showzup
 
         public bool SetEquals(IEnumerable<IVariant> other) =>
             _hashSet.SetEquals(other);
+
+        public override string ToString() =>
+            this.ToDelimitedString(", ");
     }
 }

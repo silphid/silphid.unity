@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public abstract class Transition
+    public abstract class Transition : MonoBehaviour
     {
         [SerializeField] private float _duration = 0.4f;
 

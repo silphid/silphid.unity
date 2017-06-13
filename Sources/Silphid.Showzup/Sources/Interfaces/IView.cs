@@ -8,4 +8,9 @@ namespace Silphid.Showzup
         object ViewModel { get; set; }
         GameObject GameObject { get; }
     }
+    
+    public interface IView<out TViewModel> : IView where TViewModel : IViewModel
+    {
+        TViewModel ViewModel { get; }
+    }
 }

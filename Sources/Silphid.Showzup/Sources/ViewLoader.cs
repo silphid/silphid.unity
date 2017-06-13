@@ -25,8 +25,8 @@ namespace Silphid.Showzup
             if (viewInfo.View != null)
                 return Load(viewInfo.ViewModel, viewInfo.View);
 
-            if (viewInfo.ViewType != null && viewInfo.Uri != null)
-                return Load(viewInfo.ViewModel, viewInfo.ViewType, viewInfo.Uri, cancellationToken);
+            if (viewInfo.ViewType != null && viewInfo.PrefabUri != null)
+                return Load(viewInfo.ViewModel, viewInfo.ViewType, viewInfo.PrefabUri, cancellationToken);
 
             return Observable.Return<IView>(null);
         }

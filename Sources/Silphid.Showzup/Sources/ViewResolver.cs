@@ -1,165 +1,191 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Silphid.Extensions;
+using UnityEngine;
 using Zenject;
+using Rx = UniRx;
 
 namespace Silphid.Showzup
 {
-    public class ViewResolver : IViewResolver //, IInitializable
+    public class ViewResolver : IViewResolver
     {
-        private class Candidate
+        private class CandidateMapping<TMapping>
         {
-            public ViewInfo ViewInfo { get; }
-            private int VariantScore { get; }
-            private int TypeScore { get; }
+            public TMapping Mapping { get; }
+            public int? Score { get; }
 
-            public Candidate(ViewInfo viewInfo, int variantScore, int typeScore)
+            public CandidateMapping(TMapping mapping, int? score)
             {
-                ViewInfo = viewInfo;
-                VariantScore = variantScore;
-                TypeScore = typeScore;
+                Mapping = mapping;
+                Score = score;
             }
-
-            public override string ToString() =>
-                $"{ViewInfo} (VariantScore: {VariantScore}, TypeScore: {TypeScore})";
         }
+        
+        private readonly IManifest _manifest;
+        private readonly VariantProvider _variantProvider;
+        private readonly IScoreEvaluator _scoreEvaluator;
+        private readonly ILogger _logger;
 
-        private const int ZeroScore = 0;
-        private const int MediumScore = 50;
-        private const int HighScore = 100;
-
-        private readonly Manifest _manifest;
-        private readonly VariantSet _globalVariants;
-
-        public ViewResolver(Manifest manifest, [InjectOptional] VariantSet globalVariants = null)
+        public ViewResolver(IManifest manifest, VariantProvider variantProvider, IScoreEvaluator scoreEvaluator, [InjectOptional] ILogger logger = null)
         {
             _manifest = manifest;
-            _globalVariants = globalVariants ?? VariantSet.Empty;
+            _variantProvider = variantProvider;
+            _scoreEvaluator = scoreEvaluator;
+            _logger = logger;
         }
-
-//        public void Initialize()
-//        {
-//            _viewInfos.AddRange(
-//                from viewType in GetAllViewTypes()
-//                let viewModelType = GetViewModelType(viewType)
-//                let viewVariants = viewType.GetAttributes<VariantAttribute>().Select(x => x.Variant).ToArray()
-//                from assetAttribute in viewType.GetAttributes<AssetAttribute>()
-//                select new ViewInfo
-//                {
-//                    ViewModelType = viewModelType,
-//                    ViewType = viewType,
-//                    Uri = assetAttribute.Uri,
-//                    Variants = viewVariants.Concat(assetAttribute.Variants)
-//                });
-//        }
-
-        private Type GetViewModelType(Type viewType) =>
-            viewType
-                .SelfAndAncestors()
-                .FirstOrDefault(x => x.IsGenericType() && x.GetGenericTypeDefinition() == typeof(View<>))
-                ?.GetGenericArguments()
-                .FirstOrDefault();
-
-        private IEnumerable<Type> GetAllViewTypes() =>
-            from candidateType in _viewsAssembly.GetTypes()
-            where typeof(IView).IsAssignableFrom(candidateType) && !candidateType.IsAbstract()
-            select candidateType;
 
         public ViewInfo Resolve(object input, Options options = null)
         {
             if (input == null)
             {
-//                Debug.Log("#Views# Using null view for null input");
+                _logger?.Log("#Views# Resolved null input to null View.");
                 return ViewInfo.Null;
             }
 
-            if (input is IView)
-            {
-//                Debug.Log("#Views# Using input itself as view");
-                return new ViewInfo
-                {
-                    View = (IView)input,
-                    ViewType = input.GetType()
-                };
-            }
-
+            var requestedVariants = GetRequestedVariants(options);
             if (input is Type)
+                return ResolveFromType((Type) input, requestedVariants);
+
+            return ResolveFromInstance(input, requestedVariants);
+        }
+
+        private VariantSet GetRequestedVariants(Options options)
+        {
+            var requestedVariants = options.GetVariants().UnionWith(_variantProvider.GlobalVariants.Value);
+            if (requestedVariants.Distinct(x => x.Group).Count() != requestedVariants.Count())
+                throw new InvalidOperationException($"Cannot request more than one variant per group: {requestedVariants}");
+            
+            return requestedVariants;
+        }
+
+        private ViewInfo ResolveFromInstance(object instance, VariantSet requestedVariants)
+        {
+            if (instance is IView)
+                return ResolveFromView((IView) instance);
+
+            if (instance is IViewModel)
+                return ResolveFromViewModel((IViewModel) instance, requestedVariants);
+            
+            return ResolveFromModel(instance, requestedVariants);
+        }
+
+        private static ViewInfo ResolveFromView(IView view) =>
+            new ViewInfo
             {
-                var type = (Type) input;
-                if (!type.IsAssignableTo<IView>())
-                    throw new NotSupportedException($"Input type {type} does not implement IView");
+                View = view,
+                ViewType = view.GetType()
+            };
 
-                return ResolveFromViewType(type, options);
-            }
-
-            var viewInfo = ResolveFromViewModelType(input.GetType(), options);
-            viewInfo.ViewModel = input;
+        private ViewInfo ResolveFromViewModel(IViewModel viewModel, VariantSet requestedVariants)
+        {
+            var viewInfo = ResolveFromViewModelType(viewModel.GetType(), requestedVariants);
+            viewInfo.ViewModel = viewModel;
+            viewInfo.ViewModelType = viewModel.GetType();
             return viewInfo;
         }
 
-        private ViewInfo ResolveFromViewModelType(Type viewModelType, Options options = null) =>
-            ResolveInternal(viewModelType, "view model", viewInfo => GetTypeScore(viewModelType, viewInfo.ViewModelType), options);
-
-        private ViewInfo ResolveFromViewType(Type viewType, Options options = null) =>
-            ResolveInternal(viewType, "view", viewInfo => GetTypeScore(viewType, viewInfo.ViewType), options);
-
-        private ViewInfo ResolveInternal(Type type, string kind, Func<ViewInfo, int> getTypeSpecificity, Options options)
+        private ViewInfo ResolveFromModel(object model, VariantSet requestedVariants)
         {
-            var variants = options.GetVariants().UnionWith(_globalVariants);
-
-//            Debug.Log($"#Views# Resolving view for {type} and variants {variants.ToDelimitedString(";")}");
-
-            var candidates = (
-                    from viewInfo in _viewInfos
-                    let variantScore = GetVariantScore(viewInfo.ViewType.Name, variants, viewInfo.Variants)
-                    let viewModelScore = getTypeSpecificity(viewInfo)
-                    where viewModelScore != ZeroScore
-                    orderby variantScore descending, viewModelScore descending
-                    select new Candidate(viewInfo, variantScore, viewModelScore))
-                .ToList();
-
-            var resolved = candidates.FirstOrDefault();
-            if (resolved == null)
-                throw new InvalidOperationException($"Failed to resolve view info for {kind} type {type}");
-
-//            Debug.Log($"#Views# Resolved: {resolved}");
-
-//            if (candidates.Count > 1)
-//                Debug.Log($"#Views# Other candidates:{Environment.NewLine}" +
-//                          $"{candidates.Skip(1).ToDelimitedString(Environment.NewLine)}");
-
-            return resolved.ViewInfo;
+            var viewInfo = ResolveFromViewModelType(model.GetType(), requestedVariants);
+            viewInfo.Model = model;
+            viewInfo.ModelType = model.GetType();
+            return viewInfo;
         }
 
-        private static int GetVariantScore(string viewTypeName, VariantSet requestedVariants, VariantSet candidateVariants)
+        private ViewInfo ResolveFromType(Type type, VariantSet requestedVariants)
         {
-            throw new NotImplementedException();
-//            var requiredVariants = requestedVariants.Where(x => x.EndsWith("!")).ToList();
-//            var matchedRequiredCount = requiredVariants.Count(candidateVariants.Contains);
-////            Debug.Log($"#Views# {viewTypeName} Required variants: {requiredVariants.Count}  Matched required: {matchedRequiredCount}");
-//            if (matchedRequiredCount < requiredVariants.Count)
-//                return ZeroScore;
-//
-//            return requestedVariants.Count(candidateVariants.Contains) * HighScore +
-//                   (candidateVariants.Contains(DefaultCategory) ? MediumScore : ZeroScore);
+            if (type.IsAssignableTo<IView>())
+                return ResolveFromViewType(type, requestedVariants);
+
+            if (type.IsAssignableTo<IViewModel>())
+                return ResolveFromViewModelType(type, requestedVariants);
+            
+            return ResolveFromModelType(type, requestedVariants);
         }
 
-        private static int GetTypeScore(Type requestedType, Type candidateType)
-        {
-            var score = HighScore;
-            var type = candidateType;
-            while (type != null)
+        private ViewInfo ResolveFromViewType(Type viewType, VariantSet requestedVariants) =>
+            new ViewInfo
             {
-                if (type == requestedType)
-                    return score;
+                ViewType = viewType,
+                PrefabUri = ResolvePrefabFromViewType(viewType, requestedVariants)
+            };
 
-                score--;
-                type = type.GetBaseType();
-            }
+        private ViewInfo ResolveFromViewModelType(Type viewModelType, VariantSet requestedVariants) =>
+            new ViewInfo
+            {
+                ViewModelType = viewModelType,
+                ViewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants)
+            };
 
-            return ZeroScore;
+        private ViewInfo ResolveFromModelType(Type modelType, VariantSet requestedVariants)
+        {
+            var viewModelType = ResolveTargetType(modelType, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
+            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
+
+            return new ViewInfo
+            {
+                ModelType = modelType,
+                ViewModelType = viewModelType,
+                ViewType = viewType,
+                PrefabUri = prefabUri
+            };
         }
+
+        private Type ResolveTargetType(Type type, string sourceKind, string targetKind, List<TypeToTypeMapping> mappings, VariantSet requestedVariants)
+        {
+            var candidates = mappings
+                .Where(x => type.IsAssignableTo(x.Source))
+                .ToList();
+            
+            var resolved = candidates
+                .Select(candidate => new CandidateMapping<TypeToTypeMapping>(
+                    candidate,
+                    GetScore(candidate.Source, candidate.Variants, type, requestedVariants)))
+                .Where(candidate => candidate.Score.HasValue)
+                .WithMax(candidate => candidate.Score.Value)
+                ?.Mapping;
+
+            if (resolved == null)
+                throw new InvalidOperationException($"Failed to resolve {sourceKind} {type} to some {targetKind} (Variants: {requestedVariants})");
+
+            _logger?.Log($"#Views# Resolved {sourceKind} {type} to {targetKind} {resolved.Target} (Variants: {resolved.Variants})");
+
+            if (candidates.Count > 1)
+                _logger?.Log($"#Views# Other candidates were:{Environment.NewLine}" +
+                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+            
+            return resolved.Target;
+        }
+
+        private Uri ResolvePrefabFromViewType(Type viewType, VariantSet requestedVariants)
+        {
+            var candidates = _manifest.ViewsToPrefabs
+                .Where(x => viewType == x.Source)
+                .ToList();
+            
+            var resolved = candidates
+                .Select(candidate => new CandidateMapping<TypeToUriMapping>(candidate,
+                    _scoreEvaluator.GetVariantScore(candidate.Variants, requestedVariants)))
+                .Where(candidate => candidate.Score.HasValue)
+                .WithMax(candidate => candidate.Score.Value)
+                ?.Mapping;
+
+            if (resolved == null)
+                throw new InvalidOperationException($"Failed to resolve View {viewType} to some Prefab (Variants: {requestedVariants})");
+
+            _logger?.Log($"#Views# Resolved View {viewType} to Prefab {resolved.Target} (Variants: {resolved.Variants})");
+
+            if (candidates.Count > 1)
+                _logger?.Log($"#Views# Other candidates were:{Environment.NewLine}" +
+                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+            
+            return resolved.Target;
+        }
+
+        private int? GetScore(Type candidateType, VariantSet candidateVariants, Type requestedType, VariantSet requestedVariants) =>
+            _scoreEvaluator.GetVariantScore(candidateVariants, requestedVariants) +
+            _scoreEvaluator.GetTypeScore(candidateType, requestedType);
     }
 }

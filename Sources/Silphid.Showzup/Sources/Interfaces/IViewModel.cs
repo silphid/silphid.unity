@@ -5,8 +5,8 @@
         object Model { get; }
     }
 
-    public interface IViewModel<out T> : IViewModel
+    public interface IViewModel<out TModel> : IViewModel
     {
-        T Model { get; }
+        new TModel Model { get; }
     }
 }

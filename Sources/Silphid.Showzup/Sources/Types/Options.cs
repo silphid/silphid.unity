@@ -20,15 +20,15 @@ namespace Silphid.Showzup
             {
                 Direction = other?.Direction ?? Direction.Default,
                 PushMode = other?.PushMode ?? PushMode.Default,
-                Variants = other?.Variants.ToList() ?? new List<string>(),
+                Variants = other?.Variants ?? VariantSet.Empty,
                 Transition = other?.Transition,
                 TransitionDuration = other?.TransitionDuration
             };
 
-        public static Options CloneWithExtraVariants(Options other, IEnumerable<string> variants)
+        public static Options CloneWithExtraVariants(Options other, VariantSet extraVariants)
         {
             var clone = Clone(other);
-            clone.Variants.AddRange(variants);
+            clone.Variants = other.Variants.UnionWith(extraVariants);
             return clone;
         }
     }
