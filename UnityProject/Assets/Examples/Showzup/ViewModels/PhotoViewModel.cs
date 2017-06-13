@@ -1,19 +1,16 @@
 using System;
+using Silphid.Showzup;
 
-public class PhotoViewModel
+public class PhotoViewModel : ViewModel<Photo>
 {
-    private readonly Photo _photo;
-    private PhotographerViewModel _photographer;
-
     public Uri ImageUri =>
-        new Uri($"res://Photos/{_photo.Photographer.Id}-{_photo.Id}.jpg");
+        new Uri($"res://Photos/{Model.Photographer.Id}-{Model.Id}.jpg");
 
+    private PhotographerViewModel _photographer;
     public PhotographerViewModel Photographer =>
-        _photographer =
-            _photographer ?? new PhotographerViewModel(_photo.Photographer);
+        _photographer = _photographer ?? new PhotographerViewModel(Model.Photographer);
     
-    public PhotoViewModel(Photo photo)
+    public PhotoViewModel(Photo photo) : base(photo)
     {
-        _photo = photo;
     }
 }

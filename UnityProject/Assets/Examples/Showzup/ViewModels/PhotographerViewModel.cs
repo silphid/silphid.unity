@@ -1,16 +1,14 @@
 using System;
+using Silphid.Showzup;
 
-public class PhotographerViewModel
+public class PhotographerViewModel : ViewModel<Photographer>
 {
-    private readonly Photographer _photographer;
+    public string Name => Model.Name;
+    public string Location => Model.Location;
+    public string Website => Model.Website;
+    public Uri ImageUri => new Uri($"res://Photographers/{Model.Id}.jpg");
 
-    public string Name => _photographer.Name;
-    public string Location => _photographer.Location;
-    public string Website => _photographer.Website;
-    public Uri ImageUri => new Uri($"res://Photographers/{_photographer.Id}.jpg");
-
-    public PhotographerViewModel(Photographer photographer)
+    public PhotographerViewModel(Photographer photographer) : base(photographer)
     {
-        _photographer = photographer;
     }
 }

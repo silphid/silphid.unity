@@ -8,12 +8,16 @@ namespace App
 {
     public class Application : MonoBehaviour
     {
+        public Manifest Manifest;
+        
         public void Start()
         {
             var container = new MicroContainer();
 
-            container.Bind<ILoader>(CreateLoader());
-            container.Bind<IViewResolver>();
+            container.BindInstance<ILoader>(CreateLoader());
+            container.BindSingle<IViewResolver, ViewResolver>();
+            container.BindInstance<IManifest>(Manifest);
+            container.BindSingle<IVariantProvider, VariantProvider>();
         }
 
         private CompositeLoader CreateLoader()
