@@ -4,6 +4,7 @@ using Silphid.Loadzup;
 using UniRx;
 using Rx = UniRx;
 using UnityEngine;
+using Zenject;
 using CancellationToken = UniRx.CancellationToken;
 using Object = UnityEngine.Object;
 
@@ -12,18 +13,25 @@ namespace Silphid.Showzup
     public class ViewLoader : IViewLoader
     {
         private readonly ILoader _loader;
-        private readonly Action<GameObject> _injectGameObject;
+        private readonly IInjector _injector;
+        private readonly IViewModelFactory _viewModelFactory;
+        private readonly ILogger _logger;
 
-        public ViewLoader(ILoader loader, Action<GameObject> injectGameObject)
+        public ViewLoader(ILoader loader, IInjector injector, IViewModelFactory viewModelFactory, [InjectOptional] ILogger logger = null)
         {
             _loader = loader;
-            _injectGameObject = injectGameObject;
+            _injector = injector;
+            _viewModelFactory = viewModelFactory;
+            _logger = logger;
         }
 
         public Rx.IObservable<IView> Load(ViewInfo viewInfo, CancellationToken cancellationToken)
         {
             if (viewInfo.View != null)
                 return Load(viewInfo.ViewModel, viewInfo.View);
+
+            if (viewInfo.Model != null && viewInfo.ViewModelType != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
+                return Load(viewInfo.Model, viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, cancellationToken);
 
             if (viewInfo.ViewType != null && viewInfo.PrefabUri != null)
                 return Load(viewInfo.ViewModel, viewInfo.ViewType, viewInfo.PrefabUri, cancellationToken);
@@ -38,9 +46,12 @@ namespace Silphid.Showzup
                 .ContinueWith(x => LoadLoadable(x).ThenReturn(view));
         }
 
+        private Rx.IObservable<IView> Load(object model, Type viewModelType, Type viewType, Uri uri, CancellationToken cancellationToken) =>
+            Load(_viewModelFactory.Create(model, viewModelType), viewType, uri, cancellationToken);
+
         private Rx.IObservable<IView> Load(object viewModel, Type viewType, Uri uri, CancellationToken cancellationToken)
         {
-//            Debug.Log($"#Views# Loading view {viewInfo.ViewType} for view model {viewModel} using viewInfo {viewInfo}");
+            _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
             return LoadPrefabView(viewType, uri, cancellationToken)
                 .Do(view => InjectView(view, viewModel))
                 .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
@@ -49,8 +60,8 @@ namespace Silphid.Showzup
         private void InjectView(IView view, object viewModel)
         {
             view.ViewModel = viewModel;
-//            Debug.Log($"#Views# Initializing view {view} with view model {viewModel}");
-            _injectGameObject(view.GameObject);
+            _logger?.Log(nameof(ViewLoader), $"Initializing {view} with ViewModel {viewModel}");
+            _injector.Inject(view.GameObject);
         }
 
         private Rx.IObservable<Unit> LoadLoadable(IView view) =>
@@ -60,14 +71,14 @@ namespace Silphid.Showzup
 
         private Rx.IObservable<IView> LoadPrefabView(Type viewType, Uri uri, CancellationToken cancellationToken)
         {
-            //Debug.Log($"#Views# LoadPrefabView({viewType}, {uri})");
+            _logger?.Log(nameof(ViewLoader), $"LoadPrefabView({viewType}, {uri})");
 
             return _loader.Load<GameObject>(uri)
                 .Last()
                 .Where(obj => CheckCancellation(cancellationToken))
                 .Select(x => Instantiate(x, cancellationToken))
                 .WhereNotNull()
-                .DoOnError(ex => Debug.LogError(
+                .DoOnError(ex => _logger?.LogError(nameof(ViewLoader),
                     $"Failed to load view {viewType} from {uri} with error:{Environment.NewLine}{ex}"))
                 .Select(x => GetViewFromPrefab(x, viewType));
         }

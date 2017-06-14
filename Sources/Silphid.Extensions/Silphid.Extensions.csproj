@@ -59,7 +59,7 @@
     <Compile Include="Sources\System\Int32Extensions.cs" />
     <Compile Include="Sources\System\IntegerExtensions.cs" />
     <Compile Include="Sources\System\LongExtensions.cs" />
-    <Compile Include="Sources\System\MemberInfoExtensions.cs" />
+    <Compile Include="Sources\System\ICustomAttributeProviderExtensions.cs" />
     <Compile Include="Sources\System\ObjectExtensions.cs" />
     <Compile Include="Sources\System\RandomExtension.cs" />
     <Compile Include="Sources\System\StringExtensions.cs" />
@@ -98,6 +98,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPlugins"/>
+    <CallTarget Targets="CopyOutputToPlugins" />
   </Target>
 </Project>

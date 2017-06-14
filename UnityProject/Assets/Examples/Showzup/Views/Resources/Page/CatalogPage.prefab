@@ -165,7 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: -151430557, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HistoryContainer: {fileID: 0}
   Container: {fileID: 1089623498143232}
   Variants: []
   Orientation: 1
@@ -217,6 +216,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114356598917037132
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -262,6 +262,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114457131154581032
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -280,6 +281,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114555693335169756
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -291,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811a98e1171c84571aa670b877867286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectionControl: {fileID: 0}
+  SelectionControl: {fileID: 114125492442632074}
 --- !u!114 &114743091282738140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -398,6 +400,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114924165153669870
 MonoBehaviour:
   m_ObjectHideFlags: 1

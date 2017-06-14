@@ -38,6 +38,9 @@ namespace Silphid.Showzup
         {
             Container1.SetActive(false);
             Container2.SetActive(false);
+            
+            if (DefaultTransition == null)
+                throw new Exception($"DefaultTransition must be specified on {gameObject.name}");
         }
 
         #endregion

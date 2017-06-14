@@ -87,7 +87,7 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromModel(object model, VariantSet requestedVariants)
         {
-            var viewInfo = ResolveFromViewModelType(model.GetType(), requestedVariants);
+            var viewInfo = ResolveFromModelType(model.GetType(), requestedVariants);
             viewInfo.Model = model;
             viewInfo.ModelType = model.GetType();
             return viewInfo;

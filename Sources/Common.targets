@@ -3,21 +3,21 @@
         <AssetsPath>$(SolutionDir)..\UnityProject\Assets</AssetsPath>  
         <PluginsPath>$(AssetsPath)\Plugins</PluginsPath>  
         <PluginsWsaPath>$(PluginsPath)\WSA</PluginsWsaPath>  
-        <EditorPath>$(AssetsPath)\Editor</EditorPath>  
+        <EditorPath>$(AssetsPath)\Editor</EditorPath>
     </PropertyGroup>  
   
     <Target Name="CopyOutputToPlugins">
         <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsPath)" ContinueOnError="true" />
-        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsPath)" ContinueOnError="true" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll.mdb" DestinationFolder="$(PluginsPath)" ContinueOnError="true" />
     </Target>
   
     <Target Name="CopyOutputToPluginsWsa">
         <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(PluginsWsaPath)" ContinueOnError="true" />
-        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(PluginsWsaPath)" ContinueOnError="true" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll.mdb" DestinationFolder="$(PluginsWsaPath)" ContinueOnError="true" />
     </Target>
   
     <Target Name="CopyOutputToEditor">
         <Copy SourceFiles="$(OutDir)$(TargetName).dll" DestinationFolder="$(EditorPath)" ContinueOnError="true" />
-        <Copy SourceFiles="$(OutDir)$(TargetName).pdb" DestinationFolder="$(EditorPath)" ContinueOnError="true" />
+        <Copy SourceFiles="$(OutDir)$(TargetName).dll.mdb" DestinationFolder="$(EditorPath)" ContinueOnError="true" />
     </Target>
 </Project>
