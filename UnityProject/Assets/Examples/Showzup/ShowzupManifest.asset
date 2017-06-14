@@ -11,5 +11,62 @@ MonoBehaviour:
   m_Script: {fileID: 1041059062, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: ShowzupManifest
   m_EditorClassIdentifier: 
-  PrefabsPath: Assets/Examples/Showzup/Resources
+  PrefabsPath: Assets/Examples/Showzup/Views/Resources
   UriPrefix: res://
+  _modelsToViewModels:
+  - _source:
+      _classRef: Catalog, Assembly-CSharp
+    _target:
+      _classRef: CatalogViewModel, Assembly-CSharp
+    _variants:
+      _serializableVariants: []
+  - _source:
+      _classRef: Photographer, Assembly-CSharp
+    _target:
+      _classRef: PhotographerViewModel, Assembly-CSharp
+    _variants:
+      _serializableVariants: []
+  - _source:
+      _classRef: Photo, Assembly-CSharp
+    _target:
+      _classRef: PhotoViewModel, Assembly-CSharp
+    _variants:
+      _serializableVariants: []
+  _viewModelsToViews:
+  - _source:
+      _classRef: CatalogViewModel, Assembly-CSharp
+    _target:
+      _classRef: CatalogView, Assembly-CSharp
+    _variants:
+      _serializableVariants: []
+  - _source:
+      _classRef: PhotoViewModel, Assembly-CSharp
+    _target:
+      _classRef: PhotoView, Assembly-CSharp
+    _variants:
+      _serializableVariants: []
+  _viewsToPrefabs:
+  - _source:
+      _classRef: CatalogView, Assembly-CSharp
+    _target: res://page/CatalogPage
+    _variants:
+      _serializableVariants:
+      - _typeRef:
+          _classRef: Display, Assembly-CSharp
+        _name: Page
+  - _source:
+      _classRef: PhotoView, Assembly-CSharp
+    _target: res://page/PhotoPage
+    _variants:
+      _serializableVariants:
+      - _typeRef:
+          _classRef: Display, Assembly-CSharp
+        _name: Page
+  - _source:
+      _classRef: PhotoView, Assembly-CSharp
+    _target: res://tile/PhotoTile
+    _variants:
+      _serializableVariants:
+      - _typeRef:
+          _classRef: Display, Assembly-CSharp
+        _name: Tile

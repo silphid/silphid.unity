@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Silphid.Extensions;
+using UnityEngine;
 
 namespace Silphid.Showzup
 {
     [Serializable]
-    public class VariantSet : IEnumerable<IVariant>
+    public class VariantSet : IEnumerable<IVariant>, ISerializationCallbackReceiver
     {
-        private readonly HashSet<IVariant> _hashSet;
+        [NonSerialized] private readonly HashSet<IVariant> _hashSet;
+        [SerializeField] private List<SerializableVariant> _serializableVariants;
         
         public static readonly VariantSet Empty = new VariantSet();
         
@@ -96,5 +99,22 @@ namespace Silphid.Showzup
 
         public override string ToString() =>
             this.ToDelimitedString(", ");
+
+        #region ISerializationCallbackReceiver members
+
+        public void OnBeforeSerialize()
+        {
+            _serializableVariants = this
+                .Select(x => new SerializableVariant(x))
+                .ToList();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            _hashSet.Clear();
+            _serializableVariants.ForEach(x => _hashSet.Add(x.Variant));
+        }
+
+        #endregion
     }
 }

@@ -60,10 +60,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Attributes\AssetAttribute.cs" />
     <Compile Include="Sources\Attributes\VariantAttribute.cs" />
+    <Compile Include="Sources\Configs\ClassTypeReference.cs" />
     <Compile Include="Sources\Configs\Config.cs" />
     <Compile Include="Sources\Configs\IVariant.cs" />
     <Compile Include="Sources\Configs\IVariantGroup.cs" />
     <Compile Include="Sources\Configs\Segue.cs" />
+    <Compile Include="Sources\Configs\SerializableVariant.cs" />
     <Compile Include="Sources\Configs\TypeToTypeMapping.cs" />
     <Compile Include="Sources\Configs\TypeToUriMapping.cs" />
     <Compile Include="Sources\Configs\Variant.cs" />

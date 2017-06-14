@@ -11,8 +11,8 @@ using Rx = UniRx;
 
 public class ManifestBuilder
 {
-    [MenuItem("Assets/Showzup/Update Manifest")]
-    private static void UpdateManifest()
+    [MenuItem("Assets/Build Showzup Manifest")]
+    private static void Build()
     {
         var manifest = LoadManifest();
         if (manifest == null)
@@ -21,14 +21,23 @@ public class ManifestBuilder
             return;
         }
 
+        Build(manifest);
+    }
+
+    public static void Build(Manifest manifest)
+    {
         var allVariants = GetVariantsFromAllAssemblies();
         Debug.Log($"Detected the following variants: {allVariants.ToDelimitedString(", ")}");
 
         MapModelsToViewModels(manifest, allVariants);
         MapViewModelsToViews(manifest, allVariants);
         MapViewsToPrefabs(manifest, allVariants);
-        
+
+        EditorUtility.SetDirty(manifest);
         AssetDatabase.SaveAssets();
+
+        EditorGUIUtility.PingObject(manifest);
+        Selection.activeObject = manifest;
     }
 
     private static Manifest LoadManifest()
@@ -45,6 +54,7 @@ public class ManifestBuilder
 
     private static void MapModelsToViewModels(Manifest manifest, VariantSet allVariants)
     {
+        Debug.Log("*** Mapping Models to ViewModels ***");
         manifest.ModelsToViewModels.Clear();
 
         GetAllTypesInAppDomain()
@@ -73,8 +83,9 @@ public class ManifestBuilder
     private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType, VariantSet allVariants)
     {
         var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
-        Debug.Log($"Mapping Model {modelType} => ViewModel {viewModelType} (Variants: {variants})");
-        manifest.ViewModelsToViews.Add(new TypeToTypeMapping(modelType, viewModelType, variants));
+        var mapping = new TypeToTypeMapping(modelType, viewModelType, variants);
+        Debug.Log(mapping);
+        manifest.ModelsToViewModels.Add(mapping);
     }
 
     #endregion
@@ -83,6 +94,7 @@ public class ManifestBuilder
 
     private static void MapViewModelsToViews(Manifest manifest, VariantSet allVariants)
     {
+        Debug.Log("*** Mapping ViewModels to Views ***");
         manifest.ViewModelsToViews.Clear();
 
         GetAllTypesInAppDomain()
@@ -111,8 +123,9 @@ public class ManifestBuilder
     private static void MapViewModelToView(Manifest manifest, Type viewModelType, Type viewType, VariantSet allVariants)
     {
         var variants = GetVariantsFromTypes(viewModelType, viewType, allVariants);
-        Debug.Log($"Mapping ViewModel {viewModelType} => View {viewType} (Variants: {variants})");
-        manifest.ViewModelsToViews.Add(new TypeToTypeMapping(viewModelType, viewType, variants));
+        var mapping = new TypeToTypeMapping(viewModelType, viewType, variants);
+        Debug.Log(mapping);
+        manifest.ViewModelsToViews.Add(mapping);
     }
 
     #endregion
@@ -121,6 +134,7 @@ public class ManifestBuilder
 
     private static void MapViewsToPrefabs(Manifest manifest, VariantSet allVariants)
     {
+        Debug.Log("*** Mapping Views to Prefabs ***");
         manifest.ViewsToPrefabs.Clear();
 
         var guids = AssetDatabase.FindAssets("t:GameObject", new[] {manifest.PrefabsPath});
@@ -157,8 +171,9 @@ public class ManifestBuilder
         var variants = viewVariants.UnionWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
         
-        Debug.Log($"Mapping View {viewType} => Prefab {uri} (Variants: {variants})");
-        manifest.ViewsToPrefabs.Add(new TypeToUriMapping(viewType, uri, variants));
+        var mapping = new TypeToUriMapping(viewType, uri, variants);
+        Debug.Log(mapping);
+        manifest.ViewsToPrefabs.Add(mapping);
     }
 
     private static string GetRelativePrefabPath(string prefabPath, string pathToPrefabsInAssets)

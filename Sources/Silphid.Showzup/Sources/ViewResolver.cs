@@ -23,11 +23,11 @@ namespace Silphid.Showzup
         }
         
         private readonly IManifest _manifest;
-        private readonly VariantProvider _variantProvider;
+        private readonly IVariantProvider _variantProvider;
         private readonly IScoreEvaluator _scoreEvaluator;
         private readonly ILogger _logger;
 
-        public ViewResolver(IManifest manifest, VariantProvider variantProvider, IScoreEvaluator scoreEvaluator, [InjectOptional] ILogger logger = null)
+        public ViewResolver(IManifest manifest, IVariantProvider variantProvider, IScoreEvaluator scoreEvaluator, [InjectOptional] ILogger logger = null)
         {
             _manifest = manifest;
             _variantProvider = variantProvider;

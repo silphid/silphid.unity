@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScoreEvaluatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

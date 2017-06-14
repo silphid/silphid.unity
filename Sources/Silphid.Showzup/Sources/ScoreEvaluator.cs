@@ -6,10 +6,10 @@ namespace Silphid.Showzup
 {
     public class ScoreEvaluator : IScoreEvaluator
     {
-        private const int ZeroScore = 0;
-        private const int ExactMatchScore = 100;
-        private const int InheritanceScorePenality = 5;
-        private const int FallbackScore = 10;
+        public const int ZeroScore = 0;
+        public const int ExactMatchScore = 100;
+        public const int InheritanceScorePenality = 5;
+        public const int FallbackScore = 10;
 
         public int? GetVariantScore(VariantSet candidateVariants, VariantSet requestedVariants)
         {
