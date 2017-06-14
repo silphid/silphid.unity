@@ -1,3 +1,4 @@
+using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Loadzup.Resource;
 using Silphid.Showzup;
@@ -9,6 +10,7 @@ namespace App
     public class Application : MonoBehaviour
     {
         public Manifest Manifest;
+        public NavigationControl NavigationControl;
         
         public void Start()
         {
@@ -18,6 +20,9 @@ namespace App
             container.BindSingle<IViewResolver, ViewResolver>();
             container.BindInstance<IManifest>(Manifest);
             container.BindSingle<IVariantProvider, VariantProvider>();
+
+            NavigationControl.Present(new Catalog())
+                .SubscribeAndForget();
         }
 
         private CompositeLoader CreateLoader()

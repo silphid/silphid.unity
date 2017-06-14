@@ -20,11 +20,8 @@ namespace Silphid.Showzup
         {
             get
             {
-                Debug.Log($"Deserializing variant: {_name}");
                 var field = _typeRef.Type.GetField(_name, BindingFlags.Static | BindingFlags.Public);
-                var variant = (IVariant) field.GetValue(null);
-                Debug.Log($"Deserialized variant: {variant.Name}");
-                return variant;
+                return (IVariant) field.GetValue(null);
             }
         }
     }

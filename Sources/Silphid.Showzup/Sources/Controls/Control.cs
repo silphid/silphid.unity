@@ -6,23 +6,15 @@ namespace Silphid.Showzup
 {
     public abstract class Control : MonoBehaviour
     {
-        public GameObject HistoryContainer;
-
         protected virtual void RemoveAllViews(GameObject container, GameObject except = null)
         {
             if (container)
                 container.Children().Where(x => x != except).ForEach(RemoveView);
         }
 
-        private void RemoveView(GameObject viewObject)
+        protected virtual void RemoveView(GameObject viewObject)
         {
-            if (HistoryContainer != null)
-            {
-                viewObject.SetActive(false);
-                viewObject.transform.SetParent(HistoryContainer.transform, false);
-            }
-            else
-                Destroy(viewObject);
+            Destroy(viewObject);
         }
 
         protected virtual void SetViewParent(GameObject container, GameObject viewObject)

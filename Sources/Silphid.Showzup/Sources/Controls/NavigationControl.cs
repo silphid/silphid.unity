@@ -24,6 +24,7 @@ namespace Silphid.Showzup
 
         #endregion
 
+        public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
 
         #region Life-time
@@ -63,6 +64,18 @@ namespace Silphid.Showzup
 
         public Rx.IObservable<Nav> Navigating => _navigating;
         public Rx.IObservable<Nav> Navigated => _navigated;
+
+        protected override void RemoveView(GameObject viewObject)
+        {
+            if (HistoryContainer == null)
+            {
+                base.RemoveView(viewObject);
+                return;
+            }
+            
+            viewObject.SetActive(false);
+            viewObject.transform.SetParent(HistoryContainer.transform, false);
+        }
 
         public override Rx.IObservable<IView> Present(object input, Options options = null)
         {

@@ -38,9 +38,6 @@ namespace Silphid.Showzup
         {
             Container1.SetActive(false);
             Container2.SetActive(false);
-
-            if (HistoryContainer)
-                HistoryContainer.SetActive(false);
         }
 
         #endregion
