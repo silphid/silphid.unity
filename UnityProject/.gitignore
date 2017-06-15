@@ -4,5 +4,4 @@
 /obj/
 /WSABuild/
 /UWP/
-*.csproj
 /.idea/
