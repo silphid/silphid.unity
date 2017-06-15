@@ -3,39 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx", "UniRx\UniRx.csproj", "{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx", "Sources\UniRx\UniRx.csproj", "{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions", "Silphid.Extensions\Silphid.Extensions.csproj", "{503103E3-C216-4C5E-BDA7-3268D401E185}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions", "Sources\Silphid.Extensions\Silphid.Extensions.csproj", "{503103E3-C216-4C5E-BDA7-3268D401E185}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.DOTween", "Silphid.Extensions.DOTween\Silphid.Extensions.DOTween.csproj", "{47797EE4-1E8C-4305-9F45-655CA2710A3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.DOTween", "Sources\Silphid.Extensions.DOTween\Silphid.Extensions.DOTween.csproj", "{47797EE4-1E8C-4305-9F45-655CA2710A3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit", "Silphid.Sequencit\Silphid.Sequencit.csproj", "{C0716045-F08A-489F-9B7A-25863BC13118}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit", "Sources\Silphid.Sequencit\Silphid.Sequencit.csproj", "{C0716045-F08A-489F-9B7A-25863BC13118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.DOTween", "Silphid.Sequencit.DOTween\Silphid.Sequencit.DOTween.csproj", "{3364B083-3FA4-4426-97D4-BFE1C2D1D4E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.DOTween", "Sources\Silphid.Sequencit.DOTween\Silphid.Sequencit.DOTween.csproj", "{3364B083-3FA4-4426-97D4-BFE1C2D1D4E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.Test", "Silphid.Sequencit.Test\Silphid.Sequencit.Test.csproj", "{2574A413-999D-40CE-9E55-20678D45C684}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.Test", "Sources\Silphid.Sequencit.Test\Silphid.Sequencit.Test.csproj", "{2574A413-999D-40CE-9E55-20678D45C684}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp60Support.Polyfill", "CSharp60Support.Polyfill\CSharp60Support.Polyfill.csproj", "{1918A037-DDBA-4423-AECC-1AEED7DCEBE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.DOTween.UWP", "Sources\Silphid.Extensions.DOTween.UWP\Silphid.Extensions.DOTween.UWP.csproj", "{925F040C-3513-4D9D-88AB-FB58C7BA8E8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.DOTween.UWP", "Silphid.Extensions.DOTween.UWP\Silphid.Extensions.DOTween.UWP.csproj", "{925F040C-3513-4D9D-88AB-FB58C7BA8E8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.UWP", "Sources\Silphid.Extensions.UWP\Silphid.Extensions.UWP.csproj", "{02CCE4F5-D0D0-4C6E-B57B-BA3AAC581170}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions.UWP", "Silphid.Extensions.UWP\Silphid.Extensions.UWP.csproj", "{02CCE4F5-D0D0-4C6E-B57B-BA3AAC581170}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.UWP", "Sources\Silphid.Sequencit.UWP\Silphid.Sequencit.UWP.csproj", "{FE68BF73-A9AA-4DD5-B645-E28DAEF03E64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.UWP", "Silphid.Sequencit.UWP\Silphid.Sequencit.UWP.csproj", "{FE68BF73-A9AA-4DD5-B645-E28DAEF03E64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.DOTween.UWP", "Sources\Silphid.Sequencit.DOTween.UWP\Silphid.Sequencit.DOTween.UWP.csproj", "{550118B3-BC71-4755-A6B5-A3CA5DBCD5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit.DOTween.UWP", "Silphid.Sequencit.DOTween.UWP\Silphid.Sequencit.DOTween.UWP.csproj", "{550118B3-BC71-4755-A6B5-A3CA5DBCD5BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx.UWP", "Sources\UniRx.UWP\UniRx.UWP.csproj", "{357854F3-690A-4CA1-BFB0-5C48D030840C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx.UWP", "UniRx.UWP\UniRx.UWP.csproj", "{357854F3-690A-4CA1-BFB0-5C48D030840C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup", "Sources\Silphid.Loadzup\Silphid.Loadzup.csproj", "{DAD5DF27-9FA3-4F02-96BE-E28EA2530F0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup", "Silphid.Loadzup\Silphid.Loadzup.csproj", "{DAD5DF27-9FA3-4F02-96BE-E28EA2530F0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup.UWP", "Sources\Silphid.Loadzup.UWP\Silphid.Loadzup.UWP.csproj", "{72380E4D-D61E-4A2A-BCA0-87C643ABE29C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup.UWP", "Silphid.Loadzup.UWP\Silphid.Loadzup.UWP.csproj", "{72380E4D-D61E-4A2A-BCA0-87C643ABE29C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup", "Sources\Silphid.Showzup\Silphid.Showzup.csproj", "{9B235C54-6D78-457D-9BF2-72F389A5051A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup", "Silphid.Showzup\Silphid.Showzup.csproj", "{9B235C54-6D78-457D-9BF2-72F389A5051A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.UWP", "Sources\Silphid.Showzup.UWP\Silphid.Showzup.UWP.csproj", "{87F8A39C-B614-4C09-AC31-22750C96C5DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.UWP", "Silphid.Showzup.UWP\Silphid.Showzup.UWP.csproj", "{87F8A39C-B614-4C09-AC31-22750C96C5DB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup.Test", "Silphid.Loadzup.Test\Silphid.Loadzup.Test.csproj", "{3B1B4BFE-70AF-4E0D-9383-81A7F4155848}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Loadzup.Test", "Sources\Silphid.Loadzup.Test\Silphid.Loadzup.Test.csproj", "{3B1B4BFE-70AF-4E0D-9383-81A7F4155848}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParties", "ThirdParties", "{4400A8A9-51D2-48F3-92E6-514D2A1B1F53}"
 EndProject
@@ -47,17 +45,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Silphid.Sequencit", "Silphi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Silphid.Showzup", "Silphid.Showzup", "{FE26FD62-B57C-4880-8D92-9B91D2F5659E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage", "Zenject.Usage\Zenject.Usage.csproj", "{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage", "Sources\Zenject.Usage\Zenject.Usage.csproj", "{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage.UWP", "Zenject.Usage.UWP\Zenject.Usage.UWP.csproj", "{D9DF10BC-FA75-4FAD-AC30-DD778A225325}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject.Usage.UWP", "Sources\Zenject.Usage.UWP\Zenject.Usage.UWP.csproj", "{D9DF10BC-FA75-4FAD-AC30-DD778A225325}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet", "YamlDotNet\YamlDotNet.csproj", "{057C0297-852E-4038-A7F5-3104D1862A2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet", "Sources\YamlDotNet\YamlDotNet.csproj", "{057C0297-852E-4038-A7F5-3104D1862A2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.UWP", "YamlDotNet.UWP\YamlDotNet.UWP.csproj", "{6EFF75F0-7E55-4512-9970-1F9E76C2DA4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.UWP", "Sources\YamlDotNet.UWP\YamlDotNet.UWP.csproj", "{6EFF75F0-7E55-4512-9970-1F9E76C2DA4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.Test", "Silphid.Showzup.Test\Silphid.Showzup.Test.csproj", "{F9B89198-6B1B-481F-A085-03407E690BAC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.Test", "Sources\Silphid.Showzup.Test\Silphid.Showzup.Test.csproj", "{F9B89198-6B1B-481F-A085-03407E690BAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.Editor", "Silphid.Showzup.Editor\Silphid.Showzup.Editor.csproj", "{0F803DDE-0206-4FDC-BC62-2D6AE00D2B5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Showzup.Editor", "Sources\Silphid.Showzup.Editor\Silphid.Showzup.Editor.csproj", "{0F803DDE-0206-4FDC-BC62-2D6AE00D2B5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnityProject", "UnityProject", "{2CF25326-6E59-40E0-9558-7EF08E7BF192}"
 EndProject

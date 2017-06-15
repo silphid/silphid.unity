@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UniRx</RootNamespace>
     <AssemblyName>UniRx</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -283,6 +283,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common.targets" />
   <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPlugins"/>
+    <CallTarget Targets="CopyOutputToPlugins" />
   </Target>
 </Project>
