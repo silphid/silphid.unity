@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Silphid.Extensions;
-
-namespace Silphid.Showzup
+﻿namespace Silphid.Showzup
 {
     public class Options
     {
@@ -13,7 +9,7 @@ namespace Silphid.Showzup
         public float? TransitionDuration { get; set; }
 
         public override string ToString() =>
-            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants?.ToDelimitedString(";")}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}";
+            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}";
 
         public static Options Clone(Options other) =>
             new Options
@@ -28,7 +24,7 @@ namespace Silphid.Showzup
         public static Options CloneWithExtraVariants(Options other, VariantSet extraVariants)
         {
             var clone = Clone(other);
-            clone.Variants = other.Variants.UnionWith(extraVariants);
+            clone.Variants = other?.Variants.UnionWith(extraVariants) ?? extraVariants;
             return clone;
         }
     }

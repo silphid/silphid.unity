@@ -35,7 +35,10 @@ namespace Silphid.Showzup
         private static void CreateNavigationControl()
         {
             CreateTransitionControl<NavigationControl>(x =>
-                x.HistoryContainer = CreateGameObject("History", x.gameObject));
+            {
+                x.HistoryContainer = CreateGameObject("History", x.gameObject);
+                x.HistoryContainer.AddComponent<RectTransform>().Stretch();
+            });
         }
         
         private static void CreateListControl<T>() where T : ListControl
@@ -48,7 +51,12 @@ namespace Silphid.Showzup
             Create<T>(x =>
             {
                 x.Container1 = CreateGameObject("Container1", x.gameObject);
+                x.Container1.AddComponent<RectTransform>().Stretch();
+                x.Container1.AddComponent<CanvasGroup>();
+                
                 x.Container2 = CreateGameObject("Container2", x.gameObject);
+                x.Container2.AddComponent<RectTransform>().Stretch();
+                x.Container2.AddComponent<CanvasGroup>();
                 
                 if (action != null)
                     action(x);

@@ -146,12 +146,22 @@ namespace Silphid.Showzup.Injection
 
         public void Inject(object obj, Dictionary<Type, object> extraBindings)
         {
+            if (obj is GameObject)
+                InjectGameObject((GameObject) obj, extraBindings);
+            else
+                InjectObject(obj, extraBindings);
+        }
+
+        private void InjectObject(object obj, Dictionary<Type, object> extraBindings)
+        {
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Do(x => _logger.Log($"Field: {x.Name}"))
                 .ForEach(field => InjectField(obj, field, extraBindings));
 
             obj.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Do(x => _logger.Log($"Property: {x.Name}"))
                 .ForEach(property => InjectProperty(obj, property, extraBindings));
         }
 
@@ -188,33 +198,38 @@ namespace Silphid.Showzup.Injection
             method.Invoke(obj, parameters);
         }
 
-        public void Inject(GameObject go) =>
-            Inject(go, null);
+        private void InjectGameObject(GameObject go) =>
+            InjectGameObject(go, null);
 
-        public void Inject(GameObject go, Dictionary<Type, object> extraBindings)
+        private void InjectGameObject(GameObject go, Dictionary<Type, object> extraBindings)
         {
             go.GetComponents<MonoBehaviour>()
-                .ForEach(x => Inject(x, extraBindings));
+                .ForEach(x => InjectObject(x, extraBindings));
+            
+            go.Descendants()
+                .ForEach(x => InjectGameObject(x, extraBindings));
         }
 
-        private void CallInjectMethods(GameObject go)
+        private void InjectMethods(GameObject go)
         {
             go.GetComponents<MonoBehaviour>()
                 .ForEach(component => component.GetType()
                     .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(method => method.HasAttribute<InjectAttribute>())
                     .ForEach(method => InjectMethod(component, method)));
+            
+            go.Descendants()
+                .ForEach(InjectMethods);
         }
 
         public void InjectAllGameObjects()
         {
-            AllGameObjects.ForEach(Inject);
-            AllGameObjects.ForEach(CallInjectMethods);
+            RootGameObjects.ForEach(InjectGameObject);
+            RootGameObjects.ForEach(InjectMethods);
         }
 
-        private IEnumerable<GameObject> AllGameObjects =>
-            AllScenes
-                .SelectMany(x => x.GetRootGameObjects().SelectMany(y => y.SelfAndDescendants()));
+        private IEnumerable<GameObject> RootGameObjects =>
+            AllScenes.SelectMany(x => x.GetRootGameObjects());
 
         private IEnumerable<Scene> AllScenes
         {

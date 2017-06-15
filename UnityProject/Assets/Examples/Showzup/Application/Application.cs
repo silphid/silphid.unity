@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Loadzup.Resource;

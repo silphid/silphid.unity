@@ -18,7 +18,7 @@ namespace Silphid.Showzup
         public NavigationOrientation Orientation;
         public bool AutoFocus = true;
         public float FocusDelay;
-        public bool WrapAround = false;
+        public bool WrapAround;
 
         public virtual void Start()
         {
