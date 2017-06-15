@@ -68,8 +68,6 @@ namespace Silphid.Showzup.Injection
 
         public object Resolve(Type abstractType, Dictionary<Type, object> extraBindings = null, bool isOptional = false)
         {
-            _logger?.Log($"Resolving type {abstractType.Name}...");
-            
             var instance = ResolveInternal(abstractType, extraBindings);
             if (instance == null && !isOptional)
                 throw new Exception($"No mapping for required type {abstractType.Name}.");
@@ -156,12 +154,10 @@ namespace Silphid.Showzup.Injection
         {
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Do(x => _logger.Log($"Field: {x.Name}"))
                 .ForEach(field => InjectField(obj, field, extraBindings));
 
             obj.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Do(x => _logger.Log($"Property: {x.Name}"))
                 .ForEach(property => InjectProperty(obj, property, extraBindings));
         }
 
@@ -172,7 +168,7 @@ namespace Silphid.Showzup.Injection
                 return;
             
             var value = Resolve(property.PropertyType, extraBindings, inject.Optional);
-            _logger?.Log($"Injecting property {obj.GetType().Name}.{property.Name}: {value}");
+            _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
             property.SetValue(obj, value, null);
         }
 
@@ -183,7 +179,7 @@ namespace Silphid.Showzup.Injection
                 return;
             
             var value = Resolve(field.FieldType, extraBindings, inject.Optional);
-            _logger?.Log($"Injecting field {obj.GetType().Name}.{field.Name}: {value}");
+            _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
             field.SetValue(obj, value);
         }
 
@@ -194,9 +190,15 @@ namespace Silphid.Showzup.Injection
                 return;
             
             var parameters = ResolveParameters(method.GetParameters());
-            _logger?.Log($"Injecting method {obj.GetType().Name}.{method.Name}: {parameters.ToDelimitedString(", ")}");
+            _logger?.Log($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
             method.Invoke(obj, parameters);
         }
+
+        private static string FormatParameters(object[] parameters) =>
+            parameters.Select(FormatValue).ToDelimitedString(", ");
+
+        private static string FormatValue(object value) =>
+            value?.ToString() ?? "null";
 
         private void InjectGameObject(GameObject go) =>
             InjectGameObject(go, null);

@@ -47,7 +47,7 @@ namespace Silphid.Showzup
         }
 
         public IView GetViewForViewModel(object viewModel) =>
-            _views.FirstOrDefault(x => x.ViewModel == viewModel);
+            _views.FirstOrDefault(x => x?.ViewModel == viewModel);
 
         public int? IndexOfView(IView view)
         {

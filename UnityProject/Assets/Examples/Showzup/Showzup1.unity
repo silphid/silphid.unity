@@ -277,7 +277,8 @@ MonoBehaviour:
   m_Script: {fileID: -1029033404, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Variants: []
+  Variants:
+  - Page
   Container1: {fileID: 170275834}
   Container2: {fileID: 1302258576}
   DefaultTransition: {fileID: 628999384}

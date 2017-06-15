@@ -45,8 +45,14 @@ namespace Silphid.Showzup
 
             var requestedVariants = GetRequestedVariants(options);
             if (input is Type)
-                return ResolveFromType((Type) input, requestedVariants);
-
+            {
+                var type = (Type) input;
+                if (type.IsAssignableTo<IView>())
+                    return ResolveFromViewType(type, requestedVariants);
+                
+                throw new ArgumentException("Only types implementing IView can be passed as input");
+            }
+            
             return ResolveFromInstance(input, requestedVariants);
         }
 
@@ -62,7 +68,7 @@ namespace Silphid.Showzup
         private ViewInfo ResolveFromInstance(object instance, VariantSet requestedVariants)
         {
             if (instance is IView)
-                return ResolveFromView((IView) instance);
+                return ResolveFromView((IView) instance, requestedVariants);
 
             if (instance is IViewModel)
                 return ResolveFromViewModel((IViewModel) instance, requestedVariants);
@@ -70,64 +76,57 @@ namespace Silphid.Showzup
             return ResolveFromModel(instance, requestedVariants);
         }
 
-        private static ViewInfo ResolveFromView(IView view) =>
-            new ViewInfo
-            {
-                View = view,
-                ViewType = view.GetType()
-            };
-
-        private ViewInfo ResolveFromViewModel(IViewModel viewModel, VariantSet requestedVariants)
-        {
-            var viewInfo = ResolveFromViewModelType(viewModel.GetType(), requestedVariants);
-            viewInfo.ViewModel = viewModel;
-            viewInfo.ViewModelType = viewModel.GetType();
-            return viewInfo;
-        }
-
         private ViewInfo ResolveFromModel(object model, VariantSet requestedVariants)
         {
-            var viewInfo = ResolveFromModelType(model.GetType(), requestedVariants);
-            viewInfo.Model = model;
-            viewInfo.ModelType = model.GetType();
-            return viewInfo;
-        }
-
-        private ViewInfo ResolveFromType(Type type, VariantSet requestedVariants)
-        {
-            if (type.IsAssignableTo<IView>())
-                return ResolveFromViewType(type, requestedVariants);
-
-            if (type.IsAssignableTo<IViewModel>())
-                return ResolveFromViewModelType(type, requestedVariants);
-            
-            return ResolveFromModelType(type, requestedVariants);
-        }
-
-        private ViewInfo ResolveFromViewType(Type viewType, VariantSet requestedVariants) =>
-            new ViewInfo
-            {
-                ViewType = viewType,
-                PrefabUri = ResolvePrefabFromViewType(viewType, requestedVariants)
-            };
-
-        private ViewInfo ResolveFromViewModelType(Type viewModelType, VariantSet requestedVariants) =>
-            new ViewInfo
-            {
-                ViewModelType = viewModelType,
-                ViewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants)
-            };
-
-        private ViewInfo ResolveFromModelType(Type modelType, VariantSet requestedVariants)
-        {
+            var modelType = model.GetType();
             var viewModelType = ResolveTargetType(modelType, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
 
             return new ViewInfo
             {
+                Model = model,
                 ModelType = modelType,
                 ViewModelType = viewModelType,
+                ViewType = viewType,
+                PrefabUri = prefabUri
+            };
+        }
+
+        private ViewInfo ResolveFromViewModel(IViewModel viewModel, VariantSet requestedVariants)
+        {
+            var viewModelType = viewModel.GetType();
+            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
+            
+            return new ViewInfo
+            {
+                ViewModel = viewModel,
+                ViewModelType = viewModelType,
+                ViewType = viewType,
+                PrefabUri = prefabUri
+            };
+        }
+
+        private ViewInfo ResolveFromView(IView view, VariantSet requestedVariants)
+        {
+            var viewType = view.GetType();
+            var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
+            
+            return new ViewInfo
+            {
+                View = view,
+                ViewType = viewType,
+                PrefabUri = prefabUri
+            };
+        }
+
+        private ViewInfo ResolveFromViewType(Type viewType, VariantSet requestedVariants)
+        {
+            var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
+            
+            return new ViewInfo
+            {
                 ViewType = viewType,
                 PrefabUri = prefabUri
             };

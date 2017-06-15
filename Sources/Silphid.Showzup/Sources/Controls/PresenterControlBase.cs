@@ -44,9 +44,10 @@ namespace Silphid.Showzup
 
         #endregion
 
-        #region Config properties
+        #region Properties
 
         public string[] Variants;
+        public ReadOnlyReactiveProperty<IView> View { get; }
 
         #endregion
 
@@ -55,9 +56,7 @@ namespace Silphid.Showzup
         private readonly Subject<Unit> _loadCancellations = new Subject<Unit>();
         private State _state;
         private PendingRequest _pendingRequest;
-
         protected readonly ReactiveProperty<IView> _view = new ReactiveProperty<IView>();
-        public ReadOnlyReactiveProperty<IView> View { get; }
 
         #endregion
 

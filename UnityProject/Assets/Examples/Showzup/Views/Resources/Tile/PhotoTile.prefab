@@ -39,6 +39,7 @@ GameObject:
   - component: {fileID: 222634049664066814}
   - component: {fileID: 114283305678524980}
   - component: {fileID: 114853729575563294}
+  - component: {fileID: 114513991764562900}
   m_Layer: 5
   m_Name: PhotoTile
   m_TagString: Untagged
@@ -126,6 +127,26 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &114513991764562900
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1685960835641246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 613
+  m_MinHeight: 345
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &114573572131396448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -192,7 +213,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1685960835641246}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14f5338902b441dea6e4ae08ef97aa84, type: 3}
   m_Name: 

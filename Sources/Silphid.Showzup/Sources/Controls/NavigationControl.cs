@@ -79,6 +79,8 @@ namespace Silphid.Showzup
 
         public override Rx.IObservable<IView> Present(object input, Options options = null)
         {
+            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+            
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
                 .ContinueWith(NavigateAndCompletePush);

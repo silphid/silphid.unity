@@ -166,7 +166,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Container: {fileID: 1089623498143232}
-  Variants: []
+  Variants:
+  - Tile
   Orientation: 1
   AutoFocus: 1
   FocusDelay: 0.3
