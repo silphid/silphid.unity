@@ -8,7 +8,7 @@ namespace Silphid.Showzup
 {
     public class SlideTransition : CrossfadeTransition
     {
-        [SerializeField] public Vector2 Offset = Vector2.right;
+        public Vector2 Offset { get; set; } = Vector2.right;
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {

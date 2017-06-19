@@ -53,7 +53,6 @@
     <Compile Include="Sources\ManifestBuilder.cs" />
     <Compile Include="Sources\ManifestEditor.cs" />
     <Compile Include="Sources\MenuItems.cs" />
-    <Compile Include="Sources\TransitionRefDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

@@ -129,11 +129,15 @@
     <Compile Include="Sources\Phases\PhaseStarting.cs" />
     <Compile Include="Sources\Phases\PhaseState.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
+    <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
+    <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />
+    <Compile Include="Sources\Transitions\Components\SlideTransition.cs" />
+    <Compile Include="Sources\Transitions\Components\Transition.cs" />
+    <Compile Include="Sources\Transitions\Components\ZoomTransition.cs" />
     <Compile Include="Sources\Transitions\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\InstantTransition.cs" />
     <Compile Include="Sources\Transitions\SlideTransition.cs" />
     <Compile Include="Sources\Transitions\Transition.cs" />
-    <Compile Include="Sources\Transitions\TransitionRef.cs" />
     <Compile Include="Sources\Transitions\ZoomTransition.cs" />
     <Compile Include="Sources\Types\Direction.cs" />
     <Compile Include="Sources\Types\Nav.cs" />

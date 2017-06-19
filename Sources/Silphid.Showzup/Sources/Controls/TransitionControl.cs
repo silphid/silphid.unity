@@ -21,7 +21,7 @@ namespace Silphid.Showzup
 
         public GameObject Container1;
         public GameObject Container2;
-        public TransitionRef DefaultTransition = new TransitionRef();
+        public Components.Transition DefaultTransition;
 
         #endregion
 
@@ -38,9 +38,6 @@ namespace Silphid.Showzup
         {
             Container1.SetActive(false);
             Container2.SetActive(false);
-            
-            if (DefaultTransition == null)
-                throw new Exception($"DefaultTransition must be specified on {gameObject.name}");
         }
 
         #endregion
@@ -59,13 +56,13 @@ namespace Silphid.Showzup
         protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options)
         {
             var presentation = base.CreatePresentation(viewModel, sourceView, targetViewType, options);
-            presentation.Transition = ResolveTransition(presentation, DefaultTransition.Transition);
+            presentation.Transition = ResolveTransition(presentation);
             presentation.Duration = ResolveDuration(presentation.Transition, options);
             return presentation;
         }
 
-        protected ITransition ResolveTransition(Presentation presentation, ITransition defaultTransition) =>
-            TransitionResolver?.Resolve(presentation) ?? defaultTransition;
+        protected ITransition ResolveTransition(Presentation presentation) =>
+            TransitionResolver?.Resolve(presentation) ?? DefaultTransition ?? InstantTransition.Instance;
 
         protected float ResolveDuration(ITransition transition, Options options)
             => options?.TransitionDuration ?? transition.Duration;
