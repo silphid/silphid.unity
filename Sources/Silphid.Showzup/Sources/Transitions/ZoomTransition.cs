@@ -7,8 +7,8 @@ namespace Silphid.Showzup
 {
     public class ZoomTransition : CrossfadeTransition
     {
-        public float StartScale = 0.8f;
-        public float EndScale = 1.2f;
+        [SerializeField] public float StartScale = 0.8f;
+        [SerializeField] public float EndScale = 1.2f;
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {

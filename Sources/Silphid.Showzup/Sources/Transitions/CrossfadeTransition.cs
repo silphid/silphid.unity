@@ -8,10 +8,10 @@ namespace Silphid.Showzup
 {
     public class CrossfadeTransition : Transition
     {
-        public Ease Ease = Ease.InOutCubic;
-        public bool FadeOutSource = true;
-        public bool FadeInTarget = true;
-        public bool SourceAboveTarget = true;
+        [SerializeField] public Ease Ease = Ease.InOutCubic;
+        [SerializeField] public bool FadeOutSource = true;
+        [SerializeField] public bool FadeInTarget = true;
+        [SerializeField] public bool SourceAboveTarget = true;
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {

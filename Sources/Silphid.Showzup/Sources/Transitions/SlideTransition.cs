@@ -6,16 +6,9 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class ShiftTransition : CrossfadeTransition
+    public class SlideTransition : CrossfadeTransition
     {
-        [SerializeField] private Vector2 _offset = Vector2.right;
-        public bool InvertReturn;
-
-        public Vector2 Offset
-        {
-            get { return _offset; }
-            set { _offset = value; }
-        }
+        [SerializeField] public Vector2 Offset = Vector2.right;
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {
@@ -44,7 +37,6 @@ namespace Silphid.Showzup
                     var sourceTransform = (RectTransform) sourceContainer.transform;
                     var offset = Offset.Multiply(targetTransform.rect.size) *
                                  (direction == Direction.Forward ? -1 : 1);
-                    offset *= InvertReturn ? -1 : 1;
                     sourceTransform
                         .DOAnchorPos(offset, duration, true)
                         .SetEase(Ease)

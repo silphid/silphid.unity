@@ -101,6 +101,7 @@
     <Compile Include="Sources\Interfaces\IPresenter.cs" />
     <Compile Include="Sources\Interfaces\IPreShow.cs" />
     <Compile Include="Sources\Interfaces\IScoreEvaluator.cs" />
+    <Compile Include="Sources\Interfaces\ITransition.cs" />
     <Compile Include="Sources\Interfaces\ITransitionResolver.cs" />
     <Compile Include="Sources\Interfaces\IVariantProvider.cs" />
     <Compile Include="Sources\Interfaces\IView.cs" />
@@ -130,8 +131,9 @@
     <Compile Include="Sources\ScoreEvaluator.cs" />
     <Compile Include="Sources\Transitions\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\InstantTransition.cs" />
-    <Compile Include="Sources\Transitions\ShiftTransition.cs" />
+    <Compile Include="Sources\Transitions\SlideTransition.cs" />
     <Compile Include="Sources\Transitions\Transition.cs" />
+    <Compile Include="Sources\Transitions\TransitionRef.cs" />
     <Compile Include="Sources\Transitions\ZoomTransition.cs" />
     <Compile Include="Sources\Types\Direction.cs" />
     <Compile Include="Sources\Types\Nav.cs" />

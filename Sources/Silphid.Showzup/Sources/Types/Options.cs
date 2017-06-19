@@ -5,7 +5,7 @@
         public Direction Direction { get; set; }
         public PushMode PushMode { get; set; }
         public VariantSet Variants { get; set; } = VariantSet.Empty;
-        public Transition Transition { get; set; }
+        public ITransition Transition { get; set; }
         public float? TransitionDuration { get; set; }
 
         public override string ToString() =>

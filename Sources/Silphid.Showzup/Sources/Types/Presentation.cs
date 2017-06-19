@@ -12,7 +12,7 @@ namespace Silphid.Showzup
         public Type SourceViewType => SourceView?.GetType();
         public Type TargetViewType { get; }
         public Options Options { get; }
-        public Transition Transition { get; set; }
+        public ITransition Transition { get; set; }
         public Direction Direction => Options?.Direction ?? Direction.Forward;
         public float Duration { get; set; }
         public CancellationToken CancellationToken { get; set; } = CancellationToken.None;
