@@ -144,6 +144,9 @@ namespace Silphid.Showzup.Injection
 
         public void Inject(object obj, Dictionary<Type, object> extraBindings)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+            
             if (obj is GameObject)
                 InjectGameObject((GameObject) obj, extraBindings);
             else
@@ -152,6 +155,9 @@ namespace Silphid.Showzup.Injection
 
         private void InjectObject(object obj, Dictionary<Type, object> extraBindings)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .ForEach(field => InjectField(obj, field, extraBindings));
@@ -203,9 +209,19 @@ namespace Silphid.Showzup.Injection
         private void InjectGameObject(GameObject go) =>
             InjectGameObject(go, null);
 
+        private bool IsValidComponent(MonoBehaviour behaviour)
+        {
+            if (behaviour != null)
+                return true;
+            
+            _logger.LogWarning(nameof(MicroContainer), "Skipping null MonoBehaviour.");
+            return false;
+        }
+        
         private void InjectGameObject(GameObject go, Dictionary<Type, object> extraBindings)
         {
             go.GetComponents<MonoBehaviour>()
+                .Where(IsValidComponent)
                 .ForEach(x => InjectObject(x, extraBindings));
             
             go.Descendants()
@@ -215,6 +231,7 @@ namespace Silphid.Showzup.Injection
         private void InjectMethods(GameObject go)
         {
             go.GetComponents<MonoBehaviour>()
+                .Where(IsValidComponent)
                 .ForEach(component => component.GetType()
                     .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(method => method.HasAttribute<InjectAttribute>())
