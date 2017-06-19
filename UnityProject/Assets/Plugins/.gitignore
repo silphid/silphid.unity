@@ -1,2 +1,5 @@
 *.dll
 *.pdb
+*.mdb
+*.mdb.meta
+*.dll.meta
