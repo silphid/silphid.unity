@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
     <PropertyGroup>  
-        <AssetsPath>$(SolutionDir)..\UnityProject\Assets</AssetsPath>  
+        <AssetsPath>$(SolutionDir)UnityProject\Assets</AssetsPath>  
         <PluginsPath>$(AssetsPath)\Plugins</PluginsPath>  
         <PluginsWsaPath>$(PluginsPath)\WSA</PluginsWsaPath>  
         <EditorPath>$(AssetsPath)\Editor</EditorPath>
