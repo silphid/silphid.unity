@@ -14,7 +14,7 @@ namespace App
         
         public void Start()
         {
-            var container = new MicroContainer(Debug.unityLogger);
+            var container = new Container(Debug.unityLogger);
 
             container.BindInstance<ILoader>(CreateLoader());
             container.BindSingle<IScoreEvaluator, ScoreEvaluator>();
@@ -22,14 +22,19 @@ namespace App
             container.BindSingle<IViewLoader, ViewLoader>();
             container.BindInstance<IManifest>(Manifest);
             container.BindInstance<IInjector>(new Injector(go => container.Inject(go)));
-            container.BindInstance<IViewModelFactory>(new ViewModelFactory((model, viewModelType) =>
-                (IViewModel) container.Resolve(viewModelType, container.SubBind(model))));
+            container.BindInstance<IViewModelFactory>(CreateViewModelFactory(container));
             container.BindInstance<IVariantProvider>(new VariantProvider(Display.Group, Form.Group, Platform.Group));
 
             container.InjectAllGameObjects();
             
             NavigationControl.Present(new Catalog())
                 .SubscribeAndForget(_ => {}, ex => Debug.Log($"Failed to navigate: {ex}"), () => {});
+        }
+
+        private static ViewModelFactory CreateViewModelFactory(Container container)
+        {
+            return new ViewModelFactory((viewModelType, parameters) =>
+                (IViewModel) container.Resolve(viewModelType, new Container().BindInstances(parameters)));
         }
 
         private CompositeLoader CreateLoader()
