@@ -9,7 +9,7 @@ using Zenject;
 
 namespace Silphid.Showzup.Injection
 {
-    public class MicroContainer
+    public class Container
     {
         private enum Lifetime
         {
@@ -36,93 +36,113 @@ namespace Silphid.Showzup.Injection
         private readonly List<Mapping> _mappings = new List<Mapping>();
         private readonly ILogger _logger;
 
-        public MicroContainer(ILogger logger = null)
+        public Container(ILogger logger = null)
         {
             _logger = logger;
         }
 
-        public void BindInstance<T>(T instance)
+        public Container BindInstance<T>(T instance)
         {
             _instances[typeof(T)] = instance;
+            return this;
         }
 
-        public void Bind<T>(Type type)
+        public Container BindInstance(object instance)
+        {
+            _instances[instance.GetType()] = instance;
+            return this;
+        }
+
+        public Container BindInstances(IEnumerable<object> instances)
+        {
+            instances.ForEach(x => BindInstance(x));
+            return this;
+        }
+
+        public Container Bind<T>(Type type)
         {
             _mappings.Add(new Mapping(typeof(T), type, Lifetime.Local));
+            return this;
         }
 
-        public void BindSingle<T>(Type type)
+        public Container BindSelf<T>() =>
+            Bind<T, T>();
+
+        public Container BindSingle<T>(Type type)
         {
             _mappings.Add(new Mapping(typeof(T), type, Lifetime.Single));
+            return this;
         }
 
-        public void Bind<T, U>() where U : T
+        public Container Bind<T, U>() where U : T
         {
             Bind<T>(typeof(U));
+            return this;
         }
 
-        public void BindSingle<T, U>() where U : T
+        public Container BindSingle<T, U>() where U : T
         {
             BindSingle<T>(typeof(U));
+            return this;
         }
 
-        public object Resolve(Type abstractType, Dictionary<Type, object> extraBindings = null, bool isOptional = false)
+        public object Resolve(Type abstractType, Container subContainer = null, bool isOptional = false)
         {
-            var instance = ResolveInternal(abstractType, extraBindings);
+            var instance = ResolveInternal(abstractType, subContainer);
             if (instance == null && !isOptional)
                 throw new Exception($"No mapping for required type {abstractType.Name}.");
         
             return instance;
         }
 
-        private object ResolveInternal(Type abstractType, Dictionary<Type, object> extraBindings) =>
-            ResolveExtraBinding(abstractType, extraBindings) ??
+        private object ResolveInternal(Type abstractType, Container subContainer) =>
+            ResolveSubContainer(abstractType, subContainer) ??
             ResolveInstance(abstractType) ??
-            ResolveType(abstractType, extraBindings) ??
-            ResolveDefaultSelfBound(abstractType, extraBindings);
+            ResolveType(abstractType, subContainer) ??
+            ResolveDefaultSelfBound(abstractType, subContainer);
 
-        private static object ResolveExtraBinding(Type abstractType, Dictionary<Type, object> extraBindings) =>
-            extraBindings?.GetOptionalValue(abstractType);
+        private static object ResolveSubContainer(Type abstractType, Container subContainer) =>
+            subContainer?.Resolve(abstractType, null, true);
 
         private object ResolveInstance(Type abstractType) =>
             _instances.GetOptionalValue(abstractType);
 
-        private object ResolveType(Type abstractType, Dictionary<Type, object> extraBindings) =>
-            GetInstance(_mappings.FirstOrDefault(x => x.AbstractType == abstractType), extraBindings);
+        private object ResolveType(Type abstractType, Container subContainer) =>
+            GetInstance(_mappings.FirstOrDefault(x => x.AbstractType == abstractType), subContainer);
 
-        private object ResolveDefaultSelfBound(Type abstractType, Dictionary<Type, object> extraBindings) =>
+        private object ResolveDefaultSelfBound(Type abstractType, Container subContainer) =>
             !abstractType.IsAbstract
-                ? Instantiate(abstractType, extraBindings)
+                ? Instantiate(abstractType, subContainer)
                 : null;
 
-        private object GetInstance(Mapping mapping, Dictionary<Type, object> extraBindings = null)
+        private object GetInstance(Mapping mapping, Container subContainer = null)
         {
             if (mapping == null)
                 return null;
             
             if (mapping.Lifetime == Lifetime.Local)
-                return Instantiate(mapping.ConcreteType, extraBindings);
+                return Instantiate(mapping.ConcreteType, subContainer);
 
-            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcreteType, extraBindings));
+            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcreteType, subContainer));
         }
 
-        private object Instantiate(Type type, Dictionary<Type, object> extraBindings = null)
+        private object Instantiate(Type type, Container subContainer = null)
         {
             var constructor = ResolveConstructor(type);
-            var parameters = ResolveParameters(constructor.GetParameters(), extraBindings);
+            var parameters = ResolveParameters(constructor.GetParameters(), subContainer);
 
             return constructor.Invoke(parameters);
         }
 
-        private object[] ResolveParameters(ParameterInfo[] parameters, Dictionary<Type, object> extraBindings = null) =>
+        private object[] ResolveParameters(IEnumerable<ParameterInfo> parameters, Container subContainer = null) =>
             parameters
-                .Select(x => ResolveParameter(x, extraBindings))
+                .Select(x => ResolveParameter(x, subContainer))
                 .ToArray();
 
-        private object ResolveParameter(ParameterInfo parameter, Dictionary<Type, object> extraBindings)
+        private object ResolveParameter(ParameterInfo parameter, Container subContainer)
         {
             var isOptional = parameter.HasAttribute<InjectOptionalAttribute>();
-            return Resolve(parameter.ParameterType, extraBindings, isOptional);
+            return Resolve(parameter.ParameterType, subContainer, isOptional);
         }
 
         private ConstructorInfo ResolveConstructor(Type type)
@@ -142,49 +162,49 @@ namespace Silphid.Showzup.Injection
 
         public void Inject(object obj) => Inject(obj, null);
 
-        public void Inject(object obj, Dictionary<Type, object> extraBindings)
+        public void Inject(object obj, Container subContainer)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             
             if (obj is GameObject)
-                InjectGameObject((GameObject) obj, extraBindings);
+                InjectGameObject((GameObject) obj, subContainer);
             else
-                InjectObject(obj, extraBindings);
+                InjectObject(obj, subContainer);
         }
 
-        private void InjectObject(object obj, Dictionary<Type, object> extraBindings)
+        private void InjectObject(object obj, Container subContainer)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(field => InjectField(obj, field, extraBindings));
+                .ForEach(field => InjectField(obj, field, subContainer));
 
             obj.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(property => InjectProperty(obj, property, extraBindings));
+                .ForEach(property => InjectProperty(obj, property, subContainer));
         }
 
-        private void InjectProperty(object obj, PropertyInfo property, Dictionary<Type, object> extraBindings)
+        private void InjectProperty(object obj, PropertyInfo property, Container subContainer)
         {
             var inject = property.GetAttribute<InjectAttribute>();
             if (inject == null)
                 return;
             
-            var value = Resolve(property.PropertyType, extraBindings, inject.Optional);
+            var value = Resolve(property.PropertyType, subContainer, inject.Optional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
             property.SetValue(obj, value, null);
         }
 
-        private void InjectField(object obj, FieldInfo field, Dictionary<Type, object> extraBindings)
+        private void InjectField(object obj, FieldInfo field, Container subContainer)
         {
             var inject = field.GetAttribute<InjectAttribute>();
             if (inject == null)
                 return;
             
-            var value = Resolve(field.FieldType, extraBindings, inject.Optional);
+            var value = Resolve(field.FieldType, subContainer, inject.Optional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
             field.SetValue(obj, value);
         }
@@ -214,18 +234,18 @@ namespace Silphid.Showzup.Injection
             if (behaviour != null)
                 return true;
             
-            _logger.LogWarning(nameof(MicroContainer), "Skipping null MonoBehaviour.");
+            _logger.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
             return false;
         }
         
-        private void InjectGameObject(GameObject go, Dictionary<Type, object> extraBindings)
+        private void InjectGameObject(GameObject go, Container subContainer)
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
-                .ForEach(x => InjectObject(x, extraBindings));
+                .ForEach(x => InjectObject(x, subContainer));
             
             go.Descendants()
-                .ForEach(x => InjectGameObject(x, extraBindings));
+                .ForEach(x => InjectGameObject(x, subContainer));
         }
 
         private void InjectMethods(GameObject go)
@@ -254,21 +274,9 @@ namespace Silphid.Showzup.Injection
         {
             get
             {
-                for (int i = 0; i < SceneManager.sceneCount; i++)
+                for (var i = 0; i < SceneManager.sceneCount; i++)
                     yield return SceneManager.GetSceneAt(i);
             }
         }
-
-        public Dictionary<Type, object> SubBind<T>(T value) =>
-            new Dictionary<Type, object>
-            {
-                [typeof(T)] = value
-            };
-
-        public Dictionary<Type, object> SubBind(object value) =>
-            new Dictionary<Type, object>
-            {
-                [value.GetType()] = value
-            };
     }
 }
