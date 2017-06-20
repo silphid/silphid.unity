@@ -1,19 +1,20 @@
 using System;
+using System.Collections.Generic;
 
 namespace Silphid.Showzup
 {
     public class ViewModelFactory : IViewModelFactory
     {
-        private readonly Func<object, Type, IViewModel> func;
+        private readonly Func<Type, IEnumerable<object>, IViewModel> _func;
 
-        public ViewModelFactory(Func<object, Type, IViewModel> func)
+        public ViewModelFactory(Func<Type, IEnumerable<object>, IViewModel> func)
         {
-            this.func = func;
+            _func = func;
         }
 
-        public IViewModel Create(object model, Type type)
+        public IViewModel Create(Type type, IEnumerable<object> parameters)
         {
-            return func(model, type);
+            return _func(type, parameters);
         }
     }
 }

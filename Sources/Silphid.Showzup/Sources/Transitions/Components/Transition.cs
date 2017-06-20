@@ -1,3 +1,4 @@
+using System;
 using UniRx;
 using UnityEngine;
 using Trans = Silphid.Showzup.Transition;

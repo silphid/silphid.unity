@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -39,6 +40,11 @@ namespace Silphid.Showzup
 
         protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews;
+        private VariantSet _variantSet;
+
+        protected VariantSet VariantSet =>
+            _variantSet ??
+            (_variantSet = VariantProvider.GetVariantsNamed(Variants));
 
         public ListControl()
         {
@@ -63,6 +69,12 @@ namespace Silphid.Showzup
 
         public IView GetViewAtIndex(int? index) =>
             index.HasValue ? _views[index.Value] : null;
+
+        public bool CanPresent(object input, Options options = null)
+        {
+            var target = options?.Target;
+            return target == null || VariantSet.Contains(target);
+        }
 
         [Pure]
         public virtual IObservable<IView> Present(object input, Options options = null)

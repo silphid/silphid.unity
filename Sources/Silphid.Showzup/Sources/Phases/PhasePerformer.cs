@@ -1,20 +1,19 @@
 ﻿using System;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Showzup
 {
     public class PhasePerformer : IDisposable
     {
-        private readonly Rx.IObserver<PhaseEvent> _observer;
+        private readonly IObserver<PhaseEvent> _observer;
         private readonly Subject<Unit> _completedSubject = new Subject<Unit>();
 
         public readonly CompositeDisposable _disposables = new CompositeDisposable();
         public PhaseState State { get; private set; }
         public Phase Phase { get; }
-        public Rx.IObservable<Unit> Completed => _completedSubject;
+        public IObservable<Unit> Completed => _completedSubject;
 
-        public PhasePerformer(Phase phase, Rx.IObserver<PhaseEvent> observer)
+        public PhasePerformer(Phase phase, IObserver<PhaseEvent> observer)
         {
             Phase = phase;
             _observer = observer;
@@ -25,7 +24,7 @@ namespace Silphid.Showzup
             _disposables.Dispose();
         }
 
-        public Rx.IObservable<Unit> Perform()
+        public IObservable<Unit> Perform()
         {
             Start();
             return Completed.DoOnCompleted(Complete);

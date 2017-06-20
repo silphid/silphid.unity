@@ -4,7 +4,6 @@ using System.Linq;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -62,8 +61,8 @@ namespace Silphid.Showzup
         public ReactiveProperty<List<IView>> History { get; } =
             new ReactiveProperty<List<IView>>(new List<IView>());
 
-        public Rx.IObservable<Nav> Navigating => _navigating;
-        public Rx.IObservable<Nav> Navigated => _navigated;
+        public IObservable<Nav> Navigating => _navigating;
+        public IObservable<Nav> Navigated => _navigated;
 
         protected override void RemoveView(GameObject viewObject)
         {
@@ -77,7 +76,7 @@ namespace Silphid.Showzup
             viewObject.transform.SetParent(HistoryContainer.transform, false);
         }
 
-        public override Rx.IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
             
@@ -86,7 +85,7 @@ namespace Silphid.Showzup
                 .ContinueWith(NavigateAndCompletePush);
         }
 
-        private Rx.IObservable<Presentation> StartPushAndLoadView(object input, Options options)
+        private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
         {
             Debug.Log($"#Nav# Present({input}, {options})");
             AssertCanPresent();
@@ -106,7 +105,7 @@ namespace Silphid.Showzup
                 .ThenReturn(presentation);
         }
 
-        private Rx.IObservable<IView> NavigateAndCompletePush(Presentation presentation)
+        private IObservable<IView> NavigateAndCompletePush(Presentation presentation)
         {
             var nav = StartNavigation(presentation);
 
@@ -130,7 +129,7 @@ namespace Silphid.Showzup
                     ? History.Value.Take(History.Value.Count - 1).Append(view).ToList()
                     : new List<IView> {view};
 
-        public Rx.IObservable<IView> Pop()
+        public IObservable<IView> Pop()
         {
             AssertCanPop();
 
@@ -144,7 +143,7 @@ namespace Silphid.Showzup
             return PopInternal(view, history);
         }
 
-        public Rx.IObservable<IView> PopToRoot()
+        public IObservable<IView> PopToRoot()
         {
             AssertCanPop();
 
@@ -155,7 +154,7 @@ namespace Silphid.Showzup
             return PopInternal(view, history);
         }
 
-        public Rx.IObservable<IView> PopTo(IView view)
+        public IObservable<IView> PopTo(IView view)
         {
             //Debug.Log($"#Nav# PopTo({view})");
             var viewIndex = History.Value.IndexOf(view);
@@ -165,7 +164,7 @@ namespace Silphid.Showzup
             return PopInternal(view, history);
         }
 
-        private Rx.IObservable<IView> PopInternal(IView view, List<IView> history)
+        private IObservable<IView> PopInternal(IView view, List<IView> history)
         {
             AssertCanPresent();
 
@@ -246,7 +245,7 @@ namespace Silphid.Showzup
                 throw new InvalidOperationException($"Cannot pop to view {view} because it is already current view");
         }
 
-        private void DisposeDroppedViews(Rx.Tuple<List<IView>, List<IView>> tuple)
+        private void DisposeDroppedViews(Tuple<List<IView>, List<IView>> tuple)
         {
             tuple.Item1
                 .Where(x => !tuple.Item2.Contains(x))

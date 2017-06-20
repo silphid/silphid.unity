@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Silphid.Sequencit;
 using UniRx;
 using UnityEngine;

@@ -53,7 +53,9 @@ namespace Silphid.Showzup
                 throw new ArgumentException("Only types implementing IView can be passed as input");
             }
             
-            return ResolveFromInstance(input, requestedVariants);
+            var viewInfo = ResolveFromInstance(input, requestedVariants);
+            viewInfo.Parameters = options?.Parameters;
+            return viewInfo;
         }
 
         private VariantSet GetRequestedVariants(Options options)

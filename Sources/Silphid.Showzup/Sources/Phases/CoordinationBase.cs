@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Showzup
 {
@@ -14,7 +13,7 @@ namespace Silphid.Showzup
         private bool _used;
 
         protected readonly Presentation Presentation;
-        protected Rx.IObserver<PhaseEvent> Observer { get; private set; }
+        protected IObserver<PhaseEvent> Observer { get; private set; }
 
         protected CoordinationBase(Presentation presentation)
         {
@@ -34,7 +33,7 @@ namespace Silphid.Showzup
             return performer;
         }
 
-        public IDisposable Coordinate(Rx.IObserver<PhaseEvent> observer)
+        public IDisposable Coordinate(IObserver<PhaseEvent> observer)
         {
             if (_used)
                 throw new InvalidOperationException("Coordination can be used only once.");
@@ -47,7 +46,7 @@ namespace Silphid.Showzup
 
         protected abstract IDisposable CoordinateInternal();
 
-        protected Rx.IObservable<Unit> CancellationPoint()
+        protected IObservable<Unit> CancellationPoint()
         {
             if (Presentation.CancellationToken.IsCancellationRequested)
             {

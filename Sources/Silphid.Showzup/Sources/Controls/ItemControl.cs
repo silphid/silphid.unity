@@ -8,7 +8,7 @@ namespace Silphid.Showzup
     {
         public GameObject Container;
 
-        protected override UniRx.IObservable<Unit> Present(Presentation presentation)
+        protected override IObservable<Unit> Present(Presentation presentation)
         {
             if (Container == null)
                 throw new InvalidOperationException($"Must specify ContentContainer property of ContentControl {gameObject}");

@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;UNITY_METRO;UNITY_WSA</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UNITY;UNITY_5_4_OR_NEWER;UNITY_5_4_0;UNITY_5_4;UNITY_5;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -279,6 +279,23 @@
     <Compile Include="Sources\UnityEngineBridge\YieldInstructionCache.cs" />
     <Compile Include="Sources\UnityWinRTBridge\Thread.cs" />
     <Compile Include="Sources\UnityWinRTBridge\ThreadPoolScheduler_UnityWinRT.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sources\Asynchronous\.DS_Store" />
+    <Content Include="Sources\Disposables\.DS_Store" />
+    <Content Include="Sources\InternalUtil\.DS_Store" />
+    <Content Include="Sources\Notifiers\.DS_Store" />
+    <Content Include="Sources\Operators\.DS_Store" />
+    <Content Include="Sources\Schedulers\.DS_Store" />
+    <Content Include="Sources\Subjects\.DS_Store" />
+    <Content Include="Sources\System\.DS_Store" />
+    <Content Include="Sources\Tasks\.DS_Store" />
+    <Content Include="Sources\UnityEngineBridge\.DS_Store" />
+    <Content Include="Sources\UnityEngineBridge\Diagnostics\.DS_Store" />
+    <Content Include="Sources\UnityEngineBridge\Operators\.DS_Store" />
+    <Content Include="Sources\UnityEngineBridge\Toolkit\.DS_Store" />
+    <Content Include="Sources\UnityEngineBridge\Triggers\.DS_Store" />
+    <Content Include="Sources\UnityWinRTBridge\.DS_Store" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common.targets" />

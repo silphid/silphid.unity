@@ -1,10 +1,10 @@
-﻿using UniRx;
-using Rx = UniRx;
+﻿using System;
+using UniRx;
 
 namespace Silphid.Showzup
 {
     public interface IConstructable
     {
-        Rx.IObservable<Unit> Construct(Options options);
+        IObservable<Unit> Construct(Options options);
     }
 }

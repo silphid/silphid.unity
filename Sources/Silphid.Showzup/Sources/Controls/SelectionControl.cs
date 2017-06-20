@@ -44,7 +44,7 @@ namespace Silphid.Showzup
             });
         }
 
-        private void SubscribeToUpdateSelectable<T>(UniRx.IObservable<T> observable)
+        private void SubscribeToUpdateSelectable<T>(IObservable<T> observable)
         {
             observable
                 .PairWithPrevious()
@@ -80,7 +80,7 @@ namespace Silphid.Showzup
             focusable.IsFocused.Value = false;
         }
 
-        private void SubscribeToSynchOthers<T>(UniRx.IObservable<T> observable, Action synchAction)
+        private void SubscribeToSynchOthers<T>(IObservable<T> observable, Action synchAction)
         {
             observable.Subscribe(x =>
                 {

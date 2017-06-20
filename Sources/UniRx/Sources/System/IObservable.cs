@@ -1,4 +1,8 @@
-﻿using System;
+﻿// defined from .NET Framework 4.0 and NETFX_CORE
+
+using System;
+
+#if !(NETFX_CORE || ENABLE_MONO_BLEEDING_EDGE_EDITOR || ENABLE_MONO_BLEEDING_EDGE_STANDALONE)
 
 namespace UniRx
 {
@@ -6,22 +10,14 @@ namespace UniRx
     {
         IDisposable Subscribe(IObserver<T> observer);
     }
+}
 
+#endif
+
+namespace UniRx
+{
     public interface IGroupedObservable<TKey, TElement> : IObservable<TElement>
     {
         TKey Key { get; }
     }
 }
-
-#if !(NETFX_CORE || ENABLE_MONO_BLEEDING_EDGE_EDITOR || ENABLE_MONO_BLEEDING_EDGE_STANDALONE)
-
-namespace System
-{
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public interface IObservable<T>
-    {
-        IDisposable Subscribe(IObserver<T> observer);
-    }
-}
-
-#endif

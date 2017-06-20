@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 using Zenject;
 
 namespace Silphid.Showzup
@@ -49,6 +49,10 @@ namespace Silphid.Showzup
         public string[] Variants;
         public ReadOnlyReactiveProperty<IView> View { get; }
 
+        protected VariantSet VariantSet =>
+            _variantSet ??
+            (_variantSet = VariantProvider.GetVariantsNamed(Variants));
+
         #endregion
 
         #region Private fields
@@ -57,6 +61,7 @@ namespace Silphid.Showzup
         private State _state;
         private PendingRequest _pendingRequest;
         protected readonly ReactiveProperty<IView> _view = new ReactiveProperty<IView>();
+        private VariantSet _variantSet;
 
         #endregion
 
@@ -67,7 +72,13 @@ namespace Silphid.Showzup
 
         #region IPresenter members
 
-        public virtual Rx.IObservable<IView> Present(object input, Options options = null)
+        public bool CanPresent(object input, Options options = null)
+        {
+            var target = options?.Target;
+            return target == null || VariantSet.Contains(target);
+        }
+
+        public virtual IObservable<IView> Present(object input, Options options = null)
         {
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
@@ -88,7 +99,7 @@ namespace Silphid.Showzup
 
         #region Implementation
 
-        private Rx.IObservable<IView> PresentNow(object input, Options options)
+        private IObservable<IView> PresentNow(object input, Options options)
         {
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
@@ -107,7 +118,7 @@ namespace Silphid.Showzup
                 .DoOnCompleted(CompleteRequest);
         }
 
-        private Rx.IObservable<IView> PresentLater(object input, Options options)
+        private IObservable<IView> PresentLater(object input, Options options)
         {
             // Complete any pending request without fulling it (we only allow a single pending request)
             _pendingRequest?.Subject.OnCompleted();
@@ -136,7 +147,7 @@ namespace Silphid.Showzup
             }
         }
 
-        protected Rx.IObservable<IView> LoadView(ViewInfo viewInfo, Options options)
+        protected IObservable<IView> LoadView(ViewInfo viewInfo, Options options)
         {
             var cancellationDisposable = new BooleanDisposable();
             var cancellationToken = new CancellationToken(cancellationDisposable);
@@ -157,7 +168,7 @@ namespace Silphid.Showzup
 
         #region Virtual and abstract members
 
-        protected abstract Rx.IObservable<Unit> Present(Presentation presentation);
+        protected abstract IObservable<Unit> Present(Presentation presentation);
 
         #endregion
     }

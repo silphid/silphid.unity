@@ -79,13 +79,14 @@
     <Compile Include="Sources\Controls\ListControl.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
     <Compile Include="Sources\Controls\PresenterControlBase.cs" />
+    <Compile Include="Sources\Controls\RoutingPresenter.cs" />
     <Compile Include="Sources\Controls\SelectionControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
-    <Compile Include="Sources\Injection\MicroContainer.cs" />
+    <Compile Include="Sources\Injection\Container.cs" />
     <Compile Include="Sources\Injector.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />

@@ -1,8 +1,10 @@
-﻿// This code is basaed from mono/mcs, but some performance modified
+﻿// defined from .NET Framework 4.0 and NETFX_CORE
+// This code is basaed from mono/mcs, but some performance modified
 // 1. class to struct
 // 2. implements IEquatable<T1, T2,...>
 
 // note, we need to create ValueTuple or UniRxTuple...
+#if !(NETFX_CORE || ENABLE_MONO_BLEEDING_EDGE_EDITOR || ENABLE_MONO_BLEEDING_EDGE_STANDALONE)
 
 using System;
 using System.Collections;
@@ -1188,41 +1190,6 @@ namespace UniRx
                 comparer8.Equals(rest, other.rest);
         }
     }
-}
-
-#if !(NETFX_CORE || ENABLE_MONO_BLEEDING_EDGE_EDITOR || ENABLE_MONO_BLEEDING_EDGE_STANDALONE)
-
-namespace System
-{
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public interface IStructuralEquatable {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public interface IStructuralComparable {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3, T4> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3, T4, T5> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3, T4, T5, T6> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3, T4, T5, T6, T7> {}
-
-    [Obsolete("Use UniRx version of this type to prevent conflicts with built-in type in Windows Store builds.", true)]
-    public class Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> {}
 }
 
 #endif

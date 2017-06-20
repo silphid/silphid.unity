@@ -11,6 +11,6 @@ namespace Silphid.Showzup
     
     public interface IView<out TViewModel> : IView where TViewModel : IViewModel
     {
-        TViewModel ViewModel { get; }
+        new TViewModel ViewModel { get; }
     }
 }

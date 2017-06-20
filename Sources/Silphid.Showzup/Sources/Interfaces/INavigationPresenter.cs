@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx;
 
@@ -8,7 +9,7 @@ namespace Silphid.Showzup
     {
         ReadOnlyReactiveProperty<bool> IsNavigating { get; }
         ReadOnlyReactiveProperty<bool> IsLoading { get; }
-        ReadOnlyReactiveProperty<bool> CanPresent { get; }
+        new ReadOnlyReactiveProperty<bool> CanPresent { get; }
         ReadOnlyReactiveProperty<bool> CanPop { get; }
         ReadOnlyReactiveProperty<IView> View { get; }
         IObservable<Nav> Navigating { get; }

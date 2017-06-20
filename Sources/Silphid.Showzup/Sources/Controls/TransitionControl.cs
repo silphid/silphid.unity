@@ -2,7 +2,6 @@ using System;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -44,7 +43,7 @@ namespace Silphid.Showzup
 
         #region Virtual and abstract overrides
 
-        protected override Rx.IObservable<Unit> Present(Presentation presentation)
+        protected override IObservable<Unit> Present(Presentation presentation)
         {
             return PerformTransition(presentation);
         }
@@ -67,7 +66,7 @@ namespace Silphid.Showzup
         protected float ResolveDuration(ITransition transition, Options options)
             => options?.TransitionDuration ?? transition.Duration;
 
-        protected UniRx.IObservable<Unit> PerformTransition(Presentation presentation)
+        protected IObservable<Unit> PerformTransition(Presentation presentation)
         {
             var sourceView = presentation.SourceView;
             var targetView = presentation.TargetView;

@@ -3,7 +3,6 @@ using System.Collections;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using UniRx;
-using Rx = UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -67,7 +66,7 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected Rx.IObservable<Unit> BindAsync(ListControl listControl, IEnumerable items) =>
+        protected IObservable<Unit> BindAsync(ListControl listControl, IEnumerable items) =>
             listControl
                 ?.Present(items)
                 .AsSingleUnitObservable()
@@ -82,7 +81,7 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected Rx.IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null)
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null)
         {
             if (image == null)
                 return Observable.ReturnUnit();
