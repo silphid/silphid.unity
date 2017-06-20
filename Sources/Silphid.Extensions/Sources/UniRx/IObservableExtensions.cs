@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx.Operators;
-using Rx = UniRx;
 using UniRx;
 
 namespace Silphid.Extensions
@@ -12,15 +11,15 @@ namespace Silphid.Extensions
         #region Then and ThenReturn
 
         [Pure]
-        public static Rx.IObservable<TRet> Then<T, TRet>(this Rx.IObservable<T> observable, Func<Rx.IObservable<TRet>> selector) =>
+        public static IObservable<TRet> Then<T, TRet>(this IObservable<T> observable, Func<IObservable<TRet>> selector) =>
             observable.AsSingleUnitObservable().ContinueWith(_ => selector());
 
         [Pure]
-        public static Rx.IObservable<TRet> Then<T, TRet>(this Rx.IObservable<T> observable, Rx.IObservable<TRet> other) =>
+        public static IObservable<TRet> Then<T, TRet>(this IObservable<T> observable, IObservable<TRet> other) =>
             observable.AsSingleUnitObservable().ContinueWith(_ => other);
 
         [Pure]
-        public static Rx.IObservable<TRet> ThenReturn<T, TRet>(this Rx.IObservable<T> observable, TRet value) =>
+        public static IObservable<TRet> ThenReturn<T, TRet>(this IObservable<T> observable, TRet value) =>
             observable.Then(() => Observable.Return(value));
 
         #endregion
@@ -29,20 +28,20 @@ namespace Silphid.Extensions
 
         internal class AutoDetachObservable<T> : OperatorObservableBase<T>
         {
-            private readonly Rx.IObservable<T> _source;
+            private readonly IObservable<T> _source;
 
-            public AutoDetachObservable(Rx.IObservable<T> source)
+            public AutoDetachObservable(IObservable<T> source)
                 : base(source.IsRequiredSubscribeOnCurrentThread())
             {
                 _source = source;
             }
 
-            protected override IDisposable SubscribeCore(Rx.IObserver<T> observer, IDisposable cancel) =>
+            protected override IDisposable SubscribeCore(IObserver<T> observer, IDisposable cancel) =>
                 _source.Subscribe(Observer.CreateAutoDetachObserver(observer, cancel));
         }
 
         [Pure]
-        public static Rx.IObservable<T> AutoDetach<T>(this Rx.IObservable<T> This) =>
+        public static IObservable<T> AutoDetach<T>(this IObservable<T> This) =>
             new AutoDetachObservable<T>(This);
 
         #endregion
@@ -50,59 +49,59 @@ namespace Silphid.Extensions
         #region Nulls and booleans
 
         [Pure]
-        public static Rx.IObservable<T> WhereNotNull<T>(this Rx.IObservable<T> This) =>
+        public static IObservable<T> WhereNotNull<T>(this IObservable<T> This) =>
             This.Where(x => x != null);
 
         [Pure]
-        public static Rx.IObservable<Unit> WhereTrue(this Rx.IObservable<bool> This) =>
+        public static IObservable<Unit> WhereTrue(this IObservable<bool> This) =>
             This.Where(x => x).Select(_ => Unit.Default);
 
         [Pure]
-        public static Rx.IObservable<Unit> WhereFalse(this Rx.IObservable<bool> This) =>
+        public static IObservable<Unit> WhereFalse(this IObservable<bool> This) =>
             This.Where(x => !x).Select(_ => Unit.Default);
 
         [Pure]
-        public static Rx.IObservable<bool> Not(this Rx.IObservable<bool> This) =>
+        public static IObservable<bool> Not(this IObservable<bool> This) =>
             This.Select(x => !x);
 
         [Pure]
-        public static Rx.IObservable<bool> And(this Rx.IObservable<bool> This, Rx.IObservable<bool> other) =>
+        public static IObservable<bool> And(this IObservable<bool> This, IObservable<bool> other) =>
             This.CombineLatest(other, (x, y) => x && y);
 
         [Pure]
-        public static Rx.IObservable<bool> Or(this Rx.IObservable<bool> This, Rx.IObservable<bool> other) =>
+        public static IObservable<bool> Or(this IObservable<bool> This, IObservable<bool> other) =>
             This.CombineLatest(other, (x, y) => x || y);
 
         #endregion
 
         #region SubscribeAndForget
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This)
+        public static void SubscribeAndForget<T>(this IObservable<T> This)
         {
             This.AutoDetach().Subscribe();
         }
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This, Rx.IObserver<T> observer)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, IObserver<T> observer)
         {
             This.AutoDetach().Subscribe(observer);
         }
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This, Action<T> onNext)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext)
         {
             This.AutoDetach().Subscribe(onNext);
         }
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This, Action<T> onNext, Action<Exception> onError)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError)
         {
             This.AutoDetach().Subscribe(onNext, onError);
         }
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This, Action<T> onNext, Action onCompleted)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action onCompleted)
         {
             This.AutoDetach().Subscribe(onNext, onCompleted);
         }
 
-        public static void SubscribeAndForget<T>(this Rx.IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted)
         {
             This.AutoDetach().Subscribe(onNext, onError, onCompleted);
         }
@@ -112,20 +111,20 @@ namespace Silphid.Extensions
         #region Misc
 
         [Pure]
-        public static Rx.IObservable<Rx.Tuple<TSource, TSource>> PairWithPrevious<TSource>(this Rx.IObservable<TSource> source)
+        public static IObservable<Tuple<TSource, TSource>> PairWithPrevious<TSource>(this IObservable<TSource> source)
             =>
             source.Scan(
-                Rx.Tuple.Create(default(TSource), default(TSource)),
-                (acc, current) => Rx.Tuple.Create(acc.Item2, current));
+                Tuple.Create(default(TSource), default(TSource)),
+                (acc, current) => Tuple.Create(acc.Item2, current));
 
-        public static IDisposable SubscribeCompletion<T>(this Rx.IObservable<T> This, Action onCompleted) =>
+        public static IDisposable SubscribeCompletion<T>(this IObservable<T> This, Action onCompleted) =>
             This.AutoDetach().Subscribe(Observer.Create<T>(_ => {}, ex => { throw ex; }, onCompleted));
 
         /// <summary>
         /// Waits given delay before emitting each item it receives and cancels that emitting if another item
         /// is received in the meantime. Very useful for only updating UI when value is stable enough.
         /// </summary>
-        public static Rx.IObservable<T> LazyThrottle<T>(this Rx.IObservable<T> This, TimeSpan delay) =>
+        public static IObservable<T> LazyThrottle<T>(this IObservable<T> This, TimeSpan delay) =>
             Observable.Create<T>(observer =>
             {
                 var serialDisposable = new SerialDisposable();
@@ -142,13 +141,13 @@ namespace Silphid.Extensions
 
         #region Repeat
 
-        private static IEnumerable<Rx.IObservable<T>> RepeatInternal<T>(this Rx.IObservable<T> This, int count)
+        private static IEnumerable<IObservable<T>> RepeatInternal<T>(this IObservable<T> This, int count)
         {
             for (var i = 0; i < count; i++)
                 yield return This;
         }
 
-        public static Rx.IObservable<T> Repeat<T>(this Rx.IObservable<T> This, int count) =>
+        public static IObservable<T> Repeat<T>(this IObservable<T> This, int count) =>
             This.RepeatInternal(count).Concat();
         
         #endregion

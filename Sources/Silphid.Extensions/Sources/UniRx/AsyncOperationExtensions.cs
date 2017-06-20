@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UniRx;
-using Rx = UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -9,12 +8,12 @@ namespace Silphid.Extensions
 {
     public static class AsyncOperationExtensions
     {
-        public static Rx.IObservable<TAsset> AsObservable<TAsset>(this ResourceRequest This)
+        public static IObservable<TAsset> AsObservable<TAsset>(this ResourceRequest This)
             where TAsset : Object =>
             Observable.FromCoroutine<TAsset>((observer, _) => AsObservableCore(This, observer));
 
         private static IEnumerator AsObservableCore<TAsset>(ResourceRequest This,
-            Rx.IObserver<TAsset> observer)
+            IObserver<TAsset> observer)
             where TAsset : Object
         {
 			while (!This.isDone)

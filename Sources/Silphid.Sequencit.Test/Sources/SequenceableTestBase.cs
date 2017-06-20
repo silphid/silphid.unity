@@ -2,13 +2,12 @@
 using NUnit.Framework;
 using Silphid.Extensions.UniRx.Schedulers;
 using UniRx;
-using Rx = UniRx;
 
 public abstract class SequenceableTestBase
 {
     protected int _value;
     protected TestScheduler _scheduler;
-    protected Rx.IObservable<Unit> CreateDelay(int ticks) =>
+    protected IObservable<Unit> CreateDelay(int ticks) =>
         Observable.ReturnUnit().Delay(TimeSpan.FromTicks(ticks), _scheduler);
 
     [SetUp]

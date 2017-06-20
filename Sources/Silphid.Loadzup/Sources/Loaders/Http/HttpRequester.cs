@@ -17,7 +17,7 @@ namespace Silphid.Loadzup.Http
             KnownHttpHeaders.Status
         };
 
-        public UniRx.IObservable<Response> Request(Uri uri, Options options = null) =>
+        public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWWW
                 .GetWWW(uri.AbsoluteUri, options?.RequestHeaders)
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))

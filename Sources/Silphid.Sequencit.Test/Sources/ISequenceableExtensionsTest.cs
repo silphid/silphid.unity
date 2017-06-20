@@ -3,7 +3,6 @@ using NUnit.Framework;
 using Silphid.Extensions.UniRx.Schedulers;
 using Silphid.Sequencit;
 using UniRx;
-using Rx = UniRx;
 
 [TestFixture]
 public class ISequenceableExtensionsTest
@@ -11,7 +10,7 @@ public class ISequenceableExtensionsTest
     private int _value;
     private TestScheduler _scheduler;
 
-    private Rx.IObservable<Unit> CreateDelay(int ticks) =>
+    private IObservable<Unit> CreateDelay(int ticks) =>
         Observable.ReturnUnit().Delay(TimeSpan.FromTicks(ticks), _scheduler);
 
     [SetUp]

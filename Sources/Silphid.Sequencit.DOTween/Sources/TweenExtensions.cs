@@ -18,7 +18,7 @@ namespace Silphid.Sequencit
             return This;
         }
 
-        public static Rx.IObservable<Unit> ToObservable(this Tween This, bool completeTweenOnDispose = false)
+        public static IObservable<Unit> ToObservable(this Tween This, bool completeTweenOnDispose = false)
         {
             This.Pause();
             return Observable.Create<Unit>(subscriber =>

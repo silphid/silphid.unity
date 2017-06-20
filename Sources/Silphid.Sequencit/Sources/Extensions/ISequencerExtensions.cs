@@ -6,12 +6,12 @@ namespace Silphid.Sequencit
 {
     public static class ISequencerExtensions
     {
-        public static void Add<T>(this ISequencer This, UniRx.IObservable<T> observable)
+        public static void Add<T>(this ISequencer This, IObservable<T> observable)
         {
             This.Add(observable.AsSingleUnitObservable());
         }
 
-        public static void Add<T>(this ISequencer This, Func<UniRx.IObservable<T>> observableFactory)
+        public static void Add<T>(this ISequencer This, Func<IObservable<T>> observableFactory)
         {
             This.Add(Observable.Defer(observableFactory));
         }
@@ -21,12 +21,12 @@ namespace Silphid.Sequencit
             This.Add(() => Parallel.Create(action));
         }
 
-        public static void AddParallel(this ISequencer This, params Func<UniRx.IObservable<Unit>>[] selectors)
+        public static void AddParallel(this ISequencer This, params Func<IObservable<Unit>>[] selectors)
         {
             This.Add(() => Parallel.Create(selectors));
         }
 
-        public static void AddParallel(this ISequencer This, IEnumerable<UniRx.IObservable<Unit>> observables)
+        public static void AddParallel(this ISequencer This, IEnumerable<IObservable<Unit>> observables)
         {
             This.Add(() => Parallel.Create(observables));
         }
@@ -36,12 +36,12 @@ namespace Silphid.Sequencit
             This.Add(() => Sequence.Create(action));
         }
 
-        public static void AddSequence(this ISequencer This, params Func<UniRx.IObservable<Unit>>[] selectors)
+        public static void AddSequence(this ISequencer This, params Func<IObservable<Unit>>[] selectors)
         {
             This.Add(() => Sequence.Create(selectors));
         }
 
-        public static void AddSequence(this ISequencer This, IEnumerable<UniRx.IObservable<Unit>> observables)
+        public static void AddSequence(this ISequencer This, IEnumerable<IObservable<Unit>> observables)
         {
             This.Add(() => Sequence.Create(observables));
         }
@@ -57,7 +57,7 @@ namespace Silphid.Sequencit
 
         public static void AddSuspension(this ISequencer This, Action<IDisposable> action)
         {
-            This.Add(() => Suspension.Create(x => action(x)));
+            This.Add(() => Suspension.Create(action));
         }
 
         public static IDisposable AddSuspension(this ISequencer This)

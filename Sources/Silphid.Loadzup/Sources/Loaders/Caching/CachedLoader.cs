@@ -19,10 +19,10 @@ namespace Silphid.Loadzup.Caching
         public bool Supports(Uri uri) =>
             _innerLoader.Supports(uri);
 
-        public UniRx.IObservable<T> Load<T>(Uri uri, Options options = null) =>
+        public IObservable<T> Load<T>(Uri uri, Options options = null) =>
             LoadInternal<T>(uri, options).Select(GetInstance);
 
-        private UniRx.IObservable<T> LoadInternal<T>(Uri uri, Options options)
+        private IObservable<T> LoadInternal<T>(Uri uri, Options options)
         {
             object obj;
             if (_cache.TryGetValue(uri, out obj))

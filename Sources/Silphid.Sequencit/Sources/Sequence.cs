@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Sequence : ISequencer, Rx.IObservable<Unit>
+    public class Sequence : ISequencer, IObservable<Unit>
     {
-        private Rx.IObservable<Unit> _observable = Observable.ReturnUnit();
+        private IObservable<Unit> _observable = Observable.ReturnUnit();
 
         public static Sequence Create(Action<Sequence> action)
         {
@@ -17,24 +16,24 @@ namespace Silphid.Sequencit
             return sequence;
         }
 
-        public static Sequence Create(params Func<Rx.IObservable<Unit>>[] selectors) =>
-            Create(seq => selectors.ForEach(seq.Add));
+        public static Sequence Create(params Func<IObservable<Unit>>[] selectors) =>
+            Create(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public static Sequence Create(IEnumerable<Rx.IObservable<Unit>> observables) =>
+        public static Sequence Create(IEnumerable<IObservable<Unit>> observables) =>
             Create(seq => observables.ForEach(seq.Add));
 
         public static IDisposable Start(Action<Sequence> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start(params Func<Rx.IObservable<Unit>>[] selectors) =>
-            Start(seq => selectors.ForEach(seq.Add));
+        public static IDisposable Start(params Func<IObservable<Unit>>[] selectors) =>
+            Start(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public void Add(Rx.IObservable<Unit> observable)
+        public void Add(IObservable<Unit> observable)
         {
             _observable = _observable.Then(observable);
         }
 
-        public IDisposable Subscribe(Rx.IObserver<Unit> observer)
+        public IDisposable Subscribe(IObserver<Unit> observer)
         {
             return _observable.Subscribe(observer);
         }

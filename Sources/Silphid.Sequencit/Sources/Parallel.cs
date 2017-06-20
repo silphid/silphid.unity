@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Parallel : ISequencer, Rx.IObservable<Unit>
+    public class Parallel : ISequencer, IObservable<Unit>
     {
         public static Parallel Create(Action<Parallel> action)
         {
@@ -15,29 +14,29 @@ namespace Silphid.Sequencit
             return parallel;
         }
 
-        public static Parallel Create(params Func<Rx.IObservable<Unit>>[] selectors) =>
-            Create(p => selectors.ForEach(p.Add));
+        public static Parallel Create(params Func<IObservable<Unit>>[] selectors) =>
+            Create(p => selectors.ForEach(selector => p.Add(selector())));
 
-        public static Parallel Create(IEnumerable<Rx.IObservable<Unit>> observables) =>
+        public static Parallel Create(IEnumerable<IObservable<Unit>> observables) =>
             Create(seq => observables.ForEach(seq.Add));
 
         public static IDisposable Start(Action<Parallel> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start(params Rx.IObservable<Unit>[] observables) =>
+        public static IDisposable Start(params IObservable<Unit>[] observables) =>
             Start(p => observables.ForEach(x => x.In(p)));
 
-        private List<Rx.IObservable<Unit>> _observables;
+        private List<IObservable<Unit>> _observables;
 
-        public void Add(Rx.IObservable<Unit> observable)
+        public void Add(IObservable<Unit> observable)
         {
             if (_observables == null)
-                _observables = new List<Rx.IObservable<Unit>>();
+                _observables = new List<IObservable<Unit>>();
 
             _observables.Add(observable);
         }
 
-        public IDisposable Subscribe(Rx.IObserver<Unit> observer)
+        public IDisposable Subscribe(IObserver<Unit> observer)
         {
             if (_observables == null)
             {

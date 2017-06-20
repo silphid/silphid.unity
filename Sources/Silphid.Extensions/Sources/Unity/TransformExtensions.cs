@@ -42,6 +42,10 @@ namespace Silphid.Extensions
             }
         }
 
+        public static IEnumerable<TComponent> Ancestors<TComponent>(this Transform This) where TComponent : Component =>
+            This.Ancestors()
+                .SelectMany(x => x.GetComponents<TComponent>());
+
         public static IEnumerable<GameObject> SelfAndAncestors(this Transform This)
         {
             yield return This.gameObject;

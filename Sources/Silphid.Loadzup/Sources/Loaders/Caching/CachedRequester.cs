@@ -21,7 +21,7 @@ namespace Silphid.Loadzup.Caching
             _cacheStorage = cacheStorage;
         }
 
-        public UniRx.IObservable<Response> Request(Uri uri, Options options = null)
+        public IObservable<Response> Request(Uri uri, Options options = null)
         {
             var policy = options?.CachePolicy ?? DefaultPolicy;
             //Debug.Log($"#Loadzup# Request({uri}, {policy})");
@@ -67,7 +67,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromOrigin(policy, uri, options);
         }
 
-        private UniRx.IObservable<Response> LoadWithETag(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
+        private IObservable<Response> LoadWithETag(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
             //Debug.Log($"#Loadzup# LoadWithETag");
             var eTag = responseHeaders.GetOptionalValue(KnownHttpHeaders.ETag);
@@ -88,7 +88,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
         }
 
-        private UniRx.IObservable<Response> LoadWithLastModified(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
+        private IObservable<Response> LoadWithLastModified(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
            // Debug.Log($"#Loadzup# LoadWithLastModified");
             var lastModified = responseHeaders.GetOptionalValue(KnownHttpHeaders.LastModified);
@@ -109,7 +109,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
         }
 
-        private UniRx.IObservable<Response> LoadFromCacheThenOrigin(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
+        private IObservable<Response> LoadFromCacheThenOrigin(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
            // Debug.Log($"#Loadzup# LoadFromCacheThenOrigin");
             return LoadFromCache(uri, responseHeaders)
@@ -119,13 +119,13 @@ namespace Silphid.Loadzup.Caching
                         : Observable.Throw<Response>(ex))));
         }
 
-        private UniRx.IObservable<Response> LoadFromCache(Uri uri, Dictionary<string, string> responseHeaders)
+        private IObservable<Response> LoadFromCache(Uri uri, Dictionary<string, string> responseHeaders)
         {
             //Debug.Log($"#Loadzup# {policy} - Loading resource from cache: {uri}");
             return Observable.Return(new Response(_cacheStorage.Load(uri), responseHeaders));
         }
 
-        private UniRx.IObservable<Response> LoadFromOrigin(CachePolicy policy, Uri uri, Options options)
+        private IObservable<Response> LoadFromOrigin(CachePolicy policy, Uri uri, Options options)
         {
             //Debug.Log($"#Loadzup# {policy} - Loading resource from origin: {uri}");
             return _requester

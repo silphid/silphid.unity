@@ -8,7 +8,7 @@ namespace Silphid.Sequencit
 {
     public class SequenceQueue : ISequencer, IDisposable
     {
-        private readonly Queue<Rx.IObservable<Unit>> _observables = new Queue<Rx.IObservable<Unit>>();
+        private readonly Queue<IObservable<Unit>> _observables = new Queue<IObservable<Unit>>();
         private IDisposable _currentExecution = Disposable.Empty;
         private bool _isStarted;
         private bool _isExecuting;
@@ -45,7 +45,7 @@ namespace Silphid.Sequencit
             _currentExecution.Dispose();
         }
 
-        public void Add(Rx.IObservable<Unit> observable)
+        public void Add(IObservable<Unit> observable)
         {
             _observables.Enqueue(observable);
             StartNext();

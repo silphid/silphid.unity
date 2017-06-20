@@ -23,7 +23,7 @@ namespace Silphid.Loadzup.Resource
         public bool Supports(Uri uri) =>
             uri.Scheme == Scheme;
 
-        public UniRx.IObservable<T> Load<T>(Uri uri, Options options)
+        public IObservable<T> Load<T>(Uri uri, Options options)
         {
             var contentType = options?.ContentType;
             var path = GetPathAndContentType(uri, ref contentType);
@@ -36,7 +36,7 @@ namespace Silphid.Loadzup.Resource
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();
 
-        private UniRx.IObservable<Object> LoadAsync<T>(string path)
+        private IObservable<Object> LoadAsync<T>(string path)
         {
             return Resources
                 .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))

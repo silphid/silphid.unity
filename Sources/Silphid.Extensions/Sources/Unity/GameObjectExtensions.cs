@@ -25,6 +25,9 @@ namespace Silphid.Extensions
         public static IEnumerable<GameObject> Ancestors(this GameObject This) =>
             This.transform.Ancestors();
 
+        public static IEnumerable<TComponent> Ancestors<TComponent>(this GameObject This) where TComponent : Component =>
+            This.transform.Ancestors<TComponent>();
+
         public static IEnumerable<GameObject> SelfAndAncestors(this GameObject This) =>
             This.transform.SelfAndAncestors();
 

@@ -23,7 +23,7 @@ namespace Silphid.Loadzup
         public bool Supports(Uri uri) =>
             _children.Any(x => x.Supports(uri));
 
-        public UniRx.IObservable<T> Load<T>(Uri uri, Options options  = null)
+        public IObservable<T> Load<T>(Uri uri, Options options  = null)
         {
             var child = _children.FirstOrDefault(x => x.Supports(uri));
             if (child == null)
