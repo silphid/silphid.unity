@@ -5,7 +5,6 @@ using Silphid.Sequencit;
 using UnityEngine;
 using UniRx;
 using UnityEngine.UI;
-using Rx = UniRx;
 using Sequence = Silphid.Sequencit.Sequence;
 
 public class Sequencing1 : MonoBehaviour
@@ -114,7 +113,7 @@ public class Sequencing1 : MonoBehaviour
     // This is just a method that fakes an asynchronous loading operation.  In a real application, such a method might load a level,
     // some prefabs or assets from the web. Notice that this method's body is specified after a => operator and without a "return"
     // keyword nor braces. This is the "expression body" syntax introduced in C# 6.0, which can also be used for declaring properties.
-    private Rx.IObservable<string> LoadGreeting() =>
+    private IObservable<string> LoadGreeting() =>
         Observable
             .Timer(TimeSpan.FromSeconds(FakeLoadDuration))
             .Select(_ => "Hello World!");
@@ -133,7 +132,7 @@ public class Sequencing1 : MonoBehaviour
     // breaking that chain with calls to Subscribe().  As much as possible/reasonable, try to defer the call to Subscribe() to
     // callers up the chain.  That ensures errors can always bubble up to higher level functions and also that disposing the chain
     // at a higher level will dispose it completely.
-    private Rx.IObservable<Unit> RotateCubeIndefinitely() =>
+    private IObservable<Unit> RotateCubeIndefinitely() =>
         Sequence.Create(
                 () => RotateCube(Vector3.up * 180),
                 () => RotateCube(Vector3.right * 180),
@@ -142,24 +141,24 @@ public class Sequencing1 : MonoBehaviour
 
     // The DOTween extension methods return Tween objects, which we convert to an IObservable<Unit> using ToObservable().
     // Disposing that observable has the effect of killing (stopping) the underlying Tween.
-    private Rx.IObservable<Unit> RotateCube(Vector3 angle) =>
+    private IObservable<Unit> RotateCube(Vector3 angle) =>
         Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
-    private Rx.IObservable<Unit> ResetCubeRotation() =>
+    private IObservable<Unit> ResetCubeRotation() =>
         Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
     // Move cube
 
-    private Rx.IObservable<Unit> MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
-    private Rx.IObservable<Unit> MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
-    private Rx.IObservable<Unit> MoveCubeTo(Vector3 position) =>
+    private IObservable<Unit> MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
+    private IObservable<Unit> MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
+    private IObservable<Unit> MoveCubeTo(Vector3 position) =>
         Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToObservable();
 
     // Show or hide text
 
-    private Rx.IObservable<Unit> ShowText() => ShowHideText(LoadingTextPosition, 1);
-    private Rx.IObservable<Unit> HideText() => ShowHideText(NormalTextPosition, 0);
-    private Rx.IObservable<Unit> ShowHideText(Vector3 position, float alpha) =>
+    private IObservable<Unit> ShowText() => ShowHideText(LoadingTextPosition, 1);
+    private IObservable<Unit> HideText() => ShowHideText(NormalTextPosition, 0);
+    private IObservable<Unit> ShowHideText(Vector3 position, float alpha) =>
         Parallel.Create(
             () => Text.GetComponent<CanvasGroup>().DOFadeTo(alpha, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable(),
             () => Text.transform.DOLocalMove(position, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable());

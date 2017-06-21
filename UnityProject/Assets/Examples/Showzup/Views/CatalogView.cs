@@ -1,4 +1,5 @@
-﻿using Silphid.Showzup;
+﻿using System;
+using Silphid.Showzup;
 using UniRx;
 
 public class CatalogView : View<CatalogViewModel>, ILoadable
