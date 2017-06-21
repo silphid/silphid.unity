@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Silphid.Extensions;
 using UniRx;
 
 namespace Silphid.Showzup
@@ -13,6 +16,27 @@ namespace Silphid.Showzup
         public VariantProvider(params IVariantGroup[] allVariantGroups)
         {
             AllVariantGroups = allVariantGroups.ToList();
+        }
+
+        public static VariantProvider From<T1>() => From(typeof(T1));
+        public static VariantProvider From<T1, T2>() => From(typeof(T1), typeof(T2));
+        public static VariantProvider From<T1, T2, T3>() => From(typeof(T1), typeof(T2), typeof(T3));
+        public static VariantProvider From<T1, T2, T3, T4>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
+        public static VariantProvider From<T1, T2, T3, T4, T5>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
+
+        public static VariantProvider From(params Type[] variantTypes) =>
+            new VariantProvider(
+                variantTypes
+                    .Select(GetVariantGroupFromVariantType)
+                    .ToArray());
+
+        private static IVariantGroup GetVariantGroupFromVariantType(Type type)
+        {
+            var property = type.GetProperty("Group", BindingFlags.Public | BindingFlags.Static);
+            if (property == null || !property.PropertyType.IsAssignableTo<IVariantGroup>())
+                throw new InvalidOperationException($"Variant type {type.Name} must have a static Group property of type IVariantGroup.");
+
+            return (IVariantGroup) property.GetValue(null);
         }
     }
 }
