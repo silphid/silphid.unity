@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Silphid.Showzup
 {
@@ -35,15 +37,39 @@ namespace Silphid.Showzup
 
         public int? GetTypeScore(Type candidateType, Type requestedType)
         {
+            return candidateType.IsInterface
+                ? GetInterfaceScore(candidateType, requestedType)
+                : GetClassScore(candidateType, requestedType);
+        }
+
+        private static int? GetClassScore(Type candidateClass, Type requestedType)
+        {
             var score = ExactMatchScore;
-            var type = candidateType;
+            var type = requestedType;
             while (type != null)
             {
-                if (type == requestedType)
+                if (type == candidateClass)
                     return score;
 
                 score -= InheritanceScorePenality;
                 type = type.GetBaseType();
+            }
+
+            return null;
+        }
+
+        private static int? GetInterfaceScore(Type candidateInterface, Type requestedType)
+        {
+            var score = ExactMatchScore;
+            IEnumerable<Type> interfaces = requestedType.GetInterfaces();
+            
+            while (interfaces.Any())
+            {
+                if (interfaces.Contains(candidateInterface))
+                    return score;
+
+                score -= InheritanceScorePenality;
+                interfaces = interfaces.SelectMany(x => x.GetInterfaces());
             }
 
             return null;

@@ -13,21 +13,21 @@ namespace Silphid.Showzup.Injection
     {
         private enum Lifetime
         {
-            Local,
+            Transient,
             Single
         }
         
         private class Mapping
         {
-            public Type AbstractType { get; }
-            public Type ConcreteType { get; }
+            public Type AbstractionType { get; }
+            public Type ConcretionType { get; }
             public Lifetime Lifetime { get; }
             public object Singleton { get; set; }
 
-            public Mapping(Type abstractType, Type concreteType, Lifetime lifetime)
+            public Mapping(Type abstractionType, Type concretionType, Lifetime lifetime)
             {
-                AbstractType = abstractType;
-                ConcreteType = concreteType;
+                AbstractionType = abstractionType;
+                ConcretionType = concretionType;
                 Lifetime = lifetime;
             }
         }
@@ -41,17 +41,25 @@ namespace Silphid.Showzup.Injection
             _logger = logger;
         }
 
-        public Container BindInstance<T>(T instance)
+        public Container BindInstance(Type abstractionType, object instance)
         {
-            _instances[typeof(T)] = instance;
+            if (!instance.GetType().IsAssignableTo(abstractionType))
+                throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
+                
+            _instances[abstractionType] = instance;
+            
+            abstractionType.GetAttributes<BindAttribute>()
+                .Select(x => x.Type)
+                .ForEach(x => BindInstance(x, instance));
+            
             return this;
         }
 
-        public Container BindInstance(object instance)
-        {
-            _instances[instance.GetType()] = instance;
-            return this;
-        }
+        public Container BindInstance<T>(T instance) =>
+            BindInstance(typeof(T), instance);
+
+        public Container BindInstance(object instance) =>
+            BindInstance(instance.GetType(), instance);
 
         public Container BindInstances(IEnumerable<object> instances)
         {
@@ -59,60 +67,63 @@ namespace Silphid.Showzup.Injection
             return this;
         }
 
-        public Container Bind<T>(Type type)
+        public Container Bind(Type abstractionType, Type concretionType)
         {
-            _mappings.Add(new Mapping(typeof(T), type, Lifetime.Local));
+            if (!concretionType.IsAssignableTo(abstractionType))
+                throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
+
+            _mappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Transient));           
             return this;
         }
+
+        public Container Bind<TAbstraction>(Type concretionType) =>
+            Bind(typeof(TAbstraction), concretionType);
+
+        public Container Bind<TAbstraction, TConcretion>() where TConcretion : TAbstraction =>
+            Bind(typeof(TAbstraction), typeof(TConcretion));
 
         public Container BindSelf<T>() =>
             Bind<T, T>();
 
-        public Container BindSingle<T>(Type type)
+        public Container BindSingle(Type abstractionType, Type targetType)
         {
-            _mappings.Add(new Mapping(typeof(T), type, Lifetime.Single));
+            _mappings.Add(new Mapping(abstractionType, targetType, Lifetime.Single));
             return this;
         }
 
-        public Container Bind<T, U>() where U : T
-        {
-            Bind<T>(typeof(U));
-            return this;
-        }
+        public Container BindSingle<TAbstraction>(Type concretionType) =>
+            BindSingle(typeof(TAbstraction), concretionType);
 
-        public Container BindSingle<T, U>() where U : T
-        {
-            BindSingle<T>(typeof(U));
-            return this;
-        }
+        public Container BindSingle<TAbstraction, TConcretion>() where TConcretion : TAbstraction =>
+            BindSingle(typeof(TAbstraction), typeof(TConcretion));
 
-        public object Resolve(Type abstractType, Container subContainer = null, bool isOptional = false)
+        public object Resolve(Type abstractionType, Container subContainer = null, bool isOptional = false)
         {
-            var instance = ResolveInternal(abstractType, subContainer);
+            var instance = ResolveInternal(abstractionType, subContainer);
             if (instance == null && !isOptional)
-                throw new Exception($"No mapping for required type {abstractType.Name}.");
+                throw new Exception($"No mapping for required type {abstractionType.Name}.");
         
             return instance;
         }
 
-        private object ResolveInternal(Type abstractType, Container subContainer) =>
-            ResolveSubContainer(abstractType, subContainer) ??
-            ResolveInstance(abstractType) ??
-            ResolveType(abstractType, subContainer) ??
-            ResolveDefaultSelfBound(abstractType, subContainer);
+        private object ResolveInternal(Type abstractionType, Container subContainer) =>
+            ResolveSubContainer(abstractionType, subContainer) ??
+            ResolveInstance(abstractionType) ??
+            ResolveType(abstractionType, subContainer) ??
+            ResolveDefaultSelfBound(abstractionType, subContainer);
 
-        private static object ResolveSubContainer(Type abstractType, Container subContainer) =>
-            subContainer?.Resolve(abstractType, null, true);
+        private static object ResolveSubContainer(Type abstractionType, Container subContainer) =>
+            subContainer?.Resolve(abstractionType, null, true);
 
         private object ResolveInstance(Type abstractType) =>
             _instances.GetOptionalValue(abstractType);
 
         private object ResolveType(Type abstractType, Container subContainer) =>
-            GetInstance(_mappings.FirstOrDefault(x => x.AbstractType == abstractType), subContainer);
+            GetInstance(_mappings.FirstOrDefault(x => x.AbstractionType == abstractType), subContainer);
 
-        private object ResolveDefaultSelfBound(Type abstractType, Container subContainer) =>
-            !abstractType.IsAbstract
-                ? Instantiate(abstractType, subContainer)
+        private object ResolveDefaultSelfBound(Type abstractionType, Container subContainer) =>
+            !abstractionType.IsAbstract
+                ? Instantiate(abstractionType, subContainer)
                 : null;
 
         private object GetInstance(Mapping mapping, Container subContainer = null)
@@ -120,10 +131,10 @@ namespace Silphid.Showzup.Injection
             if (mapping == null)
                 return null;
             
-            if (mapping.Lifetime == Lifetime.Local)
-                return Instantiate(mapping.ConcreteType, subContainer);
+            if (mapping.Lifetime == Lifetime.Transient)
+                return Instantiate(mapping.ConcretionType, subContainer);
 
-            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcreteType, subContainer));
+            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcretionType, subContainer));
         }
 
         private object Instantiate(Type type, Container subContainer = null)

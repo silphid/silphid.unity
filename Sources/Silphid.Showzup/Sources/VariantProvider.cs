@@ -18,13 +18,13 @@ namespace Silphid.Showzup
             AllVariantGroups = allVariantGroups.ToList();
         }
 
-        public static VariantProvider From<T1>() => From(typeof(T1));
-        public static VariantProvider From<T1, T2>() => From(typeof(T1), typeof(T2));
-        public static VariantProvider From<T1, T2, T3>() => From(typeof(T1), typeof(T2), typeof(T3));
-        public static VariantProvider From<T1, T2, T3, T4>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
-        public static VariantProvider From<T1, T2, T3, T4, T5>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
+        public static IVariantProvider From<T1>() => From(typeof(T1));
+        public static IVariantProvider From<T1, T2>() => From(typeof(T1), typeof(T2));
+        public static IVariantProvider From<T1, T2, T3>() => From(typeof(T1), typeof(T2), typeof(T3));
+        public static IVariantProvider From<T1, T2, T3, T4>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
+        public static IVariantProvider From<T1, T2, T3, T4, T5>() => From(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
 
-        public static VariantProvider From(params Type[] variantTypes) =>
+        public static IVariantProvider From(params Type[] variantTypes) =>
             new VariantProvider(
                 variantTypes
                     .Select(GetVariantGroupFromVariantType)
@@ -32,11 +32,11 @@ namespace Silphid.Showzup
 
         private static IVariantGroup GetVariantGroupFromVariantType(Type type)
         {
-            var property = type.GetProperty("Group", BindingFlags.Public | BindingFlags.Static);
-            if (property == null || !property.PropertyType.IsAssignableTo<IVariantGroup>())
-                throw new InvalidOperationException($"Variant type {type.Name} must have a static Group property of type IVariantGroup.");
+            var field = type.GetField("Group", BindingFlags.Public | BindingFlags.Static);
+            if (field == null || !field.FieldType.IsAssignableTo<IVariantGroup>())
+                throw new InvalidOperationException($"Variant type {type.Name} must have a static Group field of type IVariantGroup.");
 
-            return (IVariantGroup) property.GetValue(null);
+            return (IVariantGroup) field.GetValue(null);
         }
     }
 }

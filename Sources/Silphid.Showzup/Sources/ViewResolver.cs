@@ -54,7 +54,7 @@ namespace Silphid.Showzup
             }
             
             var viewInfo = ResolveFromInstance(input, requestedVariants);
-            viewInfo.Parameters = options?.Parameters;
+            viewInfo.Parameters = options?.Parameters ?? Enumerable.Empty<object>();
             return viewInfo;
         }
 

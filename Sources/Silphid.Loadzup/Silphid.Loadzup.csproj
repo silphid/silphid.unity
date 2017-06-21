@@ -53,6 +53,7 @@
     <Compile Include="Sources\Abstractions\IRequester.cs" />
     <Compile Include="Sources\Abstractions\RequestException.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
+    <Compile Include="Sources\Converters\XmlConverter.cs" />
     <Compile Include="Sources\Loaders\BundleLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedRequester.cs" />

@@ -5,6 +5,6 @@ namespace Silphid.Showzup
 {
     public interface IViewModelFactory
     {
-        IViewModel Create(Type type, IEnumerable<object> parameters);
+        IViewModel Create(Type viewModelType, IEnumerable<object> parameters);
     }
 }

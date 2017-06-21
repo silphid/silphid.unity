@@ -5,6 +5,7 @@ namespace Silphid.Loadzup
     public class KnownMediaType
     {
         public const string ApplicationJson = "application/json";
+        public const string ApplicationXml = "application/xml";
 
         public static string FromExtension(string extension)
         {
@@ -198,7 +199,7 @@ namespace Silphid.Loadzup
             {"xht", "application/xhtml+xml"},
             {"xhtml", "application/xhtml+xml"},
             {"xls", "application/vnd.ms-excel"},
-            {"xml", "application/xml"},
+            {"xml", ApplicationXml},
             {"xpm", "image/x-xpixmap"},
             {"xsl", "application/xml"},
             {"xlsx","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
