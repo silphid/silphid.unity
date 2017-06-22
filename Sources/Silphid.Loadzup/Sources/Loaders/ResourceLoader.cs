@@ -36,12 +36,11 @@ namespace Silphid.Loadzup.Resource
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();
 
-        private IObservable<Object> LoadAsync<T>(string path)
-        {
-            return Resources
-                .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
-                .AsObservable<Object>();
-        }
+        private IObservable<Object> LoadAsync<T>(string path) =>
+            Observable
+                .Defer(() => Resources
+                    .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
+                    .AsObservable<Object>());
 
         private string GetPathAndContentType(Uri uri, ref ContentType contentType)
         {
