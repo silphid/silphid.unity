@@ -7,45 +7,34 @@ namespace Silphid.Extensions
 {
     public static class IEnumerableExtensions
     {
-        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> This)
-        {
-            return This.Where(x => x != null);
-        } 
+        public static T FirstNotNullOrDefault<T>(this IEnumerable<T> This) =>
+            This.FirstOrDefault(x => x != null);
+
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> This) =>
+            This.Where(x => x != null);
 
         public static void DisposeAll<T>(this IEnumerable<T> This) where T : IDisposable
         {
             This.ForEach(x => x.Dispose());
         }
 
-        public static bool AllTrue(this IEnumerable<bool> This)
-        {
-            return This.All(x => x);
-        }
+        public static bool AllTrue(this IEnumerable<bool> This) =>
+            This.All(x => x);
 
-        public static bool AllFalse(this IEnumerable<bool> This)
-        {
-            return This.All(x => !x);
-        }
+        public static bool AllFalse(this IEnumerable<bool> This) =>
+            This.All(x => !x);
 
-        public static bool AnyTrue(this IEnumerable<bool> This)
-        {
-            return This.Any(x => x);
-        }
+        public static bool AnyTrue(this IEnumerable<bool> This) =>
+            This.Any(x => x);
 
-        public static bool AnyFalse(this IEnumerable<bool> This)
-        {
-            return This.Any(x => !x);
-        }
+        public static bool AnyFalse(this IEnumerable<bool> This) =>
+            This.Any(x => !x);
 
-		public static IEnumerable<bool> WhereTrue(this IEnumerable<bool> This)
-		{
-			return This.Where(x => x);
-		} 
+        public static IEnumerable<bool> WhereTrue(this IEnumerable<bool> This) =>
+            This.Where(x => x);
 
-		public static IEnumerable<bool> WhereFalse(this IEnumerable<bool> This)
-		{
-			return This.Where(x => !x);
-		} 
+        public static IEnumerable<bool> WhereFalse(this IEnumerable<bool> This) =>
+            This.Where(x => !x);
 
         public static IEnumerable<IEnumerable<T>> Paged<T>(this IEnumerable<T> source, int itemsPerPage)
         {
