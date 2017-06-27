@@ -13,15 +13,13 @@ namespace Silphid.Showzup
     public class ViewLoader : IViewLoader
     {
         private readonly ILoader _loader;
-        private readonly IInjector _injector;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IInjectionAdapter _injectionAdaptor;
         private readonly ILogger _logger;
 
-        public ViewLoader(ILoader loader, IInjector injector, IViewModelFactory viewModelFactory, [InjectOptional] ILogger logger = null)
+        public ViewLoader(ILoader loader, IInjectionAdapter injectionAdaptor, [InjectOptional] ILogger logger = null)
         {
             _loader = loader;
-            _injector = injector;
-            _viewModelFactory = viewModelFactory;
+            _injectionAdaptor = injectionAdaptor;
             _logger = logger;
         }
 
@@ -47,7 +45,7 @@ namespace Silphid.Showzup
         }
 
         private IObservable<IView> Load(object model, Type viewModelType, Type viewType, Uri uri, IEnumerable<object> parameters, CancellationToken cancellationToken) =>
-            Load(_viewModelFactory.Create(viewModelType, parameters.Prepend(model)), viewType, uri, cancellationToken);
+            Load(_injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model)), viewType, uri, cancellationToken);
 
         private IObservable<IView> Load(object viewModel, Type viewType, Uri uri, CancellationToken cancellationToken)
         {
@@ -61,7 +59,7 @@ namespace Silphid.Showzup
         {
             view.ViewModel = viewModel;
             _logger?.Log(nameof(ViewLoader), $"Initializing {view} with ViewModel {viewModel}");
-            _injector.Inject(view.GameObject);
+            _injectionAdaptor.Inject(view.GameObject);
         }
 
         private IObservable<Unit> LoadLoadable(IView view) =>

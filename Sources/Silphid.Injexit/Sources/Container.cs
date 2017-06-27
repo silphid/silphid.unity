@@ -9,51 +9,13 @@ using Zenject;
 
 namespace Silphid.Showzup.Injection
 {
-    public class Container : IBinder, IResolver
+    public class Container : IContainer
     {
-        #region Lifetime enum
-
-        private enum Lifetime
-        {
-            /// <summary>
-            /// A new object is created for each individual usage.
-            /// </summary>
-            Transient,
-
-            /// <summary>
-            /// A single instance is shared for all usages (and it is lazily created, if it was not specified at bind-time).
-            /// </summary>
-            Single
-        }
-        
-        #endregion
-
-        #region Mapping inner class
-
-        private class Mapping
-        {
-            public Type AbstractionType { get; }
-            public Type ConcretionType { get; }
-            public Lifetime Lifetime { get; }
-            public IResolver OverrideResolver { get; }
-            public object Instance { get; set; }
-            public bool IsList { get; }
-
-            public Mapping(Type abstractionType, Type concretionType, Lifetime lifetime, IResolver overrideResolver, bool isList)
-            {
-                AbstractionType = abstractionType;
-                ConcretionType = concretionType;
-                Lifetime = lifetime;
-                OverrideResolver = overrideResolver;
-                IsList = isList;
-            }
-        }
-
-        #endregion
+        public static readonly IContainer Null = new NullContainer();
         
         #region Private fields
 
-        private readonly List<Mapping> _mappings = new List<Mapping>();
+        private readonly List<Binding> _bindings = new List<Binding>();
         private readonly ILogger _logger;
         private static readonly Func<IResolver, object> NullFactory = null;
 
@@ -67,58 +29,49 @@ namespace Silphid.Showzup.Injection
         }
 
         #endregion
+
+        #region IContainer members
+
+        public IContainer CreateChild() =>
+            new Container(_logger);
+
+        #endregion
         
-        #region Binding
+        #region IBinder members
 
-        public void BindInstance(Type abstractionType, object instance) =>
-            BindInstanceInternal(abstractionType, instance, isList: false);
-
-        private void BindInstanceInternal(Type abstractionType, object instance, bool isList)
+        public IBinding BindInstance(Type abstractionType, object instance)
         {
             if (!instance.GetType().IsAssignableTo(abstractionType))
                 throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
 
-            _mappings.Add(
-                new Mapping(abstractionType, instance.GetType(), Lifetime.Single, null, isList)
-                {
-                    Instance = instance
-                });
+            var binding = new Binding(this, abstractionType, instance.GetType())
+            {
+                Instance = instance,
+                Lifetime = Lifetime.Single
+            };
+            _bindings.Add(binding);
             
             abstractionType.GetAttributes<BindAttribute>()
                 .Select(x => x.Type)
                 .ForEach(x => BindInstance(x, instance));
+
+            return binding;
         }
 
-        public void BindInstanceAsList(Type abstractionType, object instance) =>
-            BindInstanceInternal(abstractionType, instance, isList: true);
-
-        public void Bind(Type abstractionType, Type concretionType, IResolver overrideResolver = null) =>
-            BindInternal(abstractionType, concretionType, overrideResolver, isList: false);
-
-        public void BindInternal(Type abstractionType, Type concretionType, IResolver overrideResolver, bool isList)
+        public IBinding Bind(Type abstractionType, Type concretionType)
         {
             if (!concretionType.IsAssignableTo(abstractionType))
                 throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
-            _mappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Transient, overrideResolver, isList));
+            var binding = new Binding(this, abstractionType, concretionType);
+            _bindings.Add(binding);
+
+            return binding;
         }
-
-        public void BindAsList(Type abstractionType, Type concretionType, IResolver overrideResolver = null) =>
-            BindInternal(abstractionType, concretionType, overrideResolver, isList: true);
-
-        public void BindSingle(Type abstractionType, Type concretionType, IResolver overrideResolver = null) =>
-            BindSingleInternal(abstractionType, concretionType, overrideResolver, isList: false);
-
-        private void BindSingleInternal(Type abstractionType, Type concretionType, IResolver overrideResolver, bool isList) =>
-            _mappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Single, overrideResolver, isList));
-
-
-        public void BindSingleAsList(Type abstractionType, Type concretionType, IResolver overrideResolver = null) =>
-            BindSingleInternal(abstractionType, concretionType, overrideResolver, isList: true);
 
         #endregion
         
-        #region Resolve
+        #region IResolver members
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
             ResolveFromTypeMappings(abstractionType) ??
@@ -129,7 +82,7 @@ namespace Silphid.Showzup.Injection
         private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
         {
             if (!isOptional)
-                throw new Exception($"No mapping for required type {abstractionType.Name}.");
+                throw new Exception($"No binding for required type {abstractionType.Name}.");
 
             return NullFactory;
         }
@@ -182,7 +135,7 @@ namespace Silphid.Showzup.Injection
         }
 
         private List<Func<IResolver, object>> GetListFactories(Type abstractionType) =>
-            _mappings
+            _bindings
                 .Where(x => x.AbstractionType == abstractionType && x.IsList)
                 .Select(ResolveFactoryInternal)
                 .ToList();
@@ -190,32 +143,32 @@ namespace Silphid.Showzup.Injection
         private Func<IResolver, object> ResolveFromTypeMappings(Type abstractType) =>
             ResolveFactoryInternal(ResolveType(abstractType));
 
-        private Mapping ResolveType(Type abstractType) =>
-            _mappings.FirstOrDefault(x => x.AbstractionType == abstractType);
+        private Binding ResolveType(Type abstractType) =>
+            _bindings.FirstOrDefault(x => x.AbstractionType == abstractType);
 
         private Func<IResolver, object> ResolveSelfBinding(Type abstractionType, bool isSelfBindingAllowed) =>
             isSelfBindingAllowed && !abstractionType.IsAbstract
                 ? ResolveFactoryInternal(abstractionType)
                 : NullFactory;
 
-        private Func<IResolver, object> ResolveFactoryInternal(Mapping mapping)
+        private Func<IResolver, object> ResolveFactoryInternal(Binding binding)
         {
-            if (mapping == null)
+            if (binding == null)
                 return NullFactory;
             
-            if (mapping.Lifetime == Lifetime.Transient)
-                return ResolveFactoryInternal(mapping.ConcretionType, mapping.OverrideResolver);
+            if (binding.Lifetime == Lifetime.Transient)
+                return ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver);
 
             return resolver =>
-                mapping.Instance
-                ?? (mapping.Instance = ResolveFactoryInternal(mapping.ConcretionType, mapping.OverrideResolver).Invoke(resolver));
+                binding.Instance
+                ?? (binding.Instance = ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
         }
 
         private Func<IResolver, object> ResolveFactoryInternal(Type concretionType, IResolver overrideResolver)
         {
             var factory = ResolveFactoryInternal(concretionType);
             return factory != null
-                ? resolver => factory(resolver.WithOverride(overrideResolver))
+                ? resolver => factory(resolver.With(overrideResolver))
                 : NullFactory;
         }
 
@@ -253,22 +206,25 @@ namespace Silphid.Showzup.Injection
 
         #endregion
 
-        #region Inject
+        #region IInjector members
 
-        public void Inject(object obj) =>
-            Inject(obj, null);
-
-        public void Inject(object obj, IResolver overrideResolver)
+        public void Inject(object obj, IResolver overrideResolver = null)
         {
-            var resolver = this.WithOverride(overrideResolver);
+            var resolver = this.With(overrideResolver);
             
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             
             if (obj is GameObject)
-                InjectGameObject((GameObject) obj, resolver);
+            {
+                InjectGameObjectValues((GameObject) obj, resolver);
+                InjectGameObjectMethods((GameObject) obj, resolver);
+            }
             else
+            {
                 InjectObject(obj, resolver);
+                InjectObjectMethods(obj, resolver);
+            }
         }
 
         private void InjectObject(object obj, IResolver resolver)
@@ -333,33 +289,38 @@ namespace Silphid.Showzup.Injection
             return false;
         }
         
-        private void InjectGameObject(GameObject go, IResolver resolver)
+        private void InjectGameObjectValues(GameObject go, IResolver resolver)
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
                 .ForEach(x => InjectObject(x, resolver));
             
             go.Descendants()
-                .ForEach(x => InjectGameObject(x, resolver));
+                .ForEach(x => InjectGameObjectValues(x, resolver));
         }
 
-        private void InjectMethods(GameObject go, IResolver resolver)
+        private void InjectGameObjectMethods(GameObject go, IResolver resolver)
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
-                .ForEach(component => component.GetType()
-                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Where(method => method.HasAttribute<InjectAttribute>())
-                    .ForEach(method => InjectMethod(component, method, resolver)));
+                .ForEach(component => InjectObjectMethods(component, resolver));
             
             go.Descendants()
-                .ForEach(x => InjectMethods(x, resolver));
+                .ForEach(x => InjectGameObjectMethods(x, resolver));
+        }
+
+        private void InjectObjectMethods(object obj, IResolver resolver)
+        {
+            obj.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(method => method.HasAttribute<InjectAttribute>())
+                .ForEach(method => InjectMethod(obj, method, resolver));
         }
 
         public void InjectAllGameObjects()
         {
-            RootGameObjects.ForEach(x => InjectGameObject(x, this));
-            RootGameObjects.ForEach(x => InjectMethods(x, this));
+            RootGameObjects.ForEach(x => InjectGameObjectValues(x, this));
+            RootGameObjects.ForEach(x => InjectGameObjectMethods(x, this));
         }
 
         private IEnumerable<GameObject> RootGameObjects =>

@@ -4,14 +4,14 @@ namespace Silphid.Showzup.Injection
 {
     public static class IResolverExtensions
     {
-        public static IResolver WithOverride(this IResolver This, Action<IBinder> bind)
+        public static IResolver With(this IResolver This, Action<IBinder> bind)
         {
             var overrideContainer = new Container();
             bind(overrideContainer);
             return new CompositeResolver(overrideContainer, This);
         }
 
-        public static IResolver WithOverride(this IResolver This, IResolver overrideResolver) =>
+        public static IResolver With(this IResolver This, IResolver overrideResolver) =>
             overrideResolver != null
                 ? new CompositeResolver(overrideResolver, This)
                 : This;

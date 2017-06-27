@@ -36,9 +36,9 @@ namespace Silphid.Showzup.Test
         public void BindAsList()
         {
             var container = new Container();
-            container.BindAsList<IBeing, Man>();
-            container.BindSingleAsList<IBeing, Woman>();
-            container.BindInstanceAsList<IBeing>(_dog);
+            container.Bind<IBeing, Man>().InList();
+            container.Bind<IBeing, Woman>().AsSingle().InList();
+            container.BindInstance<IBeing>(_dog).InList();
 
             var list1 = container.ResolveInstance<List<IBeing>>();
             var man1 = list1.OfType<Man>().FirstOrDefault();

@@ -86,17 +86,10 @@
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
-    <Compile Include="Sources\Injection\BindAttribute.cs" />
-    <Compile Include="Sources\Injection\CompositeResolver.cs" />
-    <Compile Include="Sources\Injection\Container.cs" />
-    <Compile Include="Sources\Injection\IBinder.cs" />
-    <Compile Include="Sources\Injection\IBinderExtensions.cs" />
-    <Compile Include="Sources\Injection\IResolver.cs" />
-    <Compile Include="Sources\Injection\IResolverExtensions.cs" />
-    <Compile Include="Sources\Injector.cs" />
+    <Compile Include="Sources\InjectionAdapter.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
-    <Compile Include="Sources\Interfaces\IInjector.cs" />
+    <Compile Include="Sources\Interfaces\IInjectionAdapter.cs" />
     <Compile Include="Sources\Interfaces\IItemPresenter.cs" />
     <Compile Include="Sources\Interfaces\IListPresenter.cs" />
     <Compile Include="Sources\Interfaces\ILoadable.cs" />
@@ -114,7 +107,6 @@
     <Compile Include="Sources\Interfaces\IView.cs" />
     <Compile Include="Sources\Interfaces\IViewLoader.cs" />
     <Compile Include="Sources\Interfaces\IViewModel.cs" />
-    <Compile Include="Sources\Interfaces\IViewModelFactory.cs" />
     <Compile Include="Sources\Interfaces\IViewResolver.cs" />
     <Compile Include="Sources\Navigation\CustomInputModule.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
@@ -158,7 +150,6 @@
     <Compile Include="Sources\View.cs" />
     <Compile Include="Sources\ViewLoader.cs" />
     <Compile Include="Sources\ViewModel.cs" />
-    <Compile Include="Sources\ViewModelFactory.cs" />
     <Compile Include="Sources\ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
