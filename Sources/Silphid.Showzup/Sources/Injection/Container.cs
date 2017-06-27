@@ -9,37 +9,58 @@ using Zenject;
 
 namespace Silphid.Showzup.Injection
 {
-    public class Container
+    public class Container : IResolver
     {
+        #region Lifetime enum
+
         private enum Lifetime
         {
             Transient,
             Single
         }
         
+        #endregion
+
+        #region Mapping inner class
+
         private class Mapping
         {
             public Type AbstractionType { get; }
             public Type ConcretionType { get; }
             public Lifetime Lifetime { get; }
+            public IResolver SubResolver { get; }
             public object Singleton { get; set; }
 
-            public Mapping(Type abstractionType, Type concretionType, Lifetime lifetime)
+            public Mapping(Type abstractionType, Type concretionType, Lifetime lifetime, IResolver subResolver)
             {
                 AbstractionType = abstractionType;
                 ConcretionType = concretionType;
                 Lifetime = lifetime;
+                SubResolver = subResolver;
             }
         }
+
+        #endregion
         
+        #region Private fields
+
         private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
         private readonly List<Mapping> _mappings = new List<Mapping>();
+        private readonly List<Mapping> _listMappings = new List<Mapping>();
         private readonly ILogger _logger;
+
+        #endregion
+
+        #region Constructors
 
         public Container(ILogger logger = null)
         {
             _logger = logger;
         }
+
+        #endregion
+        
+        #region BindInstance(s)
 
         public Container BindInstance(Type abstractionType, object instance)
         {
@@ -67,93 +88,193 @@ namespace Silphid.Showzup.Injection
             return this;
         }
 
-        public Container Bind(Type abstractionType, Type concretionType)
+        public Container BindInstances(params object[] instances) =>
+            BindInstances((IEnumerable<object>) instances);
+
+        #endregion
+
+        #region BindInstance(s)AsList
+
+        public Container BindInstanceAsList(Type abstractionType, object instance)
+        {
+            if (!instance.GetType().IsAssignableTo(abstractionType))
+                throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
+                
+            _instances[abstractionType] = instance;
+            
+            abstractionType.GetAttributes<BindAttribute>()
+                .Select(x => x.Type)
+                .ForEach(x => BindInstanceAsList(x, instance));
+            
+            return this;
+        }
+
+        public Container BindInstanceAsList<T>(T instance) =>
+            BindInstanceAsList(typeof(T), instance);
+
+        public Container BindInstanceAsList(object instance) =>
+            BindInstanceAsList(instance.GetType(), instance);
+
+        public Container BindInstancesAsList(IEnumerable<object> instances)
+        {
+            instances.ForEach(x => BindInstanceAsList(x));
+            return this;
+        }
+
+        public Container BindInstancesAsList(params object[] instances) =>
+            BindInstancesAsList((IEnumerable<object>) instances);
+
+        #endregion
+
+        #region Bind
+
+        public Container Bind(Type abstractionType, Type concretionType, IResolver subResolver = null)
         {
             if (!concretionType.IsAssignableTo(abstractionType))
                 throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
-            _mappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Transient));           
+            _mappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Transient, subResolver));           
             return this;
         }
 
-        public Container Bind<TAbstraction>(Type concretionType) =>
-            Bind(typeof(TAbstraction), concretionType);
+        public Container Bind<TAbstraction>(Type concretionType, IResolver subResolver = null) =>
+            Bind(typeof(TAbstraction), concretionType, subResolver);
 
-        public Container Bind<TAbstraction, TConcretion>() where TConcretion : TAbstraction =>
-            Bind(typeof(TAbstraction), typeof(TConcretion));
+        public Container Bind<TAbstraction, TConcretion>(Container subResolver = null) where TConcretion : TAbstraction =>
+            Bind(typeof(TAbstraction), typeof(TConcretion), subResolver);
 
-        public Container BindSelf<T>() =>
-            Bind<T, T>();
+        #endregion
 
-        public Container BindSingle(Type abstractionType, Type targetType)
+        #region BindAsList
+
+        public Container BindAsList(Type abstractionType, Type concretionType, IResolver subResolver = null)
         {
-            _mappings.Add(new Mapping(abstractionType, targetType, Lifetime.Single));
+            if (!concretionType.IsAssignableTo(abstractionType))
+                throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
+
+            _listMappings.Add(new Mapping(abstractionType, concretionType, Lifetime.Transient, subResolver));           
             return this;
         }
 
-        public Container BindSingle<TAbstraction>(Type concretionType) =>
-            BindSingle(typeof(TAbstraction), concretionType);
+        public Container BindAsList<TAbstraction>(Type concretionType, IResolver subResolver = null) =>
+            BindAsList(typeof(TAbstraction), concretionType, subResolver);
 
-        public Container BindSingle<TAbstraction, TConcretion>() where TConcretion : TAbstraction =>
-            BindSingle(typeof(TAbstraction), typeof(TConcretion));
+        public Container BindAsList<TAbstraction, TConcretion>(Container subResolver = null) where TConcretion : TAbstraction =>
+            BindAsList(typeof(TAbstraction), typeof(TConcretion), subResolver);
 
-        public object Resolve(Type abstractionType, Container subContainer = null, bool isOptional = false)
+        #endregion
+
+        #region BindSelf
+
+        public Container BindSelf<T>(Container subResolver = null) =>
+            Bind<T, T>(subResolver);
+
+        #endregion
+
+        #region BindSingle
+
+        public Container BindSingle(Type abstractionType, Type targetType, IResolver subResolver = null)
         {
-            var instance = ResolveInternal(abstractionType, subContainer);
+            _mappings.Add(new Mapping(abstractionType, targetType, Lifetime.Single, subResolver));
+            return this;
+        }
+
+        public Container BindSingle<TAbstraction>(Type concretionType, IResolver subResolver = null) =>
+            BindSingle(typeof(TAbstraction), concretionType, subResolver);
+
+        public Container BindSingle<TAbstraction, TConcretion>(IResolver subResolver = null) where TConcretion : TAbstraction =>
+            BindSingle(typeof(TAbstraction), typeof(TConcretion), subResolver);
+
+        #endregion
+
+        #region BindSingleAsList
+
+        public Container BindSingleAsList(Type abstractionType, Type targetType, IResolver subResolver = null)
+        {
+            _listMappings.Add(new Mapping(abstractionType, targetType, Lifetime.Single, subResolver));
+            return this;
+        }
+
+        public Container BindSingleAsList<TAbstraction>(Type concretionType, IResolver subResolver = null) =>
+            BindSingleAsList(typeof(TAbstraction), concretionType, subResolver);
+
+        public Container BindSingleAsList<TAbstraction, TConcretion>(IResolver subResolver = null) where TConcretion : TAbstraction =>
+            BindSingleAsList(typeof(TAbstraction), typeof(TConcretion), subResolver);
+
+        #endregion
+        
+        #region Resolve
+
+        public object Resolve(Type abstractionType, IResolver subResolver = null, bool isOptional = false)
+        {
+            var instance = ResolveInternal(abstractionType, subResolver);
             if (instance == null && !isOptional)
                 throw new Exception($"No mapping for required type {abstractionType.Name}.");
         
             return instance;
         }
 
-        private object ResolveInternal(Type abstractionType, Container subContainer) =>
-            ResolveSubContainer(abstractionType, subContainer) ??
+        private object ResolveInternal(Type abstractionType, IResolver subResolver = null) =>
+            ResolveAsList(abstractionType, subResolver) ??
+            ResolveSubContainer(abstractionType, subResolver) ??
             ResolveInstance(abstractionType) ??
-            ResolveType(abstractionType, subContainer) ??
-            ResolveDefaultSelfBound(abstractionType, subContainer);
+            ResolveType(abstractionType, subResolver) ??
+            ResolveDefaultSelfBound(abstractionType, subResolver);
 
-        private static object ResolveSubContainer(Type abstractionType, Container subContainer) =>
-            subContainer?.Resolve(abstractionType, null, true);
+        private static object ResolveAsList(Type abstractionType, IResolver subResolver)
+        {
+        }
+
+        private static object ResolveSubContainer(Type abstractionType, IResolver subResolver) =>
+            subResolver?.Resolve(abstractionType, null, true);
 
         private object ResolveInstance(Type abstractType) =>
             _instances.GetOptionalValue(abstractType);
 
-        private object ResolveType(Type abstractType, Container subContainer) =>
-            GetInstance(_mappings.FirstOrDefault(x => x.AbstractionType == abstractType), subContainer);
+        private object ResolveType(Type abstractType, IResolver subResolver) =>
+            GetInstance(_mappings.FirstOrDefault(x => x.AbstractionType == abstractType), subResolver);
 
-        private object ResolveDefaultSelfBound(Type abstractionType, Container subContainer) =>
+        private object ResolveDefaultSelfBound(Type abstractionType, IResolver subResolver) =>
             !abstractionType.IsAbstract
-                ? Instantiate(abstractionType, subContainer)
+                ? Instantiate(abstractionType, subResolver)
                 : null;
 
-        private object GetInstance(Mapping mapping, Container subContainer = null)
+        private object GetInstance(Mapping mapping, IResolver subResolver = null)
         {
             if (mapping == null)
                 return null;
             
             if (mapping.Lifetime == Lifetime.Transient)
-                return Instantiate(mapping.ConcretionType, subContainer);
+                return Instantiate(mapping, subResolver);
 
-            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcretionType, subContainer));
+            return mapping.Singleton ?? (mapping.Singleton = Instantiate(mapping.ConcretionType, subResolver));
         }
 
-        private object Instantiate(Type type, Container subContainer = null)
+        private object Instantiate(Mapping mapping, IResolver subResolver = null) =>
+            Instantiate(
+                mapping.ConcretionType,
+                new CompositeResolver(
+                    mapping.SubResolver,
+                    subResolver,
+                    this));
+
+        private object Instantiate(Type concretionType, IResolver subResolver)
         {
-            var constructor = ResolveConstructor(type);
-            var parameters = ResolveParameters(constructor.GetParameters(), subContainer);
+            var constructor = ResolveConstructor(concretionType);
+            var parameters = ResolveParameters(constructor.GetParameters(), subResolver);
 
             return constructor.Invoke(parameters);
         }
 
-        private object[] ResolveParameters(IEnumerable<ParameterInfo> parameters, Container subContainer = null) =>
+        private object[] ResolveParameters(IEnumerable<ParameterInfo> parameters, IResolver subResolver = null) =>
             parameters
-                .Select(x => ResolveParameter(x, subContainer))
+                .Select(x => ResolveParameter(x, subResolver))
                 .ToArray();
 
-        private object ResolveParameter(ParameterInfo parameter, Container subContainer)
+        private object ResolveParameter(ParameterInfo parameter, IResolver subResolver)
         {
             var isOptional = parameter.HasAttribute<InjectOptionalAttribute>();
-            return Resolve(parameter.ParameterType, subContainer, isOptional);
+            return Resolve(parameter.ParameterType, subResolver, isOptional);
         }
 
         private ConstructorInfo ResolveConstructor(Type type)
@@ -168,54 +289,58 @@ namespace Silphid.Showzup.Injection
             return constructor;
         }
 
-        public T Resolve<T>() =>
-            (T) Resolve(typeof(T));
+        public T Resolve<T>(IResolver subResolver = null) =>
+            (T) Resolve(typeof(T), subResolver);
+
+        #endregion
+
+        #region Inject
 
         public void Inject(object obj) => Inject(obj, null);
 
-        public void Inject(object obj, Container subContainer)
+        public void Inject(object obj, IResolver subResolver)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             
             if (obj is GameObject)
-                InjectGameObject((GameObject) obj, subContainer);
+                InjectGameObject((GameObject) obj, subResolver);
             else
-                InjectObject(obj, subContainer);
+                InjectObject(obj, subResolver);
         }
 
-        private void InjectObject(object obj, Container subContainer)
+        private void InjectObject(object obj, IResolver subResolver)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(field => InjectField(obj, field, subContainer));
+                .ForEach(field => InjectField(obj, field, subResolver));
 
             obj.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(property => InjectProperty(obj, property, subContainer));
+                .ForEach(property => InjectProperty(obj, property, subResolver));
         }
 
-        private void InjectProperty(object obj, PropertyInfo property, Container subContainer)
+        private void InjectProperty(object obj, PropertyInfo property, IResolver subResolver)
         {
             var inject = property.GetAttribute<InjectAttribute>();
             if (inject == null)
                 return;
             
-            var value = Resolve(property.PropertyType, subContainer, inject.Optional);
+            var value = Resolve(property.PropertyType, subResolver, inject.Optional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
             property.SetValue(obj, value, null);
         }
 
-        private void InjectField(object obj, FieldInfo field, Container subContainer)
+        private void InjectField(object obj, FieldInfo field, IResolver subResolver)
         {
             var inject = field.GetAttribute<InjectAttribute>();
             if (inject == null)
                 return;
             
-            var value = Resolve(field.FieldType, subContainer, inject.Optional);
+            var value = Resolve(field.FieldType, subResolver, inject.Optional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
             field.SetValue(obj, value);
         }
@@ -249,14 +374,14 @@ namespace Silphid.Showzup.Injection
             return false;
         }
         
-        private void InjectGameObject(GameObject go, Container subContainer)
+        private void InjectGameObject(GameObject go, IResolver subResolver)
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
-                .ForEach(x => InjectObject(x, subContainer));
+                .ForEach(x => InjectObject(x, subResolver));
             
             go.Descendants()
-                .ForEach(x => InjectGameObject(x, subContainer));
+                .ForEach(x => InjectGameObject(x, subResolver));
         }
 
         private void InjectMethods(GameObject go)
@@ -289,5 +414,7 @@ namespace Silphid.Showzup.Injection
                     yield return SceneManager.GetSceneAt(i);
             }
         }
+
+        #endregion
     }
 }

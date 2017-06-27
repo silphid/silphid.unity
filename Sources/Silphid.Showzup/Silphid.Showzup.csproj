@@ -87,7 +87,9 @@
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
     <Compile Include="Sources\Injection\BindAttribute.cs" />
+    <Compile Include="Sources\Injection\CompositeResolver.cs" />
     <Compile Include="Sources\Injection\Container.cs" />
+    <Compile Include="Sources\Injection\IResolver.cs" />
     <Compile Include="Sources\Injector.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
