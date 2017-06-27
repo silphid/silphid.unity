@@ -1,0 +1,26 @@
+﻿using System;
+
+namespace Silphid.Showzup.Injection
+{
+    public static class IResolverExtensions
+    {
+        public static IResolver WithOverride(this IResolver This, Action<IBinder> bind)
+        {
+            var overrideContainer = new Container();
+            bind(overrideContainer);
+            return new CompositeResolver(overrideContainer, This);
+        }
+
+        public static IResolver WithOverride(this IResolver This, IResolver overrideResolver) =>
+            overrideResolver != null
+                ? new CompositeResolver(overrideResolver, This)
+                : This;
+
+        public static object ResolveInstance(this IResolver This, Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+            This.ResolveFactory(abstractionType, isOptional, isFallbackToSelfBinding)
+                ?.Invoke(This);
+
+        public static T ResolveInstance<T>(this IResolver This, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+            (T) This.ResolveInstance(typeof(T), isOptional, isFallbackToSelfBinding);
+    }
+}

@@ -4,6 +4,9 @@ namespace Silphid.Showzup.Injection
 {
     public interface IResolver
     {
-        object Resolve(Type abstractionType, IResolver subResolver = null, bool isOptional = false);
+        Func<IResolver, object> ResolveFactory(
+            Type abstractionType,
+            bool isOptional = false,
+            bool isFallbackToSelfBinding = true);
     }
 }

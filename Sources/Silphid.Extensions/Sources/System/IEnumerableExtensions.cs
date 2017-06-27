@@ -7,6 +7,12 @@ namespace Silphid.Extensions
 {
     public static class IEnumerableExtensions
     {
+        public static IEnumerable<TResult> Select<T, TResult>(this IEnumerable<T> This, Func<int, T, TResult> func)
+        {
+            var i = 0;
+            return This.Select(x => func(i++, x));
+        }
+
         public static T FirstNotNullOrDefault<T>(this IEnumerable<T> This) =>
             This.FirstOrDefault(x => x != null);
 

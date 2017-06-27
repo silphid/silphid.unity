@@ -10,13 +10,26 @@ namespace Silphid.Showzup.Injection
 
         public CompositeResolver(params IResolver[] resolvers)
         {
-            _resolvers = resolvers;
+            _resolvers = resolvers
+                .WhereNotNull()
+                .ToArray();
         }
 
-        public object Resolve(Type abstractionType, IResolver subResolver = null, bool isOptional = false) =>
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
             _resolvers
-                .WhereNotNull()
-                .Select(x => x.Resolve(abstractionType, subResolver, isOptional))
-                .FirstNotNullOrDefault();
+                .Select((index, x) => x.ResolveFactory(abstractionType, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
+                .FirstNotNullOrDefault()
+            ?? ThrowIfNotOptional(abstractionType, isOptional);
+
+        private bool IsSelfBindingAllowed(int index, bool isSelfBindingAllowed) =>
+            index == _resolvers.Length - 1 && isSelfBindingAllowed; 
+        
+        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
+        {
+            if (!isOptional)
+                throw new Exception($"No mapping for required type {abstractionType.Name}.");
+
+            return null;
+        }
     }
 }
