@@ -9,11 +9,6 @@ namespace Silphid.Loadzup
     {
         private readonly List<IConverter> _children;
 
-        public CompositeConverter(List<IConverter> children)
-        {
-            _children = children;
-        }
-
         public CompositeConverter(params IConverter[] children)
         {
             _children = children.ToList();

@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zenject;
 
 namespace Silphid.Loadzup
 {
     public class CompositeLoader : ILoader
     {
         private readonly List<ILoader> _children;
-
-        [Inject]
-        public CompositeLoader(List<ILoader> children)
-        {
-            _children = children;
-        }
 
         public CompositeLoader(params ILoader[] children)
         {
