@@ -172,6 +172,7 @@ namespace Silphid.Showzup
 
             var options = new Options { Direction = Direction.Backward };
             var presentation = CreatePresentation(null, _view.Value, view?.GetType(), options);
+            presentation.TargetView = view;
             var nav = StartNavigation(presentation);
 
             return Observable
