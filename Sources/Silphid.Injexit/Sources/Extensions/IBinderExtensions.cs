@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     public static class IBinderExtensions
     {

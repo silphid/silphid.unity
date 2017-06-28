@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Silphid.Showzup.Injection;
+using Silphid.Injexit;
 
 namespace Silphid.Injexit.Test
 {

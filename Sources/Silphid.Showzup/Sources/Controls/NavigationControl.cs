@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Silphid.Sequencit;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 namespace Silphid.Showzup
 {

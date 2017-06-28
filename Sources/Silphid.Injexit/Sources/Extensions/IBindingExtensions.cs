@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     public static class IBindingExtensions
     {

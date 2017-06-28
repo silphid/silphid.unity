@@ -1,9 +1,9 @@
 using System;
 using Silphid.Sequencit;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 namespace Silphid.Showzup
 {
@@ -26,7 +26,7 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject(Optional = true)]
+        [Inject(IsOptional = true)]
         internal ITransitionResolver TransitionResolver { get; set; }
 
         #endregion

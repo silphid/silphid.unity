@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
+using Silphid.Injexit;
 using UniRx;
 using Rx = UniRx;
 using UnityEngine;
-using Zenject;
 
 namespace Silphid.Showzup
 {

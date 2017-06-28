@@ -2,7 +2,7 @@
 using System.Linq;
 using Silphid.Extensions;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     public class CompositeResolver : IResolver
     {

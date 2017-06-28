@@ -5,9 +5,8 @@ using System.Reflection;
 using Silphid.Extensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Zenject;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     public class Container : IContainer
     {
@@ -188,7 +187,7 @@ namespace Silphid.Showzup.Injection
 
         private object ResolveParameter(ParameterInfo parameter, IResolver resolver)
         {
-            var isOptional = parameter.HasAttribute<InjectOptionalAttribute>();
+            var isOptional = parameter.IsOptional;
             return resolver.ResolveInstance(parameter.ParameterType, isOptional);
         }
 
@@ -252,7 +251,7 @@ namespace Silphid.Showzup.Injection
             if (inject == null)
                 return;
             
-            var value = resolver.ResolveInstance(property.PropertyType, inject.Optional);
+            var value = resolver.ResolveInstance(property.PropertyType, inject.IsOptional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
             property.SetValue(obj, value, null);
         }
@@ -263,7 +262,7 @@ namespace Silphid.Showzup.Injection
             if (inject == null)
                 return;
             
-            var value = resolver.ResolveInstance(field.FieldType, inject.Optional);
+            var value = resolver.ResolveInstance(field.FieldType, inject.IsOptional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
             field.SetValue(obj, value);
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using UniRx;
-using Zenject;
 
 namespace Silphid.Showzup
 {

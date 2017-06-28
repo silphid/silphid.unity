@@ -161,6 +161,10 @@
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Silphid.Injexit\Silphid.Injexit.csproj">
+      <Project>{61dacae5-d957-4e50-92a7-e467a5e977f3}</Project>
+      <Name>Silphid.Injexit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Silphid.Loadzup\Silphid.Loadzup.csproj">
       <Project>{dad5df27-9fa3-4f02-96be-e28ea2530f0f}</Project>
       <Name>Silphid.Loadzup</Name>
@@ -176,10 +180,6 @@
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Zenject.Usage\Zenject.Usage.csproj">
-      <Project>{e3c6424a-bfe7-4ed4-94ed-1ce34894a180}</Project>
-      <Name>Zenject.Usage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

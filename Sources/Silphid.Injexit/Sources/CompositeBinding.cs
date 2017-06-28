@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     public class CompositeBinding : IBinding
     {
@@ -15,7 +15,7 @@ namespace Silphid.Showzup.Injection
 
         public IContainer Container =>
             _bindings.FirstOrDefault()?.Container
-            ?? Injection.Container.Null;
+            ?? Injexit.Container.Null;
 
         public IBinding IntoList()
         {

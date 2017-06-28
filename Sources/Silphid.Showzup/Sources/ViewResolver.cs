@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
 using UnityEngine;
-using Zenject;
 using Rx = UniRx;
 
 namespace Silphid.Showzup
@@ -27,7 +26,7 @@ namespace Silphid.Showzup
         private readonly IScoreEvaluator _scoreEvaluator;
         private readonly ILogger _logger;
 
-        public ViewResolver(IManifest manifest, IVariantProvider variantProvider, IScoreEvaluator scoreEvaluator, [InjectOptional] ILogger logger = null)
+        public ViewResolver(IManifest manifest, IVariantProvider variantProvider, IScoreEvaluator scoreEvaluator, ILogger logger = null)
         {
             _manifest = manifest;
             _variantProvider = variantProvider;

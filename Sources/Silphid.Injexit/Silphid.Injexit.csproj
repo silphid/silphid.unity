@@ -51,6 +51,7 @@
     <Compile Include="Sources\Extensions\IBindingExtensions.cs" />
     <Compile Include="Sources\Extensions\IContainerExtensions.cs" />
     <Compile Include="Sources\Extensions\IResolverExtensions.cs" />
+    <Compile Include="Sources\InjectAttribute.cs" />
     <Compile Include="Sources\Interfaces\IBinder.cs" />
     <Compile Include="Sources\Interfaces\IBinding.cs" />
     <Compile Include="Sources\Interfaces\IContainer.cs" />

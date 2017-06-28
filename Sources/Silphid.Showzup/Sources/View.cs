@@ -2,10 +2,10 @@
 using System.Collections;
 using Silphid.Extensions;
 using Silphid.Loadzup;
+using Silphid.Injexit;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace Silphid.Showzup
 {

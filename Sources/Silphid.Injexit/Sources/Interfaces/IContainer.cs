@@ -1,4 +1,4 @@
-﻿namespace Silphid.Showzup.Injection
+﻿namespace Silphid.Injexit
 {
     public interface IContainer : IBinder, IResolver, IInjector
     {

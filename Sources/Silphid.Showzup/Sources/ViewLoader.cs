@@ -4,7 +4,6 @@ using Silphid.Extensions;
 using Silphid.Loadzup;
 using UniRx;
 using UnityEngine;
-using Zenject;
 using CancellationToken = UniRx.CancellationToken;
 using Object = UnityEngine.Object;
 
@@ -16,7 +15,7 @@ namespace Silphid.Showzup
         private readonly IInjectionAdapter _injectionAdaptor;
         private readonly ILogger _logger;
 
-        public ViewLoader(ILoader loader, IInjectionAdapter injectionAdaptor, [InjectOptional] ILogger logger = null)
+        public ViewLoader(ILoader loader, IInjectionAdapter injectionAdaptor, ILogger logger = null)
         {
             _loader = loader;
             _injectionAdaptor = injectionAdaptor;

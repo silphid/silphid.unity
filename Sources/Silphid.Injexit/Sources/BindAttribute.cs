@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Silphid.Showzup.Injection
+namespace Silphid.Injexit
 {
     /// <summary>
     /// Specifies an extra binding to add when binding an instance with Container.BindInstance(),
