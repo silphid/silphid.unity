@@ -86,9 +86,14 @@ namespace Silphid.Showzup
             if (image == null)
                 return Observable.ReturnUnit();
 
+            image.enabled = false;
             return Loader
                 .Load<Sprite>(uri, options)
-                .Do(x => image.sprite = x)
+                .Do(x =>
+                {
+                    image.sprite = x;
+                    image.enabled = true;
+                })
                 .AutoDetach()
                 .AsSingleUnitObservable();
         }

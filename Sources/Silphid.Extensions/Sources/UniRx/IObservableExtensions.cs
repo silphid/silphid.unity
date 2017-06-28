@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx.Operators;
 using UniRx;
+using UnityEngine;
 
 namespace Silphid.Extensions
 {
@@ -136,6 +137,13 @@ namespace Silphid.Extensions
                             .Timer(delay)
                             .Subscribe(_ => observer.OnNext(x)), observer.OnCompleted));
             });
+
+        public static IObservable<T> Debug<T>(this IObservable<T> This, Func<T, string> formatter) =>
+#if DEBUG
+            This.Do(x => UnityEngine.Debug.Log(formatter(x)));
+#else
+            This;
+#endif
 
         #endregion
 
