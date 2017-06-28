@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Silphid.Extensions;
 
 namespace Silphid.Showzup
 {
@@ -43,7 +44,7 @@ namespace Silphid.Showzup
         public IEnumerable<object> Parameters { get; set; }
 
         public override string ToString() =>
-            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}";
+            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, {nameof(Parameters)}: [{Parameters?.ToDelimitedString(", ")}]";
 
         public static Options Clone(Options other) =>
             new Options
@@ -51,8 +52,10 @@ namespace Silphid.Showzup
                 Direction = other?.Direction ?? Direction.Default,
                 PushMode = other?.PushMode ?? PushMode.Default,
                 Variants = other?.Variants ?? VariantSet.Empty,
+                Target = other?.Target,
                 Transition = other?.Transition,
-                TransitionDuration = other?.TransitionDuration
+                TransitionDuration = other?.TransitionDuration,
+                Parameters = other?.Parameters
             };
 
         public static Options CloneWithExtraVariants(Options other, VariantSet extraVariants)

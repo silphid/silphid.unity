@@ -72,11 +72,15 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
-            ResolveFromTypeMappings(abstractionType) ??
-            ResolveFromListMappings(abstractionType) ??
-            ResolveSelfBinding(abstractionType, isFallbackToSelfBinding) ??
-            ThrowIfNotOptional(abstractionType, isOptional);
+        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true)
+        {
+            _logger?.Log($"Resolving {abstractionType.Name}...");
+
+            return ResolveFromTypeMappings(abstractionType) ??
+                   ResolveFromListMappings(abstractionType) ??
+                   ResolveSelfBinding(abstractionType, isFallbackToSelfBinding) ??
+                   ThrowIfNotOptional(abstractionType, isOptional);
+        }
 
         private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
         {
@@ -139,11 +143,17 @@ namespace Silphid.Injexit
                 .Select(ResolveFactoryInternal)
                 .ToList();
 
-        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractType) =>
-            ResolveFactoryInternal(ResolveType(abstractType));
+        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType) =>
+            ResolveFactoryInternal(ResolveType(abstractionType));
 
-        private Binding ResolveType(Type abstractType) =>
-            _bindings.FirstOrDefault(x => x.AbstractionType == abstractType);
+        private Binding ResolveType(Type abstractionType)
+        {
+            var binding = _bindings.FirstOrDefault(x => x.AbstractionType == abstractionType);
+            if (binding != null)
+                _logger?.Log($"Resolved {binding}");
+
+            return binding;
+        }
 
         private Func<IResolver, object> ResolveSelfBinding(Type abstractionType, bool isSelfBindingAllowed) =>
             isSelfBindingAllowed && !abstractionType.IsAbstract
@@ -187,6 +197,7 @@ namespace Silphid.Injexit
 
         private object ResolveParameter(ParameterInfo parameter, IResolver resolver)
         {
+            _logger?.Log($"Resolving parameter {parameter.Name}...");
             var isOptional = parameter.IsOptional;
             return resolver.ResolveInstance(parameter.ParameterType, isOptional);
         }
@@ -194,8 +205,6 @@ namespace Silphid.Injexit
         private ConstructorInfo ResolveConstructor(Type type)
         {
             var constructors = type.GetConstructors();
-
-            Debug.Assert(constructors.Length > 0, $"Type {type.Name} is expected to have at least one constructor.");
             
             if (constructors.Length == 1)
                 return constructors.First();
@@ -289,7 +298,7 @@ namespace Silphid.Injexit
             if (behaviour != null)
                 return true;
             
-            _logger.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
+            _logger?.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
             return false;
         }
         

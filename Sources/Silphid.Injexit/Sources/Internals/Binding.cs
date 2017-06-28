@@ -47,5 +47,14 @@ namespace Silphid.Injexit
             OverrideResolver = resolver;
             return this;
         }
+
+        public override string ToString()
+        {
+            var overrides = OverrideResolver != null ? " with overrides" : "";
+            var list = IsList ? " into list" : "";
+            var instance = Instance != null ? $" using instance {Instance}" : "";
+            
+            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{list}{instance}";
+        }
     }
 }
