@@ -44,8 +44,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\BindAttribute.cs" />
-    <Compile Include="Sources\CompositeBinding.cs" />
-    <Compile Include="Sources\CompositeResolver.cs" />
+    <Compile Include="Sources\Composites\CompositeBinding.cs" />
+    <Compile Include="Sources\Composites\CompositeContainer.cs" />
+    <Compile Include="Sources\Composites\CompositeResolver.cs" />
     <Compile Include="Sources\Container.cs" />
     <Compile Include="Sources\Extensions\IBinderExtensions.cs" />
     <Compile Include="Sources\Extensions\IBindingExtensions.cs" />

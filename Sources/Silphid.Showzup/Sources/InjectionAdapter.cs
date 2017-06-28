@@ -16,10 +16,10 @@ namespace Silphid.Showzup
             this.inject = inject;
         }
 
-        public object Resolve(Type type, IEnumerable<object> extraInstances) =>
-            resolve(type, extraInstances);
+        public object Resolve(Type type, IEnumerable<object> instances = null) =>
+            resolve(type, instances);
 
-        public void Inject(object obj, IEnumerable<object> extraInstances) =>
-            inject(obj, extraInstances);
+        public void Inject(object obj, IEnumerable<object> instances = null) =>
+            inject(obj, instances);
     }
 }

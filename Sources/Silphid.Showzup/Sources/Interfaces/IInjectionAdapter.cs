@@ -5,7 +5,7 @@ namespace Silphid.Showzup
 {
     public interface IInjectionAdapter
     {
-        object Resolve(Type type, IEnumerable<object> extraInstances = null);
-        void Inject(object obj, IEnumerable<object> extraInstances = null);
+        object Resolve(Type type, IEnumerable<object> instances = null);
+        void Inject(object obj, IEnumerable<object> instances = null);
     }
 }

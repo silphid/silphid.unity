@@ -17,7 +17,7 @@ namespace Silphid.Injexit
                 : This;
 
         public static object ResolveInstance(this IResolver This, Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
-            This.ResolveFactory(abstractionType, isOptional, isFallbackToSelfBinding)
+            This.Resolve(abstractionType, isOptional, isFallbackToSelfBinding)
                 ?.Invoke(This);
 
         public static T ResolveInstance<T>(this IResolver This, bool isOptional = false, bool isFallbackToSelfBinding = true) =>

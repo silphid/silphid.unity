@@ -3,7 +3,6 @@
 namespace Silphid.Injexit
 {
     [AttributeUsage(
-        AttributeTargets.Class |
         AttributeTargets.Field |
         AttributeTargets.Property |
         AttributeTargets.Method |

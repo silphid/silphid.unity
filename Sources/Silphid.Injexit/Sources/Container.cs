@@ -72,7 +72,7 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
             ResolveFromTypeMappings(abstractionType) ??
             ResolveFromListMappings(abstractionType) ??
             ResolveSelfBinding(abstractionType, isFallbackToSelfBinding) ??
