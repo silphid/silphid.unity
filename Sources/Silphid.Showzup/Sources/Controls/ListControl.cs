@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
+using Silphid.Extensions;
 using Silphid.Injexit;
 using UniRx;
 using Rx = UniRx;
@@ -25,6 +26,7 @@ namespace Silphid.Showzup
 
         public GameObject Container;
         public string[] Variants;
+        public bool AutoSelect = true;
 
         #endregion
 
@@ -41,6 +43,7 @@ namespace Silphid.Showzup
         protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews;
         private VariantSet _variantSet;
+        protected ReactiveProperty<IView> FirstPresentedView = new ReactiveProperty<IView>();
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -50,6 +53,19 @@ namespace Silphid.Showzup
         {
             _reactiveViews = new ReactiveProperty<ReadOnlyCollection<IView>>(_views.AsReadOnly());
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
+        }
+
+        protected virtual void Start()
+        {
+            if (AutoSelect)
+                FirstPresentedView
+                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                    .Subscribe(SelectView);
+        }
+
+        protected virtual void SelectView(IView view)
+        {
+            view.GameObject.SelectDeferred();
         }
 
         public IView GetViewForViewModel(object viewModel) =>
@@ -110,6 +126,9 @@ namespace Silphid.Showzup
             _reactiveViews.Value = _views.AsReadOnly();
 
             AddView(Container, view);
+
+            if (_views.Count == 1)
+                FirstPresentedView.Value = view;
         }
 
         private IObservable<IView> LoadViews(IEnumerable items, Options options)

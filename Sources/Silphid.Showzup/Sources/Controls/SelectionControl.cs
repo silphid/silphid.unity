@@ -20,10 +20,12 @@ namespace Silphid.Showzup
         public float FocusDelay;
         public bool WrapAround;
 
-        public virtual void Start()
+        protected override void Start()
         {
-            SubscribeToUpdateSelectable(SelectedItem);
-            SubscribeToUpdateSelectable(SelectedView);
+            base.Start();
+            
+            SubscribeToUpdateFocusables(SelectedItem);
+            SubscribeToUpdateFocusables(SelectedView);
 
             SubscribeToSynchOthers(SelectedItem, () =>
             {
@@ -44,7 +46,7 @@ namespace Silphid.Showzup
             });
         }
 
-        private void SubscribeToUpdateSelectable<T>(IObservable<T> observable)
+        private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
         {
             observable
                 .PairWithPrevious()
@@ -52,8 +54,15 @@ namespace Silphid.Showzup
                 {
                     RemoveFocus(x.Item1 as IFocusable);
                     SetFocus(x.Item2 as IFocusable);
+                    AutoSelectView(x.Item2 as IView);                        
                 })
                 .AddTo(this);
+        }
+
+        private void AutoSelectView(IView view)
+        {
+            if (AutoSelect && view != null)
+                base.SelectView(view);
         }
 
         private void SetFocus(IFocusable focusable)
@@ -92,6 +101,11 @@ namespace Silphid.Showzup
                     _isSynching = false;
                 })
                 .AddTo(this);
+        }
+
+        protected override void SelectView(IView view)
+        {
+            SelectedView.Value = view;
         }
 
         public bool SelectFirst()

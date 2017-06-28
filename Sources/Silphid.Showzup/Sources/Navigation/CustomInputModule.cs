@@ -28,12 +28,7 @@ namespace Silphid.Showzup.Navigation
         {
             base.Awake();
 
-            Observable
-                .EveryUpdate()
-                .Where(_ => LogCurrentSelectedGameObject)
-                .Select(_ => eventSystem.currentSelectedGameObject)
-                .DistinctUntilChanged()
-                .Subscribe(x => Debug.Log($"#Select# Selection changed to: {x?.name}"));
+            InitSelectionLogging();
         }
 
         [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
@@ -422,6 +417,22 @@ namespace Silphid.Showzup.Navigation
             }
         }
 
+        #region Custom Code
+
+        public bool LogSelectedElement;
+
+        private void InitSelectionLogging()
+        {
+#if DEBUG
+        Observable
+            .EveryUpdate()
+            .Select(_ => eventSystem.currentSelectedGameObject)
+            .DistinctUntilChanged()
+            .Where(_ => LogSelectedElement)
+            .Subscribe(x => Debug.Log($"Selected: {x?.name ?? "<null>"}"));
+#endif
+        }
+
         private static void ExecuteBubbling<T>(GameObject target, BaseEventData eventData,
             ExecuteEvents.EventFunction<T> functor) where T : IEventSystemHandler
         {
@@ -436,5 +447,19 @@ namespace Silphid.Showzup.Navigation
                 current = current.transform.parent?.gameObject;
             }
         }
+
+        public void SendMoveEvent(Vector2 direction)
+        {
+            // Get the axis move event
+            direction.Normalize();
+            var axisEventData = GetAxisEventData(direction.x, direction.y, 0.6f);
+            if (axisEventData.moveDir == MoveDirection.None)
+                return; // input vector was not enough to move this cycle, done
+
+            // Execute the move
+            ExecuteBubbling(eventSystem.currentSelectedGameObject, axisEventData, ExecuteEvents.moveHandler);
+        }
+
+        #endregion
     }
 }

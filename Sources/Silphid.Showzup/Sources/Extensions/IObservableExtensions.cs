@@ -25,5 +25,17 @@ namespace Silphid.Showzup
             This.Where(x => x.Source is TSource && x.Target is TTarget);
 
         #endregion
+
+        #region AsViewModel/Model
+
+        public static IObservable<TViewModel> AsViewModel<TViewModel>(this IObservable<IView> This) where TViewModel : IViewModel =>
+            This.OfType<IView, View<TViewModel>>()
+                .Select(v => v.ViewModel);
+
+        public static IObservable<TModel> AsModel<TModel>(this IObservable<IViewModel> This) =>
+            This.OfType<IViewModel, ViewModel<TModel>>()
+                .Select(v => v.Model);
+
+        #endregion
     }
 }
