@@ -194,12 +194,17 @@ namespace Silphid.Showzup.Injection
 
         private ConstructorInfo ResolveConstructor(Type type)
         {
-            var constructor = type.GetConstructors().SingleOrDefault() ??
-                              type.GetConstructors().FirstOrDefault(x => x.HasAttribute<InjectAttribute>());
+            var constructors = type.GetConstructors();
 
+            Debug.Assert(constructors.Length > 0, $"Type {type.Name} is expected to have at least one constructor.");
+            
+            if (constructors.Length == 1)
+                return constructors.First();
+            
+            var constructor = constructors.FirstOrDefault(x => x.HasAttribute<InjectAttribute>());
             if (constructor == null)
-                throw new Exception(
-                    $"No constructor found with [Inject] attributes in multi-constructor type {type.Name}.");
+                throw new InvalidOperationException(
+                    $"Type {type.Name} has multiple constructors, but none of them is marked with an injection attribute to make it the default.");
 
             return constructor;
         }
