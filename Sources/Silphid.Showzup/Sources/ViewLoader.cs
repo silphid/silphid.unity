@@ -94,14 +94,14 @@ namespace Silphid.Showzup
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-#if UNITY_EDITOR
+#if DEBUG
             original = Object.Instantiate(original);
 #endif
 
             DisableAllViews(original);
 
             var instance = Object.Instantiate(original);
-#if UNITY_EDITOR
+#if DEBUG
             Object.Destroy(original);
 #endif
 
