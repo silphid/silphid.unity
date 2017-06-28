@@ -3,7 +3,7 @@
     public interface IBinding
     {
         IContainer Container { get; }
-        IBinding InList();
+        IBinding IntoList();
         IBinding AsSingle();
         IBinding With(IResolver resolver);
     }

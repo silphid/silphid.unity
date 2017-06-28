@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Silphid.Showzup.Injection;
 
-namespace Silphid.Showzup.Test
+namespace Silphid.Injexit.Test
 {
     [TestFixture]
     public class ContainerTest
@@ -36,9 +36,9 @@ namespace Silphid.Showzup.Test
         public void BindAsList()
         {
             var container = new Container();
-            container.Bind<IBeing, Man>().InList();
-            container.Bind<IBeing, Woman>().AsSingle().InList();
-            container.BindInstance<IBeing>(_dog).InList();
+            container.Bind<IBeing, Man>().IntoList();
+            container.Bind<IBeing, Woman>().AsSingle().IntoList();
+            container.BindInstance<IBeing>(_dog).IntoList();
 
             var list1 = container.ResolveInstance<List<IBeing>>();
             var man1 = list1.OfType<Man>().FirstOrDefault();

@@ -21,7 +21,7 @@ namespace Silphid.Showzup.Injection
             ConcretionType = concretionType;
         }
 
-        public IBinding InList()
+        public IBinding IntoList()
         {
             if (IsList)
                 throw new InvalidOperationException("Already a list binding.");

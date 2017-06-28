@@ -17,15 +17,15 @@ namespace Silphid.Showzup.Injection
             _bindings.FirstOrDefault()?.Container
             ?? Injection.Container.Null;
 
-        public IBinding InList()
+        public IBinding IntoList()
         {
-            _bindings.ForEach(x => x.InList());
+            _bindings.ForEach(x => x.IntoList());
             return this;
         }
 
         public IBinding AsSingle()
         {
-            _bindings.ForEach(x => x.InList());
+            _bindings.ForEach(x => x.IntoList());
             return this;
         }
 
@@ -36,7 +36,7 @@ namespace Silphid.Showzup.Injection
 
         public IBinding With(Action<IBinder> bind)
         {
-            _bindings.ForEach(x => x.InList());
+            _bindings.ForEach(x => x.IntoList());
             return this;
         }
     }
