@@ -80,6 +80,7 @@
     <Compile Include="Sources\Controls\NavigationControl.cs" />
     <Compile Include="Sources\Controls\PresenterControlBase.cs" />
     <Compile Include="Sources\Controls\RoutingPresenter.cs" />
+    <Compile Include="Sources\Controls\RoutingPresenterGameObjectExtensions.cs" />
     <Compile Include="Sources\Controls\SelectionControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />

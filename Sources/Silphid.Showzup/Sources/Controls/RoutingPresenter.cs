@@ -37,15 +37,17 @@ namespace Silphid.Showzup
         private IPresenter GetValidSiblingPresenter(object input, Options options = null) =>
             _siblingPresenters.FirstOrDefault(x => x.CanPresent(input, options));
 
-        private IPresenter GetAncestorPresenter() =>
-            this.Ancestors<RoutingPresenter>().FirstOrDefault();
-        
+        public RoutingPresenter GetAncestorRoutedPresenter() =>
+            gameObject
+                .Ancestors<RoutingPresenter>()
+                .First();
+
         public IObservable<IView> Present(object input, Options options = null)
         {
             if (options?.Target == null)
                 throw new InvalidOperationException("RoutingPresenter requires options to specify a Target variant.");
             
-            var presenter = GetValidSiblingPresenter(input, options) ?? GetAncestorPresenter();
+            var presenter = GetValidSiblingPresenter(input, options) ?? GetAncestorRoutedPresenter();
             if (presenter == null)
                 throw new InvalidOperationException($"Failed to resolve routing for target: {options.Target}");
 

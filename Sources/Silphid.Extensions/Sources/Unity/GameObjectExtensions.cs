@@ -31,11 +31,17 @@ namespace Silphid.Extensions
         public static IEnumerable<GameObject> SelfAndAncestors(this GameObject This) =>
             This.transform.SelfAndAncestors();
 
+        public static IEnumerable<TComponent> SelfAndAncestors<TComponent>(this GameObject This) where TComponent : Component =>
+            This.transform.SelfAndAncestors<TComponent>();
+
         public static IEnumerable<GameObject> Descendants(this GameObject This) =>
             This.transform.Descendants();
 
         public static IEnumerable<GameObject> SelfAndDescendants(this GameObject This) =>
             This.transform.SelfAndDescendants();
+
+        public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this GameObject This) where TComponent : Component =>
+            This.transform.SelfAndDescendants<TComponent>();
 
         #endregion
 
