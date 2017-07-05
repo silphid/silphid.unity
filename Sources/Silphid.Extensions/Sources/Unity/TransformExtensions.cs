@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -80,6 +81,32 @@ namespace Silphid.Extensions
             This.SelfAndDescendants()
                 .SelectMany(x => x.GetComponents<TComponent>())
                 .WhereNotNull();
+
+        public static GameObject CommonAncestorWith(this Transform This, Transform other)
+        {
+            if (This == null || other == null)
+                return null;
+            
+            if (This == other)
+                return This.gameObject;
+            
+            var list1 = This.SelfAndAncestors().ToArray();
+            var list2 = other.SelfAndAncestors().ToArray();
+
+            GameObject common = null;
+            for (int i1 = list1.Length - 1, i2 = list2.Length - 1; i1 >= 0 && i2 >= 0; i1--, i2--)
+            {
+                var item1 = list1[i1];
+                var item2 = list2[i2];
+
+                if (item1 != item2)
+                    break;
+
+                common = item1;
+            }
+
+            return common;
+        }
 
         public static void SetX(this Transform This, float x)
         {

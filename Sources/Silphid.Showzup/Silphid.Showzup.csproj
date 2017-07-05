@@ -82,6 +82,7 @@
     <Compile Include="Sources\Controls\RoutingPresenter.cs" />
     <Compile Include="Sources\Controls\RoutingPresenterGameObjectExtensions.cs" />
     <Compile Include="Sources\Controls\SelectionControl.cs" />
+    <Compile Include="Sources\Controls\TabControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
@@ -111,6 +112,9 @@
     <Compile Include="Sources\Interfaces\IViewModel.cs" />
     <Compile Include="Sources\Interfaces\IViewResolver.cs" />
     <Compile Include="Sources\Navigation\CustomInputModule.cs" />
+    <Compile Include="Sources\Navigation\INestedDeselectHandler.cs" />
+    <Compile Include="Sources\Navigation\INestedSelectHandler.cs" />
+    <Compile Include="Sources\Navigation\MoveHandler.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
     <Compile Include="Sources\Phases\CoordinationBase.cs" />
     <Compile Include="Sources\Phases\CoordinatorBase.cs" />

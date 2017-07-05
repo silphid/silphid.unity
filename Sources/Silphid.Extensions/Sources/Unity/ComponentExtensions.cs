@@ -40,6 +40,9 @@ namespace Silphid.Extensions
         public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this Component This) where TComponent : Component =>
             This.transform.SelfAndDescendants<TComponent>();
 
+        public static GameObject CommonAncestorWith(this Component This, Component other) =>
+            This.transform.CommonAncestorWith(other?.transform);
+
         #endregion
     }
 }

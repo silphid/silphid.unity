@@ -36,7 +36,7 @@ namespace Silphid.Showzup
             return Observable.Return<IView>(null);
         }
 
-        private IObservable<IView> Load(object viewModel, IView view)
+        private IObservable<IView> Load(IViewModel viewModel, IView view)
         {
             return Observable.Return(view)
                 .Do(x => InjectView(x, viewModel))
@@ -44,9 +44,9 @@ namespace Silphid.Showzup
         }
 
         private IObservable<IView> Load(object model, Type viewModelType, Type viewType, Uri uri, IEnumerable<object> parameters, CancellationToken cancellationToken) =>
-            Load(_injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model)), viewType, uri, cancellationToken);
+            Load((IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model)), viewType, uri, cancellationToken);
 
-        private IObservable<IView> Load(object viewModel, Type viewType, Uri uri, CancellationToken cancellationToken)
+        private IObservable<IView> Load(IViewModel viewModel, Type viewType, Uri uri, CancellationToken cancellationToken)
         {
             _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
             return LoadPrefabView(viewType, uri, cancellationToken)
@@ -54,7 +54,7 @@ namespace Silphid.Showzup
                 .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
         }
 
-        private void InjectView(IView view, object viewModel)
+        private void InjectView(IView view, IViewModel viewModel)
         {
             view.ViewModel = viewModel;
             _logger?.Log(nameof(ViewLoader), $"Initializing {view} with ViewModel {viewModel}");

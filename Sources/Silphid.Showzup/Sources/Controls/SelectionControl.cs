@@ -2,18 +2,25 @@
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class SelectionControl : ListControl, IMoveHandler
+    public class SelectionControl : ListControl, IMoveHandler, INestedDeselectHandler
     {
         private bool _isSynching;
         private readonly SerialDisposable _focusDisposable = new SerialDisposable();
+        private readonly ReactiveProperty<IView> _lastSelectedView = new ReactiveProperty<IView>();
+        private ReadOnlyReactiveProperty<IView> _lastSelectedViewReadOnly;
 
         public ReactiveProperty<object> SelectedItem { get; } = new ReactiveProperty<object>();
         public ReactiveProperty<IView> SelectedView { get; } = new ReactiveProperty<IView>();
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
+
+        public ReadOnlyReactiveProperty<IView> LastSelectedView =>
+            _lastSelectedViewReadOnly
+            ?? (_lastSelectedViewReadOnly = _lastSelectedView.ToReadOnlyReactiveProperty());
 
         public NavigationOrientation Orientation;
         public bool AutoFocus = true;
@@ -26,6 +33,10 @@ namespace Silphid.Showzup
             
             SubscribeToUpdateFocusables(SelectedItem);
             SubscribeToUpdateFocusables(SelectedView);
+
+            SelectedView
+                .BindTo(_lastSelectedView)
+                .AddTo(this);
 
             SubscribeToSynchOthers(SelectedItem, () =>
             {
@@ -44,6 +55,13 @@ namespace Silphid.Showzup
                 SelectedView.Value = GetViewAtIndex(SelectedIndex.Value);
                 SelectedItem.Value = SelectedView.Value?.ViewModel;
             });
+        }
+
+        protected override void RemoveAllViews(GameObject container, GameObject except = null)
+        {
+            base.RemoveAllViews(container, except);
+
+            SelectedView.Value = null;
         }
 
         private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
@@ -105,6 +123,9 @@ namespace Silphid.Showzup
 
         protected override void SelectView(IView view)
         {
+            if (SelectedView.Value == view)
+                SelectedView.Value = null;
+            
             SelectedView.Value = view;
         }
 
@@ -185,6 +206,11 @@ namespace Silphid.Showzup
                     eventData.moveDir == MoveDirection.Down && SelectNext())
                     eventData.Use();
             }
+        }
+
+        public void OnNestedDeselect()
+        {
+            SelectedView.Value = null;
         }
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="Sources\Unity\ComponentExtensions.cs" />
     <Compile Include="Sources\Unity\GameObjectExtensions.cs" />
     <Compile Include="Sources\Unity\ImageExtensions.cs" />
+    <Compile Include="Sources\Unity\MoveDirectionExtensions.cs" />
     <Compile Include="Sources\Unity\QuaternionExtensions.cs" />
     <Compile Include="Sources\Unity\RectExtensions.cs" />
     <Compile Include="Sources\Unity\RectTransformExtensions.cs" />

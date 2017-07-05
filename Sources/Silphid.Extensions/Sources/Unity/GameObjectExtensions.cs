@@ -43,6 +43,21 @@ namespace Silphid.Extensions
         public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this GameObject This) where TComponent : Component =>
             This.transform.SelfAndDescendants<TComponent>();
 
+        public static bool IsDescendantOf(this GameObject This, GameObject other) =>
+            other != null && (This?.transform.Ancestors().Any(x => x == other) ?? false);
+
+        public static bool IsAncestorOf(this GameObject This, GameObject other) =>
+            This != null && (other?.transform.Ancestors().Any(x => x == This) ?? false);
+
+        public static bool IsSelfOrDescendantOf(this GameObject This, GameObject other) =>
+            This == other || This.IsDescendantOf(other);
+
+        public static bool IsSelfOrAncestorOf(this GameObject This, GameObject other) =>
+            This == other || This.IsAncestorOf(other);
+
+        public static GameObject CommonAncestorWith(this GameObject This, GameObject other) =>
+            This.transform.CommonAncestorWith(other?.transform);
+
         #endregion
 
         #region Filtering
@@ -97,6 +112,18 @@ namespace Silphid.Extensions
 
         public static bool IsSelected(this Component This) =>
             This.gameObject.IsSelected();
+
+        public static bool IsDescendantSelected(this GameObject This) =>
+            EventSystem.current.currentSelectedGameObject?.IsDescendantOf(This) ?? false;
+
+        public static bool IsSelfOrDescendantSelected(this GameObject This) =>
+            EventSystem.current.currentSelectedGameObject?.IsSelfOrDescendantOf(This) ?? false;
+
+        public static bool IsDescendantSelected(this Component This) =>
+            This.gameObject.IsDescendantSelected();
+        
+        public static bool IsSelfOrDescendantSelected(this Component This) =>
+            This.gameObject.IsSelfOrDescendantSelected();
 
         #endregion
     }

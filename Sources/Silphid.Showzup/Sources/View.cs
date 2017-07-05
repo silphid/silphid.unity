@@ -14,7 +14,7 @@ namespace Silphid.Showzup
     {
         #region IView members
 
-        private object _viewModel;
+        private IViewModel _viewModel;
 
         public bool IsActive
         {
@@ -26,7 +26,7 @@ namespace Silphid.Showzup
             }
         }
 
-        object IView.ViewModel
+        IViewModel IView.ViewModel
         {
             get
             {

@@ -1,10 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using UniRx;
+﻿using UniRx;
 
 namespace Silphid.Showzup
 {
     public interface IListPresenter : IPresenter
     {
-        ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
+        ReadOnlyReactiveProperty<IView[]> Views { get; }
     }
 }

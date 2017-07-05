@@ -21,6 +21,8 @@ namespace Silphid.Showzup
         public GameObject Container1;
         public GameObject Container2;
         public Components.Transition DefaultTransition;
+        public bool TransitionInstantlyFromNull;
+        public bool TransitionInstantlyToNull;
 
         #endregion
 
@@ -73,6 +75,13 @@ namespace Silphid.Showzup
             var options = presentation.Options;
             var transition = presentation.Transition;
             var duration = presentation.Duration;
+
+            if (sourceView == null && TransitionInstantlyFromNull ||
+                targetView == null && TransitionInstantlyToNull)
+            {
+                transition = InstantTransition.Instance;
+                duration = 0f;
+            }
 
             return Sequence.Create(seq =>
             {

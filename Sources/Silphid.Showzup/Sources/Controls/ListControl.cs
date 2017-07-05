@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using Silphid.Extensions;
@@ -32,7 +31,13 @@ namespace Silphid.Showzup
 
         #region Public properties
 
-        public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
+        public ReadOnlyReactiveProperty<IView[]> Views { get; }
+
+        public ReadOnlyReactiveProperty<object[]> Models => _models ?? (_models = _reactiveViews
+                                                                .Select(views => views
+                                                                    .Select(view => view.ViewModel?.Model)
+                                                                    .ToArray())
+                                                                .ToReadOnlyReactiveProperty());
         public int Count => _views.Count;
         public bool HasItems => _views.Count > 0;
         public int? LastIndex => HasItems ? _views.Count - 1 : (int?) null;
@@ -41,9 +46,9 @@ namespace Silphid.Showzup
         #endregion
 
         protected readonly List<IView> _views = new List<IView>();
-        private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews;
+        private readonly ReactiveProperty<IView[]> _reactiveViews = new ReactiveProperty<IView[]>(Array.Empty<IView>());
         private VariantSet _variantSet;
-        protected ReactiveProperty<IView> FirstPresentedView = new ReactiveProperty<IView>();
+        private ReadOnlyReactiveProperty<object[]> _models;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -51,21 +56,20 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
-            _reactiveViews = new ReactiveProperty<ReadOnlyCollection<IView>>(_views.AsReadOnly());
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
         }
 
         protected virtual void Start()
         {
             if (AutoSelect)
-                FirstPresentedView
+                Views
                     .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(SelectView);
+                    .Subscribe(x => SelectView(x.FirstOrDefault()));
         }
 
         protected virtual void SelectView(IView view)
         {
-            view.GameObject.SelectDeferred();
+            view?.SelectDeferred();
         }
 
         public IView GetViewForViewModel(object viewModel) =>
@@ -76,7 +80,7 @@ namespace Silphid.Showzup
             if (view == null)
                 return null;
 
-            int index = _views.IndexOf(view);
+            var index = _views.IndexOf(view);
             if (index == -1)
                 return null;
 
@@ -114,7 +118,7 @@ namespace Silphid.Showzup
         private IObservable<IView> CleanUpAndLoadViews(IEnumerable items, Options options)
         {
             _views.Clear();
-            _reactiveViews.Value = _views.AsReadOnly();
+            _reactiveViews.Value = Array.Empty<IView>();
             RemoveAllViews(Container);
 
             return LoadViews(items, options);
@@ -123,12 +127,8 @@ namespace Silphid.Showzup
         private void AddView(IView view)
         {
             _views.Add(view);
-            _reactiveViews.Value = _views.AsReadOnly();
 
             AddView(Container, view);
-
-            if (_views.Count == 1)
-                FirstPresentedView.Value = view;
         }
 
         private IObservable<IView> LoadViews(IEnumerable items, Options options)
@@ -140,7 +140,8 @@ namespace Silphid.Showzup
                 .Cast<object>()
                 .Select(input => ResolveView(input, options))
                 .ToObservable()
-                .SelectMany(view => LoadView(view));
+                .SelectMany(view => LoadView(view))
+                .DoOnCompleted(() => _reactiveViews.Value = _views.ToArray());
         }
 
         protected ViewInfo ResolveView(object input, Options options) =>

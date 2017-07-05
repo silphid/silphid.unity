@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,8 +11,6 @@ namespace Silphid.Showzup.Navigation
     [AddComponentMenu("Event/Custom Input Module")]
     public class CustomInputModule : PointerInputModule
     {
-        public bool LogCurrentSelectedGameObject;
-
         private const float AxisDeadZone = 0.6f;
 
         private float m_PrevActionTime;
@@ -28,7 +28,7 @@ namespace Silphid.Showzup.Navigation
         {
             base.Awake();
 
-            InitSelectionLogging();
+            InitCustomCode();
         }
 
         [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
@@ -419,18 +419,41 @@ namespace Silphid.Showzup.Navigation
 
         #region Custom Code
 
-        public bool LogSelectedElement;
+        public bool LogSelection;
+        public bool NestedSelection;
 
-        private void InitSelectionLogging()
+        private void InitCustomCode()
         {
-#if DEBUG
-        Observable
-            .EveryUpdate()
-            .Select(_ => eventSystem.currentSelectedGameObject)
-            .DistinctUntilChanged()
-            .Where(_ => LogSelectedElement)
-            .Subscribe(x => Debug.Log($"Selected: {x?.name ?? "<null>"}"));
-#endif
+            Observable
+                .EveryUpdate()
+                .Select(_ => eventSystem.currentSelectedGameObject)
+                .DistinctUntilChanged()
+                .PairWithPrevious()
+                .Subscribe(OnSelectionChanged);
+        }
+
+        private void OnSelectionChanged(Tuple<GameObject, GameObject> selection)
+        {
+            if (LogSelection)
+                Debug.Log($"Selection: {selection.Item2?.SelfAndAncestors().Reverse().ToDelimitedString(" > ") ?? "(null)"}");
+
+            if (NestedSelection)
+                UpdateNestedSelection(selection);
+        }
+
+        private static void UpdateNestedSelection(Tuple<GameObject, GameObject> selection)
+        {
+            var commonAncestor = selection.Item1?.CommonAncestorWith(selection.Item2);
+            var deselectedObjects = selection.Item1?.SelfAndAncestors().TakeWhile(x => x != commonAncestor);
+            var selectedObjects = selection.Item2?.SelfAndAncestors().TakeWhile(x => x != commonAncestor);
+
+            deselectedObjects
+                ?.SelectMany(x => x.GetComponents<INestedDeselectHandler>())
+                .ForEach(x => x.OnNestedDeselect());
+
+            selectedObjects
+                ?.SelectMany(x => x.GetComponents<INestedSelectHandler>())
+                .ForEach(x => x.OnNestedSelect());
         }
 
         private static void ExecuteBubbling<T>(GameObject target, BaseEventData eventData,
