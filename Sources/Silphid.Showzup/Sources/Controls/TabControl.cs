@@ -31,7 +31,8 @@ namespace Silphid.Showzup
                 .BindTo(TabSelectionControl.SelectedView)
                 .AddTo(this);
 
-            TabSelectionControl.SelectedItem
+            TabSelectionControl.SelectedView
+                .Select(x => x?.ViewModel?.Model)
                 .BindTo(ContentTransitionControl);
             
             _moveHandler.BindBidirectional(

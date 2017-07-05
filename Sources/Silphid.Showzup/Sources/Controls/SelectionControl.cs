@@ -14,7 +14,6 @@ namespace Silphid.Showzup
         private readonly ReactiveProperty<IView> _lastSelectedView = new ReactiveProperty<IView>();
         private ReadOnlyReactiveProperty<IView> _lastSelectedViewReadOnly;
 
-        public ReactiveProperty<object> SelectedItem { get; } = new ReactiveProperty<object>();
         public ReactiveProperty<IView> SelectedView { get; } = new ReactiveProperty<IView>();
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
 
@@ -31,30 +30,17 @@ namespace Silphid.Showzup
         {
             base.Start();
             
-            SubscribeToUpdateFocusables(SelectedItem);
             SubscribeToUpdateFocusables(SelectedView);
 
             SelectedView
                 .BindTo(_lastSelectedView)
                 .AddTo(this);
 
-            SubscribeToSynchOthers(SelectedItem, () =>
-            {
-                SelectedView.Value = GetViewForViewModel(SelectedItem.Value);
-                SelectedIndex.Value = IndexOfView(SelectedView.Value);
-            });
+            SubscribeToSynchOther(SelectedView, () =>
+                SelectedIndex.Value = IndexOfView(SelectedView.Value));
 
-            SubscribeToSynchOthers(SelectedView, () =>
-            {
-                SelectedItem.Value = SelectedView.Value?.ViewModel;
-                SelectedIndex.Value = IndexOfView(SelectedView.Value);
-            });
-
-            SubscribeToSynchOthers(SelectedIndex, () =>
-            {
-                SelectedView.Value = GetViewAtIndex(SelectedIndex.Value);
-                SelectedItem.Value = SelectedView.Value?.ViewModel;
-            });
+            SubscribeToSynchOther(SelectedIndex, () =>
+                SelectedView.Value = GetViewAtIndex(SelectedIndex.Value));
         }
 
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
@@ -107,7 +93,7 @@ namespace Silphid.Showzup
             focusable.IsFocused.Value = false;
         }
 
-        private void SubscribeToSynchOthers<T>(IObservable<T> observable, Action synchAction)
+        private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
         {
             observable.Subscribe(x =>
                 {
@@ -149,7 +135,7 @@ namespace Silphid.Showzup
 
         public void SelectNone()
         {
-            SelectedItem.Value = null;
+            SelectedView.Value = null;
         }
 
         public bool SelectPrevious()
