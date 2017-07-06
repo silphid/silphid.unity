@@ -83,6 +83,9 @@ namespace Silphid.Extensions
             Object.Destroy(This);
         }
 
+        public static string ToHierarchyPath(this GameObject This) =>
+            This.SelfAndAncestors().Reverse().ToDelimitedString(" > ");
+
         #endregion
 
         #region Selection
