@@ -84,7 +84,10 @@ namespace Silphid.Extensions
         }
 
         public static string ToHierarchyPath(this GameObject This) =>
-            This.SelfAndAncestors().Reverse().ToDelimitedString(" > ");
+            This.SelfAndAncestors()
+                .Reverse()
+                .Select(x => x.name)
+                .ToDelimitedString(" > ");
 
         #endregion
 
