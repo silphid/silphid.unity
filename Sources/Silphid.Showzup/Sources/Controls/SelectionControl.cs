@@ -28,6 +28,9 @@ namespace Silphid.Showzup
 
         protected override void Start()
         {
+            if (Orientation == NavigationOrientation.None)
+                throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
+            
             base.Start();
             
             SubscribeToUpdateFocusables(SelectedView);
