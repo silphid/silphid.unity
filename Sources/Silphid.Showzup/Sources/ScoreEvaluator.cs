@@ -8,14 +8,15 @@ namespace Silphid.Showzup
 {
     public class ScoreEvaluator : IScoreEvaluator
     {
-        public const int ZeroScore = 0;
-        public const int ExactMatchScore = 100;
-        public const int InheritanceScorePenality = 5;
-        public const int FallbackScore = 10;
+        public const float ZeroScore = 0;
+        public const float ExactMatchScore = 100;
+        public const float InheritanceScorePenality = 5;
+        public const float FallbackScore = 10;
+        public const float VariantPrecedenceFactor = 1.25f;
 
-        public int? GetVariantScore(VariantSet candidateVariants, VariantSet requestedVariants)
+        public float? GetVariantScore(VariantSet candidateVariants, VariantSet requestedVariants)
         {
-            int score = ZeroScore;
+            var score = ZeroScore;
             
             foreach (var requestedVariant in requestedVariants)
             {
@@ -32,17 +33,17 @@ namespace Silphid.Showzup
                     score += FallbackScore;
             }
 
-            return score;
+            return score * VariantPrecedenceFactor;
         }
 
-        public int? GetTypeScore(Type candidateType, Type requestedType)
+        public float? GetTypeScore(Type candidateType, Type requestedType)
         {
             return candidateType.IsInterface
                 ? GetInterfaceScore(candidateType, requestedType)
                 : GetClassScore(candidateType, requestedType);
         }
 
-        private static int? GetClassScore(Type candidateClass, Type requestedType)
+        private static float? GetClassScore(Type candidateClass, Type requestedType)
         {
             var score = ExactMatchScore;
             var type = requestedType;
@@ -58,7 +59,7 @@ namespace Silphid.Showzup
             return null;
         }
 
-        private static int? GetInterfaceScore(Type candidateInterface, Type requestedType)
+        private static float? GetInterfaceScore(Type candidateInterface, Type requestedType)
         {
             var score = ExactMatchScore;
             IEnumerable<Type> interfaces = requestedType.GetInterfaces();
