@@ -12,9 +12,9 @@ namespace Silphid.Showzup
         private class CandidateMapping<TMapping>
         {
             public TMapping Mapping { get; }
-            public int? Score { get; }
+            public float? Score { get; }
 
-            public CandidateMapping(TMapping mapping, int? score)
+            public CandidateMapping(TMapping mapping, float? score)
             {
                 Mapping = mapping;
                 Score = score;
@@ -184,7 +184,7 @@ namespace Silphid.Showzup
             return resolved.Target;
         }
 
-        private int? GetScore(Type candidateType, VariantSet candidateVariants, Type requestedType, VariantSet requestedVariants) =>
+        private float? GetScore(Type candidateType, VariantSet candidateVariants, Type requestedType, VariantSet requestedVariants) =>
             _scoreEvaluator.GetVariantScore(candidateVariants, requestedVariants) +
             _scoreEvaluator.GetTypeScore(candidateType, requestedType);
     }
