@@ -23,6 +23,7 @@ namespace Silphid.Showzup
         public TabPlacement TabPlacement = TabPlacement.Top;
         
         private readonly MoveHandler _moveHandler = new MoveHandler();
+        private Options _lastOptions;
 
         public void Start()
         {
@@ -33,7 +34,8 @@ namespace Silphid.Showzup
 
             TabSelectionControl.SelectedView
                 .Select(x => x?.ViewModel?.Model)
-                .BindTo(ContentTransitionControl);
+                .Subscribe(x => ContentTransitionControl.Present(x, _lastOptions).SubscribeAndForget())
+                .AddTo(this);
             
             _moveHandler.BindBidirectional(
                 ContentTransitionControl,
@@ -45,11 +47,11 @@ namespace Silphid.Showzup
             TabSelectionControl.CanPresent(input, options);
 
         public IObservable<IView> Present(object input, Options options = null) =>
-            TabSelectionControl.Present(input, options);
+            TabSelectionControl.Present(input, _lastOptions = options);
 
         public void OnSelect(BaseEventData eventData)
         {
-            TabSelectionControl.Select();
+            TabSelectionControl.SelectFirst();
         }
 
         public void OnMove(AxisEventData eventData)
