@@ -166,30 +166,91 @@ For example, *Silphid.Showzup* leverages *Silphid.Loadzup* in order to load view
 - Abstract, flexible and lightweight
 - Independent from GUI framework
 - Simple attribute-based mapping of Models, ViewModels and Views
-- Data-driven UI (simply assign any Model/ViewModel object to a control and it will resolve and load the proper View to display it)
+- Data-driven UI (simply pass any Model object to a control and it will resolve and load the proper ViewModel and View to display it)
 - Abstract container controls (can be skinned with arbitrary UI)
     - `ItemControl` (displays a single item in a view)
     - `ListControl` (displays a collection of items in multiple  views)
-    - `SelectionControl` (extends `ListControl` with current item awareness)
-    - `TransitionControl` (extends `ItemControl` with visual transitions between views)
-    - `NavigationControl` (extends `ItemControl` with browser-like Back/Forward navigation support)
+    - `SelectionControl` (extends `ListControl` to add current item awareness)
+    - `TransitionControl` (extends `ItemControl` to add visual transitions between views)
+    - `NavigationControl` (extends `ItemControl` to add browser-like Back/Forward navigation support)
 - Views are defined as prefabs
-- Each view can have multiple variants
-- Customizable transition system based on IObservable
+- Each ViewModel and View can have multiple variants (ie: for different platforms, form-factors, etc.)
+- Customizable Rx-based transition system
     - Built-in transitions for uGUI (crossfade, slide, zoom, instant)
     - The sequencing of transitions allows phases (load/show/transition/hide...) to take as much time as they need.
 - Simple binding extensions for uGUI
+- Automatic routing of presentation requests (simply specify a `Target` variant in your `Options` and let `RoutingPresenter`s forward your request to the proper control).
 - And much, much more!
 
 ## Under Development
 
 - Customizable multi-phase transitioning.
-- Config-based Model/ViewModel/View mapping. 
 
-## Wishlist
+## How to get started
 
-- Support for hierarchy of variants
-- Fluent syntax for Model/ViewModel/View mapping (instead of attribute-based)
+
+
+### Configure Dependency Injection
+
+```c#
+using Silphid.Loadzup;
+using Silphid.Loadzup.Resource;
+using Silphid.Showzup;
+using Silphid.Showzup.Injection;
+using UnityEngine;
+
+public class Application : MonoBehaviour
+{
+    public Manifest Manifest;
+
+    public void Start()
+    {
+        var container = new Container(Debug.unityLogger);
+
+        container.BindInstance<ILoader>(CreateLoader());
+        container.BindSingle<IScoreEvaluator, ScoreEvaluator>();
+        container.BindSingle<IViewResolver, ViewResolver>();
+        container.BindSingle<IViewLoader, ViewLoader>();
+        container.BindInstance<IManifest>(Manifest);
+        container.BindInstance<IInjector>(new Injector(go => container.Inject(go)));
+        container.BindInstance<IViewModelFactory>(CreateViewModelFactory(container));
+        container.BindInstance<IVariantProvider>(new VariantProvider(Display.Group, Form.Group, Platform.Group));
+
+        container.InjectAllGameObjects();
+    }
+
+    private ViewModelFactory CreateViewModelFactory(Container container)
+    {
+        return new ViewModelFactory((viewModelType, parameters) =>
+            (IViewModel) container.Resolve(
+                viewModelType,
+                new Container().BindInstances(parameters)));
+    }
+
+    private CompositeLoader CreateLoader()
+    {
+        var compositeConverter = new CompositeConverter(
+            new SpriteConverter());
+
+        return new CompositeLoader(
+            new ResourceLoader(compositeConverter));
+    }
+}
+```
+
+### Define Variants
+
+### Create Model Classes
+
+### Create ViewModel Classes
+
+### Create View Classes
+
+### Create Storyboard Scene
+
+### Create View Prefabs
+
+
 
 # Experimental Libraries
 
