@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,6 +32,11 @@ namespace Silphid.Showzup.Navigation
         
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly HashSet<GameObject> _gameObjects = new HashSet<GameObject>();
+        
+        private readonly ReactiveProperty<GameObject> _selectedGameObject = new ReactiveProperty<GameObject>();
+
+        public ReadOnlyReactiveProperty<GameObject> SelectedGameObject =>
+            _selectedGameObject.ToReadOnlyReactiveProperty();
 
         public void BindUnidirectional(GameObject source, GameObject target, MoveDirection direction,
             Func<bool> condition = null)
@@ -76,6 +82,7 @@ namespace Silphid.Showzup.Navigation
             if (target != null)
             {
                 target.Select();
+                _selectedGameObject.Value = target;
                 eventData.Use();
             }
         }
