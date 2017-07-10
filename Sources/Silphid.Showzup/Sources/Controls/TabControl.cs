@@ -32,6 +32,7 @@ namespace Silphid.Showzup
                 .AddTo(this);
 
             TabSelectionControl.SelectedView
+                .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
                 .Select(x => x?.ViewModel?.Model)
                 .BindTo(ContentTransitionControl);
             
@@ -39,6 +40,11 @@ namespace Silphid.Showzup
                 ContentTransitionControl,
                 TabSelectionControl,
                 (MoveDirection) TabPlacement);
+
+            _moveHandler.SelectedGameObject
+                .Where(x => x == ContentTransitionControl.gameObject)
+                .Subscribe(x => ContentTransitionControl.View.Value.SelectDeferred())
+                .AddTo(this);
         }
 
         public bool CanPresent(object input, Options options = null) =>
