@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Silphid.Extensions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Silphid.Injexit
 {
@@ -15,6 +14,7 @@ namespace Silphid.Injexit
         #region Private fields
 
         private readonly List<Binding> _bindings = new List<Binding>();
+        private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
         private readonly ILogger _logger;
         private static readonly Func<IResolver, object> NullFactory = null;
 
@@ -37,6 +37,14 @@ namespace Silphid.Injexit
         #endregion
         
         #region IBinder members
+
+        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
+        {
+            if (_forwards.ContainsKey(sourceAbstractionType))
+                throw new InvalidOperationException($"Cannot specify same source abstraction type {sourceAbstractionType.Name} in more than one forward binding.");
+
+            _forwards[sourceAbstractionType] = targetAbstractionType;
+        }
 
         public IBinding BindInstance(Type abstractionType, object instance)
         {
@@ -72,15 +80,20 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false, bool isFallbackToSelfBinding = true)
         {
             _logger?.Log($"Resolving {abstractionType.Name}...");
 
-            return ResolveFromTypeMappings(abstractionType) ??
+            abstractionType = ResolveForward(abstractionType);
+
+            return ResolveFromTypeMappings(abstractionType, id) ??
                    ResolveFromListMappings(abstractionType) ??
                    ResolveSelfBinding(abstractionType, isFallbackToSelfBinding) ??
                    ThrowIfNotOptional(abstractionType, isOptional);
         }
+
+        private Type ResolveForward(Type abstractionType) =>
+            _forwards.GetOptionalValue(abstractionType) ?? abstractionType;
 
         private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
         {
@@ -143,12 +156,15 @@ namespace Silphid.Injexit
                 .Select(ResolveFactoryInternal)
                 .ToList();
 
-        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType) =>
-            ResolveFactoryInternal(ResolveType(abstractionType));
+        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType, string id) =>
+            ResolveFactoryInternal(ResolveType(abstractionType, id));
 
-        private Binding ResolveType(Type abstractionType)
+        private Binding ResolveType(Type abstractionType, string id)
         {
-            var binding = _bindings.FirstOrDefault(x => x.AbstractionType == abstractionType);
+            var binding = _bindings.FirstOrDefault(x =>
+                x.AbstractionType == abstractionType &&
+                x.Id == id);
+            
             if (binding != null)
                 _logger?.Log($"Resolved {binding}");
 
@@ -177,7 +193,7 @@ namespace Silphid.Injexit
         {
             var factory = ResolveFactoryInternal(concretionType);
             return factory != null
-                ? resolver => factory(resolver.With(overrideResolver))
+                ? resolver => factory(resolver.Using(overrideResolver))
                 : NullFactory;
         }
 
@@ -187,7 +203,9 @@ namespace Silphid.Injexit
                 var constructor = ResolveConstructor(concretionType);
                 var parameters = ResolveParameters(constructor.GetParameters(), resolver);
 
-                return constructor.Invoke(parameters);
+                var instance = constructor.Invoke(parameters);
+                Inject(instance);
+                return instance;
             };
 
         private object[] ResolveParameters(IEnumerable<ParameterInfo> parameters, IResolver resolver) =>
@@ -198,8 +216,9 @@ namespace Silphid.Injexit
         private object ResolveParameter(ParameterInfo parameter, IResolver resolver)
         {
             _logger?.Log($"Resolving parameter {parameter.Name}...");
-            var isOptional = parameter.IsOptional;
-            return resolver.ResolveInstance(parameter.ParameterType, isOptional);
+            var attribute = parameter.GetAttribute<InjectAttribute>();
+            var isOptional = (attribute?.IsOptional ?? false) || parameter.IsOptional;
+            return resolver.Resolve(parameter.ParameterType, attribute?.Id, isOptional);
         }
 
         private ConstructorInfo ResolveConstructor(Type type)
@@ -223,7 +242,7 @@ namespace Silphid.Injexit
 
         public void Inject(object obj, IResolver overrideResolver = null)
         {
-            var resolver = this.With(overrideResolver);
+            var resolver = this.Using(overrideResolver);
             
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
@@ -238,6 +257,13 @@ namespace Silphid.Injexit
                 InjectObject(obj, resolver);
                 InjectObjectMethods(obj, resolver);
             }
+        }
+
+        public void InjectGameObjects(IEnumerable<GameObject> gameObjects)
+        {
+            var list = gameObjects.ToList();
+            list.ForEach(x => InjectGameObjectValues(x, this));
+            list.ForEach(x => InjectGameObjectMethods(x, this));
         }
 
         private void InjectObject(object obj, IResolver resolver)
@@ -260,7 +286,7 @@ namespace Silphid.Injexit
             if (inject == null)
                 return;
             
-            var value = resolver.ResolveInstance(property.PropertyType, inject.IsOptional);
+            var value = resolver.Resolve(property.PropertyType, inject.Id, inject.IsOptional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
             property.SetValue(obj, value, null);
         }
@@ -271,7 +297,7 @@ namespace Silphid.Injexit
             if (inject == null)
                 return;
             
-            var value = resolver.ResolveInstance(field.FieldType, inject.IsOptional);
+            var value = resolver.Resolve(field.FieldType, inject.Id, inject.IsOptional);
             _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
             field.SetValue(obj, value);
         }
@@ -330,24 +356,18 @@ namespace Silphid.Injexit
                 .ForEach(method => InjectMethod(obj, method, resolver));
         }
 
-        public void InjectAllGameObjects()
-        {
-            RootGameObjects.ForEach(x => InjectGameObjectValues(x, this));
-            RootGameObjects.ForEach(x => InjectGameObjectMethods(x, this));
-        }
-
-        private IEnumerable<GameObject> RootGameObjects =>
-            AllScenes.SelectMany(x => x.GetRootGameObjects());
-
-        private IEnumerable<Scene> AllScenes
-        {
-            get
-            {
-                for (var i = 0; i < SceneManager.sceneCount; i++)
-                    yield return SceneManager.GetSceneAt(i);
-            }
-        }
-
         #endregion
+
+        #region IDisposable members
+
+        public void Dispose()
+        {
+            _bindings
+                .Select(x => x.Instance)
+                .OfType<IDisposable>()
+                .ForEach(x => x.Dispose());
+        }
+
+        #endregion        
     }
 }

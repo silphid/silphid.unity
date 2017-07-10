@@ -13,6 +13,7 @@ namespace Silphid.Injexit
         public IResolver OverrideResolver { get; private set; }
         public object Instance { get; set; }
         public bool IsList { get; private set; }
+        public string Id { get; private set; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -39,12 +40,21 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding With(IResolver resolver)
+        public IBinding Using(IResolver resolver)
         {
             if (OverrideResolver != null)
                 throw new InvalidOperationException("Already specified binding overrides.");
                     
             OverrideResolver = resolver;
+            return this;
+        }
+
+        public IBinding WithId(string id)
+        {
+            if (Id != null)
+                throw new InvalidOperationException("Already specified binding Id.");
+                    
+            Id = id;
             return this;
         }
 

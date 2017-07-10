@@ -4,11 +4,14 @@ namespace Silphid.Injexit
 {
     public static class IBindingExtensions
     {
-        public static IBinding With(this IBinding This, Action<IBinder> bind)
+        public static IBinding Using(this IBinding This, Action<IBinder> bind)
         {
             var child = This.Container.CreateChild();
             bind(child);
-            return This.With(child);
+            return This.Using(child);
         }
+        
+        public static IBinding WithId(this IBinding This, string id) =>
+            This.WithId(id);
     }
 }

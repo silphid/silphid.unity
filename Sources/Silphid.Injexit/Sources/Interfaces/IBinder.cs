@@ -6,5 +6,6 @@ namespace Silphid.Injexit
     {
         IBinding Bind(Type abstractionType, Type concretionType);
         IBinding BindInstance(Type abstractionType, object instance);
+        void BindForward(Type sourceAbstractionType, Type targetAbstractionType);
     }
 }

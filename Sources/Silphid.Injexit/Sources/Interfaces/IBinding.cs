@@ -5,6 +5,7 @@
         IContainer Container { get; }
         IBinding IntoList();
         IBinding AsSingle();
-        IBinding With(IResolver resolver);
+        IBinding Using(IResolver resolver);
+        IBinding WithId(string id);
     }
 }

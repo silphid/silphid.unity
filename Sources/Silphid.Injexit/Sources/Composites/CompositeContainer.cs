@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
+using UnityEngine;
 
 namespace Silphid.Injexit
 {
@@ -17,9 +19,9 @@ namespace Silphid.Injexit
 
         #region IResolver members
 
-        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+        public Func<IResolver, object> Resolve(Type abstractionType, string id = null, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
             _containers
-                .Select((index, x) => x.Resolve(abstractionType, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
+                .Select((index, x) => x.ResolveFactory(abstractionType, id, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
                 .FirstNotNullOrDefault()
             ?? ThrowIfNotOptional(abstractionType, isOptional);
 
@@ -48,6 +50,11 @@ namespace Silphid.Injexit
             throw new NotSupportedException("CompositeContainer cannot be added extra bindings.");
         }
 
+        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
+        {
+            throw new NotSupportedException("CompositeContainer cannot be added extra forward bindings.");
+        }
+
         #endregion
 
         #region IInjector members
@@ -57,11 +64,27 @@ namespace Silphid.Injexit
                 .First()
                 .Inject(obj, this);
 
+        public void InjectGameObjects(IEnumerable<GameObject> gameObjects) =>
+            _containers
+                .First()
+                .InjectGameObjects(gameObjects);
+
         public IContainer CreateChild() =>
             _containers
                 .First()
                 .CreateChild();
 
         #endregion
+
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false,
+            bool isFallbackToSelfBinding = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

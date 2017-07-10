@@ -15,9 +15,9 @@ namespace Silphid.Injexit
                 .ToArray();
         }
 
-        public Func<IResolver, object> Resolve(Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
             _resolvers
-                .Select((index, x) => x.Resolve(abstractionType, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
+                .Select((index, x) => x.ResolveFactory(abstractionType, id, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
                 .FirstNotNullOrDefault()
             ?? ThrowIfNotOptional(abstractionType, isOptional);
 

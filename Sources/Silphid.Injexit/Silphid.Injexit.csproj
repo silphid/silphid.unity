@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,12 +51,17 @@
     <Compile Include="Sources\Extensions\IBinderExtensions.cs" />
     <Compile Include="Sources\Extensions\IBindingExtensions.cs" />
     <Compile Include="Sources\Extensions\IContainerExtensions.cs" />
+    <Compile Include="Sources\Extensions\IInjectorExtensions.cs" />
     <Compile Include="Sources\Extensions\IResolverExtensions.cs" />
     <Compile Include="Sources\InjectAttribute.cs" />
+    <Compile Include="Sources\Installers\Installer.cs" />
+    <Compile Include="Sources\Installers\RootInstaller.cs" />
+    <Compile Include="Sources\Installers\SceneInstaller.cs" />
     <Compile Include="Sources\Interfaces\IBinder.cs" />
     <Compile Include="Sources\Interfaces\IBinding.cs" />
     <Compile Include="Sources\Interfaces\IContainer.cs" />
     <Compile Include="Sources\Interfaces\IInjector.cs" />
+    <Compile Include="Sources\Interfaces\IInstaller.cs" />
     <Compile Include="Sources\Interfaces\IResolver.cs" />
     <Compile Include="Sources\Internals\Binding.cs" />
     <Compile Include="Sources\Internals\Lifetime.cs" />

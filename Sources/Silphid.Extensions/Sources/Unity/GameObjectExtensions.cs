@@ -68,7 +68,7 @@ namespace Silphid.Extensions
         public static IEnumerable<GameObject> WithComponent<T>(this IEnumerable<GameObject> This) =>
             This.Where(x => x.GetComponent<T>() != null);
 
-        public static IEnumerable<T> SelectComponents<T>(this IEnumerable<GameObject> This) =>
+        public static IEnumerable<T> OfComponent<T>(this IEnumerable<GameObject> This) =>
             This.SelectMany(x => x.GetComponents<T>());
 
         #endregion

@@ -40,5 +40,12 @@ namespace Silphid.Injexit
             This.Bind<T, T>();
 
         #endregion
+
+        #region BindForward
+
+        public static void BindForward<TSourceAbstraction, TTargetAbstraction>(this IBinder This) =>
+            This.BindForward(typeof(TSourceAbstraction), typeof(TTargetAbstraction));
+
+        #endregion
     }
 }

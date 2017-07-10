@@ -29,12 +29,17 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding With(IResolver resolver)
+        public IBinding Using(IResolver resolver)
         {
             throw new NotImplementedException();
         }
 
-        public IBinding With(Action<IBinder> bind)
+        public IBinding WithId(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBinding Using(Action<IBinder> bind)
         {
             _bindings.ForEach(x => x.IntoList());
             return this;

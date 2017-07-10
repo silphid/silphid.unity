@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace Silphid.Showzup
 {
     public abstract class View<TViewModel> :
-        MonoBehaviour, IView<TViewModel> where TViewModel : IViewModel
+        MonoBehaviour, IView<TViewModel>, ILoadable where TViewModel : IViewModel
     {
         #region IView members
 
@@ -96,6 +96,15 @@ namespace Silphid.Showzup
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
+        }
+
+        #endregion
+
+        #region ILoadable members
+
+        public virtual IObservable<Unit> Load()
+        {
+            return null;
         }
 
         #endregion

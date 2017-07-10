@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Silphid.Injexit;
 
 namespace Silphid.Injexit.Test
 {
     [TestFixture]
-    public class ContainerTest
+    public class ListTest
     {
         private interface IBeing {}
 
@@ -40,7 +39,7 @@ namespace Silphid.Injexit.Test
             container.Bind<IBeing, Woman>().AsSingle().IntoList();
             container.BindInstance<IBeing>(_dog).IntoList();
 
-            var list1 = container.ResolveInstance<List<IBeing>>();
+            var list1 = container.Resolve<List<IBeing>>();
             var man1 = list1.OfType<Man>().FirstOrDefault();
             var woman1 = list1.OfType<Woman>().FirstOrDefault();
             var dog1 = list1.OfType<Dog>().FirstOrDefault();
@@ -49,7 +48,7 @@ namespace Silphid.Injexit.Test
             Assert.That(dog1, Is.SameAs(_dog));
             
             // Try same resolve a second time
-            var list2 = container.ResolveInstance<List<IBeing>>();
+            var list2 = container.Resolve<List<IBeing>>();
             var man2 = list2.OfType<Man>().FirstOrDefault();
             var woman2 = list2.OfType<Woman>().FirstOrDefault();
             var dog2 = list2.OfType<Dog>().FirstOrDefault();
