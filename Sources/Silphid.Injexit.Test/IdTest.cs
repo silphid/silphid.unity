@@ -46,8 +46,8 @@ namespace Silphid.Injexit.Test
             _fixture.BindInstance(_service1).WithId("Service1");
             _fixture.BindInstance(_service2).WithId("Service2");
             _fixture.BindInstance(_service3).WithId("Service3");
-            _fixture.BindSelf<FieldInjectionWithId>();
-            _fixture.BindSelf<ConstructorInjectionWithId>();
+            _fixture.BindToSelf<FieldInjectionWithId>();
+            _fixture.BindToSelf<ConstructorInjectionWithId>();
         }
         
         [Test]

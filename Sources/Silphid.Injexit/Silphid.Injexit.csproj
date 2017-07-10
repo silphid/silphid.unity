@@ -43,7 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sources\BindAttribute.cs" />
+    <Compile Include="Sources\Attributes\BindAttribute.cs" />
+    <Compile Include="Sources\Attributes\InjectAttribute.cs" />
     <Compile Include="Sources\Composites\CompositeBinding.cs" />
     <Compile Include="Sources\Composites\CompositeContainer.cs" />
     <Compile Include="Sources\Composites\CompositeResolver.cs" />
@@ -53,7 +54,6 @@
     <Compile Include="Sources\Extensions\IContainerExtensions.cs" />
     <Compile Include="Sources\Extensions\IInjectorExtensions.cs" />
     <Compile Include="Sources\Extensions\IResolverExtensions.cs" />
-    <Compile Include="Sources\InjectAttribute.cs" />
     <Compile Include="Sources\Installers\Installer.cs" />
     <Compile Include="Sources\Installers\RootInstaller.cs" />
     <Compile Include="Sources\Installers\SceneInstaller.cs" />

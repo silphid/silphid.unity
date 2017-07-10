@@ -7,7 +7,6 @@ namespace Silphid.Injexit
         Func<IResolver, object> ResolveFactory(
             Type abstractionType,
             string id = null,
-            bool isOptional = false,
-            bool isFallbackToSelfBinding = true);
+            bool isOptional = false);
     }
 }

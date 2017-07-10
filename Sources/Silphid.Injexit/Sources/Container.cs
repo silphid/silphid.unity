@@ -70,6 +70,9 @@ namespace Silphid.Injexit
             if (!concretionType.IsAssignableTo(abstractionType))
                 throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
+            if (concretionType.IsAbstract)
+                throw new InvalidOperationException($"Concretion type {concretionType.Name} cannot be abstract.");
+
             var binding = new Binding(this, abstractionType, concretionType);
             _bindings.Add(binding);
 
@@ -80,7 +83,7 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false, bool isFallbackToSelfBinding = true)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false)
         {
             _logger?.Log($"Resolving {abstractionType.Name}...");
 
@@ -88,7 +91,6 @@ namespace Silphid.Injexit
 
             return ResolveFromTypeMappings(abstractionType, id) ??
                    ResolveFromListMappings(abstractionType) ??
-                   ResolveSelfBinding(abstractionType, isFallbackToSelfBinding) ??
                    ThrowIfNotOptional(abstractionType, isOptional);
         }
 
@@ -170,11 +172,6 @@ namespace Silphid.Injexit
 
             return binding;
         }
-
-        private Func<IResolver, object> ResolveSelfBinding(Type abstractionType, bool isSelfBindingAllowed) =>
-            isSelfBindingAllowed && !abstractionType.IsAbstract
-                ? ResolveFactoryInternal(abstractionType)
-                : NullFactory;
 
         private Func<IResolver, object> ResolveFactoryInternal(Binding binding)
         {

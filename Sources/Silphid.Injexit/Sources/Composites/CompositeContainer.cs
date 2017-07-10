@@ -19,15 +19,12 @@ namespace Silphid.Injexit
 
         #region IResolver members
 
-        public Func<IResolver, object> Resolve(Type abstractionType, string id = null, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false) =>
             _containers
-                .Select((index, x) => x.ResolveFactory(abstractionType, id, true, IsSelfBindingAllowed(index, isFallbackToSelfBinding)))
+                .Select((index, x) => x.ResolveFactory(abstractionType, id, true))
                 .FirstNotNullOrDefault()
             ?? ThrowIfNotOptional(abstractionType, isOptional);
 
-        private bool IsSelfBindingAllowed(int index, bool isSelfBindingAllowed) =>
-            index == _containers.Length - 1 && isSelfBindingAllowed; 
-        
         private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
         {
             if (!isOptional)
