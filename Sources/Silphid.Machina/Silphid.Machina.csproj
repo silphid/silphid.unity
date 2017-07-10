@@ -1,19 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C0716045-F08A-489F-9B7A-25863BC13118}</ProjectGuid>
+    <ProjectGuid>{5F154D39-CC27-4143-9612-7751ECDEA4E7}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Silphid.Sequencit</RootNamespace>
-    <AssemblyName>Silphid.Sequencit</AssemblyName>
+    <RootNamespace>Silphid.Machina</RootNamespace>
+    <AssemblyName>Silphid.Machina</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,28 +35,21 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Dependencies\net35\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\Dependencies\net35\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Sources\Change.cs" />
+    <Compile Include="Sources\IMachine.cs" />
+    <Compile Include="Sources\IMachineExtensions.cs" />
+    <Compile Include="Sources\IState.cs" />
+    <Compile Include="Sources\Machine.cs" />
+    <Compile Include="Sources\MachineBehaviour.cs" />
+    <Compile Include="Sources\StateBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sources\Suspension.cs" />
-    <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
-    <Compile Include="Sources\Extensions\ISequencerExtensions.cs" />
-    <Compile Include="Sources\Input\IInputLayer.cs" />
-    <Compile Include="Sources\Input\InputLayer.cs" />
-    <Compile Include="Sources\Interfaces\ISequencer.cs" />
-    <Compile Include="Sources\Parallel.cs" />
-    <Compile Include="Sources\Sequence.cs" />
-    <Compile Include="Sources\SequenceQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

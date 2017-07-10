@@ -1,7 +1,7 @@
 ﻿using System;
 using UniRx;
 
-namespace Silphid.Sequencit.Machines
+namespace Silphid.Machina
 {
 	public interface IMachine<TState> where TState : IState
 	{

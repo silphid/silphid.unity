@@ -46,7 +46,7 @@ public class ManifestBuilder
         if (!guids.Any())
             return null;
 
-        string assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
+        var assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
         return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
     }
 
@@ -65,23 +65,17 @@ public class ManifestBuilder
                 allVariants));
     }
 
-    private static Type GetModelForViewModel(Type viewModelType)
-    {
-        try
-        {
-            return viewModelType.GetInterfaces()
-                .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
-                .GetGenericArguments()
-                .First();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Failed to resolve Model for ViewModel: {viewType.Name}", ex);
-        }
-    }
-    
+    private static Type GetModelForViewModel(Type viewModelType) =>
+        viewModelType.GetInterfaces()
+            .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
+            ?.GetGenericArguments()
+            .FirstOrDefault();
+
     private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType, VariantSet allVariants)
     {
+        if (modelType == null)
+            return;
+        
         var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
         var mapping = new TypeToTypeMapping(modelType, viewModelType, variants);
         Debug.Log(mapping);

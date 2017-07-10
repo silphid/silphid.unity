@@ -1,6 +1,6 @@
 ﻿using Silphid.Extensions.DataTypes;
 
-namespace Silphid.Sequencit.Machines
+namespace Silphid.Machina
 {
     public abstract class StateBase<T> : ObjectEnum<T>, IState where T : StateBase<T>
     {

@@ -2,7 +2,7 @@
 using UniRx;
 using UnityEngine;
 
-namespace Silphid.Sequencit.Machines
+namespace Silphid.Machina
 {
     public abstract class MachineBehaviour<TState> : MonoBehaviour, IMachine<TState> where TState : class, IState
     {

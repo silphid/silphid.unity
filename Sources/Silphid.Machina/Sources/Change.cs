@@ -1,9 +1,9 @@
-﻿namespace Silphid.Sequencit.Machines
+﻿namespace Silphid.Machina
 {
 	public class Change<TState> where TState : IState
     {
-        public TState Source { get; private set; }
-        public TState Destination { get; private set; }
+        public TState Source { get; }
+        public TState Destination { get; }
 
         public Change(TState source, TState destination)
         {

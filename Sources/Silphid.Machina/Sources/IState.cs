@@ -1,4 +1,4 @@
-﻿namespace Silphid.Sequencit.Machines
+﻿namespace Silphid.Machina
 {
 	public interface IState
 	{
