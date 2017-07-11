@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -7,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class SelectionControl : ListControl, IMoveHandler, INestedDeselectHandler
+    public class SelectionControl : ListControl, IMoveHandler
     {
         private bool _isSynching;
         private readonly SerialDisposable _focusDisposable = new SerialDisposable();
@@ -195,11 +196,6 @@ namespace Silphid.Showzup
                     eventData.moveDir == MoveDirection.Down && SelectNext())
                     eventData.Use();
             }
-        }
-
-        public void OnNestedDeselect()
-        {
-            SelectedView.Value = null;
         }
     }
 }
