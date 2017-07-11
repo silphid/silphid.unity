@@ -18,6 +18,7 @@ namespace Silphid.Showzup
 
     public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler
     {
+        public float SelectionDelay = 0f;
         public SelectionControl TabSelectionControl;
         public TransitionControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
@@ -34,6 +35,7 @@ namespace Silphid.Showzup
 
             TabSelectionControl.SelectedView
                 .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
+                .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
                 .Select(x => x?.ViewModel?.Model)
                 .Subscribe(x => ContentTransitionControl.Present(x, _lastOptions).SubscribeAndForget())
                 .AddTo(this);
