@@ -44,6 +44,7 @@ namespace Silphid.Showzup
                 (MoveDirection) TabPlacement);
 
             _moveHandler.SelectedGameObject
+                .CombineLatest(ContentTransitionControl.View, (x, y) => x)
                 .Where(x => x == ContentTransitionControl.gameObject)
                 .Subscribe(x => ContentTransitionControl.View.Value.SelectDeferred())
                 .AddTo(this);
