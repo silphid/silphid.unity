@@ -16,7 +16,7 @@ namespace Silphid.Showzup
         Right = MoveDirection.Right
     }
 
-    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler
+    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
     {
         public float SelectionDelay = 0f;
         public SelectionControl TabSelectionControl;
@@ -66,6 +66,15 @@ namespace Silphid.Showzup
         public void OnMove(AxisEventData eventData)
         {
             _moveHandler.OnMove(eventData);
+        }
+
+        public void OnCancel(BaseEventData eventData)
+        {
+            if (!TabSelectionControl.IsSelfOrDescendantSelected())
+            {
+                _moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up});
+                eventData.Use();
+            }
         }
     }
 }
