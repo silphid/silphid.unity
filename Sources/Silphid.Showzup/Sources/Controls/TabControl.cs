@@ -45,6 +45,7 @@ namespace Silphid.Showzup
                 TabSelectionControl,
                 (MoveDirection) TabPlacement);
 
+            // Combining with view to select gameobject when view is loaded
             _moveHandler.SelectedGameObject
                 .CombineLatest(ContentTransitionControl.View, (x, y) => x)
                 .Where(x => x == ContentTransitionControl.gameObject)
@@ -72,7 +73,7 @@ namespace Silphid.Showzup
         {
             if (!TabSelectionControl.IsSelfOrDescendantSelected())
             {
-                _moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up});
+                //_moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up}); // Disable back buttton until we fix tab selection
                 eventData.Use();
             }
         }
