@@ -31,7 +31,7 @@ namespace Silphid.Injexit
 
         #region IContainer members
 
-        public IContainer CreateChild() =>
+        public IContainer Create() =>
             new Container(_logger);
 
         #endregion
@@ -237,37 +237,35 @@ namespace Silphid.Injexit
 
         #region IInjector members
 
-        public void Inject(object obj, IResolver overrideResolver = null)
+        public void Inject(object obj, IResolver resolver = null)
         {
-            var resolver = this.Using(overrideResolver);
+            resolver = resolver ?? this;
             
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+            
+            InjectFieldsAndProperties(obj, resolver);
+            InjectMethods(obj, resolver);
+        }
+
+        public void Inject(IEnumerable<object> objects, IResolver resolver = null)
+        {
+            var list = objects.ToList();
+            list.ForEach(x => InjectFieldsAndProperties(x, resolver));
+            list.ForEach(x => InjectMethods(x, resolver));
+        }
+
+        private void InjectFieldsAndProperties(object obj, IResolver resolver)
+        {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             
             if (obj is GameObject)
             {
-                InjectGameObjectValues((GameObject) obj, resolver);
-                InjectGameObjectMethods((GameObject) obj, resolver);
+                InjectGameObjectFieldsAndProperties((GameObject) obj, resolver);
+                return;
             }
-            else
-            {
-                InjectObject(obj, resolver);
-                InjectObjectMethods(obj, resolver);
-            }
-        }
-
-        public void InjectGameObjects(IEnumerable<GameObject> gameObjects)
-        {
-            var list = gameObjects.ToList();
-            list.ForEach(x => InjectGameObjectValues(x, this));
-            list.ForEach(x => InjectGameObjectMethods(x, this));
-        }
-
-        private void InjectObject(object obj, IResolver resolver)
-        {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
+            
             obj.GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .ForEach(field => InjectField(obj, field, resolver));
@@ -275,6 +273,49 @@ namespace Silphid.Injexit
             obj.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .ForEach(property => InjectProperty(obj, property, resolver));
+        }
+
+        private void InjectMethods(object obj, IResolver resolver)
+        {
+            if (obj is GameObject)
+            {
+                InjectGameObjectMethods((GameObject) obj, resolver);
+                return;
+            }
+            
+            obj.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(method => method.HasAttribute<InjectAttribute>())
+                .ForEach(method => InjectMethod(obj, method, resolver));            
+        }
+
+        private bool IsValidComponent(MonoBehaviour behaviour)
+        {
+            if (behaviour != null)
+                return true;
+            
+            _logger?.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
+            return false;
+        }
+        
+        private void InjectGameObjectFieldsAndProperties(GameObject go, IResolver resolver)
+        {
+            go.GetComponents<MonoBehaviour>()
+                .Where(IsValidComponent)
+                .ForEach(component => InjectFieldsAndProperties(component, resolver));
+            
+            go.Children()
+                .ForEach(child => InjectGameObjectFieldsAndProperties(child, resolver));
+        }
+
+        private void InjectGameObjectMethods(GameObject go, IResolver resolver)
+        {
+            go.GetComponents<MonoBehaviour>()
+                .Where(IsValidComponent)
+                .ForEach(component => InjectMethods(component, resolver));
+            
+            go.Children()
+                .ForEach(child => InjectGameObjectMethods(child, resolver));
         }
 
         private void InjectProperty(object obj, PropertyInfo property, IResolver resolver)
@@ -315,43 +356,6 @@ namespace Silphid.Injexit
 
         private static string FormatValue(object value) =>
             value?.ToString() ?? "null";
-
-        private bool IsValidComponent(MonoBehaviour behaviour)
-        {
-            if (behaviour != null)
-                return true;
-            
-            _logger?.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
-            return false;
-        }
-        
-        private void InjectGameObjectValues(GameObject go, IResolver resolver)
-        {
-            go.GetComponents<MonoBehaviour>()
-                .Where(IsValidComponent)
-                .ForEach(x => InjectObject(x, resolver));
-            
-            go.Descendants()
-                .ForEach(x => InjectGameObjectValues(x, resolver));
-        }
-
-        private void InjectGameObjectMethods(GameObject go, IResolver resolver)
-        {
-            go.GetComponents<MonoBehaviour>()
-                .Where(IsValidComponent)
-                .ForEach(component => InjectObjectMethods(component, resolver));
-            
-            go.Descendants()
-                .ForEach(x => InjectGameObjectMethods(x, resolver));
-        }
-
-        private void InjectObjectMethods(object obj, IResolver resolver)
-        {
-            obj.GetType()
-                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(method => method.HasAttribute<InjectAttribute>())
-                .ForEach(method => InjectMethod(obj, method, resolver));
-        }
 
         #endregion
 

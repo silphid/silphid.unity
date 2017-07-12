@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
-using UnityEngine;
 
 namespace Silphid.Injexit
 {
@@ -37,51 +36,49 @@ namespace Silphid.Injexit
 
         #region IBinder members
 
-        public IBinding Bind(Type abstractionType, Type concretionType)
-        {
-            throw new NotSupportedException("CompositeContainer cannot be added extra bindings.");
-        }
+        public IBinding Bind(Type abstractionType, Type concretionType) =>
+            _containers
+                .First()
+                .Bind(abstractionType, concretionType);
 
-        public IBinding BindInstance(Type abstractionType, object instance)
-        {
-            throw new NotSupportedException("CompositeContainer cannot be added extra bindings.");
-        }
+        public IBinding BindInstance(Type abstractionType, object instance) =>
+            _containers
+                .First()
+                .BindInstance(abstractionType, instance);
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
-        {
-            throw new NotSupportedException("CompositeContainer cannot be added extra forward bindings.");
-        }
+        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType) =>
+            _containers
+                .First()
+                .BindForward(sourceAbstractionType, targetAbstractionType);
 
         #endregion
 
         #region IInjector members
 
-        public void Inject(object obj, IResolver overrideResolver = null) =>
+        public void Inject(object obj, IResolver resolver = null) =>
             _containers
                 .First()
-                .Inject(obj, this);
+                .Inject(obj, resolver ?? this);
 
-        public void InjectGameObjects(IEnumerable<GameObject> gameObjects) =>
+        public void Inject(IEnumerable<object> objects, IResolver resolver = null) =>
             _containers
                 .First()
-                .InjectGameObjects(gameObjects);
+                .Inject(objects, resolver);
 
-        public IContainer CreateChild() =>
+        public IContainer Create() =>
             _containers
                 .First()
-                .CreateChild();
+                .Create();
 
         #endregion
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false,
-            bool isFallbackToSelfBinding = true)
-        {
-            throw new NotImplementedException();
-        }
+        #region IDisposable members
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose() =>
+            _containers
+                .First()
+                .Dispose();
+
+        #endregion
     }
 }

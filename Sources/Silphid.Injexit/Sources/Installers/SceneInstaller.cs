@@ -21,7 +21,7 @@ namespace Silphid.Injexit
             if (parentInstallers.Length > 1)
                 throw new InvalidOperationException($"Multiple parent installers of type {typeof(TParent).Name} found for scene installer {GetType().Name}. Expecting one and only one.");
             
-            Container = parentInstallers[0].Container.CreateChild();
+            Container = parentInstallers[0].Container.Child();
             
             Debug.Log($"Installing {GetType().Name}");
 

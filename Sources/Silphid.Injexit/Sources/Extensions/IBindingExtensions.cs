@@ -6,7 +6,7 @@ namespace Silphid.Injexit
     {
         public static IBinding Using(this IBinding This, Action<IBinder> bind)
         {
-            var child = This.Container.CreateChild();
+            var child = This.Container.Create();
             bind(child);
             return This.Using(child);
         }
