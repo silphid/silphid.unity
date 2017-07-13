@@ -70,6 +70,11 @@ namespace Silphid.Extensions
             }
         }
 
+        public static IEnumerable<TComponent> Descendants<TComponent>(this Transform This) where TComponent : Component =>
+            This.Descendants()
+                .SelectMany(x => x.GetComponents<TComponent>())
+                .WhereNotNull();
+
         public static IEnumerable<GameObject> SelfAndDescendants(this Transform This)
         {
             yield return This.gameObject;

@@ -91,17 +91,20 @@ namespace Silphid.Injexit
 
             return ResolveFromTypeMappings(abstractionType, id) ??
                    ResolveFromListMappings(abstractionType) ??
-                   ThrowIfNotOptional(abstractionType, isOptional);
+                   ThrowIfNotOptional(abstractionType, id, isOptional);
         }
 
         private Type ResolveForward(Type abstractionType) =>
             _forwards.GetOptionalValue(abstractionType) ?? abstractionType;
 
-        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
+        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, string id, bool isOptional)
         {
             if (!isOptional)
-                throw new Exception($"No binding for required type {abstractionType.Name}.");
-
+            {
+                var withId = id != null ? $" with Id={id}" : "";
+                throw new Exception($"No binding{withId} found for required type {abstractionType.Name}.");
+            }
+            
             return NullFactory;
         }
 
@@ -201,7 +204,7 @@ namespace Silphid.Injexit
                 var parameters = ResolveParameters(constructor.GetParameters(), resolver);
 
                 var instance = constructor.Invoke(parameters);
-                Inject(instance);
+                Inject(instance, resolver);
                 return instance;
             };
 
@@ -239,10 +242,10 @@ namespace Silphid.Injexit
 
         public void Inject(object obj, IResolver resolver = null)
         {
-            resolver = resolver ?? this;
-            
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
+            
+            resolver = resolver ?? this;
             
             InjectFieldsAndProperties(obj, resolver);
             InjectMethods(obj, resolver);
@@ -250,6 +253,11 @@ namespace Silphid.Injexit
 
         public void Inject(IEnumerable<object> objects, IResolver resolver = null)
         {
+            if (objects == null)
+                throw new ArgumentNullException(nameof(objects));
+
+            resolver = resolver ?? this;
+            
             var list = objects.ToList();
             list.ForEach(x => InjectFieldsAndProperties(x, resolver));
             list.ForEach(x => InjectMethods(x, resolver));

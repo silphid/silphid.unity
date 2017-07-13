@@ -34,6 +34,9 @@ namespace Silphid.Extensions
         public static IEnumerable<GameObject> Descendants(this Component This) =>
             This.transform.Descendants();
 
+        public static IEnumerable<TComponent> Descendants<TComponent>(this Component This) where TComponent : Component =>
+            This.transform.Descendants<TComponent>();
+
         public static IEnumerable<GameObject> SelfAndDescendants(this Component This) =>
             This.transform.SelfAndDescendants();
 

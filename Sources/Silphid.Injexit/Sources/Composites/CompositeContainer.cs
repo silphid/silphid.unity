@@ -16,18 +16,30 @@ namespace Silphid.Injexit
                 .ToArray();
         }
 
+        #region IContainer members
+
+        public IContainer Create() =>
+            _containers
+                .First()
+                .Create();
+
+        #endregion
+        
         #region IResolver members
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false) =>
             _containers
                 .Select((index, x) => x.ResolveFactory(abstractionType, id, true))
                 .FirstNotNullOrDefault()
-            ?? ThrowIfNotOptional(abstractionType, isOptional);
+            ?? ThrowIfNotOptional(abstractionType, id, isOptional);
 
-        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
+        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, string id, bool isOptional)
         {
             if (!isOptional)
-                throw new Exception($"No mapping for required type {abstractionType.Name}.");
+            {
+                var withId = id != null ? $" with Id={id}" : "";
+                throw new Exception($"No binding{withId} found for required type {abstractionType.Name}.");
+            }
 
             return null;
         }
@@ -63,12 +75,7 @@ namespace Silphid.Injexit
         public void Inject(IEnumerable<object> objects, IResolver resolver = null) =>
             _containers
                 .First()
-                .Inject(objects, resolver);
-
-        public IContainer Create() =>
-            _containers
-                .First()
-                .Create();
+                .Inject(objects, resolver ?? this);
 
         #endregion
 
