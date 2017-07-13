@@ -31,8 +31,12 @@ namespace Silphid.Showzup
         {
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
-            
-            base.Start();
+
+            if (AutoSelect)
+                Views
+                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                    .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
+                    .AddTo(this);
             
             SubscribeToUpdateFocusables(SelectedView);
 
