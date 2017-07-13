@@ -73,7 +73,7 @@ namespace Silphid.Showzup
         {
             if (!TabSelectionControl.IsSelfOrDescendantSelected())
             {
-                //_moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up}); // Disable back buttton until we fix tab selection
+                _moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up});
                 eventData.Use();
             }
         }
