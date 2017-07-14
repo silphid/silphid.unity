@@ -73,20 +73,20 @@ namespace Silphid.Showzup
                 .AutoDetach()
             ?? Observable.ReturnUnit();
 
-        protected void Bind(Image image, Uri uri)
+        protected void Bind(Image image, Uri uri, bool keepVisible = false)
         {
             if (image != null)
-                BindAsync(image, uri)
+                BindAsync(image, uri, null, keepVisible)
                     .Subscribe()
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null)
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null, bool keepVisible = false)
         {
             if (image == null)
                 return Observable.ReturnUnit();
 
-            image.enabled = false;
+            image.enabled = keepVisible;
             return Loader
                 .Load<Sprite>(uri, options)
                 .Do(x =>
