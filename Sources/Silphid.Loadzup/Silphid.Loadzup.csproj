@@ -46,6 +46,7 @@
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Converters\CompositeConverter.cs" />
+    <Compile Include="Sources\Converters\JsonConverter.cs" />
     <Compile Include="Sources\Converters\SpriteConverter.cs" />
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
