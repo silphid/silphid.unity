@@ -123,6 +123,18 @@ namespace Silphid.Showzup
             SelectedView.Value = view;
         }
 
+        public bool SelectIndex(int index)
+        {
+            var viewAtIndex = GetViewAtIndex(index);
+
+            if (viewAtIndex == null)
+                return false;
+
+            SelectedView.Value = viewAtIndex;
+
+            return true;
+        }
+
         public bool SelectFirst()
         {
             if (!HasItems)
