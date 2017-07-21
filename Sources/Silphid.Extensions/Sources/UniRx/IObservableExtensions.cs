@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx.Operators;
 using UniRx;
+using UnityEngine;
 
 namespace Silphid.Extensions
 {
@@ -76,34 +77,34 @@ namespace Silphid.Extensions
 
         #region SubscribeAndForget
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This)
+        public static void SubscribeAndForget<T>(this IObservable<T> This)
         {
-            return This.AutoDetach().Subscribe();
+            This.AutoDetach().Subscribe();
         }
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, IObserver<T> observer)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, IObserver<T> observer)
         {
-            return This.AutoDetach().Subscribe(observer);
+            This.AutoDetach().Subscribe(observer);
         }
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext)
         {
-            return This.AutoDetach().Subscribe(onNext);
+            This.AutoDetach().Subscribe(onNext);
         }
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError)
         {
-            return This.AutoDetach().Subscribe(onNext, onError);
+            This.AutoDetach().Subscribe(onNext, onError);
         }
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action onCompleted)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action onCompleted)
         {
-            return This.AutoDetach().Subscribe(onNext, onCompleted);
+            This.AutoDetach().Subscribe(onNext, onCompleted);
         }
 
-        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted)
+        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted)
         {
-            return This.AutoDetach().Subscribe(onNext, onError, onCompleted);
+            This.AutoDetach().Subscribe(onNext, onError, onCompleted);
         }
 
         #endregion
