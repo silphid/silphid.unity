@@ -75,8 +75,8 @@ public class Sequencing1 : MonoBehaviour
                 // method supports any type T for IObservable<T>, but it disregards all emitted values, so it is our responsability
                 // to act upon meaningful values, as we are doing here with the Do() Rx operator to log the loaded greeting as a
                 // side-effect.
-                seq.Add(RotateCubeIndefinitely()
-                    .TakeUntil(LoadGreeting().Do(x => Debug.Log($"Greeting loaded: {x}"))));
+                seq.Add(RotateCubeIndefinitely().TakeUntil(
+                    LoadGreeting().Do(x => Debug.Log($"Greeting loaded: {x}"))));
 
                 // This is a more verbose, but much more flexible overload of AddParallel(), because it passes the new parallel
                 // object to the lambda and you therefore have access to all its extensions methods (like AddSequence() in this case).
@@ -133,7 +133,8 @@ public class Sequencing1 : MonoBehaviour
     // callers up the chain.  That ensures errors can always bubble up to higher level functions and also that disposing the chain
     // at a higher level will dispose it completely.
     private IObservable<Unit> RotateCubeIndefinitely() =>
-        Sequence.Create(
+        Sequence
+            .Create(
                 () => RotateCube(Vector3.up * 180),
                 () => RotateCube(Vector3.right * 180),
                 () => RotateCube(Vector3.forward * 180))

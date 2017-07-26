@@ -87,6 +87,7 @@
     <Compile Include="Sources\Unity\RectExtensions.cs" />
     <Compile Include="Sources\Unity\RectTransformExtensions.cs" />
     <Compile Include="Sources\Unity\TransformExtensions.cs" />
+    <Compile Include="Sources\Unity\UIExtensions.cs" />
     <Compile Include="Sources\Unity\Vector2Extensions.cs" />
     <Compile Include="Sources\Unity\Vector3Extensions.cs" />
   </ItemGroup>

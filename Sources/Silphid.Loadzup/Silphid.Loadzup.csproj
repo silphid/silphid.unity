@@ -76,10 +76,6 @@
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenject.Usage\Zenject.Usage.csproj">
-      <Project>{E3C6424A-BFE7-4ED4-94ED-1CE34894A180}</Project>
-      <Name>Zenject.Usage</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common.targets" />

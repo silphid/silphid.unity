@@ -1,2 +1,4 @@
 *.lock.json
 /.idea/
+/Temp/
+/obj/

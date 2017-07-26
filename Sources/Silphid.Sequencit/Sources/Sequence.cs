@@ -7,7 +7,7 @@ namespace Silphid.Sequencit
 {
     public class Sequence : ISequencer, IObservable<Unit>
     {
-        private IObservable<Unit> _observable = Observable.ReturnUnit();
+        private readonly List<IObservable<Unit>> _observables = new List<IObservable<Unit>>();
 
         public static Sequence Create(Action<Sequence> action)
         {
@@ -17,7 +17,7 @@ namespace Silphid.Sequencit
         }
 
         public static Sequence Create(params Func<IObservable<Unit>>[] selectors) =>
-            Create(seq => selectors.ForEach(selector => seq.Add(selector())));
+            Create(seq => selectors.ForEach(selector => seq.Add(Observable.Defer(selector))));
 
         public static Sequence Create(IEnumerable<IObservable<Unit>> observables) =>
             Create(seq => observables.ForEach(seq.Add));
@@ -28,14 +28,10 @@ namespace Silphid.Sequencit
         public static IDisposable Start(params Func<IObservable<Unit>>[] selectors) =>
             Start(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public void Add(IObservable<Unit> observable)
-        {
-            _observable = _observable.Then(observable);
-        }
+        public void Add(IObservable<Unit> observable) =>
+            _observables.Add(observable);
 
-        public IDisposable Subscribe(IObserver<Unit> observer)
-        {
-            return _observable.Subscribe(observer);
-        }
+        public IDisposable Subscribe(IObserver<Unit> observer) =>
+            _observables.Concat().Subscribe(observer);
     }
 }

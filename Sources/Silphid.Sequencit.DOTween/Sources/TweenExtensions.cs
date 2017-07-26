@@ -1,7 +1,6 @@
 ﻿using System;
 using DG.Tweening;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {

@@ -252,7 +252,7 @@ All your view prefabs must be contained within your resources or asset bundles, 
 All *controls* implement the *IPresenter* interface, which allows to asynchronously present any object (*model*), with optional *Options*. Because the loading and presenting of *views* is asynchronous, you must always subscribe to the returned observable:
 
 ```c#
-var disposable = control.Present(myModelObject, options).Subscribe();
+control.Present(myModelObject, options).AutoDetach().Subscribe();
 ```
 
 ## Manifest

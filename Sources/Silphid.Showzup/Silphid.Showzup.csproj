@@ -89,7 +89,6 @@
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
-    <Compile Include="Sources\InjectionAdapter.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
     <Compile Include="Sources\Interfaces\IInjectionAdapter.cs" />
