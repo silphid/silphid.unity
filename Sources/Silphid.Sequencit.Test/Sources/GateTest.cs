@@ -9,6 +9,7 @@ public class GateTest : SequenceableTestBase
     [Test]
     public void BooleanGateTest()
     {
+        // Start in already paused state
         var gate = new ReactiveProperty<bool>(false);
         
         Sequence.Start(s =>
@@ -26,13 +27,18 @@ public class GateTest : SequenceableTestBase
 
         Assert.That(_value, Is.EqualTo(1));
 
+        // Resume
         gate.Value = true;
         Assert.That(_value, Is.EqualTo(3));
 
+        // Pause (during virtual delay)
         gate.Value = false;
+        
+        // Let virtual delay elapse
         _scheduler.AdvanceTo(10);
         Assert.That(_value, Is.EqualTo(4));
 
+        // Resume
         gate.Value = true;
         Assert.That(_value, Is.EqualTo(5));
     }
