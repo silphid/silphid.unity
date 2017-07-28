@@ -10,7 +10,6 @@ namespace Silphid.Loadzup.Resource
 {
     public class ResourceLoader : ILoader
     {
-        private const string Scheme = "res";
         private const string PathSeparator = "/";
 
         private readonly IConverter _converter;
@@ -20,8 +19,8 @@ namespace Silphid.Loadzup.Resource
             _converter = converter;
         }
 
-        public bool Supports(Uri uri) =>
-            uri.Scheme == Scheme;
+        public bool Supports<T>(Uri uri) =>
+            uri.Scheme == Scheme.Resource;
 
         public IObservable<T> Load<T>(Uri uri, Options options)
         {
@@ -29,18 +28,19 @@ namespace Silphid.Loadzup.Resource
             var path = GetPathAndContentType(uri, ref contentType);
 
             return LoadAsync<T>(path)
-                .Select(x => Convert<T>(x, contentType))
+                .ContinueWith(x => Convert<T>(x, contentType))
 //                .DoOnCompleted(() => Debug.Log($"#Loadzup# Asset '{path}' loaded from resources."))
                 .DoOnError(error => Debug.Log($"#Loadzup# Failed to load asset '{path}' from resources: {error}"));
         }
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();
 
-        private IObservable<Object> LoadAsync<T>(string path) =>
-            Observable
-                .Defer(() => Resources
-                    .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
-                    .AsObservable<Object>());
+        private IObservable<Object> LoadAsync<T>(string path)
+        {
+            return Resources
+                .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
+                .AsObservable<Object>();
+        }
 
         private string GetPathAndContentType(Uri uri, ref ContentType contentType)
         {
@@ -68,10 +68,10 @@ namespace Silphid.Loadzup.Resource
             return path;
         }
 
-        private T Convert<T>(Object obj, ContentType contentType)
+        private IObservable<T> Convert<T>(Object obj, ContentType contentType)
         {
             if (obj is T)
-                return (T) (object) obj;
+                return Observable.Return((T) (object) obj);
 
             if (obj is TextAsset)
             {

@@ -14,12 +14,12 @@ namespace Silphid.Loadzup.Http
             _converter = converter;
         }
 
-        public bool Supports(Uri uri) =>
-            uri.Scheme == "http" || uri.Scheme == "https";
+        public bool Supports<T>(Uri uri) =>
+            uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https;
 
         public IObservable<T> Load<T>(Uri uri, Options options = null) =>
             _requester
                 .Request(uri, options)
-                .Select(x => _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding));
+                .ContinueWith(x => _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding));
     }
 }

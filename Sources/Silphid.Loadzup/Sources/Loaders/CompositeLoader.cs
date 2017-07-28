@@ -13,12 +13,12 @@ namespace Silphid.Loadzup
             _children = children.ToList();
         }
 
-        public bool Supports(Uri uri) =>
-            _children.Any(x => x.Supports(uri));
+        public bool Supports<T>(Uri uri) =>
+            _children.Any(x => x.Supports<T>(uri));
 
         public IObservable<T> Load<T>(Uri uri, Options options  = null)
         {
-            var child = _children.FirstOrDefault(x => x.Supports(uri));
+            var child = _children.FirstOrDefault(x => x.Supports<T>(uri));
             if (child == null)
                 throw new NotSupportedException($"URI not supported: {uri}");
 
