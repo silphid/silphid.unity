@@ -261,14 +261,14 @@ The *Manifest* is an asset file that stores the mappings between the different m
 
 ![](Doc/ShowzupManifest.png "Showzup Manifest")
 
-To create a manifest from the main menu, select *Assets > Create > Showzup > Manifest*. The manifest will then be automatically selected and displayed in the Inspector window. You must then configure the path within your assets where your prefabs are located and the URI prefix that will be prepended to each prefab's relative path, in order to load it at run-time. Finally, press the *Build* button to regenerate the manifest using those new configurations.
+To create a manifest from the main menu, select *Assets > Create > Showzup > Manifest*. The manifest will then be automatically selected and displayed in the Inspector window. You must then configure the path within your assets where your view prefabs are located and the URI prefix that will be prepended to each prefab's relative path, in order to load it at run-time. Finally, press the *Build* button to regenerate the manifest using those new configurations.
 
 ### How the Manifest is generated
 
 - All *ViewModel*-derived classes are scanned and their base class declaration (`... : ViewModel<TModel>`) is used to determine the *Model* > *ViewModel* mappings. 
 - Similarly, all *View*-derived classes are scanned and their base class declaration (`... : View<TViewModel>`) is used to determine the *ViewModel* > *View* mappings.
 - Finally, all prefabs in the given folder and sub-folders are scanned for any *View*-derived MonoBehaviours attached to them to determine the *View* > *Prefab* mappings.
-- *Variants* may be associated with each of those mappings (as described in following section *Variants*).
+- *Variants* may be associated with each of those mappings (as described in following section *Variants*, under *Variant Mapping*).
 
 ## Variants
 
@@ -284,37 +284,90 @@ The following are only examples of the kinds of variants that might be required 
 - **Popup**: Large image with a thin title underneath.
 - **List Item**: Only a small thumbnail next to a title.
 - **Menu Item**: Only title.
-- ...
+
+#### Platform variants
+
+- **iOS**: Top nav-bar, with iOS-like back button in the upper-left corner.
+- **Android**: No back button, as OS provides its own navigation for that.
 
 #### Form-factor variants
 
 - **Tablet**: Many panels, with more details in each one.
 - **Mobile**: Fewer panels, with fewer details in each one.
 - **TV**: Similar to tablet, but with larger fonts for 10-foot viewing.
-- ...
 
 #### Orientation variants
 
 - **Portrait**: Vertical layout, with everything stacked in a single column.
 - **Landscape**: Two columns, with an overview on the left and details on the right.
 
-#### Platform variants
-
-- **iOS**: Top nav-bar, with iOS-like back button in the upper-left corner.
-- **Android**: No back button, as OS provides its own navigation for that.
-- ...
-
 #### Theme variants
 
 - **Christmas**: Christmas-themed skin
 - **Halloween**: Halloween-themed skin
-- ...
 
-### Supported variants vs Requested variants
+### How to define variants
+
+As in the following example, variants are defined by creating a class named according to the variant group (*Display* in this case) and adding a `public static readonly` field for each variant in the group: 
+
+```C#
+public class Display : Variant<Display>
+{
+    public static readonly Display Page = Create();
+    public static readonly Display Popup = Create();
+    public static readonly Display ListItem = Create();
+    public static readonly Display MenuItem = Create();
+}
+```
+
+The *Page* variant can be accessed (just as any static field) via `Display.Page` and the variant group itself is `Display.Group`, or from the `Group` property on any variant, for example `Display.Page.Group`.
+
+All your variant groups must be registered at startup with the `VariantProvider` in order for Showzup to know about them. The following code creates a new `VariantProvider` from the variant groups *Display*, *Form* and *Platform* and binds it in the dependency injection container (the actual binding syntax here is specific to *Injexit* and will vary from one dependency injection framework to another):
+
+```c#
+var variantProvider = VariantProvider.From<Display, Form, Platform>();
+container.BindInstance(variantProvider);
+```
+
+### How to tag prefabs with variants
+
+Simply put the prefab in a sub-folder (underneath the root view prefab folder) with a name that matches a variant name.
+
+For example, if all your root view prefab folder is *Assets/Prefabs/Resources* and you place some prefabs in the *Assets/Prefabs/Resources/* **iOS/Lanscape/Page** folder, those prefabs will be tagged with the following variants (assuming you have defined the variants in the example above):
+
+- Platform.iOS
+- Orientation.Landscape
+- Display.Page
+
+Note that you may also have other arbitrary sub-folder names that do not match any variant, for purely organizational purposes.
+
+### How to tag view models and views with variants
+
+Simply apply the `[Variant]` attribute to any view model or view class: 
+
+```c#
+[Variant("Page")]
+public class FooView : View<FooViewModel>
+{
+}
+```
+
+It is however recommended to use the C# 6 `nameof()` operator, so that if you rename your variants, all references to them will stay in sync:
+
+```c#
+[Variant(nameof(Display.Page))]
+public class FooView : View<FooViewModel>
+{
+}
+```
+
+Note that tagging view models and views with variants is less common than tagging prefabs. Most of the time, the same view models and views will work for all variants and only prefabs need to be customized for each variant. For example, the same view class can often be reused with multiple prefabs, even if you don't bind all its UI fields.  You can also have conditional logic in the view when those UI fields are null, which increases the reusability of the view.
+
+### Distinction between *Supported variants* and *Requested variants*
 
 If you tag some view models, views or prefabs with one or more variants, those are said to be their *supported variants*.
 
-When time comes to display a model, we need to specify the variants to be used. Those are the *requested variants*. *Showzup* resolve the proper view models, views and prefabs to use by going through all candidate mappings and comparing their *supported variants* with the variants you requested. 
+When time comes to display a model, we need to specify the variants to be used. Those are the *requested variants*. *Showzup* resolves the proper view models, views and prefabs to use by going through all candidate mappings and comparing their *supported variants* with the variants you requested. 
 
 ### Variants are grouped
 
@@ -322,89 +375,94 @@ Each variant is part of a *Variant Group*. In the above examples, the *Page* var
 
 ### No variant means *generic*
 
-If a view model, view or prefab is not tagged with any variant from a given group, it is considered generic and can be used for 
-
-
+If a view model, view or prefab is not tagged with any variant from a given group, it is considered generic and can be used for any variant of that group.  However, such a generic variant is considered less prioritary than a specific variant match, if there is one. 
 
 ### Variants can be combined across groups
 
-Variants can become very powerful when they are combined.  For example, you are likely to want to use a different prefab for the *Mobile+Landscape* version of a page to be different from its *Tablet+Landscape* version.
+Variants of different groups can become very powerful when they are combined together.  For example, you could have prefabs for the *Mobile + Landscape* variant combination that are different from those from  the *Tablet + Landscape* or *Mobile + Portrait* combinations.
 
-### A specific variant
+### Variant mapping in manifest
 
-![](Doc/ShowzupVariants.png "Showzup Variants")
+We saw earlier how *Showzup* generates mappings and stores them in the manifest. During this process, for each mapping, it also takes the variants of both mapped items (if any) and combines them into the mapping. For example, if FooViewModel is tagged with *Page* and FooView with *iOS*, the mapping *FooViewModel > FooView* will be tagged with both *Page + iOS*.
+
+![](Doc/ShowzupVariantMapping.png "Showzup Variant Mapping")
+
+### Requesting variants at run-time
+
+There are three ways of requesting specific variants at run-time (shown as dark-grey boxes in diagram below).
+
+![](Doc/ShowzupVariantPresentation.png "Showzup Variant Presentation")
+
+#### Options.Variants
+
+This is the least common way of requesting variants. The optional `Options` object, that you can pass as second parameter to the `IPresenter.Present()` method, has a `Variants` property for requesting specific variants on the spot.
+
+#### Control.Variants
+
+This is the most useful and common way of requesting variants. You simply specify the requested variant(s) in the `Variants` property of the control in the *Inspector* window. Whenever you will present a model object in that control, it will request those variants to be fulfilled.
+
+#### IVariantProvider.GlobalVariants
+
+Variants that are global to the entire application, such as *Platform*, *FormFactor*, *Orientation* and *Theme* in our previous example, can be set via the `GlobalVariants` property of the `IVariantProvider`.
+
+### Configuring dependency injection
+
+This is an excerpt from the example project that configures the various dependencies using *Injexit*:
+
+```c#
+using Silphid.Extensions;
+using Silphid.Loadzup;
+using Silphid.Loadzup.Resource;
+using Silphid.Showzup;
+using Silphid.Injexit;
+using UniRx;
+using UnityEngine;
+
+namespace App
+{
+    public class Application : MonoBehaviour
+    {
+        public Manifest Manifest;
+        public NavigationControl NavigationControl;
+        
+        public void Start()
+        {
+            var container = new Container(Debug.unityLogger);
+
+            container.BindInstance(Debug.unityLogger);
+            container.BindInstance(CreateLoader());
+            container.Bind<IScoreEvaluator, ScoreEvaluator>().AsSingle();
+            container.Bind<IViewResolver, ViewResolver>().AsSingle();
+            container.Bind<IViewLoader, ViewLoader>().AsSingle();
+            container.BindInstance<IManifest>(Manifest);
+            container.BindInstance<IInjectionAdapter>(new InjectionAdapter(container));
+            container.BindInstance(VariantProvider.From<Display, Form, Platform>());
+
+            container.InjectScene(gameObject.scene);
+        }
+
+        private ILoader CreateLoader() =>
+            new ResourceLoader(new SpriteConverter());
+    }
+}
+```
+
+### Create *storyboard* Scene(s)
+
+In order to faciliate editing your view prefabs, you can create a scene with multiple canvases side by side, one canvas for each view prefab. Configure you canvases in World Space and size them according to each view's likely dimensions. This scene is only used at design-time. We call it a *storyboard*, in reference to Xcode's storyboards.
+
+If you multiple developers are designing those prefabs, it is recommended to isolate each prefab in its own scene, but load all those scenes together in the editor by dragging them all into the *Hierarchy* window, using Unity's (rather) new multi-scene editing. You can then lay all your canvases side by side into some pratical layout, even if they are in different scenes.
+
+Note that you may be able to setup your storyboard scenes so that they could be tested in *Play* mode, by loading your main scene in addition to the storyboard scenes. When you hit *Play*, your storyboard canvases will be off-screen and should not interfere. This might however not be ideal, as all storyboard view prefabs will be loaded and active and might introduce side-effects and extra memory consumption. It's just a quick shortcut to avoid switching between your storyboard scenes and the main scene.
 
 ## Under Development
 
 - Customizable multi-phase transitioning.
 
-## How to get started
+## Wishlist
 
-### Configure Dependency Injection
-
-```c#
-using Silphid.Loadzup;
-using Silphid.Loadzup.Resource;
-using Silphid.Showzup;
-using Silphid.Showzup.Injection;
-using UnityEngine;
-
-public class Application : MonoBehaviour
-{
-    public Manifest Manifest;
-
-    public void Start()
-    {
-        var container = new Container(Debug.unityLogger);
-
-        container.BindInstance<ILoader>(CreateLoader());
-        container.BindSingle<IScoreEvaluator, ScoreEvaluator>();
-        container.BindSingle<IViewResolver, ViewResolver>();
-        container.BindSingle<IViewLoader, ViewLoader>();
-        container.BindInstance<IManifest>(Manifest);
-        container.BindInstance<IInjector>(new Injector(go => container.Inject(go)));
-        container.BindInstance<IViewModelFactory>(CreateViewModelFactory(container));
-        container.BindInstance<IVariantProvider>(new VariantProvider(Display.Group, Form.Group, Platform.Group));
-
-        container.InjectAllGameObjects();
-    }
-
-    private ViewModelFactory CreateViewModelFactory(Container container)
-    {
-        return new ViewModelFactory((viewModelType, parameters) =>
-            (IViewModel) container.Resolve(
-                viewModelType,
-                new Container().BindInstances(parameters)));
-    }
-
-    private CompositeLoader CreateLoader()
-    {
-        var compositeConverter = new CompositeConverter(
-            new SpriteConverter());
-
-        return new CompositeLoader(
-            new ResourceLoader(compositeConverter));
-    }
-}
-```
-
-### Define Variants
-
-### Create Model Classes
-
-### Create ViewModel Classes
-
-### Create View Classes
-
-### Create Storyboard Scene
-
-### Create View Prefabs
-
-### Place a Control
-
-### Present a Model in Control
-
-
+- Making *Showzup* compatible with other dependency injection frameworks than *Injexit*, such as *Zenject*.
+- Allowing controls to dynamically swap views when global variants change, for example to present a more suitable view when orientation switches from landscape to portrait.
 
 # Experimental Libraries
 

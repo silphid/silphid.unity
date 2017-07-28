@@ -1,17 +1,18 @@
-using Silphid.Extensions;
+using System.Collections.Generic;
 
 namespace Silphid.Showzup
 {
-    public class VariantGroup<T> : IVariantGroup where T : Variant<T>
+    public class VariantGroup<T> : IVariantGroup where T : Variant<T>, new()
     {
-        public string Name { get; }
-        public VariantSet Variants { get; }
+        private readonly List<T> _variants = new List<T>();
+        private VariantSet _variantSet;
 
-        public VariantGroup(params Variant<T>[] variants)
+        public string Name => typeof(T).Name;
+        public VariantSet Variants => _variantSet ?? (_variantSet = new VariantSet(_variants));
+
+        public void Add(T variant)
         {
-            Name = typeof(T).Name;
-            Variants = new VariantSet(variants);
-            variants.ForEach(x => x.Group = this);
+            _variants.Add(variant);
         }
     }
 }

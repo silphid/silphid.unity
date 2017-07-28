@@ -180,8 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 512b492b07c74955a29ab287eafab9ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Manifest: {fileID: 11400000, guid: 3dd6e90639eeb46419ef117d17c44428, type: 2}
-  NavigationControl: {fileID: 870891445}
+  Manifest: {fileID: 11400000, guid: 50d5beb9ef3184e04ae78dc919307c1f, type: 2}
+  NavigationControl: {fileID: 870891447}
 --- !u!4 &554429614
 Transform:
   m_ObjectHideFlags: 0
@@ -326,6 +326,8 @@ GameObject:
   m_Component:
   - component: {fileID: 870891444}
   - component: {fileID: 870891445}
+  - component: {fileID: 870891447}
+  - component: {fileID: 870891446}
   m_Layer: 5
   m_Name: NavigationControl
   m_TagString: Untagged
@@ -365,11 +367,40 @@ MonoBehaviour:
   m_Script: {fileID: -1029033404, guid: 3ab50cf3e83e243e39c1fe8d32573e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Variants:
-  - Page
+--- !u!114 &870891446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 870891443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -455708996, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Ease: 10
+  FadeOutSource: 1
+  FadeInTarget: 1
+  SourceAboveTarget: 1
+  StartScale: 0.8
+  EndScale: 1.2
+--- !u!114 &870891447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 870891443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1029033404, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Variants: []
   Container1: {fileID: 2008876462}
   Container2: {fileID: 411554991}
-  DefaultTransition: {fileID: 0}
+  DefaultTransition: {fileID: 870891446}
+  TransitionInstantlyFromNull: 0
+  TransitionInstantlyToNull: 0
   HistoryContainer: {fileID: 595017915}
   CanPopTopLevelView: 0
 --- !u!1 &1387079288

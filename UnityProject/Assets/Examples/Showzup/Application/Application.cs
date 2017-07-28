@@ -9,7 +9,7 @@ using UnityEngine;
 namespace App
 {
     public class Application : MonoBehaviour
-    {
+    {    
         public Manifest Manifest;
         public NavigationControl NavigationControl;
         
@@ -25,6 +25,8 @@ namespace App
             container.BindInstance<IManifest>(Manifest);
             container.BindInstance<IInjectionAdapter>(new InjectionAdapter(container));
             container.BindInstance(VariantProvider.From<Display, Form, Platform>());
+            
+            container.BindToSelfAll<IViewModel>(GetType().Assembly);
 
             container.InjectScene(gameObject.scene);
             

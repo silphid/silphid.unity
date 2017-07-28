@@ -2,13 +2,10 @@ using Silphid.Showzup;
 
 public class Display : Variant<Display>
 {
-    public static readonly Display Page = new Display();
-    public static readonly Display Background = new Display();
-    public static readonly Display Panel = new Display();
-    public static readonly Display Tile = new Display();
-    public static readonly Display Thumbnail = new Display();
-    public static readonly Display Item = new Display();
-
-    public new static readonly VariantGroup<Display> Group = new VariantGroup<Display>(
-        Page, Panel, Tile, Thumbnail, Item);
+    public static readonly Display Page = Create();
+    public static readonly Display Background = Create();
+    public static readonly Display Panel = Create();
+    public static readonly Display Tile = Create();
+    public static readonly Display Thumbnail = Create();
+    public static readonly Display Item = Create();
 }

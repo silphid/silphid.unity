@@ -32,11 +32,11 @@ namespace Silphid.Showzup
 
         private static IVariantGroup GetVariantGroupFromVariantType(Type type)
         {
-            var field = type.GetField("Group", BindingFlags.Public | BindingFlags.Static);
-            if (field == null || !field.FieldType.IsAssignableTo<IVariantGroup>())
-                throw new InvalidOperationException($"Variant type {type.Name} must have a static Group field of type IVariantGroup.");
+            var property = type.BaseType.GetProperty("Group", BindingFlags.Public | BindingFlags.Static);
+            if (property == null || !property.PropertyType.IsAssignableTo<IVariantGroup>())
+                throw new InvalidOperationException($"Variant type {type.Name} must have a static Group property of type IVariantGroup.");
 
-            return (IVariantGroup) field.GetValue(null);
+            return (IVariantGroup) property.GetValue(null);
         }
     }
 }
