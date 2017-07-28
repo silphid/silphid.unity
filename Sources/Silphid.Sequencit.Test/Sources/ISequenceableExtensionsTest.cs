@@ -163,7 +163,7 @@ public class ISequenceableExtensionsTest
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            disposable = s.AddSuspension();
+            disposable = s.AddDisposableGate();
             s.AddAction(() => _value = 456);
         });
 

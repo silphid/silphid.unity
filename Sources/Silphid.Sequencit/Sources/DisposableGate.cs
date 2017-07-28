@@ -7,11 +7,11 @@ namespace Silphid.Sequencit
     /// <summary>
     /// An observable that completes only when it is disposed.
     /// </summary>
-    public class Suspension : IObservable<Unit>, IDisposable
+    public class DisposableGate : IObservable<Unit>, IDisposable
     {
-        public static Suspension Create(Action<Suspension> action)
+        public static DisposableGate Create(Action<DisposableGate> action)
         {
-            var completion = new Suspension();
+            var completion = new DisposableGate();
             action(completion);
             return completion;
         }
