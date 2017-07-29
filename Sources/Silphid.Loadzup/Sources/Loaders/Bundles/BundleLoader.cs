@@ -24,6 +24,7 @@ namespace Silphid.Loadzup.Bundles
         {
             // Todo only passed parsed uri
             var bundleName = uri.Host;
+
             return _manifestLoader.Load()
                 .ContinueWith(m => LoadAllDependencies(m, bundleName, options))
                 .ContinueWith(x => _cachedLoader
@@ -53,7 +54,6 @@ namespace Silphid.Loadzup.Bundles
 
         public void Unload(string bundleName)
         {
-            bundleName = bundleName.ToLowerInvariant();
             // Bundle has not been loaded yet or does not need to be unload
             if (!_cachedLoader.Unload(bundleName))
                 return;
