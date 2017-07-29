@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Silphid.Loadzup.Caching;
 using UniRx;
-using UnityEngine.Assertions;
 
 namespace Silphid.Loadzup.Bundles
 {
@@ -32,7 +32,7 @@ namespace Silphid.Loadzup.Bundles
 
             public void SetBundle(IBundle bundle)
             {
-                Assert.IsTrue(_bundle == null || _bundle == bundle);
+                Debug.Assert(_bundle == null || _bundle == bundle);
                 _bundle = bundle;
             }
 
@@ -56,7 +56,7 @@ namespace Silphid.Loadzup.Bundles
 
             public bool ReleaseDependencyRef()
             {
-                Assert.IsTrue(_dependencyCount >= 1);
+                Debug.Assert(_dependencyCount >= 1);
 
                 _dependencyCount--;
                 return CheckRefCount();
@@ -69,7 +69,7 @@ namespace Silphid.Loadzup.Bundles
 
             public bool ReleaseLoadingRef()
             {
-                Assert.IsTrue(_loadingCount >= 1);
+                Debug.Assert(_loadingCount >= 1);
 
                 _loadingCount--;
                 return CheckRefCount();
@@ -112,7 +112,8 @@ namespace Silphid.Loadzup.Bundles
             // Need to add ref before loading. Otherwise, if unload occurs while loading, it will release ref incorrectly
             AddRef(bundleName, addRefAction);
             AddRef(bundleName, AddLoadingRefAction);
-            var releaseLoadingRefDisposable = Disposable.Create(() => ReleaseRef(bundleName, ReleaseLoadingRefAction, false));
+            var releaseLoadingRefDisposable =
+                Disposable.Create(() => ReleaseRef(bundleName, ReleaseLoadingRefAction, false));
 
             return Load<IBundle>(GetBundleUri(bundleName), options)
                 .Do(x => SetBundle(x, bundleName))
