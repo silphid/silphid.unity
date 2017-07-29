@@ -8,7 +8,7 @@ namespace Silphid.Loadzup.Caching
 {
     public class CachedLoader : ILoader
     {
-        private readonly Dictionary<Uri, Subject<object>> _burst = new Dictionary<Uri, Subject<object>>();
+        private readonly Dictionary<Uri, Subject<object>> _currentlyLoading = new Dictionary<Uri, Subject<object>>();
         private readonly ILoader _innerLoader;
         private readonly Dictionary<Uri, object> _cache = new Dictionary<Uri, object>();
 
@@ -32,13 +32,12 @@ namespace Silphid.Loadzup.Caching
                     return Observable.Return((T) obj);
 
                 Subject<object> sub;
-                if (_burst.TryGetValue(uri, out sub))
+                if (_currentlyLoading.TryGetValue(uri, out sub))
                     return sub.OfType<object, T>();
 
-                _burst[uri] = new Subject<object>();
+                _currentlyLoading[uri] = new Subject<object>();
             }
 
-            // Todo throw error on subject of burst dictionary on loading failed (remove uri from dictionary)
             return _innerLoader
                 .Load<T>(uri, options)
                 .Do(x =>
@@ -47,9 +46,9 @@ namespace Silphid.Loadzup.Caching
 
                     lock (this)
                     {
-                        sub = _burst[uri];
+                        sub = _currentlyLoading[uri];
                         _cache[uri] = x;
-                        _burst.Remove(uri);
+                        _currentlyLoading.Remove(uri);
                     }
 
                     sub.OnNext(x);
@@ -61,8 +60,8 @@ namespace Silphid.Loadzup.Caching
 
                     lock (this)
                     {
-                        sub = _burst[uri];
-                        _burst.Remove(uri);
+                        sub = _currentlyLoading[uri];
+                        _currentlyLoading.Remove(uri);
                     }
 
                     sub.OnError(x);
