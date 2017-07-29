@@ -21,7 +21,7 @@ namespace Silphid.Loadzup.Bundles
                 {
                     if (request.asset == null)
                         throw new InvalidOperationException(
-                            $"Failed to load asset with name \"{assetName}\" from bundle {_bundle.name}");
+                            $"Failed to load asset with name \"{assetName}\" from bundle {_bundle.name} with type {typeof(T)}");
 
                     return (T) (object) request.asset;
                 });
