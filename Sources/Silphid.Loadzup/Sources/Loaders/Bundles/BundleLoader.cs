@@ -53,6 +53,7 @@ namespace Silphid.Loadzup.Bundles
 
         public void Unload(string bundleName)
         {
+            bundleName = bundleName.ToLowerInvariant();
             // Bundle has not been loaded yet or does not need to be unload
             if (!_cachedLoader.Unload(bundleName))
                 return;
