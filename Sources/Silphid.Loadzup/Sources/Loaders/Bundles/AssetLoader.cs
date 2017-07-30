@@ -12,7 +12,7 @@ namespace Silphid.Loadzup.Bundles
         private readonly ILoader _innerLoader;
 
         public bool Supports<T>(Uri uri) =>
-            uri.Scheme == Scheme.Bundle && typeof(T) != typeof(AssetBundle);
+            uri.Scheme == Scheme.Bundle && typeof(T) != typeof(IBundle);
 
         public AssetLoader(ILoader innerLoader)
         {
