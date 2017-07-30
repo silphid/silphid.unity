@@ -10,23 +10,23 @@ namespace Silphid.Loadzup.Bundles
     {
         private readonly string _baseUri;
 
-        private static readonly Action<BundleRefCount> AddRootRefAction = refCount => refCount.AddRootRef();
-        private static readonly Action<BundleRefCount> AddDependencyRefAction = refCount => refCount.AddDependencyRef();
-        private static readonly Action<BundleRefCount> AddLoadingRefAction = refCount => refCount.AddLoadingRef();
-        private static readonly Func<BundleRefCount, bool> ReleaseRootRefFunc = refCount => refCount.ReleaseRootRef();
+        private static readonly Action<BundleRefCount, string> AddRootRefAction = (refCount, x) => refCount.AddRootRef();
+        private static readonly Action<BundleRefCount, string> AddDependencyRefAction = (refCount, dependencyWithBundleNamed) => refCount.AddDependencyRef(dependencyWithBundleNamed);
+        private static readonly Action<BundleRefCount, string> AddLoadingRefAction = (refCount,x) => refCount.AddLoadingRef();
+        private static readonly Func<BundleRefCount, string, bool> ReleaseRootRefFunc = (refCount,x) => refCount.ReleaseRootRef();
 
-        private static readonly Func<BundleRefCount, bool> ReleaseDependencyRefFunc =
-            refCount => refCount.ReleaseDependencyRef();
+        private static readonly Func<BundleRefCount, string, bool> ReleaseDependencyRefFunc =
+            (refCount, dependencyWithBundleNamed) => refCount.ReleaseDependencyRef(dependencyWithBundleNamed);
 
-        private static readonly Func<BundleRefCount, bool> ReleaseLoadingRefAction =
-            refCount => refCount.ReleaseLoadingRef();
+        private static readonly Func<BundleRefCount, string, bool> ReleaseLoadingRefAction =
+            (refCount,x) => refCount.ReleaseLoadingRef();
 
         #region BundleRefCount private class
 
         private class BundleRefCount
         {
             private IBundle _bundle;
-            private int _dependencyCount;
+            private readonly List<string> _dependencyOfBundles = new List<string>();
             private int _loadingCount;
             private bool _bundleRootLoaded;
 
@@ -49,16 +49,23 @@ namespace Silphid.Loadzup.Bundles
                 return CheckRefCount();
             }
 
-            public void AddDependencyRef()
+            public void AddDependencyRef(string dependencyWithBundleNamed)
             {
-                _dependencyCount++;
+                lock (this)
+                {
+                    if (_dependencyOfBundles.IndexOf(dependencyWithBundleNamed) >= 0)
+                        return;
+
+                    _dependencyOfBundles.Add(dependencyWithBundleNamed);
+                }
             }
 
-            public bool ReleaseDependencyRef()
+            public bool ReleaseDependencyRef(string dependencyWithBundleNamed)
             {
-                Debug.Assert(_dependencyCount >= 1);
-
-                _dependencyCount--;
+                lock (this)
+                {
+                    _dependencyOfBundles.Remove(dependencyWithBundleNamed);
+                }
                 return CheckRefCount();
             }
 
@@ -77,7 +84,7 @@ namespace Silphid.Loadzup.Bundles
 
             private bool CheckRefCount()
             {
-                if (_bundleRootLoaded || _dependencyCount != 0 || _loadingCount != 0)
+                if (_bundleRootLoaded || _dependencyOfBundles.Count != 0 || _loadingCount != 0)
                     return false;
 
                 _bundle?.Unload();
@@ -101,16 +108,16 @@ namespace Silphid.Loadzup.Bundles
         }
 
         public IObservable<IBundle> Load(string bundleName, Options options) =>
-            LoadInternal(bundleName, options, AddRootRefAction, x => Unload(x));
+            LoadInternal(bundleName, options, AddRootRefAction, (x,y) => Unload(x));
 
-        public IObservable<IBundle> LoadDependency(string bundleName, Options options) =>
-            LoadInternal(bundleName, options, AddDependencyRefAction, UnloadDependency);
+        public IObservable<IBundle> LoadDependency(string bundleName, Options options, string dependencyWithBundleNamed) =>
+            LoadInternal(bundleName, options, AddDependencyRefAction, UnloadDependency, dependencyWithBundleNamed);
 
         private IObservable<IBundle> LoadInternal(string bundleName, Options options,
-            Action<BundleRefCount> addRefAction, Action<string> onErrorAction)
+            Action<BundleRefCount, string> addRefAction, Action<string,string> onErrorAction, string dependencyWithBundleNamed = null)
         {
             // Need to add ref before loading. Otherwise, if unload occurs while loading, it will release ref incorrectly
-            AddRef(bundleName, addRefAction);
+            AddRef(bundleName, addRefAction, dependencyWithBundleNamed);
             AddRef(bundleName, AddLoadingRefAction);
             var releaseLoadingRefDisposable =
                 Disposable.Create(() => ReleaseRef(bundleName, ReleaseLoadingRefAction, false));
@@ -120,7 +127,7 @@ namespace Silphid.Loadzup.Bundles
                 .Select(x => new DisposableBundle(x, releaseLoadingRefDisposable))
                 .DoOnError(ex =>
                 {
-                    onErrorAction(bundleName);
+                    onErrorAction(bundleName, dependencyWithBundleNamed);
                     releaseLoadingRefDisposable.Dispose();
                 })
                 .Cast<DisposableBundle, IBundle>();
@@ -137,12 +144,12 @@ namespace Silphid.Loadzup.Bundles
         public bool Unload(string bundleName) =>
             ReleaseRef(bundleName, ReleaseRootRefFunc, true);
 
-        public void UnloadDependency(string bundleName)
+        public void UnloadDependency(string bundleName, string dependencyWithBundleNamed)
         {
-            ReleaseRef(bundleName, ReleaseDependencyRefFunc, false);
+            ReleaseRef(bundleName, ReleaseDependencyRefFunc, false, dependencyWithBundleNamed);
         }
 
-        private void AddRef(string bundleName, Action<BundleRefCount> addRefAction)
+        private void AddRef(string bundleName, Action<BundleRefCount, string> addRefAction, string dependencyWithBundleNamed = null)
         {
             lock (this)
             {
@@ -150,12 +157,12 @@ namespace Silphid.Loadzup.Bundles
                 if (!_bundleRefCounts.TryGetValue(bundleName, out refCount))
                     refCount = _bundleRefCounts[bundleName] = new BundleRefCount();
 
-                addRefAction(refCount);
+                addRefAction(refCount, dependencyWithBundleNamed);
             }
         }
 
-        /// <returns>Whether the bundle was loaded or needs to be unload(</returns>
-        private bool ReleaseRef(string bundleName, Func<BundleRefCount, bool> releaseRefFunc, bool isUnloadingRootRef)
+        /// <returns>Whether needs to be unload(</returns>
+        private bool ReleaseRef(string bundleName, Func<BundleRefCount, string, bool> releaseRefFunc, bool isUnloadingRootRef, string dependencyWithBundleNamed = null)
         {
             lock (this)
             {
@@ -172,7 +179,7 @@ namespace Silphid.Loadzup.Bundles
                 if (isUnloadingRootRef && !refCount.IsRootLoaded())
                     return false;
 
-                if (releaseRefFunc(refCount))
+                if (releaseRefFunc(refCount, dependencyWithBundleNamed))
                 {
                     _bundleRefCounts.Remove(bundleName);
                     Remove(GetBundleUri(bundleName));

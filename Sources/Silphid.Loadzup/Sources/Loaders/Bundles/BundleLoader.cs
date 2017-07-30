@@ -29,7 +29,7 @@ namespace Silphid.Loadzup.Bundles
                 .ContinueWith(m => LoadAllDependencies(m, bundleName, options))
                 .ContinueWith(x => _cachedLoader
                     .Load(bundleName, options)
-                    .DoOnError(ex => x.ForEach(_cachedLoader.UnloadDependency))) // Todo DRY
+                    .DoOnError(ex => x.ForEach(y => _cachedLoader.UnloadDependency(y, bundleName)))) // Todo DRY
                 .Cast<IBundle, T>();
         }
 
@@ -40,7 +40,7 @@ namespace Silphid.Loadzup.Bundles
             return manifest
                 .GetAllDependencies(bundleName)
                 .Select(x => _cachedLoader
-                    .LoadDependency(x, options)
+                    .LoadDependency(x, options, bundleName)
                     .Do(y =>
                     {
                         (y as IDisposable)?.Dispose();
@@ -49,7 +49,7 @@ namespace Silphid.Loadzup.Bundles
                 .WhenAll()
                 .Select(x => loadedBundleNames)
                 .DoOnError(ex => loadedBundleNames
-                    .ForEach(_cachedLoader.UnloadDependency)); // Todo DRY
+                    .ForEach(x => _cachedLoader.UnloadDependency(x, bundleName))); // Todo DRY
         }
 
         public void Unload(string bundleName)
@@ -62,7 +62,7 @@ namespace Silphid.Loadzup.Bundles
                 .AutoDetach()
                 .Subscribe(x => x
                     .GetAllDependencies(bundleName)
-                    .ForEach(_cachedLoader.UnloadDependency));
+                    .ForEach(y => _cachedLoader.UnloadDependency(y, bundleName)));
         }
     }
 }

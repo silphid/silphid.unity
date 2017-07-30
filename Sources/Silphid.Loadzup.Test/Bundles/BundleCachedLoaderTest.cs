@@ -69,7 +69,7 @@ public class BundleCachedLoaderTest
         foreach (var dependency in mockBundle.Dependencies)
         {
             SetUpInnerLoaderReturns(Observable.Return(dependency.Bundle));
-            _fixture.LoadDependency(dependency.Name, options ?? new Options())
+            _fixture.LoadDependency(dependency.Name, options ?? new Options(), mockBundle.Name)
                 .Do(x => (x as IDisposable)?.Dispose())
                 .Wait();
         }
@@ -78,7 +78,7 @@ public class BundleCachedLoaderTest
     private IObservable<IBundle> LoadBundle(MockBundle bundle) => _fixture.Load(bundle.Name, new Options());
 
     private IObservable<IBundle> LoadBundleDependency(MockBundle bundle)
-        => _fixture.LoadDependency(bundle.Name, new Options());
+        => _fixture.LoadDependency(bundle.Name, new Options(), bundle.Name);
 
     private bool UnloadBundleWithDependency(MockBundle bundle)
     {
@@ -92,7 +92,7 @@ public class BundleCachedLoaderTest
     private void UnloadDependency(MockBundle bundle)
     {
         foreach (var dependency in bundle.Dependencies)
-            _fixture.UnloadDependency(dependency.Name);
+            _fixture.UnloadDependency(dependency.Name, bundle.Name);
     }
 
     [Test]

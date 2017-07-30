@@ -40,7 +40,7 @@ public class BundleLoaderTest
 
     private void SetupLoadDependencyReturns(IObservable<IBundle> observable, string bundleName = null)
     {
-        _cachedLoader.LoadDependency(bundleName ?? Arg.Any<string>(), Arg.Any<Options>())
+        _cachedLoader.LoadDependency(bundleName ?? Arg.Any<string>(), Arg.Any<Options>(), Arg.Any<string>())
             .Returns(observable);
     }
 
@@ -93,7 +93,7 @@ public class BundleLoaderTest
         _cachedLoader.Received(1).Load(AssetBundleName, _mockedOptions);
 
         foreach (var t in _mockedDependencies)
-            _cachedLoader.Received(1).LoadDependency(t, _mockedOptions);
+            _cachedLoader.Received(1).LoadDependency(t, _mockedOptions, Arg.Any<string>());
     }
 
     [Test]
@@ -127,7 +127,7 @@ public class BundleLoaderTest
         Assert.IsFalse(_cachedLoader.Received(1).Unload(Arg.Any<string>()));
         _manifestLoader.DidNotReceive().Load();
         _manifest.DidNotReceive().GetAllDependencies(Arg.Any<string>());
-        _cachedLoader.DidNotReceive().UnloadDependency(Arg.Any<string>());
+        _cachedLoader.DidNotReceive().UnloadDependency(Arg.Any<string>(), Arg.Any<string>());
     }
 
     [Test]
@@ -143,7 +143,7 @@ public class BundleLoaderTest
         _manifest.Received(1).GetAllDependencies(Arg.Any<string>());
 
         foreach (var t in _mockedDependencies)
-            _cachedLoader.Received(1).UnloadDependency(t);
+            _cachedLoader.Received(1).UnloadDependency(t, Arg.Any<string>());
     }
 
     [Test]
@@ -158,7 +158,7 @@ public class BundleLoaderTest
 
         foreach (var dependency in _mockedDependencies)
         {
-            _cachedLoader.Received(1).UnloadDependency(dependency);
+            _cachedLoader.Received(1).UnloadDependency(dependency, Arg.Any<string>());
         }
     }
 
@@ -184,8 +184,8 @@ public class BundleLoaderTest
         // Unload only loaded dependencies
         for (var i = 0; i < _mockedDependencies.Length; i++)
         {
-            _cachedLoader.Received(1).LoadDependency(_mockedDependencies[i], Arg.Any<Options>());
-            _cachedLoader.Received(i == throwErrorOnDependencyIndex ? 0 : 1).UnloadDependency(_mockedDependencies[i]);
+            _cachedLoader.Received(1).LoadDependency(_mockedDependencies[i], Arg.Any<Options>(), Arg.Any<string>());
+            _cachedLoader.Received(i == throwErrorOnDependencyIndex ? 0 : 1).UnloadDependency(_mockedDependencies[i], Arg.Any<string>());
         }
     }
 }
