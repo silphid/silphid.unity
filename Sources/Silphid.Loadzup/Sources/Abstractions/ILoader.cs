@@ -1,5 +1,4 @@
 ﻿using System;
-using UniRx;
 
 namespace Silphid.Loadzup
 {
