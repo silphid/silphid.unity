@@ -28,14 +28,8 @@ namespace Silphid.Showzup
 
         IViewModel IView.ViewModel
         {
-            get
-            {
-                return _viewModel;
-            }
-            set
-            {
-                _viewModel = value;
-            }
+            get { return _viewModel; }
+            set { _viewModel = value; }
         }
 
         public GameObject GameObject => gameObject;
@@ -81,7 +75,8 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null, bool keepVisible = false)
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null,
+            bool keepVisible = false)
         {
             if (image == null)
                 return Observable.ReturnUnit();
@@ -96,6 +91,12 @@ namespace Silphid.Showzup
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
+        }
+
+        protected IObservable<Unit> BindAsyncOrDefault(Image image, Uri uri, Loadzup.Options options = null,
+            bool keepVisible = false)
+        {
+            return uri == null ? Observable.ReturnUnit() : BindAsync(image, uri, options, keepVisible);
         }
 
         #endregion
