@@ -91,6 +91,7 @@
     <Compile Include="Sources\Loaders\ILoaderExtensions.cs" />
     <Compile Include="Sources\Loaders\IPosterExtensions.cs" />
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
+    <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
