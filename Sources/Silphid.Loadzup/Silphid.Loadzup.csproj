@@ -85,6 +85,7 @@
     <Compile Include="Sources\Loaders\Caching\ICacheStorage.cs" />
     <Compile Include="Sources\Loaders\CompositeLoader.cs" />
     <Compile Include="Sources\Loaders\Http\HttpLoader.cs" />
+    <Compile Include="Sources\Loaders\Http\HttpPoster.cs" />
     <Compile Include="Sources\Loaders\Http\HttpRequester.cs" />
     <Compile Include="Sources\Loaders\Http\KnownHttpHeaders.cs" />
     <Compile Include="Sources\Loaders\ILoaderExtensions.cs" />
