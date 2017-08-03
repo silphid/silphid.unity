@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using Silphid.Extensions;
 using UniRx;
@@ -25,7 +24,7 @@ namespace Silphid.Loadzup.Resource
         public IObservable<T> Load<T>(Uri uri, Options options)
         {
             var contentType = options?.ContentType;
-            var path = GetPathAndContentType(uri, ref contentType);
+            var path = uri.GetPathAndContentType(ref contentType, PathSeparator, false);
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))
@@ -40,32 +39,6 @@ namespace Silphid.Loadzup.Resource
             return Resources
                 .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
                 .AsObservable<Object>();
-        }
-
-        private string GetPathAndContentType(Uri uri, ref ContentType contentType)
-        {
-            // Rebuild path while removing scheme component
-            var host = uri.Host.RemovePrefix(PathSeparator);
-            bool isRoot = string.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath == PathSeparator;
-            var path = isRoot ? host : host + uri.AbsolutePath;
-
-            // Any extension detected?
-            var extension = Path.GetExtension(path);
-            if (extension.IsNullOrWhiteSpace())
-                return path;
-
-            // Remove extension, because Unity doesn't expect it when looking up resources
-            path = path.Left(path.LastIndexOf(".", StringComparison.Ordinal));
-
-            if (contentType == null)
-            {
-                // Try to determine content type from extension
-                var mediaType = KnownMediaType.FromExtension(extension);
-                if (mediaType != null)
-                    contentType = new ContentType(mediaType);
-            }
-
-            return path;
         }
 
         private IObservable<T> Convert<T>(Object obj, ContentType contentType)
