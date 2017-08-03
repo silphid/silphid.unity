@@ -96,7 +96,13 @@ namespace Silphid.Showzup
         protected IObservable<Unit> BindAsyncOrDefault(Image image, Uri uri, Loadzup.Options options = null,
             bool keepVisible = false)
         {
-            return uri == null ? Observable.ReturnUnit() : BindAsync(image, uri, options, keepVisible);
+            if (uri == null)
+            {
+                Debug.LogError($"Uri of image is null on {gameObject.name}");
+                return Observable.ReturnUnit();
+            }
+
+            return BindAsync(image, uri, options, keepVisible);
         }
 
         #endregion

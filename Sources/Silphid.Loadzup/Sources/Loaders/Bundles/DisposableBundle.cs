@@ -1,5 +1,6 @@
 ﻿using System;
 using UniRx;
+using Object = UnityEngine.Object;
 
 namespace Silphid.Loadzup.Bundles
 {
@@ -20,6 +21,13 @@ namespace Silphid.Loadzup.Bundles
             return _isDisposed 
                 ? Observable.Throw<T>(new InvalidOperationException("The bundle is disposed. Cannot LoadAsset from it"))
                 :_bundle.LoadAsset<T>(assetName);
+        }
+
+        public IObservable<T[]> LoadAllAssets<T>()
+        {
+            return _isDisposed
+                 ? Observable.Throw<T[]>(new InvalidOperationException("The bundle is disposed. Cannot LoadAllAssets from it"))
+                 : _bundle.LoadAllAssets<T>();
         }
 
         public void Unload()
