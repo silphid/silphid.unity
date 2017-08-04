@@ -62,9 +62,9 @@ namespace Silphid.Sequencit
         // reached in the sequence.
         public static IDisposable AddLapse(this ISequencer This)
         {
-            var gate = new Lapse();
-            This.Add(gate);
-            return gate;
+            var lapse = new Lapse();
+            This.Add(lapse);
+            return lapse;
         }
 
         // Adds a gate that pauses sequencing until a given disposable is disposed.
@@ -74,7 +74,7 @@ namespace Silphid.Sequencit
         // once completed.
         public static void AddLapse(this ISequencer This, Action<IDisposable> action)
         {
-            This.Add(() => Lapse.Create(action));
+            This.Add(() => new Lapse(action));
         }
 
         // Adds a gate that pauses sequencing indefinitely when last emitted

@@ -9,15 +9,19 @@ namespace Silphid.Sequencit
     /// </summary>
     public class Lapse : IObservable<Unit>, IDisposable
     {
-        public static Lapse Create(Action<IDisposable> action)
-        {
-            var lapse = new Lapse();
-            action(lapse);
-            return lapse;
-        }
-
+        private readonly Action<IDisposable> _action;
+        private bool _isSubscribed;
         private bool _isDisposed;
         private Subject<Unit> _subject;
+
+        public Lapse()
+        {
+        }
+
+        public Lapse(Action<IDisposable> action)
+        {
+            _action = action;
+        }
 
         public IDisposable Subscribe(IObserver<Unit> observer)
         {
@@ -26,6 +30,18 @@ namespace Silphid.Sequencit
 
             if (_subject == null)
                 _subject = new Subject<Unit>();
+
+            if (!_isSubscribed)
+            {
+                _isSubscribed = true;
+                _action?.Invoke(this);
+
+                if (_isDisposed)
+                {
+                    observer.OnCompleted();
+                    return Disposable.Empty;
+                }
+            }
 
             return _subject.Subscribe(observer);
         }

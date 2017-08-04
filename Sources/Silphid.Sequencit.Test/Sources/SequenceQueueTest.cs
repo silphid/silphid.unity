@@ -3,7 +3,7 @@ using Silphid.Sequencit;
 using UniRx;
 
 [TestFixture]
-public class SequenceQueueTest : SequenceableTestBase
+public class SequenceQueueTest : SequencingTestBase
 {
     private SequenceQueue _sequenceQueue;
 

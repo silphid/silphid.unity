@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Silphid.Extensions.UniRx.Schedulers;
 using UniRx;
 
-public abstract class SequenceableTestBase
+public abstract class SequencingTestBase
 {
     protected int _value;
     protected TestScheduler _scheduler;

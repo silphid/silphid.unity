@@ -49,9 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\GateTest.cs" />
     <Compile Include="Sources\ISequencerExtensionsTest.cs" />
+    <Compile Include="Sources\LapseTest.cs" />
     <Compile Include="Sources\ParallelTest.cs" />
-    <Compile Include="Sources\SequenceableTestBase.cs" />
+    <Compile Include="Sources\SequencingTestBase.cs" />
     <Compile Include="Sources\SequenceQueueTest.cs" />
     <Compile Include="Sources\SequenceTest.cs" />
     <Compile Include="Sources\TestSchedulerTest.cs" />

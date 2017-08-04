@@ -5,7 +5,7 @@ using Silphid.Sequencit;
 using UniRx;
 
 [TestFixture]
-public class SequenceTest : SequenceableTestBase
+public class SequenceTest : SequencingTestBase
 {
     private Sequence _sequence;
 
