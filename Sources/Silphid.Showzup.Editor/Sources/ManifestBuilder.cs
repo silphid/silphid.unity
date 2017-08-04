@@ -216,9 +216,12 @@ public class ManifestBuilder
     private static VariantSet GetVariantsFromAllAssemblies()
     {
         return GetAllTypesInAppDomain()
-            .Where(type => type.IsAssignableTo<IVariant>())
-            .Select(type => type.GetField("Group", BindingFlags.Static | BindingFlags.Public))
-            .Where(field => field != null && field.FieldType.IsAssignableTo<IVariantGroup>())
+            .Where(type =>
+                !type.IsGenericType &&
+                !type.IsAbstract &&
+                type.IsAssignableTo<IVariant>())
+            .Select(type => type.BaseType?.GetProperty("Group", BindingFlags.Static | BindingFlags.Public))
+            .Where(property => property != null && property.PropertyType.IsAssignableTo<IVariantGroup>())
             .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
             .ToVariantSet();
     }
