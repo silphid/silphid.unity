@@ -63,7 +63,7 @@
     <Compile Include="Sources\Loaders\Bundles\BundleCachedLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\BundleConverter.cs" />
     <Compile Include="Sources\Loaders\Bundles\BundleLoader.cs" />
-    <Compile Include="Sources\Loaders\Bundles\DisposableBundle.cs" />
+    <Compile Include="Sources\Loaders\Bundles\LoadingBundle.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundle.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleCachedLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleUnloader.cs" />

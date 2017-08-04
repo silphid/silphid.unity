@@ -1,7 +1,6 @@
 ﻿using System;
 using Silphid.Extensions;
 using UniRx;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Silphid.Loadzup.Bundles
@@ -11,8 +10,10 @@ namespace Silphid.Loadzup.Bundles
         private const string _pathSeparator = "/";
         private readonly ILoader _innerLoader;
 
+        private string GetAssetName(Uri uri) => uri.AbsolutePath.RemovePrefix(_pathSeparator);
+
         public bool Supports<T>(Uri uri) =>
-            uri.Scheme == Scheme.Bundle && typeof(T) != typeof(IBundle);
+            uri.Scheme == Scheme.Bundle && !string.IsNullOrWhiteSpace(GetAssetName(uri));
 
         public AssetLoader(ILoader innerLoader)
         {
@@ -21,19 +22,17 @@ namespace Silphid.Loadzup.Bundles
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
-            var assetName = uri.AbsolutePath.RemovePrefix(_pathSeparator);
-
+            var assetName = GetAssetName(uri);
+            
             // Todo remove absolutePath in bundle uri
             return _innerLoader.Load<IBundle>(uri, options)
                 .ContinueWith(bundle =>
                     typeof(T) == typeof(Scene)
                         ? _innerLoader
                             .Load<Scene>(new Uri($"scene://{assetName}"), options)
-                            .Finally(() => (bundle as IDisposable)?.Dispose())
                             .Cast<Scene, T>()
                         : bundle
-                            .LoadAsset<T>(assetName)
-                            .Finally(() => (bundle as IDisposable)?.Dispose()));
+                            .LoadAsset<T>(assetName));
         }
     }
 }

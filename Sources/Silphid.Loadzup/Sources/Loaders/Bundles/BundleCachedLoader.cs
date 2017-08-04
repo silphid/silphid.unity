@@ -28,7 +28,6 @@ namespace Silphid.Loadzup.Bundles
             private IBundle _bundle;
             private readonly List<string> _dependencyOfBundles = new List<string>();
             private int _loadingCount;
-            private bool _bundleRootLoaded;
 
             public void SetBundle(IBundle bundle)
             {
@@ -36,16 +35,16 @@ namespace Silphid.Loadzup.Bundles
                 _bundle = bundle;
             }
 
-            public bool IsRootLoaded() => _bundleRootLoaded;
+            public bool IsRootLoaded { get; private set; }
 
             public void AddRootRef()
             {
-                _bundleRootLoaded = true;
+                IsRootLoaded = true;
             }
 
             public bool ReleaseRootRef()
             {
-                _bundleRootLoaded = false;
+                IsRootLoaded = false;
                 return CheckRefCount();
             }
 
@@ -84,7 +83,7 @@ namespace Silphid.Loadzup.Bundles
 
             private bool CheckRefCount()
             {
-                if (_bundleRootLoaded || _dependencyOfBundles.Count != 0 || _loadingCount != 0)
+                if (IsRootLoaded || _dependencyOfBundles.Count != 0 || _loadingCount != 0)
                     return false;
 
                 _bundle?.Unload();
@@ -124,13 +123,13 @@ namespace Silphid.Loadzup.Bundles
 
             return Load<IBundle>(GetBundleUri(bundleName), options)
                 .Do(x => SetBundle(x, bundleName))
-                .Select(x => new DisposableBundle(x, releaseLoadingRefDisposable))
+                .Select(x => new LoadingBundle(x, releaseLoadingRefDisposable))
                 .DoOnError(ex =>
                 {
                     onErrorAction(bundleName, dependencyWithBundleNamed);
                     releaseLoadingRefDisposable.Dispose();
                 })
-                .Cast<DisposableBundle, IBundle>();
+                .Cast<LoadingBundle, IBundle>();
         }
 
         private void SetBundle(IBundle bundle, string bundleName)
@@ -176,7 +175,7 @@ namespace Silphid.Loadzup.Bundles
                 }
 
                 // Bundle is loaded because it is only a dependency. No need to unload his dependencies again
-                if (isUnloadingRootRef && !refCount.IsRootLoaded())
+                if (isUnloadingRootRef && !refCount.IsRootLoaded)
                     return false;
 
                 if (releaseRefFunc(refCount, dependencyWithBundleNamed))

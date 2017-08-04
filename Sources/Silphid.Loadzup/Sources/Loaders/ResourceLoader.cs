@@ -9,7 +9,7 @@ namespace Silphid.Loadzup.Resource
 {
     public class ResourceLoader : ILoader
     {
-        private const string PathSeparator = "/";
+        private const string _pathSeparator = "/";
 
         private readonly IConverter _converter;
 
@@ -24,7 +24,7 @@ namespace Silphid.Loadzup.Resource
         public IObservable<T> Load<T>(Uri uri, Options options)
         {
             var contentType = options?.ContentType;
-            var path = uri.GetPathAndContentType(ref contentType, PathSeparator, false);
+            var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, false);
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))

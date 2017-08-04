@@ -4,7 +4,7 @@ using Silphid.Extensions;
 
 namespace Silphid.Loadzup
 {
-    public static class UriExtensions
+    internal static class UriExtensions
     {
         public static string GetPathAndContentType(this Uri This, ref ContentType contentType,
             string pathSeparator, bool keepExtension)

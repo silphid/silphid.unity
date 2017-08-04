@@ -11,8 +11,7 @@ namespace Silphid.Loadzup.Bundles
         private readonly IBundleCachedLoader _cachedLoader;
         private readonly IManifestLoader _manifestLoader;
 
-        public bool Supports<T>(Uri uri) =>
-            uri.Scheme == Scheme.Bundle && typeof (T) == typeof (IBundle);
+        public bool Supports<T>(Uri uri) => uri.Scheme == Scheme.Bundle;
 
         public BundleLoader(IBundleCachedLoader cachedLoader, IManifestLoader manifestLoader)
         {
@@ -30,7 +29,7 @@ namespace Silphid.Loadzup.Bundles
                 .ContinueWith(x => _cachedLoader
                     .Load(bundleName, options)
                     .DoOnError(ex => x.ForEach(y => _cachedLoader.UnloadDependency(y, bundleName)))) // Todo DRY
-                .Cast<IBundle, T>();
+                    .Cast<IBundle, T>();
         }
 
         private IObservable<List<string>> LoadAllDependencies(IManifest manifest, string bundleName, Options options)

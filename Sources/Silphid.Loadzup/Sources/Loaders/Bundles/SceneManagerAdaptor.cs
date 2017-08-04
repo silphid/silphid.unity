@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class SceneManagerAdaptor : ISceneManager
+    internal class SceneManagerAdaptor : ISceneManager
     {
         public IObservable<AsyncOperation> LoadSceneAsync(int sceneBuildIndex, LoadSceneMode mode) =>
             SceneManager.LoadSceneAsync(sceneBuildIndex, mode).AsAsyncOperationObservable();

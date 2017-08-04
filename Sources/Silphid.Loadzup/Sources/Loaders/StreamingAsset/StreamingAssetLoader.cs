@@ -7,7 +7,7 @@ namespace Silphid.Loadzup.StreamingAsset
 {
     public class StreamingAssetLoader : ILoader
     {
-        private const string PathSeparator = "/";
+        private const string _pathSeparator = "/";
         private readonly IRequester _requester;
         private readonly IConverter _converter;
 
@@ -23,7 +23,7 @@ namespace Silphid.Loadzup.StreamingAsset
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             var contentType = options?.ContentType;
-            var path = uri.GetPathAndContentType(ref contentType, PathSeparator, true);
+            var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, true);
 
             return LoadFile(uri, options, path, contentType)
                 .ContinueWith(x => _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType ?? contentType, x.Encoding));

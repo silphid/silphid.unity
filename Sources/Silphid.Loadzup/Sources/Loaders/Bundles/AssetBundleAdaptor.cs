@@ -2,11 +2,10 @@
 using System.Linq;
 using UniRx;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class AssetBundleAdaptor : IBundle
+    internal class AssetBundleAdaptor : IBundle
     {
         private readonly AssetBundle _bundle;
 
