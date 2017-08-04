@@ -7,13 +7,13 @@ namespace Silphid.Sequencit
     /// <summary>
     /// An observable that completes only when it is disposed.
     /// </summary>
-    public class DisposableGate : IObservable<Unit>, IDisposable
+    public class Lapse : IObservable<Unit>, IDisposable
     {
-        public static DisposableGate Create(Action<DisposableGate> action)
+        public static Lapse Create(Action<IDisposable> action)
         {
-            var completion = new DisposableGate();
-            action(completion);
-            return completion;
+            var lapse = new Lapse();
+            action(lapse);
+            return lapse;
         }
 
         private bool _isDisposed;
@@ -22,7 +22,7 @@ namespace Silphid.Sequencit
         public IDisposable Subscribe(IObserver<Unit> observer)
         {
             if (_isDisposed)
-                throw new ObjectDisposedException("Suspension");
+                throw new ObjectDisposedException(nameof(Lapse));
 
             if (_subject == null)
                 _subject = new Subject<Unit>();

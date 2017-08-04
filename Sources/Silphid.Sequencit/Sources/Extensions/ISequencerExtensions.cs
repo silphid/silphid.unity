@@ -56,13 +56,13 @@ namespace Silphid.Sequencit
             });
         }
 
-        // Adds a gate that pauses sequencing until a given disposable is disposed.
+        // Adds an item that pauses sequencing until a given disposable is disposed.
         // It returns that disposable immediately, so that you store it and dispose
         // it at any point in time. You can even dispose it before the gate is
         // reached in the sequence.
-        public static IDisposable AddDisposableGate(this ISequencer This)
+        public static IDisposable AddLapse(this ISequencer This)
         {
-            var gate = new DisposableGate();
+            var gate = new Lapse();
             This.Add(gate);
             return gate;
         }
@@ -72,9 +72,9 @@ namespace Silphid.Sequencit
         // only when the gate is reached in the sequence, so that you may then
         // invoke some operation/animation/tween and finally dispose the disposable
         // once completed.
-        public static void AddDisposableGate(this ISequencer This, Action<IDisposable> action)
+        public static void AddLapse(this ISequencer This, Action<IDisposable> action)
         {
-            This.Add(() => DisposableGate.Create(action));
+            This.Add(() => Lapse.Create(action));
         }
 
         // Adds a gate that pauses sequencing indefinitely when last emitted

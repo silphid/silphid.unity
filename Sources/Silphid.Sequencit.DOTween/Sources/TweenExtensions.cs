@@ -9,7 +9,7 @@ namespace Silphid.Sequencit
         public static Tween In(this Tween This, ISequencer sequencer)
         {
             This.Pause();
-            sequencer.AddDisposableGate(d =>
+            sequencer.AddLapse(d =>
             {
                 This.Play();
                 This.OnComplete(d.Dispose);

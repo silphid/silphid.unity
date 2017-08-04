@@ -3,9 +3,10 @@ using NUnit.Framework;
 using Silphid.Extensions.UniRx.Schedulers;
 using Silphid.Sequencit;
 using UniRx;
+// ReSharper disable AccessToDisposedClosure
 
 [TestFixture]
-public class ISequenceableExtensionsTest
+public class ISequencerExtensionsTest
 {
     private int _value;
     private TestScheduler _scheduler;
@@ -125,7 +126,7 @@ public class ISequenceableExtensionsTest
     }
 
     [Test]
-    public void AddDelay_Seconds()
+    public void AddInterval_Seconds()
     {
         Sequence.Start(s =>
         {
@@ -141,7 +142,7 @@ public class ISequenceableExtensionsTest
     }
 
     [Test]
-    public void AddDelay_TimeSpan()
+    public void AddInterval_TimeSpan()
     {
         Sequence.Start(s =>
         {
@@ -157,19 +158,75 @@ public class ISequenceableExtensionsTest
     }
 
     [Test]
-    public void AddWaitForDispose()
+    public void AddGate()
     {
-        IDisposable disposable = null;
+        // Start in already paused state
+        var gate = new ReactiveProperty<bool>(false);
+        
         Sequence.Start(s =>
         {
-            s.AddAction(() => _value = 123);
-            disposable = s.AddDisposableGate();
-            s.AddAction(() => _value = 456);
+            s.AddAction(() => _value = 1);
+            s.AddGate(gate);
+            s.AddAction(() => _value = 2);
+            s.AddGate(gate);
+            s.AddAction(() => _value = 3);
+            s.Add(CreateDelay(10));
+            s.AddAction(() => _value = 4);
+            s.AddGate(gate);
+            s.AddAction(() => _value = 5);
         });
 
-        Assert.That(_value, Is.EqualTo(123));
+        Assert.That(_value, Is.EqualTo(1));
+
+        // Resume
+        gate.Value = true;
+        Assert.That(_value, Is.EqualTo(3));
+
+        // Pause (during virtual delay)
+        gate.Value = false;
+        
+        // Let virtual delay elapse
+        _scheduler.AdvanceTo(10);
+        Assert.That(_value, Is.EqualTo(4));
+
+        // Resume
+        gate.Value = true;
+        Assert.That(_value, Is.EqualTo(5));
+    }
+
+    [Test]
+    public void AddLapse_ReturnedDisposable_Test()
+    {
+        var disposable = new SerialDisposable();
+        
+        Sequence.Start(s =>
+        {
+            s.AddAction(() => _value = 1);
+            disposable.Disposable = s.AddLapse();
+            s.AddAction(() => _value = 2);
+        });
+
+        Assert.That(_value, Is.EqualTo(1));
 
         disposable.Dispose();
-        Assert.That(_value, Is.EqualTo(456));
+        Assert.That(_value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void AddLapse_LambdaDisposable_Test()
+    {
+        var disposable = new SerialDisposable();
+        
+        Sequence.Start(s =>
+        {
+            s.AddAction(() => _value = 1);
+            s.AddLapse(x => disposable.Disposable = x);
+            s.AddAction(() => _value = 2);
+        });
+
+        Assert.That(_value, Is.EqualTo(1));
+
+        disposable.Dispose();
+        Assert.That(_value, Is.EqualTo(2));
     }
 }
