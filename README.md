@@ -36,7 +36,7 @@ My sincere thanks to [LVL Studio](http://lvlstudio.com) for supporting this effo
 - All projects have a post-build step that copies their output `dll` and `pdb` to:
     - `/UnityProject/Assets/Plugins` (for regular .NET 3.5 projects)
     - `/UnityProject/Assets/Plugins/WSA` (for `.UWP` projects)
-- You can now open the Unity project at `/UnityProject`.
+- You can now open the Unity project, located at `/UnityProject`.
 
 # Dependencies
 
@@ -52,11 +52,11 @@ In other words, there is no dependency from lower level libraries to higher leve
 
 ### Unity 2017.1
 
-*Silphid.Unity* requires Unity 2017.1 (still in beta, as of this writing) for its .NET 4.6 and C# 6.0 support.
+*Silphid.Unity* requires Unity 2017.1 for its .NET 4.6 and C# 6.0 support.
 
 ### UniRx
 
-Silphid.Unity also requires (and is distributed with) [UniRx](https://github.com/neuecc/UniRx) 5.5.0, the Unity implementation of the [Reactive Extensions](reactivex.io) (*Rx*).  It is a great and thorough library on which *Silphid.Unity* relies heavily (for example, all asynchronous operations return or use some form of `IObservable<T>`).
+*Silphid.Unity* also requires (and is distributed with) [UniRx](https://github.com/neuecc/UniRx) 5.5.0, the Unity implementation of the [Reactive Extensions](reactivex.io) (*Rx*).  It is a great and thorough library on which *Silphid.Unity* relies heavily (for example, all asynchronous operations return or use some form of `IObservable<T>`).
 
 If you are new to Rx, there are plenty of resources on the Net.  Here are my personal recommendations:
 
@@ -269,13 +269,16 @@ This interface allows to manually inject dependencies into already created insta
 
 For manually injecting dependencies, you cannot use *constructor injection*, because the instance has already been create, and you must instead rely on *field* or *property injection*, as described in the *Types of injection* section below.
 
-### Setting up dependencies at startup
+### Installers
 
-Simply extend the `RootInstaller` class, override the `OnBind()` method and place your bindings in it, and attach it to some root game object in your scene (it's a `MonoBehaviour`):
+An *installer* is a script responsible for configuring bindings and injecting dependencies into a scene. *Injexit* provides two installer classes that you can extend.
+
+#### RootInstaller
+
+The `RootInstaller` allows to configure most of your bindings in your main scene.  Simply extend the `RootInstaller` class, override its `OnBind()` method to specify your bindings, and (because it's a `MonoBehaviour`) attach it to some root game object in your main scene:
 
 ```c#
 using Silphid.Injexit;
-using UnityEngine;
 
 public class AppInstaller : RootInstaller
 {
@@ -293,6 +296,30 @@ public class AppInstaller : RootInstaller
   }
 }
 ```
+
+#### SceneInstaller
+
+Only in *multi-scene* scenarios, the `SceneInstaller` allows your secondary scenes to specify their own bindings and have their game objects injected when they are loaded.  You must extend that class and specify a parent installer type as generic parameter, which it will look for in the root game objects of some other scene and use as parent to inherit all its bindings.
+
+```c#
+using Silphid.Injexit;
+
+public class MySceneInstaller : SceneInstaller<AppInstaller>
+{
+  protected override void OnBind(IBinder binder)
+  {
+    // Add your scene-specific bindings (or overrides) here, if any
+    binder.Bind<IFoo, Foo2>();
+  }
+  
+  protected override void OnReady()
+  {
+    // All game objects in current scene have now been injected
+  }
+}
+```
+
+Because it inherits from `SceneInstaller<AppInstaller>`, it will look for an `AppInstaller` in some other scene  and use it as parent. It will there inherits all the bindings defined in `AppInstaller` and override the `IFoo` binding to `Foo2` (instead of `Foo`), but only for that scene. Finally, it will inject all game objects in the current scene and call the `OnReady()` method.
 
 ### Binding
 
@@ -524,6 +551,10 @@ injector
   .Using(binder => binder.Bind<IFoo, Foo2>())
   .Inject(obj);
 ```
+
+### Logging
+
+(TODO)
 
 # <a id="Machina"></a>Machina
 
