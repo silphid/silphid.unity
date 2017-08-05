@@ -88,7 +88,7 @@ Newtonsoft's [Json.NET](http://www.newtonsoft.com/json) is a very useful library
 
 Because *Json.NET* is a paid asset, it is not distributed with *Silphid.Unity* and you must therefore explicitly enable the integration scripts by adding the `JSON_NET` define to your Unity project (`Edit` > `Project Settings` > `Player` > `Other Settings` > `Scripting Define Symbols`).
 
-# Extensions<a id="Extensions"></a>
+# <a id="Extensions"></a>Extensions
 
 *Extensions* is a library of various helpers and extension methods for types from *.NET*, *Unity*, *UniRx*, *DOTween*, etc, that provides a concise fluent syntax for many common or more complex operations. This is where I put everything I feel is missing from the APIs I use everyday.
 
@@ -101,7 +101,7 @@ Because *Json.NET* is a paid asset, it is not distributed with *Silphid.Unity* a
 - `VirtualTimeScheduler` and `TestScheduler` that are currently missing from *UniRx* (*Silphid.Sequencit* uses those for unit testing), but I have submitted a pull request for them to be merged into *UniRx*.
 - And much more!
 
-# Sequencit
+# <a id="Sequencit"></a>Sequencit
 
 *Sequencit* extends *UniRx* with the concept of `ISequencer` for coordinating time-based operations in sequence or in parallel, such as playing sound effects and animations, performing transitions between pages or loading data from the Net. In the Rx tradition, all such operations are represented as `IObservable<Unit>`.
 
@@ -118,7 +118,7 @@ Because *Json.NET* is a paid asset, it is not distributed with *Silphid.Unity* a
 
 ![](Doc/Sequencit.png "Sequencit")
 
-# Injexit
+# <a id="Injexit"></a>Injexit
 
 *Injexit* is a simple dependency injection framework that I created as an alternative to [Zenject](https://github.com/modesttree/Zenject), a great dependency injection framework for Unity.  I love *Zenject*, it is very powerful, robust and mature, however I needed *Showzup* to be independent from *Zenject* and also needed some specific features that *Zenject* was lacking.  *Injexit* started as a minimalist container (with a single class!) and quickly evolved into a full-fledged framework with a clean and efficient fluent syntax.
 
@@ -525,7 +525,7 @@ injector
   .Inject(obj);
 ```
 
-# Machina
+# <a id="Machina"></a>Machina
 
 *Machina* is a simple Rx-based polymorphic state machine.  It is said to be *polymorphic* in that it builds upon the general principle that a state machine should be in one and only one state at any given time, and extends it to allow some states to be polymorphically equivalent to others (in other words, inherit from others).
 
@@ -543,7 +543,7 @@ It is then easy to handle whenever an object enters or leaves the *Busy* state, 
 
 - Allow some states to be marked as *Abstract*, to prevent entering those states directly (only their derived states) and make intents clearer.
 
-# Loadzup
+# <a id="Loadzup"></a>Loadzup
 
 Typically in *Unity*, depending on the source you want to load your assets from (*WWW*, *Resources*, *AssetBundleManager*...), you need to use a different class, with different syntax and peculiarities. And if you change the type of storage for an asset, you actually need to change your code.
 
@@ -578,7 +578,7 @@ For example, *Showzup* leverages *Loadzup* in order to load views from prefabs. 
 - `IProgress` support
 - Scene Loading
 
-# Showzup
+# <a id="Showzup"></a>Showzup
 
 *Showzup* is a Rx-based MVVM framework for dynamic, data-driven UI, asynchronous loading of views, custom visual transitions, multiple variants for each view, etc. It leverages Sequencit and Loadzup for flexible and fluid loading and animations.
 
