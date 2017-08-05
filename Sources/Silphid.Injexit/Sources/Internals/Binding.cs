@@ -22,7 +22,7 @@ namespace Silphid.Injexit
             ConcretionType = concretionType;
         }
 
-        public IBinding IntoList()
+        public IBinding AsList()
         {
             if (IsList)
                 throw new InvalidOperationException("Already a list binding.");

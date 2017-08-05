@@ -12,7 +12,7 @@
         /// abstraction type T, to be injected as some IEnumerable&lt;T&gt;,
         /// List&lt;T&gt; or T[].
         /// </summary>
-        IBinding IntoList();
+        IBinding AsList();
         
         /// <summary>
         /// Marks binding as singleton. Multiple injections of the same

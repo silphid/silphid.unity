@@ -35,9 +35,9 @@ namespace Silphid.Injexit.Test
         public void BindAsList()
         {
             var container = new Container();
-            container.Bind<IBeing, Man>().IntoList();
-            container.Bind<IBeing, Woman>().AsSingle().IntoList();
-            container.BindInstance<IBeing>(_dog).IntoList();
+            container.Bind<IBeing, Man>().AsList();
+            container.Bind<IBeing, Woman>().AsSingle().AsList();
+            container.BindInstance<IBeing>(_dog).AsList();
 
             var list1 = container.Resolve<List<IBeing>>();
             var man1 = list1.OfType<Man>().FirstOrDefault();
