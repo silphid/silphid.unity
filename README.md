@@ -8,6 +8,15 @@ Even though it has been used to deliver multiple commercial-grade applications, 
 
 My sincere thanks to [LVL Studio](http://lvlstudio.com) for supporting this effort and being such a great place to work at. If you are looking for an outstanding job opportunity in the Montreal area, make sure to visit our [Careers](http://lvlstudio.com/en/careers) page! :)
 
+# Libraries
+
+- [Extensions](#Extensions) - Extension methods (and more) for *.NET*, *Unity*, *UniRx*, *DOTween*, etc, providing a concise fluent syntax for many useful operations.
+- [Sequencit](#Sequencit) - Rx-based sequencing of elements with dynamic durations.
+- [Injexit](#Injexit) - Lightweight dependency injection framework with a clean and efficient fluent syntax.
+- [Machina](#Machina) - Lightweight Rx-based state machine with polymorphic states.
+- [Loadzup](#Loadzup) - Rx-based asynchronous asset/resource/object loading and conversion, with simple URI-addressing.
+- [Showzup](#Showzup) - Full-fledged MVVM framework with asynchronous data-driven UI, custom transitions and dynamic view variants.
+
 # Getting started
 
 - Download the latest release from [GitHub](https://github.com/Silphid/Silphid.Unity/releases).
@@ -79,7 +88,7 @@ Newtonsoft's [Json.NET](http://www.newtonsoft.com/json) is a very useful library
 
 Because *Json.NET* is a paid asset, it is not distributed with *Silphid.Unity* and you must therefore explicitly enable the integration scripts by adding the `JSON_NET` define to your Unity project (`Edit` > `Project Settings` > `Player` > `Other Settings` > `Scripting Define Symbols`).
 
-# Extensions
+# Extensions<a id="Extensions"></a>
 
 *Extensions* is a library of various helpers and extension methods for types from *.NET*, *Unity*, *UniRx*, *DOTween*, etc, that provides a concise fluent syntax for many common or more complex operations. This is where I put everything I feel is missing from the APIs I use everyday.
 
@@ -188,8 +197,6 @@ public class Bar : IBar
 }
 ```
 
-
-
 #### Method injection
 
 When you cannot use *constructor injection*, this approach is a good compromise, with some of the same advantages.
@@ -240,7 +247,7 @@ public class Bar : IBar
 
 ### The Container
 
-The `Container` class is the central class in *Injexit*. You create an instance of it at startup, use it to configure all your type *bindings*, and then let it perform its wonders.  That class implements the `IContainer` interface, which itself derives from the `IBinder`, `IResolver` and `IInjector` interfaces. Those interfaces correspond to the three types of operations you may need to perform in your application, which we will explore in the three following sections.
+The `Container` class is the central class in *Injexit*. You create an instance of it at startup, use it to configure all your type *bindings*, and then let it perform its wonders.  That class implements the `IContainer` interface, which itself derives from the `IBinder`, `IResolver` and `IInjector` interface. Those interfaces correspond to the three types of operations you may need to perform in your application. We will explore those three types of operations in the following sections named respectively *Binding*, *Resolving* and *Injecting*.
 
 ![](Doc/InjexitContainer.png "IContainer")
 
@@ -264,39 +271,41 @@ For manually injecting dependencies, you cannot use *constructor injection*, bec
 
 ### Setting up dependencies at startup
 
-Simply place your dependency set-up code in the `Start` method of any MonoBehaviour and attach it to some root game object in your scene:
+Simply extend the `RootInstaller` class, override the `OnBind()` method and place your bindings in it, and attach it to some root game object in your scene (it's a `MonoBehaviour`):
 
 ```c#
 using Silphid.Injexit;
 using UnityEngine;
 
-public class Application : MonoBehaviour
-{    
-  public void Start()
+public class AppInstaller : RootInstaller
+{
+  protected override void OnBind(IBinder binder)
   {
-    var container = new Container();
-    
     // Add your bindings here
-    container.Bind<IFoo, Foo>();
-    container.Bind<IGoo, Goo>();
-    container.Bind<IBar, Bar>();
-    
-    // Inject dependencies into all components of all game objects in current scene
-    container.InjectScene(gameObject.scene);
+    binder.Bind<IFoo, Foo>();
+    binder.Bind<IGoo, Goo>();
+    binder.Bind<IBar, Bar>();
+  }
+  
+  protected override void OnReady()
+  {
+    // All game objects in current scene have now been injected
   }
 }
 ```
 
 ### Binding
 
+Because the `IContainer` also implements `IBinder`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IBinder`).
+
 #### Binding to a concrete type
 
 This is the best type of binding, because it lets *Injexit* create the object and resolve all sub-dependencies:
 
 ```c#
-container.Bind<IFoo, Foo>();
-container.Bind<IGoo, Goo>();
-container.Bind<IBar, Bar>();
+binder.Bind<IFoo, Foo>();
+binder.Bind<IGoo, Goo>();
+binder.Bind<IBar, Bar>();
 ```
 
 Here, all `Bar` instances will automatically have their constructor injected with instances of `Foo` and `Goo`, because the `Bar` constructor has `IFoo` and `IGoo` parameters, which are respectively bound to the `Foo` and `Goo` concrete classes.
@@ -307,40 +316,45 @@ In cases where you already have an instance and simply want to inject it into ot
 
 ```c#
 Foo fooInstance = ...
-container.BindInstance<IFoo>(fooInstance);
+binder.BindInstance<IFoo>(fooInstance);
 ```
 
 Or if your instance is already downcasted to the proper interface type, you may omit that type for brevity:
 
 ```c#
 IFoo fooInstance = ...
-container.BindInstance(fooInstance);
+binder.BindInstance(fooInstance);
 ```
 
 Instance binding is useful when you need to inject a specific game object or component into another object. Just expose a field on you script (that you may assign via the Inspector) and bind that field with ```BindInstance()```:
 
 ```c#
-public class Application : MonoBehaviour
+using Silphid.Injexit;
+using UnityEngine;
+
+public class AppInstaller : RootInstaller
 {
   // Assign a value to this field via the Inspector
-  public SomeComponent myComponent;
-  
-  public void Start()
+  public MyComponent myComponent;
+
+  protected override void OnBind(IBinder binder)
   {
-    var container = new Container();
-    container.BindInstance(myComponent);
+    binder.BindInstance(myComponent);
+    
+    // Equivalent to:
+    // binder.BindInstance<MyComponent>(myComponent);
   }
 }
 ```
 
-The downside to passing a specific instance is that this instance does not benefit from dependency injection for its own dependencies, because *Injexit* did not instantiate it. So this form could be considered as partial dependency injection.
+For anything else than MonoBehaviours, the downside of binding a specific instance is that the instance will not have its own dependencies injected, because *Injexit* did not instantiate it. For MonoBehaviours part of your scene, that's OK, because they get injected automatically anyway by the Installer.
 
 #### Binding to a shared object
 
 By default, *Injexit* will create a new instance of a class for every other class that depends on it. This is a good pattern, because it limits side-effects between objects. However, sometimes you want an object to be shared, so that changes made to it will be visible to all other objects sharing it as a dependency. This is achieved using the `.AsSingle()` suffix:
 
 ```c#
-container.Bind<IFoo, Foo>().AsSingle();
+binder.Bind<IFoo, Foo>().AsSingle();
 ```
 
 Note that instance binding using `BindInstance()` does not support the `.AsSingle()` suffix, because instances specified explicitly are forcibly always shared.
@@ -354,10 +368,6 @@ public class Foo1 : IFoo {}
 public class Foo2 : IFoo {}
 public class Foo3 : IFoo {}
 
-container.Bind<IFoo, Foo1>().AsList();
-container.Bind<IFoo, Foo2>().AsList();
-container.Bind<IFoo, Foo3>().AsList();
-
 public class Bar : IBar
 {
   public Bar(List<IFoo> foos)
@@ -366,20 +376,62 @@ public class Bar : IBar
 }
 ```
 
+In that case, you would bind them with the `.AsList()` suffix:
+
+```c#
+binder.Bind<IFoo, Foo1>().AsList();
+binder.Bind<IFoo, Foo2>().AsList();
+binder.Bind<IFoo, Foo3>().AsList();
+```
+
 Here, the `Bar` constructor will be injected with a `List<IFoo>` containing instances of the `Foo1`, `Foo2` and `Foo3` classes.
+
+Note that `.AsList()` will work, no matter if the dependent object expects a `List<T>`, an `IEnumerable<T>` or a `T[]`.
+
+#### Forwarding multiple interfaces to same binding
+
+Sometimes the same class implements multiple interfaces and you want all those interfaces to be bound to the same object, with the same binding options.
+
+```c#
+public class FooGooBar : IFoo, IGoo, IBar {}
+```
+
+Simply bind the first interface the regular way and then use `BindForward()` to forward the other interfaces to the first one:
+
+```c#
+binder.Bind<IFoo, FooGooBar>().AsSingle();
+binder.BindForward<IGoo, IFoo>();
+binder.BindForward<IBar, IFoo>();
+```
+
+Here, the `IFoo`, `IGoo` and `IBar` interfaces will all be bound to the same `FooGooBar` instance. 
 
 #### Self-binding a type
 
 Even though it is a best practice to access most of your concrete classes through abstract interfaces, especially in the context of dependency injection, in some cases you might only have a concrete type with no interface and prefer to inject it as is.
 
 ``` c#
-container.BindToSelf<Foo>();
-container.BindToSelf<Goo>();
+binder.BindToSelf<Foo>();
+binder.BindToSelf<Goo>();
 ```
 
-*Showzup* uses that approach for models and view models, which do not require specific interfaces.
+*Showzup* uses that approach for models and view models, which do not have each their own interface.
 
-*This approach however defeats multiple advantages of dependency injection, such as being able to swap an implementation of an interface with some other arbitrary implementation, so you should avoid it, unless really necessary.*
+*This approach however defeats multiple advantages of dependency injection, such as being able to swap an implementation of an interface with some other arbitrary implementation, so try to avoid it, unless it's part of your design.*
+
+#### Self-binding all of a type's derivatives
+
+```c#
+binder.BindToSelfAll<IFoo>();
+```
+
+This will scan the assembly where `IFoo` is defined for all classes implementing that interface (for instance, `Foo1`, `Foo2` and `Foo3`) and self-bind them. In this case, the `IFoo` interface serves only as a marker. This approach is used in *Showzup* to automatically bind all view model classes.
+
+You may also specify the assembly to scan explicitly:
+
+```c#
+binder.BindToSelfAll<IFoo>(GetType().Assembly);
+```
 
 #### Self-binding multiple instances
 
@@ -388,49 +440,79 @@ If you want multiple instances of different types, that will only be known at ru
 ``` c#
 IFoo foo = new Foo();
 IGoo goo = new Goo();
-container.BindInstances(foo, goo);
+binder.BindInstances(foo, goo);
 ```
 
 Or:
 
 ```c#
 var objects = new object[] { new Foo(), new Goo() };
-container.BindInstances(objects);
+binder.BindInstances(objects);
 ```
 
 This is equivalent to:
 
 ``` c#
-container.BindInstance<Foo>(foo);
-container.BindInstance<Goo>(goo);
+Container.BindInstance<Foo>(foo);
+binder.BindInstance<Goo>(goo);
 ```
 
-*Note that, even if `foo` and `goo` are downcast to interfaces, `BindInstances()` always binds each object to its own type and disregards the interfaces it implements. That means that the dependent object*
+*Note that, even if `foo` and `goo` are downcast to interfaces, `BindInstances()` always binds each object to its own type and disregards the interfaces it implements. That means that the dependent object must also declare its dependencies using those concrete types.*
+
+### Resolving
+
+You typically won't need to resolve dependencies manually, as *Injexit* will do it automatically for you behind the scenes. *It is considered a best practice to **only** use such explicit dependency resolution in your bootstrapping code and **avoid it completely** everywhere else in your application.*
+
+Because the `IContainer` also implements `IResolver`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IResolver`).
+
+#### Resolving a type known at compile-time
+
+```c#
+resolver.Resolve<IFoo>();
+```
+
+#### Resolving a type only known at run-time
+
+```c#
+resolver.Resolve(type);
+```
+
+#### Overriding bindings at resolution-time
+
+When you want to specify bindings that should only apply to the current resolution operation (or that should temporarily override existing bindings), you can create a sub-container on the fly with the `Using()` extension method, just before calling `Resolve()`:
+
+```c#
+resolver
+  .Using(binder => binder.Bind<IFoo, Foo2>())
+  .Resolve<IBar>();
+```
 
 ### Injecting
+
+Because the `IContainer` also implements `IInjector`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IInjector`).
 
 #### Injecting an existing instance
 
 ``` c#
-container.Inject(instance);
+injector.Inject(instance);
 ```
 
 This will only inject the dependencies of given instance.
 
-#### Injecting scripts of a game object
+#### Injecting all scripts of a game object
 
 ```c#
-container.Inject(gameObject);
+injector.Inject(gameObject);
 ```
 
 This will recursively inject the dependencies of all `MonoBehaviour` scripts attached to given `GameObject` and its descendants.
 
-#### Injecting scripts of a scene
+#### Injecting all scripts of a scene
 
-It is common practice, after having set up all your bindings, to inject all game objects in your scene:
+After you have set up all your bindings, the `RootInstaller` and `SceneInstaller` will automatically call this method to inject all game objects in your scene:
 
 ```c#
-container.InjectScene(gameObject.scene);
+injector.InjectScene(gameObject.scene);
 ```
 
 #### Overriding bindings at injection-time
@@ -438,14 +520,14 @@ container.InjectScene(gameObject.scene);
 When you want to specify bindings that should only apply to the current injection operation (or that should temporarily override existing bindings), you can create a sub-container on the fly with the `Using()` extension method, just before calling `Inject()`:
 
 ``` c#
-container
+injector
   .Using(binder => binder.Bind<IFoo, Foo2>())
   .Inject(obj);
 ```
 
 # Machina
 
-*Machina* is a simple Rx-based polymorphic state machine.  It is said to be *polymorphic* in that it builds upon the general principle that a state machine should be in one and only one state at any given time, and extends it to allow some states to be polymorphically equivalent to others (in other words, inherit from them).
+*Machina* is a simple Rx-based polymorphic state machine.  It is said to be *polymorphic* in that it builds upon the general principle that a state machine should be in one and only one state at any given time, and extends it to allow some states to be polymorphically equivalent to others (in other words, inherit from others).
 
 ## State polymorphism example
 
