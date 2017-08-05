@@ -10,6 +10,10 @@ namespace Silphid.Injexit
     public abstract class SceneInstaller<TParent> : Installer
         where TParent : IInstaller
     {
+        protected override void OnBind(IBinder binder)
+        {
+        }
+
         public virtual void Start()
         {
             var parent = GetParentInstaller();
