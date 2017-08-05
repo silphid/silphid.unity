@@ -7,17 +7,19 @@ namespace Silphid.Injexit
         public bool LogContainer;
         public bool LogAll;
 
-        public void Start()
-        {            
-            Container = new Container(LogContainer ? Debug.unityLogger : null);
+        public virtual void Start()
+        {
+            Logger = LogContainer ? Debug.unityLogger : null;
+            Container = new Container(Logger);
 
             if (LogAll)
                 Container.BindInstance(Debug.unityLogger);
 
-            Debug.Log($"Installing {GetType().Name}");
+            Logger?.Log($"Installing {GetType().Name}");
 
-            Install();
+            OnBind(Container);
             InjectScene();
+            OnReady();
         }
     }
 }
