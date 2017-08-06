@@ -319,7 +319,7 @@ public class MySceneInstaller : SceneInstaller<AppInstaller>
 }
 ```
 
-Because it inherits from `SceneInstaller<AppInstaller>`, it will look for an `AppInstaller` in some other scene  and use it as parent. It will there inherits all the bindings defined in `AppInstaller` and override the `IFoo` binding to `Foo2` (instead of `Foo`), but only for that scene. Finally, it will inject all game objects in the current scene and call the `OnReady()` method.
+Because it inherits from `SceneInstaller<AppInstaller>`, it will look for an `AppInstaller` in some other scene  and use it as parent. It will therefore inherit all the bindings defined in `AppInstaller` and override the `IFoo` binding to `Foo2` (instead of `Foo`), but only for that scene. Finally, it will inject all game objects in the current scene and call the `OnReady()` method.
 
 ### Binding
 
@@ -414,6 +414,40 @@ binder.Bind<IFoo, Foo3>().AsList();
 Here, the `Bar` constructor will be injected with a `List<IFoo>` containing instances of the `Foo1`, `Foo2` and `Foo3` classes.
 
 Note that `.AsList()` will work, no matter if the dependent object expects a `List<T>`, an `IEnumerable<T>` or a `T[]`.
+
+#### Controlling the composition tree explicitly
+
+I am a big fan of the [Composite](https://en.wikipedia.org/wiki/Composite_pattern) and [Decorator](https://en.wikipedia.org/wiki/Decorator_pattern) design patterns and I use them abundantly, notably in *Loadzup*. The problem they raise with dependency injection is that they require precise control over their composition tree. You cannot just register each class individually and expect the container to figure how you want all of them to be assembled together. Let's take an example from *Loadzup*, where the `ILoader` interface is implemented by `HttpLoader`, `ResourceLoader` and `CompositeLoader`. The responsibility of `CompositeLoader` is to delegate to the proper child loader according to the URI scheme, so its constructor expects a list of `ILoader` child objects to delegate to:
+
+```c#
+public class CompositeLoader : ILoader
+{
+  // ...
+  
+  public CompositeLoader(params ILoader[] children)
+  {
+    // ...
+  }
+
+  // ...
+}
+```
+
+In order to tell the container specifically how to assemble those three classes, we can use the `Using()` method: 
+
+```c#
+binder.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
+{
+    x.Bind<ILoader, HttpLoader>().AsList();
+    x.Bind<ILoader, ResourceLoader>().AsList();
+});
+```
+
+In this case, the `HttpLoader` and `ResourceLoader` classes are only exposed to the `CompositeLoader` and when the rest of the application will require an `ILoader`, it will be injected a `CompositeLoader`.
+
+I love this syntax because it shows the composition tree in a very visual way.
+
+However, in order to maximize the benefits of dependency injection, only use this syntax when you need explicit control over the composition tree. Otherwise, you better let the container figure the composition tree for you.
 
 #### Forwarding multiple interfaces to same binding
 
@@ -554,7 +588,11 @@ injector
 
 ### Logging
 
-(TODO)
+(TODO: Add documentation)
+
+### Wishlist
+
+- Caching the injection info, in order to spare the reflection overhead
 
 # <a id="Machina"></a>Machina
 

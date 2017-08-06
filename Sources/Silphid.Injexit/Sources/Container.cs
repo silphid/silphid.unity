@@ -293,7 +293,6 @@ namespace Silphid.Injexit
             
             obj.GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(method => method.HasAttribute<InjectAttribute>())
                 .ForEach(method => InjectMethod(obj, method, resolver));            
         }
 
