@@ -54,6 +54,15 @@
     <Compile Include="Sources\Extensions\IContainerExtensions.cs" />
     <Compile Include="Sources\Extensions\IInjectorExtensions.cs" />
     <Compile Include="Sources\Extensions\IResolverExtensions.cs" />
+    <Compile Include="Sources\InjectInfo\IInjectInfoService.cs" />
+    <Compile Include="Sources\InjectInfo\InjectConstructorInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectFieldInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectFieldOrPropertyInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectInfoService.cs" />
+    <Compile Include="Sources\InjectInfo\InjectMemberInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectMethodInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectPropertyInfo.cs" />
+    <Compile Include="Sources\InjectInfo\InjectTypeInfo.cs" />
     <Compile Include="Sources\Installers\Installer.cs" />
     <Compile Include="Sources\Installers\RootInstaller.cs" />
     <Compile Include="Sources\Installers\SceneInstaller.cs" />
