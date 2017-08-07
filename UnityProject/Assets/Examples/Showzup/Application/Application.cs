@@ -2,13 +2,14 @@ using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Loadzup.Resource;
 using Silphid.Showzup;
-using Silphid.Showzup.Injection;
+using Silphid.Injexit;
+using UniRx;
 using UnityEngine;
 
 namespace App
 {
     public class Application : MonoBehaviour
-    {
+    {    
         public Manifest Manifest;
         public NavigationControl NavigationControl;
         
@@ -18,23 +19,22 @@ namespace App
 
             container.BindInstance(Debug.unityLogger);
             container.BindInstance(CreateLoader());
-            container.BindSingle<IScoreEvaluator, ScoreEvaluator>();
-            container.BindSingle<IViewResolver, ViewResolver>();
-            container.BindSingle<IViewLoader, ViewLoader>();
+            container.Bind<IScoreEvaluator, ScoreEvaluator>().AsSingle();
+            container.Bind<IViewResolver, ViewResolver>().AsSingle();
+            container.Bind<IViewLoader, ViewLoader>().AsSingle();
             container.BindInstance<IManifest>(Manifest);
-            container.BindInstance<IInjector>(new Injector(go => container.Inject(go)));
-            container.BindInstance<IViewModelFactory>(CreateViewModelFactory(container));
-            container.BindInstance<IVariantProvider>(VariantProvider.From<Display, Form, Platform>());
-
-            container.InjectAllGameObjects();
+            container.BindInstance<IInjectionAdapter>(new InjectionAdapter(container));
+            container.BindInstance(VariantProvider.From<Display, Form, Platform>());
             
-            NavigationControl.Present(new Catalog())
-                .SubscribeAndForget(_ => {}, ex => Debug.Log($"Failed to navigate: {ex}"), () => {});
-        }
+            container.BindToSelfAll<IViewModel>(GetType().Assembly);
 
-        private static ViewModelFactory CreateViewModelFactory(Container container) =>
-            new ViewModelFactory((viewModelType, parameters) =>
-                (IViewModel) container.Resolve(viewModelType, new Container().BindInstances(parameters)));
+            container.InjectScene(gameObject.scene);
+            
+            NavigationControl
+                .Present(new Catalog())
+                .AutoDetach()
+                .Subscribe(_ => {}, ex => Debug.Log($"Failed to navigate: {ex}"), () => {});
+        }
 
         private ILoader CreateLoader() =>
             new ResourceLoader(new SpriteConverter());

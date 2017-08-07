@@ -45,7 +45,7 @@ public class ManifestBuilder
         if (!guids.Any())
             return null;
 
-        string assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
+        var assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
         return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
     }
 
@@ -64,24 +64,17 @@ public class ManifestBuilder
                 allVariants));
     }
 
-    private static Type GetModelForViewModel(Type viewModelType)
-    {
-        try
-        {
-            return viewModelType.GetInterfaces()
-                .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
-                .GetGenericArguments()
-                .First();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Failed to resolve Model for ViewModel: {viewType.Name}", ex);
-        }
-    }
+    private static Type GetModelForViewModel(Type viewModelType) =>
+        viewModelType.GetInterfaces()
+            .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
+            ?.GetGenericArguments()
+            .FirstOrDefault();
 
-    private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType,
-        VariantSet allVariants)
+    private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType, VariantSet allVariants)
     {
+        if (modelType == null)
+            return;
+        
         var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
         var mapping = new TypeToTypeMapping(modelType, viewModelType, variants);
         Debug.Log(mapping);
@@ -223,9 +216,12 @@ public class ManifestBuilder
     private static VariantSet GetVariantsFromAllAssemblies()
     {
         return GetAllTypesInAppDomain()
-            .Where(type => type.IsAssignableTo<IVariant>())
-            .Select(type => type.GetField("Group", BindingFlags.Static | BindingFlags.Public))
-            .Where(field => field != null && field.FieldType.IsAssignableTo<IVariantGroup>())
+            .Where(type =>
+                !type.IsGenericType &&
+                !type.IsAbstract &&
+                type.IsAssignableTo<IVariant>())
+            .Select(type => type.BaseType?.GetProperty("Group", BindingFlags.Static | BindingFlags.Public))
+            .Where(property => property != null && property.PropertyType.IsAssignableTo<IVariantGroup>())
             .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
             .ToVariantSet();
     }

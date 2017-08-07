@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {
@@ -34,10 +36,25 @@ namespace Silphid.Injexit
 
         #endregion
         
-        #region BindSelf
+        #region BindToSelf
 
-        public static IBinding BindSelf<T>(this IBinder This) =>
+        public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
+
+        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null)
+        {
+            var types = (assembly ?? typeof(T).Assembly).GetTypes();
+            types
+                .Where(x => !x.IsAbstract && x.IsAssignableTo<T>())
+                .ForEach(x => This.Bind(x, x));
+        }
+
+        #endregion
+
+        #region BindForward
+
+        public static void BindForward<TSourceAbstraction, TTargetAbstraction>(this IBinder This) =>
+            This.BindForward(typeof(TSourceAbstraction), typeof(TTargetAbstraction));
 
         #endregion
     }

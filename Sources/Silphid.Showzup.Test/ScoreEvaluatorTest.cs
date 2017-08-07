@@ -13,9 +13,6 @@ namespace Silphid.Showzup.Test
             public static readonly Display Tile = new Display();
             public static readonly Display Thumbnail = new Display();
             public static readonly Display Item = new Display();
-
-            public new static readonly VariantGroup<Display> Group = new VariantGroup<Display>(
-                Page, Panel, Tile, Thumbnail, Item);
         }
 
         private class ParentClass {}
@@ -46,13 +43,5 @@ namespace Silphid.Showzup.Test
             
             Assert.That(score, Is.Null);
         }
-
-//        [Test]
-//        public void AAA()
-//        {
-//            var score = _fixture.GetVariantScore();
-//            
-//            Assert.That(score, Is.Null);
-//        }
     }
 }

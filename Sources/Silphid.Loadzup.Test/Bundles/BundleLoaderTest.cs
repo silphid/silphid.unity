@@ -12,7 +12,7 @@ public class BundleLoaderTest
     private readonly string[] _mockedDependencies = {"a", "b", "c", "d"};
     private readonly IBundle _mockBundle = Substitute.For<IBundle>();
     private IBundleCachedLoader _cachedLoader;
-    private BaseBundleLoader _fixture;
+    private BundleLoader _fixture;
     private IManifest _manifest;
     private IManifestLoader _manifestLoader;
 
@@ -29,7 +29,7 @@ public class BundleLoaderTest
         _manifest = Substitute.For<IManifest>();
         _manifestLoader.Load().Returns(Observable.Return(_manifest));
 
-        _fixture = new BaseBundleLoader(_cachedLoader, _manifestLoader);
+        _fixture = new BundleLoader(_cachedLoader, _manifestLoader);
     }
 
     private void SetupLoadReturns(IObservable<IBundle> observable)

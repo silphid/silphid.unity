@@ -8,10 +8,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1041059062, guid: 3ab50cf3e83e243e39c1fe8d32573e68, type: 3}
+  m_Script: {fileID: 1041059062, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: ShowzupManifest
   m_EditorClassIdentifier: 
-  PrefabsPath: Assets/Examples/Showzup/Views/Resources
+  PrefabsPath: Assets/Examples/Showzup/Prefabs/Resources
   UriPrefix: res://
   _modelsToViewModels:
   - _source:
@@ -50,23 +50,14 @@ MonoBehaviour:
       _classRef: CatalogView, Assembly-CSharp
     _target: res://page/CatalogPage
     _variants:
-      _serializableVariants:
-      - _typeRef:
-          _classRef: Display, Assembly-CSharp
-        _name: Page
+      _serializableVariants: []
   - _source:
       _classRef: PhotoView, Assembly-CSharp
     _target: res://page/PhotoPage
     _variants:
-      _serializableVariants:
-      - _typeRef:
-          _classRef: Display, Assembly-CSharp
-        _name: Page
+      _serializableVariants: []
   - _source:
       _classRef: PhotoView, Assembly-CSharp
     _target: res://tile/PhotoTile
     _variants:
-      _serializableVariants:
-      - _typeRef:
-          _classRef: Display, Assembly-CSharp
-        _name: Tile
+      _serializableVariants: []

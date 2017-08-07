@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -49,9 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sources\ISequenceableExtensionsTest.cs" />
+    <Compile Include="Sources\GateTest.cs" />
+    <Compile Include="Sources\ISequencerExtensionsTest.cs" />
+    <Compile Include="Sources\LapseTest.cs" />
     <Compile Include="Sources\ParallelTest.cs" />
-    <Compile Include="Sources\SequenceableTestBase.cs" />
+    <Compile Include="Sources\SequencingTestBase.cs" />
     <Compile Include="Sources\SequenceQueueTest.cs" />
     <Compile Include="Sources\SequenceTest.cs" />
     <Compile Include="Sources\TestSchedulerTest.cs" />

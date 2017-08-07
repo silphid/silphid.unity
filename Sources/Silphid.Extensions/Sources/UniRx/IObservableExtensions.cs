@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx.Operators;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Extensions
 {

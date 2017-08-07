@@ -9,7 +9,7 @@ namespace Silphid.Showzup
     {
         private SerializedProperty _prefabsPath;
         private SerializedProperty _uriPrefix;
-        private Manifest Target => (Manifest) target; 
+        private Manifest Target => (Manifest) target;
     
         [UsedImplicitly]
         private void OnEnable()

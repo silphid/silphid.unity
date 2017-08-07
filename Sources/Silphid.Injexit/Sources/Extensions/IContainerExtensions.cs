@@ -4,23 +4,36 @@ namespace Silphid.Injexit
 {
     public static class IContainerExtensions
     {
-        public static IContainer With(this IContainer This, Action<IBinder> bind)
+        /// <summary>
+        /// Creates child container with extra bindings specified by action.
+        /// </summary>
+        public static IContainer Using(this IContainer This, Action<IBinder> bind)
         {
-            var overrideContainer = new Container();
+            var overrideContainer = This.Create();
             bind(overrideContainer);
-            return This.With(overrideContainer);
+            return This.Using(overrideContainer);
         }
 
-        public static IContainer With(this IContainer This, IContainer overrideContainer) =>
+        /// <summary>
+        /// Creates child container with extra bindings specified by overrideContainer.
+        /// If overrideContainer is null, this container is returned as is.
+        /// </summary>
+        public static IContainer Using(this IContainer This, IContainer overrideContainer) =>
             overrideContainer != null
                 ? new CompositeContainer(overrideContainer, This)
                 : This;
         
-        public static void Inject(this IContainer This, object obj, Action<IBinder> bind)
-        {
-            var child = This.CreateChild();
-            bind(child);
-            This.Inject(obj, child);
-        }
+        /// <summary>
+        /// Injects given object, using extra bindings specified by action.
+        /// </summary>
+        public static void Inject(this IContainer This, object obj, Action<IBinder> bind) =>
+            This.Inject(obj, This.Using(bind));
+
+        /// <summary>
+        /// Creates a child container that inherits all of this container's bindings,
+        /// to which extra/override bindings can be added.
+        /// </summary>
+        public static IContainer Child(this IContainer This) =>
+            new CompositeContainer(This.Create(), This);
     }
 }

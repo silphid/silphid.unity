@@ -5,7 +5,7 @@ using Silphid.Sequencit;
 using UniRx;
 
 [TestFixture]
-public class ParallelTest : SequenceableTestBase
+public class ParallelTest : SequencingTestBase
 {
     private Parallel _parallel;
 

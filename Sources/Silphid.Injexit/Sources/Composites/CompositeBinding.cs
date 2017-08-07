@@ -17,26 +17,31 @@ namespace Silphid.Injexit
             _bindings.FirstOrDefault()?.Container
             ?? Injexit.Container.Null;
 
-        public IBinding IntoList()
+        public IBinding AsList()
         {
-            _bindings.ForEach(x => x.IntoList());
+            _bindings.ForEach(x => x.AsList());
             return this;
         }
 
         public IBinding AsSingle()
         {
-            _bindings.ForEach(x => x.IntoList());
+            _bindings.ForEach(x => x.AsList());
             return this;
         }
 
-        public IBinding With(IResolver resolver)
+        public IBinding Using(IResolver resolver)
         {
             throw new NotImplementedException();
         }
 
-        public IBinding With(Action<IBinder> bind)
+        public IBinding WithId(string id)
         {
-            _bindings.ForEach(x => x.IntoList());
+            throw new NotImplementedException();
+        }
+
+        public IBinding Using(Action<IBinder> bind)
+        {
+            _bindings.ForEach(x => x.AsList());
             return this;
         }
     }

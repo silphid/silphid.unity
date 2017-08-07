@@ -1,7 +1,12 @@
-﻿namespace Silphid.Injexit
+﻿using System;
+
+namespace Silphid.Injexit
 {
-    public interface IContainer : IBinder, IResolver, IInjector
+    public interface IContainer : IBinder, IResolver, IInjector, IDisposable
     {
-        IContainer CreateChild();
+        /// <summary>
+        /// Creates another container sharing same logger as this container, if any.
+        /// </summary>
+        IContainer Create();
     }
 }

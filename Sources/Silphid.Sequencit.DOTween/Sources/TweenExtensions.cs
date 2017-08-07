@@ -1,7 +1,6 @@
 ﻿using System;
 using DG.Tweening;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
@@ -10,7 +9,7 @@ namespace Silphid.Sequencit
         public static Tween In(this Tween This, ISequencer sequencer)
         {
             This.Pause();
-            sequencer.AddSuspension(d =>
+            sequencer.AddLapse(d =>
             {
                 This.Play();
                 This.OnComplete(d.Dispose);

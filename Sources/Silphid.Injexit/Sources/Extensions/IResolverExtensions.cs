@@ -4,23 +4,23 @@ namespace Silphid.Injexit
 {
     public static class IResolverExtensions
     {
-        public static IResolver With(this IResolver This, Action<IBinder> bind)
+        public static IResolver Using(this IResolver This, Action<IBinder> bind)
         {
             var overrideContainer = new Container();
             bind(overrideContainer);
             return new CompositeResolver(overrideContainer, This);
         }
 
-        public static IResolver With(this IResolver This, IResolver overrideResolver) =>
+        public static IResolver Using(this IResolver This, IResolver overrideResolver) =>
             overrideResolver != null
                 ? new CompositeResolver(overrideResolver, This)
                 : This;
 
-        public static object ResolveInstance(this IResolver This, Type abstractionType, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
-            This.Resolve(abstractionType, isOptional, isFallbackToSelfBinding)
+        public static object Resolve(this IResolver This, Type abstractionType, string id = null, bool isOptional = false) =>
+            This.ResolveFactory(abstractionType, id, isOptional)
                 ?.Invoke(This);
 
-        public static T ResolveInstance<T>(this IResolver This, bool isOptional = false, bool isFallbackToSelfBinding = true) =>
-            (T) This.ResolveInstance(typeof(T), isOptional, isFallbackToSelfBinding);
+        public static T Resolve<T>(this IResolver This, string id = null, bool isOptional = false) =>
+            (T) This.Resolve(typeof(T), id, isOptional);
     }
 }

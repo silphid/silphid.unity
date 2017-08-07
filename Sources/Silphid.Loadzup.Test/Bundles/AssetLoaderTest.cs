@@ -50,14 +50,14 @@ public class AssetLoaderTest
         Assert.AreEqual(_scene, scene);
     }
 
-    [Ignore]
+   // [Ignore]
     [Test]
     public void LoadAssetIfNotScene_ReturnAsset()
     {
         throw new NotImplementedException();
     }
 
-    [Ignore]
+   // [Ignore]
     [Test]
     public void CheckUriAndOptionsPassedToLoaderWhenScene_ReturnValidArgs()
     {
@@ -83,7 +83,7 @@ public class AssetLoaderTest
         _innerLoader.Received(1).Load<Scene>(GetSceneUri(_assetName), Arg.Any<Options>());
     }
 
-    [Ignore]
+    //[Ignore]
     [Test]
     public void ErrorLoadingBundle_DoNotCallBundleNorSceneLoader()
     {

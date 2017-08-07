@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Silphid.Extensions;
 using UniRx;
 
 namespace Silphid.Sequencit
@@ -55,16 +56,35 @@ namespace Silphid.Sequencit
             });
         }
 
-        public static void AddSuspension(this ISequencer This, Action<IDisposable> action)
+        // Adds an item that pauses sequencing until a given disposable is disposed.
+        // It returns that disposable immediately, so that you store it and dispose
+        // it at any point in time. You can even dispose it before the gate is
+        // reached in the sequence.
+        public static IDisposable AddLapse(this ISequencer This)
         {
-            This.Add(() => Suspension.Create(action));
+            var lapse = new Lapse();
+            This.Add(lapse);
+            return lapse;
         }
 
-        public static IDisposable AddSuspension(this ISequencer This)
+        // Adds a gate that pauses sequencing until a given disposable is disposed.
+        // It passes that disposable to a lambda expression that will be invoked
+        // only when the gate is reached in the sequence, so that you may then
+        // invoke some operation/animation/tween and finally dispose the disposable
+        // once completed.
+        public static void AddLapse(this ISequencer This, Action<IDisposable> action)
         {
-            var complete = new Suspension();
-            This.Add(complete);
-            return complete;
+            This.Add(() => new Lapse(action));
+        }
+
+        // Adds a gate that pauses sequencing indefinitely when last emitted
+        // value of an observable is false and resumes sequencing immediately
+        // when it becomes true. It is recommended to use a BehaviorSubject or
+        // a ReactiveProperty, because they always emit their current value
+        // upon subscription.
+        public static void AddGate(this ISequencer This, IObservable<bool> gate)
+        {
+            This.Add(() => gate.WhereTrue().Take(1));
         }
 
         public static void AddInterval(this ISequencer This, float seconds)
