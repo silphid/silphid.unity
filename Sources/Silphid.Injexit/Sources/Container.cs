@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Silphid.Extensions;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace Silphid.Injexit
 
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
+        private readonly IReflector _reflector;
         private readonly ILogger _logger;
         private static readonly Func<IResolver, object> NullFactory = null;
 
@@ -22,8 +22,9 @@ namespace Silphid.Injexit
 
         #region Constructors
 
-        public Container(ILogger logger = null)
+        public Container(IReflector reflector, ILogger logger = null)
         {
+            _reflector = reflector;
             _logger = logger;
         }
 
@@ -32,7 +33,7 @@ namespace Silphid.Injexit
         #region IContainer members
 
         public IContainer Create() =>
-            new Container(_logger);
+            new Container(_reflector, _logger);
 
         #endregion
         
@@ -48,6 +49,12 @@ namespace Silphid.Injexit
 
         public IBinding BindInstance(Type abstractionType, object instance)
         {
+            if (abstractionType == null)
+                throw new ArgumentNullException(nameof(abstractionType));
+            
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            
             if (!instance.GetType().IsAssignableTo(abstractionType))
                 throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
 
@@ -200,40 +207,27 @@ namespace Silphid.Injexit
         private Func<IResolver, object> ResolveFactoryInternal(Type concretionType) =>
             resolver =>
             {
-                var constructor = ResolveConstructor(concretionType);
-                var parameters = ResolveParameters(constructor.GetParameters(), resolver);
+                var typeInfo = GetTypeInfo(concretionType);
+                if (typeInfo.Constructor.Constructor == null)
+                    throw typeInfo.Constructor.ConstructorException;
+                
+                var parameters = ResolveParameters(typeInfo.Constructor.Parameters, resolver);
 
-                var instance = constructor.Invoke(parameters);
+                var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
                 Inject(instance, resolver);
                 return instance;
             };
 
-        private object[] ResolveParameters(IEnumerable<ParameterInfo> parameters, IResolver resolver) =>
+        private object[] ResolveParameters(IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>
             parameters
                 .Select(x => ResolveParameter(x, resolver))
                 .ToArray();
 
-        private object ResolveParameter(ParameterInfo parameter, IResolver resolver)
+        private object ResolveParameter(InjectParameterInfo parameter, IResolver resolver)
         {
             _logger?.Log($"Resolving parameter {parameter.Name}...");
-            var attribute = parameter.GetAttribute<InjectAttribute>();
-            var isOptional = (attribute?.IsOptional ?? false) || parameter.IsOptional;
-            return resolver.Resolve(parameter.ParameterType, attribute?.Id, isOptional);
-        }
-
-        private ConstructorInfo ResolveConstructor(Type type)
-        {
-            var constructors = type.GetConstructors();
-            
-            if (constructors.Length == 1)
-                return constructors.First();
-            
-            var constructor = constructors.FirstOrDefault(x => x.HasAttribute<InjectAttribute>());
-            if (constructor == null)
-                throw new InvalidOperationException(
-                    $"Type {type.Name} has multiple constructors, but none of them is marked with an injection attribute to make it the default.");
-
-            return constructor;
+            var isOptional = parameter.IsOptional || parameter.IsOptional;
+            return resolver.Resolve(parameter.Type, parameter.Id, isOptional);
         }
 
         #endregion
@@ -247,8 +241,10 @@ namespace Silphid.Injexit
             
             resolver = resolver ?? this;
             
-            InjectFieldsAndProperties(obj, resolver);
-            InjectMethods(obj, resolver);
+            var typeInfo = GetObjectTypeInfo(obj);
+            
+            InjectFieldsAndProperties(obj, typeInfo, resolver);
+            InjectMethods(obj, typeInfo, resolver);
         }
 
         public void Inject(IEnumerable<object> objects, IResolver resolver = null)
@@ -258,12 +254,14 @@ namespace Silphid.Injexit
 
             resolver = resolver ?? this;
             
-            var list = objects.ToList();
-            list.ForEach(x => InjectFieldsAndProperties(x, resolver));
-            list.ForEach(x => InjectMethods(x, resolver));
+            var list = objects.ToArray();
+            var typeInfos = list.Select(GetObjectTypeInfo).ToArray();
+            
+            list.ForEach((i, x) => InjectFieldsAndProperties(x, typeInfos[i], resolver));
+            list.ForEach((i, x) => InjectMethods(x, typeInfos[i], resolver));
         }
 
-        private void InjectFieldsAndProperties(object obj, IResolver resolver)
+        private void InjectFieldsAndProperties(object obj, InjectTypeInfo typeInfo, IResolver resolver)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
@@ -273,17 +271,11 @@ namespace Silphid.Injexit
                 InjectGameObjectFieldsAndProperties((GameObject) obj, resolver);
                 return;
             }
-            
-            obj.GetType()
-                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(field => InjectField(obj, field, resolver));
 
-            obj.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(property => InjectProperty(obj, property, resolver));
+            typeInfo.FieldsAndProperties.ForEach(x => InjectFieldOrProperty(obj, x, resolver));
         }
 
-        private void InjectMethods(object obj, IResolver resolver)
+        private void InjectMethods(object obj, InjectTypeInfo typeInfo, IResolver resolver)
         {
             if (obj is GameObject)
             {
@@ -291,9 +283,7 @@ namespace Silphid.Injexit
                 return;
             }
             
-            obj.GetType()
-                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .ForEach(method => InjectMethod(obj, method, resolver));            
+            typeInfo.Methods.ForEach(method => InjectMethod(obj, method, resolver));            
         }
 
         private bool IsValidComponent(MonoBehaviour behaviour)
@@ -309,7 +299,7 @@ namespace Silphid.Injexit
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
-                .ForEach(component => InjectFieldsAndProperties(component, resolver));
+                .ForEach(component => InjectFieldsAndProperties(component, GetObjectTypeInfo(component), resolver));
             
             go.Children()
                 .ForEach(child => InjectGameObjectFieldsAndProperties(child, resolver));
@@ -319,45 +309,36 @@ namespace Silphid.Injexit
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
-                .ForEach(component => InjectMethods(component, resolver));
+                .ForEach(component => InjectMethods(component, GetObjectTypeInfo(component), resolver));
             
             go.Children()
                 .ForEach(child => InjectGameObjectMethods(child, resolver));
         }
 
-        private void InjectProperty(object obj, PropertyInfo property, IResolver resolver)
+        private void InjectFieldOrProperty(object obj, InjectFieldOrPropertyInfo member, IResolver resolver)
         {
-            var inject = property.GetAttribute<InjectAttribute>();
-            if (inject == null)
-                return;
-            
-            var value = resolver.Resolve(property.PropertyType, inject.Id, inject.IsOptional);
-            _logger?.Log($"Injecting {obj.GetType().Name}.{property.Name} ({property.PropertyType.Name}) <= {FormatValue(value)}");
-            property.SetValue(obj, value, null);
+            var value = resolver.Resolve(member.Type, member.Id, member.IsOptional);
+            _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+            member.SetValue(obj, value);
         }
 
-        private void InjectField(object obj, FieldInfo field, IResolver resolver)
+        private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
-            var inject = field.GetAttribute<InjectAttribute>();
-            if (inject == null)
-                return;
-            
-            var value = resolver.Resolve(field.FieldType, inject.Id, inject.IsOptional);
-            _logger?.Log($"Injecting {obj.GetType().Name}.{field.Name} ({field.FieldType.Name}) <= {FormatValue(value)}");
-            field.SetValue(obj, value);
-        }
-
-        private void InjectMethod(object obj, MethodInfo method, IResolver resolver)
-        {
-            var inject = method.GetAttribute<InjectAttribute>();
-            if (inject == null)
-                return;
-            
-            var parameters = ResolveParameters(method.GetParameters(), resolver);
+            var parameters = ResolveParameters(method.Parameters, resolver);
             _logger?.Log($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
-            method.Invoke(obj, parameters);
+            method.Method.Invoke(obj, parameters);
         }
 
+        #endregion
+
+        #region Helpers
+
+        private InjectTypeInfo GetTypeInfo(Type type) =>
+            _reflector.GetTypeInfo(type);
+        
+        private InjectTypeInfo GetObjectTypeInfo(object obj) =>
+            _reflector.GetTypeInfo(obj.GetType());
+        
         private static string FormatParameters(object[] parameters) =>
             parameters.Select(FormatValue).ToDelimitedString(", ");
 

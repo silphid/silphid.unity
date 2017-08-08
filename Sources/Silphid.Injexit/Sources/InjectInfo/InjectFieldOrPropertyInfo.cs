@@ -6,7 +6,7 @@ namespace Silphid.Injexit
     {
         public abstract void SetValue(object obj, object value);
 
-        protected InjectFieldOrPropertyInfo(Type type, bool isOptional, string id) : base(type, isOptional, id)
+        protected InjectFieldOrPropertyInfo(string name, Type type, bool isOptional, string id) : base(name, type, isOptional, id)
         {
         }
     }

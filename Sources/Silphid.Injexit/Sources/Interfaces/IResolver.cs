@@ -5,6 +5,11 @@ namespace Silphid.Injexit
     public interface IResolver
     {
         /// <summary>
+        /// Creates container with same configs as this.
+        /// </summary>
+        IContainer Create();
+
+        /// <summary>
         /// Resolves given abstraction type to a factory able to create
         /// concrete objects of that type.
         /// </summary>

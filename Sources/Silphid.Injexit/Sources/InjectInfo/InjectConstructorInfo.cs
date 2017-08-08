@@ -7,9 +7,9 @@ namespace Silphid.Injexit
     {
         public ConstructorInfo Constructor { get; }
         public Exception ConstructorException { get; }
-        public InjectMemberInfo[] Parameters { get; }
+        public InjectParameterInfo[] Parameters { get; }
 
-        public InjectConstructorInfo(ConstructorInfo constructor, Exception constructorException, InjectMemberInfo[] parameters)
+        public InjectConstructorInfo(ConstructorInfo constructor, Exception constructorException, InjectParameterInfo[] parameters)
         {
             Constructor = constructor;
             ConstructorException = constructorException;

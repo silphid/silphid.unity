@@ -10,7 +10,7 @@ namespace Silphid.Injexit
         public virtual void Start()
         {
             Logger = LogContainer ? Debug.unityLogger : null;
-            Container = new Container(Logger);
+            Container = new Container(new Reflector(), Logger);
 
             if (LogAll)
                 Container.BindInstance(Debug.unityLogger);

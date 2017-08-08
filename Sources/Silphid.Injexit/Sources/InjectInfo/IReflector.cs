@@ -2,7 +2,7 @@
 
 namespace Silphid.Injexit
 {
-    public interface IInjectInfoService
+    public interface IReflector
     {
         InjectTypeInfo GetTypeInfo(Type type);
     }
