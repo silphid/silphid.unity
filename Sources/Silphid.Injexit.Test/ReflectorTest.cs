@@ -42,10 +42,29 @@ namespace Silphid.Injexit.Test
             private string RegularPrivateProperty { get; set; }
             public string RegularPublicProperty { get; set; }
         
-            [Inject] private void InjectablePrivateMethod() {}
-            [Inject] public void InjectablePublicMethod() {}
+            [Inject] private void InjectablePrivateMethod(object obj, string str) {}
+            [Inject] public void InjectablePublicMethod(object obj, string str) {}
             private void RegularPrivateMethod() {}
             public void RegularPublicMethod() {}
+        }
+    
+        private class ClassWithOptionalInjectableMembers
+        {
+            [Inject] [Optional] private string _injectablePrivateField;
+            [Inject] [Optional] public string InjectablePublicField;
+            [Inject] [Optional] private string InjectablePrivateProperty { get; set; }
+            [Inject] [Optional] public string InjectablePublicProperty { get; set; }
+        
+            [Inject] private void InjectablePrivateMethod(object obj, [Optional] string str) {}
+            [Inject] public void InjectablePublicMethod(object obj, [Optional] string str) {}
+        }
+    
+        private class ClassWithIdentifiedInjectableMembers
+        {
+            [Inject] [Id("FieldId")] public string InjectableField;
+            [Inject] [Id("PropertyId")] public string InjectableProperty { get; set; }
+        
+            [Inject] public void InjectableMethod(object obj, [Id("ParameterId")] string str) {}
         }
     
         private class ClassWithNonWritableInjectableProperty
@@ -89,11 +108,11 @@ namespace Silphid.Injexit.Test
             Assert.That(typeInfo.Constructor.ConstructorException, Is.Null);
             Assert.That(typeInfo.Constructor.Constructor.GetAttribute<InjectAttribute>(), Is.Not.Null);
             Assert.That(typeInfo.Constructor.Parameters.Length, Is.EqualTo(1));
-            AssertMember<string>(typeInfo.Constructor.Parameters[0], "str", false, null);
+            AssertMember<string>(typeInfo.Constructor.Parameters[0], "str");
         }
 
         [Test]
-        public void ClassWithSomeInjectableMembers_OnlyInjectablesAreReturned()
+        public void ClassWithSomeInjectableMembers_ReturnsOnlyInjectables()
         {
             var typeInfo = GetTypeInfo<ClassWithSomeInjectableMembers>();
 
@@ -104,8 +123,58 @@ namespace Silphid.Injexit.Test
             AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectablePublicProperty");
             
             Assert.That(typeInfo.Methods.Length, Is.EqualTo(2));
+            
+            var privateMethod = GetMethod(typeInfo.Methods, "InjectablePrivateMethod");
+            Assert.That(privateMethod.Parameters.Length, Is.EqualTo(2));
+            AssertMember<object>(privateMethod.Parameters[0], "obj");
+            AssertMember<string>(privateMethod.Parameters[1], "str");
+
+            var publicMethod = GetMethod(typeInfo.Methods, "InjectablePublicMethod");
+            Assert.That(publicMethod.Parameters.Length, Is.EqualTo(2));
+            AssertMember<object>(publicMethod.Parameters[0], "obj");
+            AssertMember<string>(publicMethod.Parameters[1], "str");
         }
 
+        [Test]
+        public void ClassWithOptionalInjectableMembers_OptionalsAreCorrectlyDetected()
+        {
+            var typeInfo = GetTypeInfo<ClassWithOptionalInjectableMembers>();
+
+            Assert.That(typeInfo.FieldsAndProperties.Length, Is.EqualTo(4));
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "_injectablePrivateField", true);
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectablePublicField", true);
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectablePrivateProperty", true);
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectablePublicProperty", true);
+            
+            Assert.That(typeInfo.Methods.Length, Is.EqualTo(2));
+            
+            var privateMethod = GetMethod(typeInfo.Methods, "InjectablePrivateMethod");
+            Assert.That(privateMethod.Parameters.Length, Is.EqualTo(2));
+            AssertMember<object>(privateMethod.Parameters[0], "obj");
+            AssertMember<string>(privateMethod.Parameters[1], "str", true);
+
+            var publicMethod = GetMethod(typeInfo.Methods, "InjectablePublicMethod");
+            Assert.That(publicMethod.Parameters.Length, Is.EqualTo(2));
+            AssertMember<object>(publicMethod.Parameters[0], "obj");
+            AssertMember<string>(publicMethod.Parameters[1], "str", true);
+        }
+
+        [Test]
+        public void ClassWithIdentifiedInjectableMembers_IdsAreCorrectlyDetected()
+        {
+            var typeInfo = GetTypeInfo<ClassWithIdentifiedInjectableMembers>();
+
+            Assert.That(typeInfo.FieldsAndProperties.Length, Is.EqualTo(2));
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectableField", false, "FieldId");
+            AssertContainsMember<string>(typeInfo.FieldsAndProperties, "InjectableProperty", false, "PropertyId");
+            
+            Assert.That(typeInfo.Methods.Length, Is.EqualTo(1));
+            var method = GetMethod(typeInfo.Methods, "InjectableMethod");
+            Assert.That(method.Parameters.Length, Is.EqualTo(2));
+            AssertMember<object>(method.Parameters[0], "obj");
+            AssertMember<string>(method.Parameters[1], "str", false, "ParameterId");
+        }
+        
         [Test]
         public void ClassWithNonWritableInjectableProperty_Throws()
         {
@@ -117,10 +186,8 @@ namespace Silphid.Injexit.Test
             Assert.That(exception.Message, Is.EqualTo($"Property {className}.{propertyName} is marked with [Inject] attribute, but has not setter."));
         }
 
-        private void AssertContainsMethod(IEnumerable<InjectMethodInfo> methods, string name)
-        {
-            Assert.That(methods.Any(x => x.Name == name), Is.True);
-        }
+        private InjectMethodInfo GetMethod(IEnumerable<InjectMethodInfo> methods, string name) =>
+            methods.Single(x => x.Name == name);
 
         private void AssertContainsMember<T>(IEnumerable<InjectMemberInfo> members, string name, bool isOptional = false, string id = null)
         {

@@ -92,11 +92,9 @@ namespace Silphid.Injexit
 
         private InjectParameterInfo[] GetParameters(MethodBase method) =>
             (from parameter in method.GetParameters()
-                let attribute = parameter.GetAttribute<InjectAttribute>()
-                select new InjectParameterInfo(
-                    parameter,
-                    attribute?.IsOptional ?? false,
-                    attribute?.Id))
+                let isOptional = parameter.HasAttribute<OptionalAttribute>()
+                let id = parameter.GetAttribute<IdAttribute>()?.Id
+                select new InjectParameterInfo(parameter, isOptional, id))
             .ToArray();
 
         private InjectFieldOrPropertyInfo[] GetFieldsAndProperties(Type type) =>
@@ -109,7 +107,11 @@ namespace Silphid.Injexit
             {
                 var attribute = field.GetAttribute<InjectAttribute>();
                 if (attribute != null)
-                    yield return new InjectFieldInfo(field, field.FieldType, attribute.IsOptional, attribute.Id);
+                {
+                    var isOptional = field.HasAttribute<OptionalAttribute>();
+                    var id = field.GetAttribute<IdAttribute>()?.Id;
+                    yield return new InjectFieldInfo(field, field.FieldType, isOptional, id);
+                }
             }
         }
 
@@ -123,8 +125,10 @@ namespace Silphid.Injexit
                 {
                     if (!property.CanWrite)
                         throw new InvalidOperationException($"Property {type.Name}.{property.Name} is marked with [Inject] attribute, but has not setter.");
-                        
-                    yield return new InjectPropertyInfo(property, property.PropertyType, attribute.IsOptional, attribute.Id);
+
+                    var isOptional = property.HasAttribute<OptionalAttribute>();
+                    var id = property.GetAttribute<IdAttribute>()?.Id;
+                    yield return new InjectPropertyInfo(property, property.PropertyType, isOptional, id);
                 }
             }
         }
