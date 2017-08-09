@@ -8,13 +8,14 @@ namespace Silphid.Showzup
 {
     public class ScoreEvaluator : IScoreEvaluator
     {
-        public const float ZeroScore = 0;
-        public const float ExactMatchScore = 100;
-        public const float InheritanceScorePenality = 5;
-        public const float FallbackScore = 10;
-        public const float VariantPrecedenceFactor = 1.25f;
+        public const int ZeroScore = 0;
+        public const int MatchedVariantScore = 100;
+        public const int MatchedImplicitVariantScore = 90;
+        public const int MatchedTypeScore = 80;
+        public const int TypeInheritanceDepthScorePenality = 5;
+        public const int FallbackVariantScore = 10;
 
-        public float? GetVariantScore(VariantSet candidateVariants, VariantSet requestedVariants)
+        public int? GetVariantScore(VariantSet candidateVariants, VariantSet candidateImplicitVariants, VariantSet requestedVariants)
         {
             var score = ZeroScore;
             
@@ -22,54 +23,58 @@ namespace Silphid.Showzup
             {
                 // Matches exact variant?
                 if (candidateVariants.Contains(requestedVariant))
-                    score += ExactMatchScore;
+                    score += MatchedVariantScore;
                 
                 // Matches another variant in same group? (fail!)
                 else if (candidateVariants.Any(x => x.Group == requestedVariant.Group))
                     return null;
+
+                // Matches implicit variant?
+                else if (candidateImplicitVariants.Contains(requestedVariant))
+                    score += MatchedImplicitVariantScore;
                 
                 // No variant specified for that group (is a fallback)
                 else
-                    score += FallbackScore;
+                    score += FallbackVariantScore;
             }
 
-            return score * VariantPrecedenceFactor;
+            return score;
         }
 
-        public float? GetTypeScore(Type candidateType, Type requestedType)
+        public int? GetTypeScore(Type candidateType, Type requestedType)
         {
             return candidateType.IsInterface
                 ? GetInterfaceScore(candidateType, requestedType)
                 : GetClassScore(candidateType, requestedType);
         }
 
-        private static float? GetClassScore(Type candidateClass, Type requestedType)
+        private static int? GetClassScore(Type candidateClass, Type requestedType)
         {
-            var score = ExactMatchScore;
+            var score = MatchedTypeScore;
             var type = requestedType;
             while (type != null)
             {
                 if (type == candidateClass)
                     return score;
 
-                score -= InheritanceScorePenality;
+                score -= TypeInheritanceDepthScorePenality;
                 type = type.GetBaseType();
             }
 
             return null;
         }
 
-        private static float? GetInterfaceScore(Type candidateInterface, Type requestedType)
+        private static int? GetInterfaceScore(Type candidateInterface, Type requestedType)
         {
-            var score = ExactMatchScore;
-            IEnumerable<Type> interfaces = requestedType.GetInterfaces();
+            var score = MatchedTypeScore;
+            IEnumerable<Type> interfaces = requestedType.GetInterfaces().ToList();
             
             while (interfaces.Any())
             {
                 if (interfaces.Contains(candidateInterface))
                     return score;
 
-                score -= InheritanceScorePenality;
+                score -= TypeInheritanceDepthScorePenality;
                 interfaces = interfaces.SelectMany(x => x.GetInterfaces());
             }
 

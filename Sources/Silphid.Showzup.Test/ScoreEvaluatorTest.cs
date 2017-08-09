@@ -5,41 +5,45 @@ namespace Silphid.Showzup.Test
     [TestFixture]
     public class ScoreEvaluatorTest
     {
-        public class Display : Variant<Display>
+        public class Temper : Variant<Temper>
         {
-            public static readonly Display Page = Create();
-            public static readonly Display Background = Create();
-            public static readonly Display Panel = Create();
-            public static readonly Display Tile = Create();
-            public static readonly Display Thumbnail = Create();
-            public static readonly Display Item = Create();
+            public static readonly Temper Good = Create();
+            public static readonly Temper Bad = Create();
         }
 
-        private class ParentClass {}
-        private class ChildClass : ParentClass {}
+        private class Animal {}
+        private class Dog : Animal {}
         
         private readonly ScoreEvaluator _fixture = new ScoreEvaluator();
 
         [Test]
         public void ExactType_MatchesWithMaximumScore()
         {
-            var score = _fixture.GetTypeScore(typeof(ParentClass), typeof(ParentClass));
+            var score = _fixture.GetTypeScore(typeof(Animal), typeof(Animal));
             
-            Assert.That(score, Is.EqualTo(ScoreEvaluator.ExactMatchScore));
+            Assert.That(score, Is.EqualTo(ScoreEvaluator.MatchedVariantScore));
         }
 
         [Test]
         public void DerivedType_MatchesWithLowerScore()
         {
-            var score = _fixture.GetTypeScore(typeof(ParentClass), typeof(ChildClass));
+            var score = _fixture.GetTypeScore(typeof(Animal), typeof(Dog));
             
-            Assert.That(score, Is.EqualTo(ScoreEvaluator.ExactMatchScore - ScoreEvaluator.InheritanceScorePenality));
+            Assert.That(score, Is.EqualTo(ScoreEvaluator.MatchedTypeScore - ScoreEvaluator.TypeInheritanceDepthScorePenality));
         }
 
         [Test]
         public void ParentType_DoesNotMatchAtAll()
         {
-            var score = _fixture.GetTypeScore(typeof(ChildClass), typeof(ParentClass));
+            var score = _fixture.GetTypeScore(typeof(Dog), typeof(Animal));
+            
+            Assert.That(score, Is.Null);
+        }
+
+        [Test]
+        public void MatchedVariant()
+        {
+            var score = _fixture.GetVariantScore();
             
             Assert.That(score, Is.Null);
         }
