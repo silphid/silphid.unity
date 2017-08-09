@@ -102,7 +102,7 @@ namespace Silphid.Injexit
         }
 
         private Type ResolveForward(Type abstractionType) =>
-            _forwards.GetOptionalValue(abstractionType) ?? abstractionType;
+            _forwards.GetValueOrDefault(abstractionType) ?? abstractionType;
 
         private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, string id, bool isOptional)
         {
@@ -208,7 +208,7 @@ namespace Silphid.Injexit
             resolver =>
             {
                 var typeInfo = GetTypeInfo(concretionType);
-                if (typeInfo.Constructor.Constructor == null)
+                if (typeInfo.Constructor.ConstructorException != null)
                     throw typeInfo.Constructor.ConstructorException;
                 
                 var parameters = ResolveParameters(typeInfo.Constructor.Parameters, resolver);

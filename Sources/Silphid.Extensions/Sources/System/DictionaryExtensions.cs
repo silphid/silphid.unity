@@ -4,7 +4,7 @@ namespace Silphid.Extensions
 {
     public static class DictionaryExtensions
     {
-        public static TValue GetOptionalValue<TKey, TValue>(this IDictionary<TKey, TValue> This, TKey key, TValue defaultValue = default(TValue))
+        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> This, TKey key, TValue defaultValue = default(TValue))
         {
             TValue value;
             if (This.TryGetValue(key, out value))
