@@ -28,14 +28,8 @@ namespace Silphid.Showzup
 
         IViewModel IView.ViewModel
         {
-            get
-            {
-                return _viewModel;
-            }
-            set
-            {
-                _viewModel = value;
-            }
+            get { return _viewModel; }
+            set { _viewModel = value; }
         }
 
         public GameObject GameObject => gameObject;
@@ -73,20 +67,21 @@ namespace Silphid.Showzup
                 .AutoDetach()
             ?? Observable.ReturnUnit();
 
-        protected void Bind(Image image, Uri uri)
+        protected void Bind(Image image, Uri uri, bool keepVisible = false)
         {
             if (image != null)
-                BindAsync(image, uri)
+                BindAsync(image, uri, null, keepVisible)
                     .Subscribe()
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null)
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null,
+            bool keepVisible = false)
         {
             if (image == null)
                 return Observable.ReturnUnit();
 
-            image.enabled = false;
+            image.enabled = keepVisible;
             return Loader
                 .Load<Sprite>(uri, options)
                 .Do(x =>
@@ -96,6 +91,18 @@ namespace Silphid.Showzup
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
+        }
+
+        protected IObservable<Unit> BindAsyncOrDefault(Image image, Uri uri, Loadzup.Options options = null,
+            bool keepVisible = false)
+        {
+            if (uri == null)
+            {
+                Debug.LogError($"Uri of image is null on {gameObject.name}");
+                return Observable.ReturnUnit();
+            }
+
+            return BindAsync(image, uri, options, keepVisible);
         }
 
         #endregion

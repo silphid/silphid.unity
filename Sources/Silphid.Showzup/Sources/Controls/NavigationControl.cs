@@ -87,7 +87,7 @@ namespace Silphid.Showzup
 
         private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
         {
-            Debug.Log($"#Nav# Present({input}, {options})");
+            //Debug.Log($"#Nav# Present({input}, {options})");
             AssertCanPresent();
 
             var viewInfo = ResolveView(input, options);

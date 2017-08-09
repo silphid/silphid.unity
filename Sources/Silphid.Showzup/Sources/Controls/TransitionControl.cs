@@ -28,8 +28,7 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject(IsOptional = true)]
-        internal ITransitionResolver TransitionResolver { get; set; }
+        [Inject] [Optional] internal ITransitionResolver TransitionResolver { get; set; }
 
         #endregion
 

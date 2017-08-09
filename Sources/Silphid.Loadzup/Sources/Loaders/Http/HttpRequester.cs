@@ -23,6 +23,12 @@ namespace Silphid.Loadzup.Http
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
                 .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
 
+        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null) =>
+            ObservableWWW
+                .PostWWW(uri.AbsoluteUri, form, options?.RequestHeaders ?? new Dictionary<string, string>())
+                .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
+                .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
+
         private Dictionary<string, string> GetMeaningfulHeaders(IDictionary<string, string> allHeaders)
         {
             return MeaningfulHeaders

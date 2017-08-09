@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -7,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class SelectionControl : ListControl, IMoveHandler, INestedDeselectHandler
+    public class SelectionControl : ListControl, IMoveHandler
     {
         private bool _isSynching;
         private readonly SerialDisposable _focusDisposable = new SerialDisposable();
@@ -30,8 +31,12 @@ namespace Silphid.Showzup
         {
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
-            
-            base.Start();
+
+            if (AutoSelect)
+                Views
+                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                    .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
+                    .AddTo(this);
             
             SubscribeToUpdateFocusables(SelectedView);
 
@@ -118,6 +123,18 @@ namespace Silphid.Showzup
             SelectedView.Value = view;
         }
 
+        public bool SelectIndex(int index)
+        {
+            var viewAtIndex = GetViewAtIndex(index);
+
+            if (viewAtIndex == null)
+                return false;
+
+            SelectedView.Value = viewAtIndex;
+
+            return true;
+        }
+
         public bool SelectFirst()
         {
             if (!HasItems)
@@ -195,11 +212,6 @@ namespace Silphid.Showzup
                     eventData.moveDir == MoveDirection.Down && SelectNext())
                     eventData.Use();
             }
-        }
-
-        public void OnNestedDeselect()
-        {
-            SelectedView.Value = null;
         }
     }
 }

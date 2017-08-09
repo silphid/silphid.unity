@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mime;
 using Silphid.Loadzup.Caching;
 
 namespace Silphid.Loadzup
@@ -8,6 +9,7 @@ namespace Silphid.Loadzup
         public ContentType ContentType;
         public CachePolicy? CachePolicy;
         public Dictionary<string, string> RequestHeaders;
+        public bool IsSceneLoadAdditive = true;
 
         public void SetRequestHeader(string key, string value)
         {

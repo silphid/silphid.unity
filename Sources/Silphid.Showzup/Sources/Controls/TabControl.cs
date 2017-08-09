@@ -16,8 +16,9 @@ namespace Silphid.Showzup
         Right = MoveDirection.Right
     }
 
-    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler
+    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
     {
+        public float SelectionDelay = 0f;
         public SelectionControl TabSelectionControl;
         public TransitionControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
@@ -33,6 +34,8 @@ namespace Silphid.Showzup
                 .AddTo(this);
 
             TabSelectionControl.SelectedView
+                .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
+                .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
                 .Select(x => x?.ViewModel?.Model)
                 .Subscribe(x => ContentTransitionControl.Present(x, _lastOptions).SubscribeAndForget())
                 .AddTo(this);
@@ -41,6 +44,13 @@ namespace Silphid.Showzup
                 ContentTransitionControl,
                 TabSelectionControl,
                 (MoveDirection) TabPlacement);
+
+            // Combining with view to select gameobject when view is loaded
+            _moveHandler.SelectedGameObject
+                .CombineLatest(ContentTransitionControl.View, (x, y) => x)
+                .Where(x => x == ContentTransitionControl.gameObject)
+                .Subscribe(x => ContentTransitionControl.View.Value?.SelectDeferred())
+                .AddTo(this);
         }
 
         public bool CanPresent(object input, Options options = null) =>
@@ -57,6 +67,15 @@ namespace Silphid.Showzup
         public void OnMove(AxisEventData eventData)
         {
             _moveHandler.OnMove(eventData);
+        }
+
+        public void OnCancel(BaseEventData eventData)
+        {
+            if (!TabSelectionControl.IsSelfOrDescendantSelected())
+            {
+                _moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up});
+                eventData.Use();
+            }
         }
     }
 }

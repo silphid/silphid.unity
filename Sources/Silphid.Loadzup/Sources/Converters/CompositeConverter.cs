@@ -17,7 +17,7 @@ namespace Silphid.Loadzup
         public bool Supports<T>(byte[] bytes, ContentType contentType) =>
             _children.Any(x => x.Supports<T>(bytes, contentType));
 
-        public T Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
         {
             var child = _children.FirstOrDefault(x => x.Supports<T>(bytes, contentType));
             if (child == null)
