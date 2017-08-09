@@ -7,7 +7,7 @@ using System.Reflection;
 namespace Silphid.Extensions.DataTypes
 {
     [DebuggerDisplay("{Name} ({Id})")]
-    public abstract class ObjectEnum<T> where T : ObjectEnum<T>, new()
+    public abstract class ObjectEnum<T> where T : ObjectEnum<T>
     {
         #region Statics
 

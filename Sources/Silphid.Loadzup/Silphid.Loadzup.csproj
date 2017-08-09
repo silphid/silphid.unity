@@ -43,9 +43,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Abstractions\ContentType.cs" />
+    <Compile Include="Sources\Abstractions\IPoster.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
+    <Compile Include="Sources\Abstractions\Scheme.cs" />
     <Compile Include="Sources\Converters\CompositeConverter.cs" />
+    <Compile Include="Sources\Converters\JsonConverter.cs" />
     <Compile Include="Sources\Converters\SpriteConverter.cs" />
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
@@ -54,7 +57,27 @@
     <Compile Include="Sources\Abstractions\RequestException.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
-    <Compile Include="Sources\Loaders\BundleLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\AssetBundleAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\AssetBundleManifestAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\AssetLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleCachedLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleConverter.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\LoadingBundle.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundle.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleCachedLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleUnloader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IManifest.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IManifestLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IPlatformProvider.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IScene.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\ISceneManager.cs" />
+    <Compile Include="Sources\Loaders\Bundles\ISceneAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\ManifestLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\PlatformProvider.cs" />
+    <Compile Include="Sources\Loaders\Bundles\SceneLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\SceneManagerAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\SimulatedAssetLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedRequester.cs" />
     <Compile Include="Sources\Loaders\Caching\CachePolicy.cs" />
@@ -62,10 +85,14 @@
     <Compile Include="Sources\Loaders\Caching\ICacheStorage.cs" />
     <Compile Include="Sources\Loaders\CompositeLoader.cs" />
     <Compile Include="Sources\Loaders\Http\HttpLoader.cs" />
+    <Compile Include="Sources\Loaders\Http\HttpPoster.cs" />
     <Compile Include="Sources\Loaders\Http\HttpRequester.cs" />
     <Compile Include="Sources\Loaders\Http\KnownHttpHeaders.cs" />
     <Compile Include="Sources\Loaders\ILoaderExtensions.cs" />
+    <Compile Include="Sources\Loaders\IPosterExtensions.cs" />
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
+    <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
+    <Compile Include="Sources\Loaders\UriExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

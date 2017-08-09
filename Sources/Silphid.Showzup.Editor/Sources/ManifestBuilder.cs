@@ -7,11 +7,10 @@ using Silphid.Extensions;
 using Silphid.Showzup;
 using UnityEditor;
 using UnityEngine;
-using Rx = UniRx;
 
 public class ManifestBuilder
 {
-    [MenuItem("Assets/Build Showzup Manifest")]
+    [MenuItem("Assets/Build Showzup Manifest %#&s")]
     private static void Build()
     {
         var manifest = LoadManifest();
@@ -114,7 +113,7 @@ public class ManifestBuilder
             throw new Exception("Failed to determine ViewModel for View: {viewType.Name}", ex);
         }
     }
-    
+
     private static void MapViewModelToView(Manifest manifest, Type viewModelType, Type viewType, VariantSet allVariants)
     {
         var variants = GetVariantsFromTypes(viewModelType, viewType, allVariants);
@@ -154,18 +153,19 @@ public class ManifestBuilder
         }
 
         var assetVariants = GetVariantsFromRelativePath(relativePath, manifest, allVariants);
-        
+
         foreach (var view in views)
             MapViewToRelativePath(view.GetType(), relativePath, assetVariants, allVariants, manifest);
     }
 
-    private static void MapViewToRelativePath(Type viewType, string relativePath, VariantSet assetVariants, VariantSet allVariants,
+    private static void MapViewToRelativePath(Type viewType, string relativePath, VariantSet assetVariants,
+        VariantSet allVariants,
         Manifest manifest)
     {
         var viewVariants = GetVariantsFromType(viewType, allVariants);
         var variants = viewVariants.UnionWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
-        
+
         var mapping = new TypeToUriMapping(viewType, uri, variants);
         Debug.Log(mapping);
         manifest.ViewsToPrefabs.Add(mapping);
@@ -175,10 +175,10 @@ public class ManifestBuilder
     {
         if (!pathToPrefabsInAssets.EndsWith("/"))
             pathToPrefabsInAssets += "/";
-        
+
         Debug.Assert(prefabPath.StartsWith(pathToPrefabsInAssets),
             $"Prefab {prefabPath} should be located within {pathToPrefabsInAssets}");
-        
+
         return prefabPath.RemovePrefix(pathToPrefabsInAssets);
     }
 
@@ -193,7 +193,7 @@ public class ManifestBuilder
     #endregion
 
     #region Variants
-    
+
     private static VariantSet GetVariantsFromRelativePath(string relativePath, Manifest manifest, VariantSet allVariants)
     {
         var allTokens = relativePath
@@ -266,9 +266,9 @@ public class ManifestBuilder
     {
         var attributes = type
             .GetAttributes<VariantAttribute>()
-            .Select(x => x.Variant)        
+            .Select(x => x.Variant)
             .ToList();
-        
+
         if (!attributes.Any())
             return new VariantSet();
 

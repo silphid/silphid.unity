@@ -21,6 +21,11 @@ namespace Silphid.Loadzup.Caching
             _cacheStorage = cacheStorage;
         }
 
+        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public IObservable<Response> Request(Uri uri, Options options = null)
         {
             var policy = options?.CachePolicy ?? DefaultPolicy;

@@ -36,7 +36,7 @@
     <Reference Include="NSubstitute, Version=2.0.3.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca">
       <HintPath>..\Dependencies\net35\NSubstitute.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.0, Culture=neutral, PublicKeyToken=7aba5c763ef4d5f9">
+    <Reference Include="nunit.framework">
       <HintPath>..\Dependencies\net35\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />

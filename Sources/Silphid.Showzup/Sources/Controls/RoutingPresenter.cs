@@ -10,8 +10,10 @@ namespace Silphid.Showzup
         public GameObject[] SiblingPresenters = new GameObject[0];
         private IPresenter[] _siblingPresenters;
         
-        public bool CanPresent(object input, Options options = null) =>
-            true;
+        public bool CanPresent(object input, Options options = null) => 
+            GetValidSiblingPresenter(input, options)?.CanPresent(input, options) ??
+            GetAncestorRoutedPresenter()?.CanPresent(input, options) ??
+            false;
 
         internal void Start()
         {

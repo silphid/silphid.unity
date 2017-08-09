@@ -64,7 +64,8 @@ namespace Silphid.Showzup
             if (AutoSelect)
                 Views
                     .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(x => SelectView(x.FirstOrDefault()));
+                    .Subscribe(x => SelectView(x.FirstOrDefault()))
+                    .AddTo(this);
         }
 
         protected virtual void SelectView(IView view)

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Silphid.Showzup
 {
-    public class VariantGroup<T> : IVariantGroup where T : Variant<T>, new()
+    public class VariantGroup<T> : IVariantGroup where T : Variant<T>
     {
         private readonly List<T> _variants = new List<T>();
         private VariantSet _variantSet;

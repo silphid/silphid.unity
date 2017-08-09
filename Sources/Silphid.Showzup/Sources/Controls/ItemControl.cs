@@ -23,7 +23,8 @@ namespace Silphid.Showzup
             PreShow(targetView, options);
 
             ReplaceView(Container, targetView);
-            targetView.IsActive = true;
+            if (targetView != null)
+                targetView.IsActive = true;
             _view.Value = targetView;
 
             PostHide(sourceView, options);
