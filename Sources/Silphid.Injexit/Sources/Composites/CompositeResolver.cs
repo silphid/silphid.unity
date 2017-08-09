@@ -24,18 +24,20 @@ namespace Silphid.Injexit
         public IContainer Create() =>
             _resolvers.First().Create();
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false) =>
-            _resolvers
-                .Select((index, x) => x.ResolveFactory(abstractionType, id, true))
-                .FirstNotNullOrDefault()
-            ?? ThrowIfNotOptional(abstractionType, isOptional);
-        
-        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, bool isOptional)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
-            if (!isOptional)
-                throw new Exception($"No mapping for required type {abstractionType.Name}.");
-
-            return null;
+            foreach (var resolver in _resolvers)
+            {
+                try
+                {
+                    return resolver.ResolveFactory(abstractionType, id);
+                }
+                catch (UnresolvedTypeException)
+                {
+                }
+            }
+            
+            throw new UnresolvedTypeException(abstractionType, id);
         }
     }
 }

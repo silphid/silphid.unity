@@ -27,21 +27,20 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false) =>
-            _containers
-                .Select((index, x) => x.ResolveFactory(abstractionType, id, true))
-                .FirstNotNullOrDefault()
-            ?? ThrowIfNotOptional(abstractionType, id, isOptional);
-
-        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, string id, bool isOptional)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
-            if (!isOptional)
+            foreach (var container in _containers)
             {
-                var withId = id != null ? $" with Id={id}" : "";
-                throw new Exception($"No binding{withId} found for required type {abstractionType.Name}.");
+                try
+                {
+                    return container.ResolveFactory(abstractionType, id);
+                }
+                catch (UnresolvedTypeException)
+                {
+                }
             }
-
-            return null;
+            
+            throw new UnresolvedTypeException(abstractionType, id);
         }
 
         #endregion
