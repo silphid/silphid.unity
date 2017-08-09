@@ -9,12 +9,23 @@ namespace Silphid.Injexit
 {
     public class Reflector : IReflector
     {
+        private readonly InjectTypeInfo _gameObjectTypeInfo;
         private readonly Dictionary<Type, InjectTypeInfo> _typeInfos = new Dictionary<Type, InjectTypeInfo>();
+
+        public Reflector()
+        {
+            _gameObjectTypeInfo = new InjectTypeInfo(
+                typeof(GameObject),
+                new InjectConstructorInfo(null,
+                    new InvalidOperationException("GameObject cannot be instantiated manually."), null),
+                Array.Empty<InjectMethodInfo>(),
+                Array.Empty<InjectFieldOrPropertyInfo>());
+        }
 
         public InjectTypeInfo GetTypeInfo(Type type)
         {
             if (type == typeof(GameObject))
-                throw new NotSupportedException("GameObject type reflection not supported");
+                return _gameObjectTypeInfo;
             
             var typeInfo = _typeInfos.GetValueOrDefault(type);
             
