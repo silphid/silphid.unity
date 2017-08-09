@@ -32,7 +32,7 @@ namespace Silphid.Loadzup.Http
         private Dictionary<string, string> GetMeaningfulHeaders(IDictionary<string, string> allHeaders)
         {
             return MeaningfulHeaders
-                .Select(x => new KeyValuePair<string, string>(x, allHeaders.GetOptionalValue(x)))
+                .Select(x => new KeyValuePair<string, string>(x, allHeaders.GetValueOrDefault(x)))
                 .Where(x => x.Value != null)
                 .ToDictionary(x => x.Key, x => x.Value);
         }

@@ -6,7 +6,7 @@ namespace Silphid.Injexit
     {
         public static IResolver Using(this IResolver This, Action<IBinder> bind)
         {
-            var overrideContainer = new Container();
+            var overrideContainer = This.Create();
             bind(overrideContainer);
             return new CompositeResolver(overrideContainer, This);
         }

@@ -34,7 +34,7 @@ namespace Silphid.Injexit.Test
         [Test]
         public void BindAsList()
         {
-            var container = new Container();
+            var container = new Container(new Reflector());
             container.Bind<IBeing, Man>().AsList();
             container.Bind<IBeing, Woman>().AsSingle().AsList();
             container.BindInstance<IBeing>(_dog).AsList();

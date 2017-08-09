@@ -12,11 +12,13 @@ namespace Silphid.Injexit.Test
         
         private class FieldInjectionWithId
         {
-            [Inject(Id = "Service1")]
+            [Inject]
+            [Id("Service1")]
             [UsedImplicitly]
             internal Service Service1;
             
-            [Inject(Id = "Service2")]
+            [Inject]
+            [Id("Service2")]
             [UsedImplicitly]
             public Service Service2;
         }
@@ -27,7 +29,7 @@ namespace Silphid.Injexit.Test
 
             [Inject]
             [UsedImplicitly]
-            public void Inject([Inject(Id = "Service3")] Service service3)
+            public void Inject([Id("Service3")] Service service3)
             {
                 Service3 = service3;
             }
@@ -41,7 +43,7 @@ namespace Silphid.Injexit.Test
         [SetUp]
         public void SetUp()
         {
-            _fixture = new Container();
+            _fixture = new Container(new Reflector());
             
             _fixture.BindInstance(_service1).WithId("Service1");
             _fixture.BindInstance(_service2).WithId("Service2");

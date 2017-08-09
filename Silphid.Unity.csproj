@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UnityProject\Assets\Examples\Sequencit\Sequencing1.cs" />
-    <Compile Include="UnityProject\Assets\Examples\Showzup\Application\Application.cs" />
+    <Compile Include="UnityProject\Assets\Examples\Showzup\Application\AppInstaller.cs" />
     <Compile Include="UnityProject\Assets\Examples\Showzup\Models\Catalog.cs" />
     <Compile Include="UnityProject\Assets\Examples\Showzup\Models\Photo.cs" />
     <Compile Include="UnityProject\Assets\Examples\Showzup\Models\Photographer.cs" />
