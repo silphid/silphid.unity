@@ -32,6 +32,7 @@ public class ManifestBuilder
         MapModelsToViewModels(manifest, allVariants);
         MapViewModelsToViews(manifest, allVariants);
         MapViewsToPrefabs(manifest, allVariants);
+        PropagateImplicitVariants(manifest);
 
         EditorUtility.SetDirty(manifest);
         AssetDatabase.SaveAssets();
@@ -224,6 +225,30 @@ public class ManifestBuilder
             .Where(property => property != null && property.PropertyType.IsAssignableTo<IVariantGroup>())
             .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
             .ToVariantSet();
+    }
+
+    #endregion
+
+    #region Implicit variants
+
+    private static void PropagateImplicitVariants(Manifest manifest)
+    {
+        manifest.ViewModelsToViews.ForEach(vmToV =>
+        {
+            vmToV.ImplicitVariants = manifest.ViewsToPrefabs
+                .Where(vToP => vmToV.Target.IsAssignableTo(vToP.Source))
+                .Aggregate(VariantSet.Empty, (acc, vToP) => acc
+                    .UnionWith(vToP.Variants));
+        });
+        
+        manifest.ModelsToViewModels.ForEach(vToVm =>
+        {
+            vToVm.ImplicitVariants = manifest.ViewModelsToViews
+                .Where(vmToV => vToVm.Target.IsAssignableTo(vmToV.Source))
+                .Aggregate(VariantSet.Empty, (acc, vToP) => acc
+                    .UnionWith(vToP.Variants)
+                    .UnionWith(vToP.ImplicitVariants));
+        });
     }
 
     #endregion

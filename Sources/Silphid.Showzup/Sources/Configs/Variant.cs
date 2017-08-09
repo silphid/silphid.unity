@@ -16,7 +16,6 @@ namespace Silphid.Showzup
             return variant;
         }
 
-        public override string ToString() =>
-            $"{((IVariant)this).Group.Name}.{Name}";
+        public override string ToString() => Name;
     }
 }
