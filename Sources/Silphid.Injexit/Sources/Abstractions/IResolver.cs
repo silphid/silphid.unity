@@ -18,7 +18,6 @@ namespace Silphid.Injexit
         /// <param name="isOptional">Whether to return null upon failure (isOptional=true) or throw an exception (isOptional=false)</param>
         Func<IResolver, object> ResolveFactory(
             Type abstractionType,
-            string id = null,
-            bool isOptional = false);
+            string id = null);
     }
 }

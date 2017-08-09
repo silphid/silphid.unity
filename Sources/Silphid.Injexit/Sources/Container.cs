@@ -90,7 +90,7 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null, bool isOptional = false)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
             _logger?.Log($"Resolving {abstractionType.Name}...");
 
@@ -98,21 +98,15 @@ namespace Silphid.Injexit
 
             return ResolveFromTypeMappings(abstractionType, id) ??
                    ResolveFromListMappings(abstractionType) ??
-                   ThrowIfNotOptional(abstractionType, id, isOptional);
+                   ThrowUnresolvedType(abstractionType, id);
         }
 
         private Type ResolveForward(Type abstractionType) =>
             _forwards.GetValueOrDefault(abstractionType) ?? abstractionType;
 
-        private Func<IResolver, object> ThrowIfNotOptional(Type abstractionType, string id, bool isOptional)
+        private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string id)
         {
-            if (!isOptional)
-            {
-                var withId = id != null ? $" with Id={id}" : "";
-                throw new Exception($"No binding{withId} found for required type {abstractionType.Name}.");
-            }
-            
-            return NullFactory;
+            throw new UnresolvedTypeException(abstractionType, id);
         }
 
         private Func<IResolver, object> ResolveFromListMappings(Type abstractionType)
@@ -225,9 +219,16 @@ namespace Silphid.Injexit
 
         private object ResolveParameter(InjectParameterInfo parameter, IResolver resolver)
         {
-            _logger?.Log($"Resolving parameter {parameter.Name}...");
-            var isOptional = parameter.IsOptional || parameter.IsOptional;
-            return resolver.Resolve(parameter.Type, parameter.Id, isOptional);
+            _logger?.Log($"Resolving parameter {parameter.Name}");
+            try
+            {
+                return resolver.Resolve(parameter.Type, parameter.Id);
+            }
+            catch (UnresolvedTypeException)
+            {
+                _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
+                return parameter.DefaultValue;
+            }
         }
 
         #endregion
@@ -317,9 +318,17 @@ namespace Silphid.Injexit
 
         private void InjectFieldOrProperty(object obj, InjectFieldOrPropertyInfo member, IResolver resolver)
         {
-            var value = resolver.Resolve(member.Type, member.Id, member.IsOptional);
-            _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
-            member.SetValue(obj, value);
+            try
+            {
+                var value = resolver.Resolve(member.Type, member.Id);
+                _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                member.SetValue(obj, value);
+            }
+            catch (UnresolvedTypeException)
+            {
+                if (!member.IsOptional)
+                    throw;
+            }
         }
 
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)

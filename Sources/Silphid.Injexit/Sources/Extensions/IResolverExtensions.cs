@@ -16,11 +16,11 @@ namespace Silphid.Injexit
                 ? new CompositeResolver(overrideResolver, This)
                 : This;
 
-        public static object Resolve(this IResolver This, Type abstractionType, string id = null, bool isOptional = false) =>
-            This.ResolveFactory(abstractionType, id, isOptional)
+        public static object Resolve(this IResolver This, Type abstractionType, string id = null) =>
+            This.ResolveFactory(abstractionType, id)
                 ?.Invoke(This);
 
-        public static T Resolve<T>(this IResolver This, string id = null, bool isOptional = false) =>
-            (T) This.Resolve(typeof(T), id, isOptional);
+        public static T Resolve<T>(this IResolver This, string id = null) =>
+            (T) This.Resolve(typeof(T), id);
     }
 }
