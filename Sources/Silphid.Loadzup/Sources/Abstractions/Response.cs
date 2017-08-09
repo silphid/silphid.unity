@@ -26,7 +26,7 @@ namespace Silphid.Loadzup
                 if (_contentType != null)
                     return _contentType;
 
-                var str = Headers.GetOptionalValue(KnownHttpHeaders.ContentType);
+                var str = Headers.GetValueOrDefault(KnownHttpHeaders.ContentType);
                 if (str != null)
                     _contentType = new ContentType(str);
 

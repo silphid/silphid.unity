@@ -6,6 +6,7 @@ using Silphid.Extensions;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnassignedGetOnlyAutoProperty
 // ReSharper disable ClassNeverInstantiated.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Local
 #pragma warning disable 169
 
 namespace Silphid.Injexit.Test
@@ -56,7 +57,7 @@ namespace Silphid.Injexit.Test
             [Inject] [Optional] public string InjectablePublicProperty { get; set; }
         
             [Inject] private void InjectablePrivateMethod(object obj, [Optional] string str) {}
-            [Inject] public void InjectablePublicMethod(object obj, [Optional] string str) {}
+            [Inject] public void InjectablePublicMethod(object obj, [Optional] string str, object obj2 = null) {}
         }
     
         private class ClassWithIdentifiedInjectableMembers
@@ -154,9 +155,10 @@ namespace Silphid.Injexit.Test
             AssertMember<string>(privateMethod.Parameters[1], "str", true);
 
             var publicMethod = GetMethod(typeInfo.Methods, "InjectablePublicMethod");
-            Assert.That(publicMethod.Parameters.Length, Is.EqualTo(2));
+            Assert.That(publicMethod.Parameters.Length, Is.EqualTo(3));
             AssertMember<object>(publicMethod.Parameters[0], "obj");
             AssertMember<string>(publicMethod.Parameters[1], "str", true);
+            AssertMember<object>(publicMethod.Parameters[2], "obj2", true);
         }
 
         [Test]

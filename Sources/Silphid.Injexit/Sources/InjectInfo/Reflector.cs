@@ -9,25 +9,14 @@ namespace Silphid.Injexit
 {
     public class Reflector : IReflector
     {
-        private readonly InjectTypeInfo _gameObjectTypeInfo;
         private readonly Dictionary<Type, InjectTypeInfo> _typeInfos = new Dictionary<Type, InjectTypeInfo>();
-
-        public Reflector()
-        {
-            _gameObjectTypeInfo = new InjectTypeInfo(
-                typeof(GameObject),
-                new InjectConstructorInfo(null,
-                    new InvalidOperationException("GameObject cannot be instantiated manually."), null),
-                Array.Empty<InjectMethodInfo>(),
-                Array.Empty<InjectFieldOrPropertyInfo>());
-        }
 
         public InjectTypeInfo GetTypeInfo(Type type)
         {
             if (type == typeof(GameObject))
-                return _gameObjectTypeInfo;
+                throw new NotSupportedException("GameObject type reflection not supported");
             
-            var typeInfo = _typeInfos.GetOptionalValue(type);
+            var typeInfo = _typeInfos.GetValueOrDefault(type);
             
             if (typeInfo == null)
             {
@@ -92,7 +81,7 @@ namespace Silphid.Injexit
 
         private InjectParameterInfo[] GetParameters(MethodBase method) =>
             (from parameter in method.GetParameters()
-                let isOptional = parameter.HasAttribute<OptionalAttribute>()
+                let isOptional = parameter.HasAttribute<OptionalAttribute>() || parameter.IsOptional
                 let id = parameter.GetAttribute<IdAttribute>()?.Id
                 select new InjectParameterInfo(parameter, isOptional, id))
             .ToArray();

@@ -75,7 +75,7 @@ namespace Silphid.Loadzup.Caching
         private IObservable<Response> LoadWithETag(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
             //Debug.Log($"#Loadzup# LoadWithETag");
-            var eTag = responseHeaders.GetOptionalValue(KnownHttpHeaders.ETag);
+            var eTag = responseHeaders.GetValueOrDefault(KnownHttpHeaders.ETag);
             if (eTag == null)
                 return LoadFromOrigin(policy, uri, options);
 
@@ -96,7 +96,7 @@ namespace Silphid.Loadzup.Caching
         private IObservable<Response> LoadWithLastModified(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
            // Debug.Log($"#Loadzup# LoadWithLastModified");
-            var lastModified = responseHeaders.GetOptionalValue(KnownHttpHeaders.LastModified);
+            var lastModified = responseHeaders.GetValueOrDefault(KnownHttpHeaders.LastModified);
             if (lastModified == null)
                 return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
 
