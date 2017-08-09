@@ -10,10 +10,16 @@ namespace Silphid.Showzup
         [SerializeField] private ClassTypeReference _source;
         [SerializeField] private ClassTypeReference _target;
         [SerializeField] private VariantSet _variants;
+        [SerializeField] private VariantSet _implicitVariants = VariantSet.Empty;
 
         public Type Source => _source;
         public Type Target => _target;
         public VariantSet Variants => _variants;
+        public VariantSet ImplicitVariants
+        {
+            get { return _implicitVariants; }
+            set { _implicitVariants = value; }
+        }
 
         public TypeToTypeMapping(Type source, Type target, VariantSet variants)
         {
@@ -25,7 +31,9 @@ namespace Silphid.Showzup
         public override string ToString()
         {
             var variants = _variants.Any() ? $" ({_variants})" : "";
-            return $"{_source} => {_target}{variants}";
+            var implicitVariants = _implicitVariants.Any() ? $" [{_implicitVariants}]" : "";
+            
+            return $"{_source} => {_target}{variants}{implicitVariants}";
         }
     }
 }
