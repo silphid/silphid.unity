@@ -142,7 +142,7 @@ namespace Silphid.Showzup
             var resolved = candidates
                 .Select(candidate => new CandidateMapping<TypeToTypeMapping>(
                     candidate,
-                    GetScore(candidate.Source, candidate.Variants, candidate.ImplicitVariants, type, requestedVariants)))
+                    _scoreEvaluator.GetScore(candidate.Source, candidate.Variants, candidate.ImplicitVariants, type, requestedVariants)))
                 .Where(candidate => candidate.Score.HasValue)
                 .WithMax(candidate => candidate.Score.Value)
                 ?.Mapping;
@@ -167,7 +167,7 @@ namespace Silphid.Showzup
             
             var resolved = candidates
                 .Select(candidate => new CandidateMapping<TypeToUriMapping>(candidate,
-                    _scoreEvaluator.GetVariantScore(candidate.Variants, null, requestedVariants)))
+                    _scoreEvaluator.GetVariantScore(requestedVariants, candidate.Variants, null)))
                 .Where(candidate => candidate.Score.HasValue)
                 .WithMax(candidate => candidate.Score.Value)
                 ?.Mapping;
@@ -183,9 +183,5 @@ namespace Silphid.Showzup
             
             return resolved.Target;
         }
-
-        private float? GetScore(Type candidateType, VariantSet candidateVariants, VariantSet candidateImplicitVariants, Type requestedType, VariantSet requestedVariants) =>
-            _scoreEvaluator.GetVariantScore(candidateVariants, candidateImplicitVariants, requestedVariants) +
-            _scoreEvaluator.GetTypeScore(candidateType, requestedType);
     }
 }

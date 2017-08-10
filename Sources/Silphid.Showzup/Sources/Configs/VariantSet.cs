@@ -26,6 +26,11 @@ namespace Silphid.Showzup
         {
         }
 
+        public VariantSet([NotNull] params IVariant[] collection) :
+            this(new HashSet<IVariant>(collection))
+        {
+        }
+
         public VariantSet([NotNull] IEnumerable<IVariant> collection) :
             this(new HashSet<IVariant>(collection))
         {

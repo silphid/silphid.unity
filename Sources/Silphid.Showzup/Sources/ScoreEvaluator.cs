@@ -9,21 +9,26 @@ namespace Silphid.Showzup
     public class ScoreEvaluator : IScoreEvaluator
     {
         public const int ZeroScore = 0;
-        public const int MatchedVariantScore = 100;
-        public const int MatchedImplicitVariantScore = 90;
-        public const int MatchedTypeScore = 80;
-        public const int TypeInheritanceDepthScorePenality = 5;
-        public const int FallbackVariantScore = 10;
+        public const int ExplicitVariantScore = 100;
+        public const int ImplicitVariantScore = 90;
+        public const int TypeScore = 80;
+        public const int InheritanceDepthPenality = 5;
+        public const int FallbackVariantScore = 50;
+        public const int ExcessVariantPenality = 5;
 
-        public int? GetVariantScore(VariantSet candidateVariants, VariantSet candidateImplicitVariants, VariantSet requestedVariants)
+        public int? GetVariantScore(VariantSet requestedVariants, VariantSet candidateVariants, VariantSet candidateImplicitVariants)
         {
             var score = ZeroScore;
+            var excessVariants = new HashSet<IVariant>(candidateVariants);
             
             foreach (var requestedVariant in requestedVariants)
             {
                 // Matches exact variant?
                 if (candidateVariants.Contains(requestedVariant))
-                    score += MatchedVariantScore;
+                {
+                    score += ExplicitVariantScore;
+                    excessVariants.Remove(requestedVariant);
+                }
                 
                 // Matches another variant in same group? (fail!)
                 else if (candidateVariants.Any(x => x.Group == requestedVariant.Group))
@@ -31,17 +36,19 @@ namespace Silphid.Showzup
 
                 // Matches implicit variant?
                 else if (candidateImplicitVariants.Contains(requestedVariant))
-                    score += MatchedImplicitVariantScore;
+                    score += ImplicitVariantScore;
                 
                 // No variant specified for that group (is a fallback)
                 else
                     score += FallbackVariantScore;
             }
 
+            score -= excessVariants.Count * ExcessVariantPenality;
+
             return score;
         }
 
-        public int? GetTypeScore(Type candidateType, Type requestedType)
+        public int? GetTypeScore(Type requestedType, Type candidateType)
         {
             return candidateType.IsInterface
                 ? GetInterfaceScore(candidateType, requestedType)
@@ -50,14 +57,14 @@ namespace Silphid.Showzup
 
         private static int? GetClassScore(Type candidateClass, Type requestedType)
         {
-            var score = MatchedTypeScore;
+            var score = TypeScore;
             var type = requestedType;
             while (type != null)
             {
                 if (type == candidateClass)
                     return score;
 
-                score -= TypeInheritanceDepthScorePenality;
+                score -= InheritanceDepthPenality;
                 type = type.GetBaseType();
             }
 
@@ -66,7 +73,7 @@ namespace Silphid.Showzup
 
         private static int? GetInterfaceScore(Type candidateInterface, Type requestedType)
         {
-            var score = MatchedTypeScore;
+            var score = TypeScore;
             IEnumerable<Type> interfaces = requestedType.GetInterfaces().ToList();
             
             while (interfaces.Any())
@@ -74,7 +81,7 @@ namespace Silphid.Showzup
                 if (interfaces.Contains(candidateInterface))
                     return score;
 
-                score -= TypeInheritanceDepthScorePenality;
+                score -= InheritanceDepthPenality;
                 interfaces = interfaces.SelectMany(x => x.GetInterfaces());
             }
 

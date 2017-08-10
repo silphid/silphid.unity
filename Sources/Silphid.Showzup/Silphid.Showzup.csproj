@@ -87,6 +87,7 @@
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
+    <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />

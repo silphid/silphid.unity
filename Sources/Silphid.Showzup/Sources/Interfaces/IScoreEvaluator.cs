@@ -4,7 +4,7 @@ namespace Silphid.Showzup
 {
     public interface IScoreEvaluator
     {
-        int? GetVariantScore(VariantSet candidateVariants, VariantSet candidateImplicitVariants, VariantSet requestedVariants);
-        int? GetTypeScore(Type candidateType, Type requestedType);
+        int? GetVariantScore(VariantSet requestedVariants, VariantSet candidateVariants, VariantSet candidateImplicitVariants);
+        int? GetTypeScore(Type requestedType, Type candidateType);
     }
 }
