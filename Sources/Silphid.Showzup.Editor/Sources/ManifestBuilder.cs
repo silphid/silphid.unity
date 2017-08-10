@@ -10,16 +10,10 @@ using UnityEngine;
 
 public class ManifestBuilder
 {
-    [MenuItem("Assets/Build Showzup Manifest %#&s")]
-    private static void Build()
+    [MenuItem("Silphid/Showzup/Build Manifest %#&s")]
+    public static void Build()
     {
-        var manifest = LoadManifest();
-        if (manifest == null)
-        {
-            Debug.Log("No manifest to build. Create a new manifest first from Assets/Create/Showzup menu.");
-            return;
-        }
-
+        var manifest = ManifestManager.Manifest;
         Build(manifest);
     }
 
@@ -38,16 +32,7 @@ public class ManifestBuilder
 
         EditorGUIUtility.PingObject(manifest);
         Selection.activeObject = manifest;
-    }
-
-    private static Manifest LoadManifest()
-    {
-        var guids = AssetDatabase.FindAssets($"t:{typeof(Manifest)}");
-        if (!guids.Any())
-            return null;
-
-        var assetPath = AssetDatabase.GUIDToAssetPath(guids.FirstOrDefault());
-        return AssetDatabase.LoadAssetAtPath<Manifest>(assetPath);
+        ManifestWindow.Open();
     }
 
     #region ModelsToViewModels
