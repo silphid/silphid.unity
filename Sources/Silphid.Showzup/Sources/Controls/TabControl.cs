@@ -18,13 +18,16 @@ namespace Silphid.Showzup
 
     public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
     {
-        public float SelectionDelay = 0f;
+        public float SelectionDelay;
         public SelectionControl TabSelectionControl;
         public TransitionControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
         
         private readonly MoveHandler _moveHandler = new MoveHandler();
         private Options _lastOptions;
+        
+        private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
+        public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
 
         public void Start()
         {
@@ -36,8 +39,9 @@ namespace Silphid.Showzup
             TabSelectionControl.SelectedView
                 .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
-                .Select(x => x?.ViewModel?.Model)
-                .Subscribe(x => ContentTransitionControl.Present(x, _lastOptions).SubscribeAndForget())
+                .SelectMany(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? Observable.Return(x?.ViewModel?.Model))
+                .SelectMany(x => ContentTransitionControl.Present(x, _lastOptions))
+                .Subscribe(x => _contentView.Value = x)
                 .AddTo(this);
             
             _moveHandler.BindBidirectional(

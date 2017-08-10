@@ -91,6 +91,7 @@
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
+    <Compile Include="Sources\Interfaces\IContentProvider.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
     <Compile Include="Sources\Interfaces\IInjectionAdapter.cs" />
     <Compile Include="Sources\Interfaces\IItemPresenter.cs" />
