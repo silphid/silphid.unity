@@ -30,8 +30,8 @@ namespace Silphid.Showzup
 
         public override string ToString()
         {
-            var variants = _variants.Any() ? $" ({_variants})" : "";
-            var implicitVariants = _implicitVariants.Any() ? $" [{_implicitVariants}]" : "";
+            var variants = _variants.Any() ? $" [{_variants}]" : "";
+            var implicitVariants = _implicitVariants.Any() ? $" ({_implicitVariants})" : "";
             
             return $"{_source} => {_target}{variants}{implicitVariants}";
         }
