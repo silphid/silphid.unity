@@ -97,7 +97,7 @@ namespace Silphid.Injexit
             abstractionType = ResolveForward(abstractionType);
 
             return ResolveFromTypeMappings(abstractionType, id) ??
-                   ResolveFromListMappings(abstractionType) ??
+                   ResolveFromListMappings(abstractionType, id) ??
                    ThrowUnresolvedType(abstractionType, id);
         }
 
@@ -109,13 +109,13 @@ namespace Silphid.Injexit
             throw new UnresolvedTypeException(abstractionType, id);
         }
 
-        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType)
+        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType, string id)
         {
             var elementType = GetListElementType(abstractionType);
             if (elementType == null)
                 return NullFactory;
 
-            var factories = GetListFactories(elementType);
+            var factories = GetListFactories(elementType, id);
             if (factories.Count == 0)
                 return NullFactory;
             
@@ -156,9 +156,9 @@ namespace Silphid.Injexit
             return null;
         }
 
-        private List<Func<IResolver, object>> GetListFactories(Type abstractionType) =>
+        private List<Func<IResolver, object>> GetListFactories(Type abstractionType, string id) =>
             _bindings
-                .Where(x => x.AbstractionType == abstractionType && x.IsList)
+                .Where(x => x.AbstractionType == abstractionType && x.IsList && x.Id == id)
                 .Select(ResolveFactoryInternal)
                 .ToList();
 

@@ -36,7 +36,8 @@ namespace Silphid.Injexit
 
         public IBinding WithId(string id)
         {
-            throw new NotImplementedException();
+            _bindings.ForEach(x => x.WithId(id));
+            return this;
         }
 
         public IBinding Using(Action<IBinder> bind)

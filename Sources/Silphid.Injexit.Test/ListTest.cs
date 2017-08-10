@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
+// ReSharper disable ClassNeverInstantiated.Local
 
 namespace Silphid.Injexit.Test
 {
@@ -29,10 +29,17 @@ namespace Silphid.Injexit.Test
         private class Woman : Human {}
         private class Dog : Being {}
 
+        private class ManWithDog : Man
+        {
+            public Dog Dog { get; }
+
+            public ManWithDog(Dog dog) { Dog = dog; }
+        }
+
         private readonly Dog _dog = new Dog();
         
         [Test]
-        public void BindAsList()
+        public void BindAsList_OrderIsRespected()
         {
             var container = new Container(new Reflector());
             container.Bind<IBeing, Man>().AsList();
@@ -40,18 +47,17 @@ namespace Silphid.Injexit.Test
             container.BindInstance<IBeing>(_dog).AsList();
 
             var list1 = container.Resolve<List<IBeing>>();
-            var man1 = list1.OfType<Man>().FirstOrDefault();
-            var woman1 = list1.OfType<Woman>().FirstOrDefault();
-            var dog1 = list1.OfType<Dog>().FirstOrDefault();
+            var man1 = list1[0];
+            var woman1 = list1[1];
+            var dog1 = list1[2];
             
-            Assert.That(list1, Is.EquivalentTo(new IBeing[]{ new Man(), new Woman(), _dog }));
-            Assert.That(dog1, Is.SameAs(_dog));
+            Assert.That(list1, Is.EqualTo(new IBeing[]{ new Man(), new Woman(), _dog }));
             
             // Try same resolve a second time
             var list2 = container.Resolve<List<IBeing>>();
-            var man2 = list2.OfType<Man>().FirstOrDefault();
-            var woman2 = list2.OfType<Woman>().FirstOrDefault();
-            var dog2 = list2.OfType<Dog>().FirstOrDefault();
+            var man2 = list2[0];
+            var woman2 = list2[1];
+            var dog2 = list2[2];
 
             // Should be same woman and same dog
             Assert.That(woman2, Is.SameAs(woman1));
@@ -59,6 +65,99 @@ namespace Silphid.Injexit.Test
 
             // Should be different man
             Assert.That(man2, Is.Not.SameAs(man1));
+        }
+        
+        [Test]
+        public void BindAsListWithNewSyntax()
+        {
+            var container = new Container(new Reflector());
+            container.BindAsList<IBeing>(x =>
+            {
+                x.Bind<Man>();
+                x.Bind<Woman>();
+                x.BindInstance(_dog);
+            });
+
+            var list = container.Resolve<List<IBeing>>();
+            Assert.That(list, Is.EqualTo(new IBeing[]{ new Man(), new Woman(), _dog }));
+            Assert.That(list[2], Is.SameAs(_dog));
+        }
+        
+        [Test]
+        public void BindManyTimeTheSameTypeAsList_OrderShouldBeRespected()
+        {
+            var container = new Container(new Reflector());
+            container.Bind<Being, Man>().AsList();
+            container.Bind<Being, Man>().AsList();
+            container.Bind<Being, Woman>().AsList();
+            container.Bind<Being, Man>().AsList();
+            container.Bind<Being, Woman>().AsList();
+            container.Bind<Being, Woman>().AsList();
+
+            var list = container.Resolve<List<Being>>();
+            
+            Assert.That(list.Count, Is.EqualTo(6));
+            Assert.That(list[0], Is.TypeOf<Man>());
+            Assert.That(list[1], Is.TypeOf<Man>());
+            Assert.That(list[2], Is.TypeOf<Woman>());
+            Assert.That(list[3], Is.TypeOf<Man>());
+            Assert.That(list[4], Is.TypeOf<Woman>());
+            Assert.That(list[5], Is.TypeOf<Woman>());
+        }
+        
+        [Test]
+        public void BindTwoListsWithDifferentIdsWithNewSyntax()
+        {
+            var container = new Container(new Reflector());
+
+            container
+                .BindAsList<Being>(x =>
+                {
+                    x.Bind<Man>();
+                    x.Bind<Man>();
+                    x.Bind<Woman>();
+                })
+                .WithId("List1");
+
+            container
+                .BindAsList<Being>(x =>
+                {
+                    x.Bind<Woman>();
+                    x.Bind<Man>();
+                    x.Bind<Woman>();
+                })
+                .WithId("List2");
+            
+            var list1 = container.Resolve<List<Being>>("List1");
+            Assert.That(list1.Count, Is.EqualTo(3));
+            Assert.That(list1[0], Is.TypeOf<Man>());
+            Assert.That(list1[1], Is.TypeOf<Man>());
+            Assert.That(list1[2], Is.TypeOf<Woman>());
+
+            var list2 = container.Resolve<List<Being>>("List2");
+            Assert.That(list2.Count, Is.EqualTo(3));
+            Assert.That(list2[0], Is.TypeOf<Woman>());
+            Assert.That(list2[1], Is.TypeOf<Man>());
+            Assert.That(list2[2], Is.TypeOf<Woman>());
+        }
+        
+        [Test]
+        public void BindManWithDogAsListUsingDogInstance()
+        {
+            var container = new Container(new Reflector());
+
+            container
+                .BindAsList<Being>(x =>
+                {
+                    x.Bind<ManWithDog>().UsingInstance(_dog);
+                    x.Bind<Man>();
+                });
+            
+            var list = container.Resolve<List<Being>>();
+            
+            Assert.That(list.Count, Is.EqualTo(2));
+            Assert.That(list[0], Is.TypeOf<ManWithDog>());
+            Assert.That(((ManWithDog)list[0]).Dog, Is.SameAs(_dog));
         }
     }
 }

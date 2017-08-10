@@ -48,6 +48,7 @@
     <Compile Include="Sources\Abstractions\IContainer.cs" />
     <Compile Include="Sources\Abstractions\IInjector.cs" />
     <Compile Include="Sources\Abstractions\IInstaller.cs" />
+    <Compile Include="Sources\Abstractions\IListBinder.cs" />
     <Compile Include="Sources\Abstractions\IResolver.cs" />
     <Compile Include="Sources\Abstractions\UnresolvedTypeException.cs" />
     <Compile Include="Sources\Attributes\BindAttribute.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Sources\Installers\SceneInstaller.cs" />
     <Compile Include="Sources\Internals\Binding.cs" />
     <Compile Include="Sources\Internals\Lifetime.cs" />
+    <Compile Include="Sources\Internals\ListBinder.cs" />
     <Compile Include="Sources\Internals\NullBinding.cs" />
     <Compile Include="Sources\Internals\NullContainer.cs" />
   </ItemGroup>

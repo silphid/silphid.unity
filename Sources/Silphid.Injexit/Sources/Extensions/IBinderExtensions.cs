@@ -57,5 +57,16 @@ namespace Silphid.Injexit
             This.BindForward(typeof(TSourceAbstraction), typeof(TTargetAbstraction));
 
         #endregion
+
+        #region BindAsList
+
+        public static IBinding BindAsList<TSourceAbstraction>(this IBinder This, Action<IListBinder<TSourceAbstraction>> action)
+        {
+            var listBinder = new ListBinder<TSourceAbstraction>(This);
+            action(listBinder);
+            return listBinder.CompositeBinding;
+        }
+
+        #endregion
     }
 }
