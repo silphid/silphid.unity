@@ -109,9 +109,10 @@ namespace Silphid.Showzup
 
         public void OnBeforeSerialize()
         {
-            _serializableVariants = this
-                .Select(x => new SerializableVariant(x))
-                .ToList();
+            if (_serializableVariants == null)
+                _serializableVariants = this
+                    .Select(x => new SerializableVariant(x))
+                    .ToList();
         }
 
         public void OnAfterDeserialize()

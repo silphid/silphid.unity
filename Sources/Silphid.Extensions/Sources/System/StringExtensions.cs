@@ -32,6 +32,11 @@ namespace Silphid.Extensions
             return string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
+        public static bool CaseInsensitiveContains(this string str1, string str2)
+        {
+            return str1.IndexOf(str2, StringComparison.OrdinalIgnoreCase) != -1;
+        }
+
         [StringFormatMethod("format")]
         public static string Formatted(this string format, params object[] args)
         {

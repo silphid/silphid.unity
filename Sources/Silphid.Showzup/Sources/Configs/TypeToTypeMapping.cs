@@ -33,7 +33,7 @@ namespace Silphid.Showzup
             var variants = _variants.Any() ? $" [{_variants}]" : "";
             var implicitVariants = _implicitVariants.Any() ? $" ({_implicitVariants})" : "";
             
-            return $"{_source} => {_target}{variants}{implicitVariants}";
+            return $"{Source.Name} => {Target.Name}{variants}{implicitVariants}";
         }
     }
 }
