@@ -14,6 +14,9 @@ namespace Silphid.Injexit
         public static IBinding UsingInstance<T>(this IBinding This, T instance) =>
             This.Using(x => x.BindInstance(instance));
         
+        public static IBinding UsingSelf<TConcretion>(this IBinding This) =>
+            This.Using(x => x.BindToSelf<TConcretion>());
+        
         public static IBinding Using<TAbstraction, TConcretion>(this IBinding This) where TConcretion : TAbstraction =>
             This.Using(x => x.Bind<TAbstraction, TConcretion>());
 

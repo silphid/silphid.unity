@@ -124,8 +124,12 @@ namespace Silphid.Injexit.Test
                 {
                     x.Bind<Woman>();
                     x.Bind<Man>();
-                    x.Bind<Woman>();
                 })
+                .WithId("List2");
+
+            container
+                .Bind<Being, Woman>()
+                .AsList()
                 .WithId("List2");
             
             var list1 = container.Resolve<List<Being>>("List1");
