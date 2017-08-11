@@ -5,32 +5,26 @@ using UnityEngine;
 namespace Silphid.Showzup
 {
     [Serializable]
-    public class TypeToTypeMapping
+    public class TypeToTypeMapping : Mapping
     {
-        [SerializeField] private ClassTypeReference _source;
         [SerializeField] private ClassTypeReference _target;
-        [SerializeField] private VariantSet _variants;
         [SerializeField] private VariantSet _implicitVariants = VariantSet.Empty;
 
-        public Type Source => _source;
         public Type Target => _target;
-        public VariantSet Variants => _variants;
         public VariantSet ImplicitVariants
         {
             get { return _implicitVariants; }
             set { _implicitVariants = value; }
         }
 
-        public TypeToTypeMapping(Type source, Type target, VariantSet variants)
+        public TypeToTypeMapping(Type source, Type target, VariantSet variants) : base(source, variants)
         {
-            _source = source;
             _target = target;
-            _variants = variants;
         }
 
         public override string ToString()
         {
-            var variants = _variants.Any() ? $" [{_variants}]" : "";
+            var variants = Variants.Any() ? $" [{Variants}]" : "";
             var implicitVariants = _implicitVariants.Any() ? $" ({_implicitVariants})" : "";
             
             return $"{Source.Name} => {Target.Name}{variants}{implicitVariants}";

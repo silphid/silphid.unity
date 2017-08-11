@@ -64,6 +64,7 @@
     <Compile Include="Sources\Configs\Config.cs" />
     <Compile Include="Sources\Configs\IVariant.cs" />
     <Compile Include="Sources\Configs\IVariantGroup.cs" />
+    <Compile Include="Sources\Configs\Mapping.cs" />
     <Compile Include="Sources\Configs\Segue.cs" />
     <Compile Include="Sources\Configs\SerializableVariant.cs" />
     <Compile Include="Sources\Configs\TypeToTypeMapping.cs" />

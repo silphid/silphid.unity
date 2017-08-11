@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using Silphid.Extensions;
 using UnityEditor;
 using UnityEngine;
@@ -16,13 +15,12 @@ namespace Silphid.Showzup
         private string _filter = "";
         private Vector2 _scrollPos;
 
-        [MenuItem("Silphid/Showzup/Manifest Window")]
+        [MenuItem("Window/Showzup/Manifest")]
         public static void Open()
         {
-            GetWindow(typeof(ManifestWindow));
+            GetWindow(typeof(ManifestWindow), false, "Manifest", true);
         }
         
-        [UsedImplicitly]
         public void OnEnable()
         {
             _normalStyle = new GUIStyle(EditorStyles.boldLabel);
@@ -40,14 +38,14 @@ namespace Silphid.Showzup
             _explicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
             _explicitVariantStyle.stretchWidth = false;
             _explicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.95f, 0.54f, 0f)
+                ? new Color(0.97f, 0.55f, 0f)
                 : new Color(0.67f, 0.35f, 0f);
 
             _implicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
             _implicitVariantStyle.stretchWidth = false;
             _implicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.62f, 0.31f, 0f)
-                : new Color(0.4f, 0.2f, 0f);
+                ? new Color(0.74f, 0.38f, 0f)
+                : new Color(0f, 0.18f, 0.58f);
         }
         
         public void OnGUI()
@@ -94,7 +92,6 @@ namespace Silphid.Showzup
             objects
                 .Select(x => new { Obj = x, Str = x.ToString() })
                 .Where(x => _filter.IsNullOrEmpty() || x.Str.CaseInsensitiveContains(_filter))
-                .OrderBy(x => x.Str)
                 .ForEach(x => Label(x.Obj, x.Str));
         }
 
@@ -113,7 +110,6 @@ namespace Silphid.Showzup
             GUILayout.Label(mapping.Source.Name, _normalStyle);
             GUILayout.Label(" => ", _mappingArrowStyle);
             GUILayout.Label(mapping.Target.Name, _normalStyle);
-            
             if (mapping.Variants.Any())
                 GUILayout.Label($" [{mapping.Variants}]", _explicitVariantStyle);
             

@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class ManifestBuilder
 {
-    [MenuItem("Silphid/Showzup/Build Manifest %#&s")]
+    [MenuItem("Assets/Build Showzup Manifest %#&s")]
     public static void Build()
     {
         var manifest = ManifestManager.Manifest;
@@ -48,7 +48,12 @@ public class ManifestBuilder
                 manifest,
                 GetModelForViewModel(viewModelType), viewModelType,
                 allVariants));
+        
+        manifest.ModelsToViewModels.Sort(MappingSortingComparison);
     }
+
+    private static Comparison<Mapping> MappingSortingComparison =>
+        (x, y) => string.Compare(x.Source.Name, y.Source.Name, StringComparison.Ordinal);
 
     private static Type GetModelForViewModel(Type viewModelType) =>
         viewModelType.GetInterfaces()
@@ -82,6 +87,8 @@ public class ManifestBuilder
                 manifest,
                 GetViewModelForView(viewType), viewType,
                 allVariants));
+        
+        manifest.ViewModelsToViews.Sort(MappingSortingComparison);
     }
 
     private static Type GetViewModelForView(Type viewType)
@@ -121,6 +128,8 @@ public class ManifestBuilder
             guids.ForEach(x => MapViewsToPrefabWithGuid(x, manifest, allVariants));
         else
             Debug.Log($"No view prefab could be found in path: {manifest.PrefabsPath}");
+                        
+        manifest.ViewsToPrefabs.Sort(MappingSortingComparison);
     }
 
     private static void MapViewsToPrefabWithGuid(string guid, Manifest manifest, VariantSet allVariants)

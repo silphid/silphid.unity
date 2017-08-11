@@ -5,26 +5,20 @@ using UnityEngine;
 namespace Silphid.Showzup
 {
     [Serializable]
-    public class TypeToUriMapping
+    public class TypeToUriMapping : Mapping
     {
-        [SerializeField] private ClassTypeReference _source;
         [SerializeField] private string _target;
-        [SerializeField] private VariantSet _variants;
 
-        public Type Source => _source;
         public Uri Target => new Uri(_target);
-        public VariantSet Variants => _variants;
 
-        public TypeToUriMapping(Type source, Uri target, VariantSet variants)
+        public TypeToUriMapping(Type source, Uri target, VariantSet variants) : base(source, variants)
         {
-            _source = source;
             _target = target.ToString();
-            _variants = variants;
         }
 
         public override string ToString()
         {
-            var variants = _variants.Any() ? $" [{_variants}]" : "";
+            var variants = Variants.Any() ? $" [{Variants}]" : "";
             return $"{Source.Name} => {_target}{variants}";
         }
     }
