@@ -69,7 +69,7 @@ namespace Silphid.Showzup
         protected SinglePresenterControl()
         {
             View = _view.ToReadOnlyReactiveProperty();
-            FirstView = View;
+            View.Subscribe(x => MutableFirstView.Value = x);
         }
 
         #region IPresenter members

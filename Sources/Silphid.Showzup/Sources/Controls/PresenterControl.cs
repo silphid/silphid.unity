@@ -9,7 +9,7 @@ namespace Silphid.Showzup
         public abstract IObservable<IView> Present(object input, Options options = null);
 
         protected ReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
-        public ReadOnlyReactiveProperty<IView> FirstView { get; protected set; }
-        
+        public ReadOnlyReactiveProperty<IView> FirstView => MutableFirstView.ToReadOnlyReactiveProperty();
+
     }
 }

@@ -51,6 +51,7 @@ namespace Silphid.Showzup
 
             // Combining with view to select gameobject when view is loaded
             _moveHandler.SelectedGameObject
+                .WhereNotNull()
                 .CombineLatest(ContentTransitionControl.FirstView, (x, y) => x)
                 .Where(x => x == ContentTransitionControl.gameObject)
                 .Subscribe(x => ContentTransitionControl.FirstView.Value?.SelectDeferred())
@@ -63,8 +64,9 @@ namespace Silphid.Showzup
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
-        public void OnSelect(BaseEventData eventData)
+        public override void OnSelect(BaseEventData eventData)
         {
+            base.OnSelect(eventData);
             TabSelectionControl.SelectFirst();
         }
 
