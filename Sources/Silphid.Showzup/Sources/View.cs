@@ -84,6 +84,7 @@ namespace Silphid.Showzup
             image.enabled = keepVisible;
             return Loader
                 .Load<Sprite>(uri, options)
+                .Catch<Sprite, Exception>(x => Observable.Throw<Sprite>(new BindException($"Unable to resolve image {uri} in view {GetType().Name}", x)))
                 .Do(x =>
                 {
                     image.sprite = x;
