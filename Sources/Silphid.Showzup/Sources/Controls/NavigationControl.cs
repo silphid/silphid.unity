@@ -4,12 +4,13 @@ using System.Linq;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable
+    public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable, IRequestHandler
     {
         #region Fields
 
@@ -25,6 +26,7 @@ namespace Silphid.Showzup
 
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
+        public bool ShouldHandleBackRequests;
 
         #region Life-time
 
@@ -261,6 +263,18 @@ namespace Silphid.Showzup
             Destroy(view.GameObject);
             (view as IDisposable)?.Dispose();
         }
+
+        #endregion
+
+        #region IRequestHandler members
+
+        public bool CanHandle(IRequest request) =>
+            ShouldHandleBackRequests && _canPop.Value;
+
+        public IObservable<Unit> Handle(IRequest request) =>
+            CanHandle(request)
+                ? Pop().AsSingleUnitObservable()
+                : null;
 
         #endregion
     }
