@@ -25,25 +25,25 @@ namespace Silphid.Extensions
         public static IEnumerable<GameObject> Ancestors(this GameObject This) =>
             This.transform.Ancestors();
 
-        public static IEnumerable<TComponent> Ancestors<TComponent>(this GameObject This) where TComponent : Component =>
+        public static IEnumerable<TComponent> Ancestors<TComponent>(this GameObject This) =>
             This.transform.Ancestors<TComponent>();
 
         public static IEnumerable<GameObject> SelfAndAncestors(this GameObject This) =>
             This.transform.SelfAndAncestors();
 
-        public static IEnumerable<TComponent> SelfAndAncestors<TComponent>(this GameObject This) where TComponent : Component =>
+        public static IEnumerable<TComponent> SelfAndAncestors<TComponent>(this GameObject This) =>
             This.transform.SelfAndAncestors<TComponent>();
 
         public static IEnumerable<GameObject> Descendants(this GameObject This) =>
             This.transform.Descendants();
 
-        public static IEnumerable<TComponent> Descendants<TComponent>(this GameObject This) where TComponent : Component =>
+        public static IEnumerable<TComponent> Descendants<TComponent>(this GameObject This) =>
             This.transform.Descendants<TComponent>();
 
         public static IEnumerable<GameObject> SelfAndDescendants(this GameObject This) =>
             This.transform.SelfAndDescendants();
 
-        public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this GameObject This) where TComponent : Component =>
+        public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this GameObject This) =>
             This.transform.SelfAndDescendants<TComponent>();
 
         public static bool IsDescendantOf(this GameObject This, GameObject other) =>

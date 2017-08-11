@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -43,7 +42,7 @@ namespace Silphid.Extensions
             }
         }
 
-        public static IEnumerable<TComponent> Ancestors<TComponent>(this Transform This) where TComponent : Component =>
+        public static IEnumerable<TComponent> Ancestors<TComponent>(this Transform This) =>
             This.Ancestors()
                 .SelectMany(x => x.GetComponents<TComponent>())
                 .WhereNotNull();
@@ -55,7 +54,7 @@ namespace Silphid.Extensions
                 yield return ancestor.gameObject;
         }
 
-        public static IEnumerable<TComponent> SelfAndAncestors<TComponent>(this Transform This) where TComponent : Component =>
+        public static IEnumerable<TComponent> SelfAndAncestors<TComponent>(this Transform This) =>
             This.SelfAndAncestors()
                 .SelectMany(x => x.GetComponents<TComponent>())
                 .WhereNotNull();
@@ -70,7 +69,7 @@ namespace Silphid.Extensions
             }
         }
 
-        public static IEnumerable<TComponent> Descendants<TComponent>(this Transform This) where TComponent : Component =>
+        public static IEnumerable<TComponent> Descendants<TComponent>(this Transform This) =>
             This.Descendants()
                 .SelectMany(x => x.GetComponents<TComponent>())
                 .WhereNotNull();
@@ -82,7 +81,7 @@ namespace Silphid.Extensions
                 yield return child.gameObject;
         }
 
-        public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this Transform This) where TComponent : Component =>
+        public static IEnumerable<TComponent> SelfAndDescendants<TComponent>(this Transform This) =>
             This.SelfAndDescendants()
                 .SelectMany(x => x.GetComponents<TComponent>())
                 .WhereNotNull();

@@ -2,16 +2,16 @@
 
 namespace Silphid.Machina
 {
-    public abstract class StateBase<T> : ObjectEnum<T>, IState where T : StateBase<T>
+    public abstract class State<T> : ObjectEnum<T>, IState where T : State<T>
     {
         public IState BaseState { get; }
 
-        protected StateBase(StateBase<T> baseState = null)
+        protected State(State<T> baseState = null)
         {
             BaseState = baseState;
         }
 
-        protected StateBase(int id, StateBase<T> baseState = null) : base(id)
+        protected State(int id, State<T> baseState = null) : base(id)
         {
             BaseState = baseState;
         }

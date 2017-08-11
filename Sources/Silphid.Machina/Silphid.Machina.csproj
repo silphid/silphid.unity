@@ -45,10 +45,12 @@
     <Compile Include="Sources\Change.cs" />
     <Compile Include="Sources\IMachine.cs" />
     <Compile Include="Sources\IMachineExtensions.cs" />
+    <Compile Include="Sources\Internals\IStateConfig.cs" />
+    <Compile Include="Sources\Internals\StateInfo.cs" />
     <Compile Include="Sources\IState.cs" />
     <Compile Include="Sources\Machine.cs" />
     <Compile Include="Sources\MachineBehaviour.cs" />
-    <Compile Include="Sources\StateBase.cs" />
+    <Compile Include="Sources\State.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
