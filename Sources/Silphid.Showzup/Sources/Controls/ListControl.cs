@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class ListControl : Control, IListPresenter
+    public class ListControl : PresenterControl, IListPresenter
     {
         #region Injected properties
 
@@ -91,14 +91,14 @@ namespace Silphid.Showzup
         public IView GetViewAtIndex(int? index) =>
             index.HasValue ? _views[index.Value] : null;
 
-        public bool CanPresent(object input, Options options = null)
+        public override bool CanPresent(object input, Options options = null)
         {
             var target = options?.Target;
             return target == null || VariantSet.Contains(target);
         }
 
         [Pure]
-        public virtual IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 

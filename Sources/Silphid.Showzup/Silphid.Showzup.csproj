@@ -79,6 +79,7 @@
     <Compile Include="Sources\Controls\ItemControl.cs" />
     <Compile Include="Sources\Controls\ListControl.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
+    <Compile Include="Sources\Controls\PresenterControl.cs" />
     <Compile Include="Sources\Controls\PresenterControlBase.cs" />
     <Compile Include="Sources\Controls\RoutingPresenter.cs" />
     <Compile Include="Sources\Controls\RoutingPresenterGameObjectExtensions.cs" />

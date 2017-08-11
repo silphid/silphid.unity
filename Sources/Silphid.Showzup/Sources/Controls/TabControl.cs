@@ -16,7 +16,7 @@ namespace Silphid.Showzup
         Right = MoveDirection.Right
     }
 
-    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
+    public class TabControl : PresenterControl, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
     {
         public float SelectionDelay;
         public SelectionControl TabSelectionControl;
@@ -57,10 +57,10 @@ namespace Silphid.Showzup
                 .AddTo(this);
         }
 
-        public bool CanPresent(object input, Options options = null) =>
+        public override bool CanPresent(object input, Options options = null) =>
             TabSelectionControl.CanPresent(input, options);
 
-        public IObservable<IView> Present(object input, Options options = null) =>
+        public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
         public void OnSelect(BaseEventData eventData)

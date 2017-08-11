@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class RoutingPresenter : MonoBehaviour, IPresenter
+    public class RoutingPresenter : PresenterControl, IPresenter
     {
         public GameObject[] SiblingPresenters = new GameObject[0];
         private IPresenter[] _siblingPresenters;
         
-        public bool CanPresent(object input, Options options = null) => 
+        public override bool CanPresent(object input, Options options = null) => 
             GetValidSiblingPresenter(input, options)?.CanPresent(input, options) ??
             GetAncestorRoutedPresenter()?.CanPresent(input, options) ??
             false;
@@ -44,7 +44,7 @@ namespace Silphid.Showzup
                 .Ancestors<RoutingPresenter>()
                 .First();
 
-        public IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
             if (options?.Target == null)
                 throw new InvalidOperationException("RoutingPresenter requires options to specify a Target variant.");

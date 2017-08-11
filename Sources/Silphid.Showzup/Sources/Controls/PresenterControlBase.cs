@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Silphid.Showzup
 {
-    public abstract class PresenterControlBase : Control, IPresenter
+    public abstract class PresenterControlBase : PresenterControl, IPresenter
     {
         #region State enum
 
@@ -72,13 +72,13 @@ namespace Silphid.Showzup
 
         #region IPresenter members
 
-        public bool CanPresent(object input, Options options = null)
+        public override bool CanPresent(object input, Options options = null)
         {
             var target = options?.Target;
             return target == null || VariantSet.Contains(target);
         }
 
-        public virtual IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
