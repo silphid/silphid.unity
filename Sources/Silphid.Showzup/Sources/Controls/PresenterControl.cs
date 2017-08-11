@@ -1,4 +1,5 @@
 ﻿using System;
+using UniRx;
 
 namespace Silphid.Showzup
 {
@@ -6,5 +7,9 @@ namespace Silphid.Showzup
     {
         public abstract bool CanPresent(object input, Options options = null);
         public abstract IObservable<IView> Present(object input, Options options = null);
+
+        protected ReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
+        public ReadOnlyReactiveProperty<IView> FirstView { get; protected set; }
+        
     }
 }
