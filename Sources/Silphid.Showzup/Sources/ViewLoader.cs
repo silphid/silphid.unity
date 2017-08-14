@@ -62,7 +62,7 @@ namespace Silphid.Showzup
         }
 
         private IObservable<Unit> LoadLoadable(IView view) =>
-            (view as ILoadable)?.Load()
+            (view as ILoadable)?.Load()?
                 .Catch<Unit, Exception>(e => Observable.Throw<Unit>(new LoadException($"Exception when load {view.GetType().Name}", e)))
             ?? Observable.ReturnUnit();
 
