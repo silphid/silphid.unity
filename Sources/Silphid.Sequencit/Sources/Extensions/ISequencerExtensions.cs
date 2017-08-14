@@ -106,5 +106,12 @@ namespace Silphid.Sequencit
         {
             This.Add(Observable.ReturnUnit().Delay(interval, scheduler));
         }
+
+        public static Marker AddMarker(this ISequencer This)
+        {
+            var marker = new Marker();
+            This.Add(marker);
+            return marker;
+        }
     }
 }

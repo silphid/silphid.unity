@@ -52,6 +52,7 @@
     <Compile Include="Sources\Input\IInputLayer.cs" />
     <Compile Include="Sources\Input\InputLayer.cs" />
     <Compile Include="Sources\Interfaces\ISequencer.cs" />
+    <Compile Include="Sources\Marker.cs" />
     <Compile Include="Sources\Parallel.cs" />
     <Compile Include="Sources\Sequence.cs" />
     <Compile Include="Sources\SequenceQueue.cs" />

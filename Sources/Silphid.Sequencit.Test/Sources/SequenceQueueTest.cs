@@ -145,4 +145,32 @@ public class SequenceQueueTest : SequencingTestBase
         _sequenceQueue.AddAction(() => _value = 2);
         Assert.That(_value, Is.EqualTo(1));
     }
+
+    [Test]
+    public void SkipToMarker()
+    {
+        _sequenceQueue.Start();
+        _sequenceQueue.Add(Observable.Never<Unit>());
+        _sequenceQueue.AddAction(() => _value = 1);
+        var marker = _sequenceQueue.AddMarker();
+        _sequenceQueue.AddAction(() => _value = 2);
+
+        Assert.That(_value, Is.EqualTo(0));
+        _sequenceQueue.SkipTo(marker);
+        Assert.That(_value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void Clear()
+    {
+        _sequenceQueue.Start();
+        _sequenceQueue.Add(Observable.Never<Unit>());
+        _sequenceQueue.AddAction(() => _value = 1);
+
+        Assert.That(_value, Is.EqualTo(0));
+        
+        _sequenceQueue.Clear();
+        _sequenceQueue.AddAction(() => _value = 2);
+        Assert.That(_value, Is.EqualTo(2));
+    }
 }

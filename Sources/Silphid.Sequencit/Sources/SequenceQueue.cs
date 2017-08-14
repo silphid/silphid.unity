@@ -9,7 +9,7 @@ namespace Silphid.Sequencit
     public class SequenceQueue : ISequencer, IDisposable
     {
         private readonly Queue<IObservable<Unit>> _observables = new Queue<IObservable<Unit>>();
-        private IDisposable _currentExecution = Disposable.Empty;
+        private IDisposable _currentExecution;
         private bool _isStarted;
         private bool _isExecuting;
 
@@ -42,7 +42,30 @@ namespace Silphid.Sequencit
                 return;
 
             _isStarted = false;
-            _currentExecution.Dispose();
+            _currentExecution?.Dispose();
+        }
+
+        public void Clear()
+        {
+            if (!_isStarted)
+                return;
+
+            _observables.Clear();
+            _isExecuting = false;
+            _currentExecution?.Dispose();
+        }
+
+        public void SkipTo(IObservable<Unit> observable)
+        {
+            if (!_isStarted || !_observables.Contains(observable))
+                return;
+            
+            _isExecuting = false;
+            _currentExecution?.Dispose();
+            while (_observables.Peek() != observable)
+                _observables.Dequeue();
+
+            StartNext();
         }
 
         public void Add(IObservable<Unit> observable)
