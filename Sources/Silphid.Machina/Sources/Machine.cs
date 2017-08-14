@@ -5,13 +5,13 @@ using UniRx;
 
 namespace Silphid.Machina
 {
-    public class Machine<TState> : IMachine<TState> where TState : class, IState
+    public class Machine<TState> : IMachine<TState> where TState : IState
     {
         private readonly Dictionary<TState, StateInfo> _stateInfos = new Dictionary<TState, StateInfo>();
         
         public IReactiveProperty<TState> State { get; }
 
-        public Machine(TState initialState = null)
+        public Machine(TState initialState = default(TState))
         {
             State = new ReactiveProperty<TState>(initialState);
         }
