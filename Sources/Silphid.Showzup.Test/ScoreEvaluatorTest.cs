@@ -118,5 +118,13 @@ namespace Silphid.Showzup.Test
             var score = _fixture.GetVariantScore(GoodAndFast, GoodAndSlow, Empty);
             Assert.That(score, Is.Null);
         }
+
+        [Test]
+        public void NoImplicitVariantIsBetterThanIncorrectImplicitVariant()
+        {
+            var noImplicitScore = _fixture.GetVariantScore(Good, Empty, Empty);
+            var incorrectImplicitScore = _fixture.GetVariantScore(Good, Empty, Bad);
+            Assert.That(noImplicitScore, Is.GreaterThan(incorrectImplicitScore));
+        }
     }
 }
