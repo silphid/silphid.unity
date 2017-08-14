@@ -11,6 +11,7 @@ namespace Silphid.Showzup
         public const int ZeroScore = 0;
         public const int ExplicitVariantScore = 100;
         public const int ImplicitVariantScore = 90;
+        public const int IncorrectImplicitVariantPenality = 5;
         public const int TypeScore = 80;
         public const int InheritanceDepthPenality = 5;
         public const int FallbackVariantScore = 50;
@@ -37,6 +38,10 @@ namespace Silphid.Showzup
                 // Matches implicit variant?
                 else if (candidateImplicitVariants.Contains(requestedVariant))
                     score += ImplicitVariantScore;
+                
+                // Matches another implicit variant in same group?
+                else if (candidateImplicitVariants.Any(x => x.Group == requestedVariant.Group))
+                    score -= IncorrectImplicitVariantPenality;
                 
                 // No variant specified for that group (is a fallback)
                 else

@@ -62,7 +62,9 @@ namespace Silphid.Showzup
         }
 
         private IObservable<Unit> LoadLoadable(IView view) =>
-            (view as ILoadable)?.Load() ?? Observable.ReturnUnit();
+            (view as ILoadable)?.Load()
+                .Catch<Unit, Exception>(e => Observable.Throw<Unit>(new LoadException($"Exception when load {view.GetType().Name}", e)))
+            ?? Observable.ReturnUnit();
 
         #region Prefab view loading
 

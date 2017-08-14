@@ -16,11 +16,11 @@ namespace Silphid.Showzup
         Right = MoveDirection.Right
     }
 
-    public class TabControl : MonoBehaviour, IPresenter, ISelectHandler, IMoveHandler, ICancelHandler
+    public class TabControl : PresenterControl, ISelectHandler, IMoveHandler, ICancelHandler
     {
         public float SelectionDelay;
         public SelectionControl TabSelectionControl;
-        public TransitionControl ContentTransitionControl;
+        public PresenterControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
         
         private readonly MoveHandler _moveHandler = new MoveHandler();
@@ -39,7 +39,7 @@ namespace Silphid.Showzup
             TabSelectionControl.SelectedView
                 .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
-                .SelectMany(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? Observable.Return(x?.ViewModel?.Model))
+                .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
                 .SelectMany(x => ContentTransitionControl.Present(x, _lastOptions))
                 .Subscribe(x => _contentView.Value = x)
                 .AddTo(this);
@@ -51,20 +51,22 @@ namespace Silphid.Showzup
 
             // Combining with view to select gameobject when view is loaded
             _moveHandler.SelectedGameObject
-                .CombineLatest(ContentTransitionControl.View, (x, y) => x)
+                .WhereNotNull()
+                .CombineLatest(ContentTransitionControl.FirstView, (x, y) => x)
                 .Where(x => x == ContentTransitionControl.gameObject)
-                .Subscribe(x => ContentTransitionControl.View.Value?.SelectDeferred())
+                .Subscribe(x => ContentTransitionControl.FirstView.Value?.SelectDeferred())
                 .AddTo(this);
         }
 
-        public bool CanPresent(object input, Options options = null) =>
+        public override bool CanPresent(object input, Options options = null) =>
             TabSelectionControl.CanPresent(input, options);
 
-        public IObservable<IView> Present(object input, Options options = null) =>
+        public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
-        public void OnSelect(BaseEventData eventData)
+        public override void OnSelect(BaseEventData eventData)
         {
+            base.OnSelect(eventData);
             TabSelectionControl.SelectFirst();
         }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class TransitionControl : PresenterControlBase
+    public class TransitionControl : SinglePresenterControl
     {
         #region Fields
 

@@ -7,7 +7,8 @@ using UniRx;
 
 namespace Silphid.Showzup
 {
-    public abstract class PresenterControlBase : Control, IPresenter, IRequestHandler
+    //TODO to rename. 
+    public abstract class SinglePresenterControl : PresenterControl, IRequestHandler
     {
         #region State enum
 
@@ -67,23 +68,28 @@ namespace Silphid.Showzup
 
         #endregion
 
-        protected PresenterControlBase()
+        protected SinglePresenterControl()
         {
             View = _view.ToReadOnlyReactiveProperty();
+            View.Subscribe(x => MutableFirstView.Value = x);
         }
 
         #region IPresenter members
 
-        public bool CanPresent(object input, Options options = null)
+        public override bool CanPresent(object input, Options options = null)
         {
             var target = options?.Target;
             return target == null || VariantSet.Contains(target);
         }
 
-        public virtual IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.SelectMany(x => Present(x, options));
+            
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
-
+            
             if (_state == State.Ready)
                 return PresentNow(input, options);
 

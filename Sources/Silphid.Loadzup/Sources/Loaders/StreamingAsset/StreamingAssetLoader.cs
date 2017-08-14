@@ -17,7 +17,7 @@ namespace Silphid.Loadzup.StreamingAsset
             _converter = converter;
         }
 
-        public bool Supports<T>(Uri uri) => 
+        public bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.StreamingAsset;
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
@@ -26,7 +26,9 @@ namespace Silphid.Loadzup.StreamingAsset
             var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, true);
 
             return LoadFile(uri, options, path, contentType)
-                .ContinueWith(x => _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType ?? contentType, x.Encoding));
+                .ContinueWith(
+                    x =>
+                        _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType ?? contentType, x.Encoding));
         }
 
         private IObservable<Response> LoadFile(Uri uri, Options options, string path, ContentType contentType)
@@ -35,8 +37,11 @@ namespace Silphid.Loadzup.StreamingAsset
 
             if (filePath.Contains("://"))
             {
+                if (options == null)
+                    options = new Options();
+
                 options.ContentType = contentType;
-                return _requester.Request(uri, options);
+                return _requester.Request(new Uri(filePath), options);
             }
 
             return Observable.Return(System.IO.File.ReadAllBytes(filePath))

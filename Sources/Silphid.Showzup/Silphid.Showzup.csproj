@@ -79,13 +79,16 @@
     <Compile Include="Sources\Controls\ItemControl.cs" />
     <Compile Include="Sources\Controls\ListControl.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
-    <Compile Include="Sources\Controls\PresenterControlBase.cs" />
+    <Compile Include="Sources\Controls\PresenterControl.cs" />
+    <Compile Include="Sources\Controls\SinglePresenterControl.cs" />
     <Compile Include="Sources\Controls\RoutingPresenter.cs" />
     <Compile Include="Sources\Controls\RoutingPresenterGameObjectExtensions.cs" />
     <Compile Include="Sources\Controls\SelectionControl.cs" />
     <Compile Include="Sources\Controls\TabControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
+    <Compile Include="Sources\Exceptions\BindException.cs" />
+    <Compile Include="Sources\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />

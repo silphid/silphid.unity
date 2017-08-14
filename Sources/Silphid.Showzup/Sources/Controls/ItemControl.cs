@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class ItemControl : PresenterControlBase
+    public class ItemControl : SinglePresenterControl
     {
         public GameObject Container;
         public bool AutoSelect = true;

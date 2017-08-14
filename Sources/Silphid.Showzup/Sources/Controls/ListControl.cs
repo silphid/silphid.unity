@@ -11,13 +11,18 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class ListControl : Control, IListPresenter
+    public class ListControl : PresenterControl, IListPresenter
     {
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject]
+        internal IViewResolver ViewResolver { get; set; }
+
+        [Inject]
+        internal IViewLoader ViewLoader { get; set; }
+
+        [Inject]
+        internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -38,6 +43,7 @@ namespace Silphid.Showzup
                                                                     .Select(view => view.ViewModel?.Model)
                                                                     .ToArray())
                                                                 .ToReadOnlyReactiveProperty());
+
         public int Count => _views.Count;
         public bool HasItems => _views.Count > 0;
         public int? LastIndex => HasItems ? _views.Count - 1 : (int?) null;
@@ -61,11 +67,13 @@ namespace Silphid.Showzup
 
         protected virtual void Start()
         {
-            if (AutoSelect)
-                Views
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(x => SelectView(x.FirstOrDefault()))
-                    .AddTo(this);
+            Views
+                .Select(x => x.FirstOrDefault())
+                .Do(x => MutableFirstView.Value = x)
+                .Where(x => AutoSelect)
+                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                .Subscribe(SelectView)
+                .AddTo(this);
         }
 
         protected virtual void SelectView(IView view)
@@ -91,15 +99,20 @@ namespace Silphid.Showzup
         public IView GetViewAtIndex(int? index) =>
             index.HasValue ? _views[index.Value] : null;
 
-        public bool CanPresent(object input, Options options = null)
+        public override bool CanPresent(object input, Options options = null)
         {
             var target = options?.Target;
             return target == null || VariantSet.Contains(target);
         }
 
         [Pure]
-        public virtual IObservable<IView> Present(object input, Options options = null)
+        public override IObservable<IView> Present(object input, Options options = null)
         {
+            //Review this make possible to use Observable.next for populate the list 
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.SelectMany(x => Present(x, options));
+            
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             if (!(input is IEnumerable))
