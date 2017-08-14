@@ -1,5 +1,4 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 using UnityEngine;
 
 namespace Silphid.Machina
@@ -9,7 +8,6 @@ namespace Silphid.Machina
         private readonly Machine<TState> _machine;
 
         public IReactiveProperty<TState> State => _machine.State;
-        public IObservable<Change<TState>> Changes => _machine.Changes;
 
         protected MachineBehaviour()
         {
@@ -21,7 +19,8 @@ namespace Silphid.Machina
             _machine = new Machine<TState>(initialState);
         }
 
-        public void Set(TState state) => State.Value = state;
-        public bool Is(TState state) => State.Value.Is(state);
+        public void Set(TState state) => _machine.State.Value = state;
+        public bool Is(TState state) => _machine.State.Value.Is(state);
+        public bool Trigger(object trigger) => _machine.Trigger(trigger);
     }
 }

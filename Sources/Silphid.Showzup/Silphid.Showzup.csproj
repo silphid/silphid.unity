@@ -138,6 +138,11 @@
     <Compile Include="Sources\Phases\PhasePerformer.cs" />
     <Compile Include="Sources\Phases\PhaseStarting.cs" />
     <Compile Include="Sources\Phases\PhaseState.cs" />
+    <Compile Include="Sources\Requests\BackRequest.cs" />
+    <Compile Include="Sources\Requests\IRequest.cs" />
+    <Compile Include="Sources\Requests\IRequestHandler.cs" />
+    <Compile Include="Sources\Requests\RequestHandlerGameObjectExtensions.cs" />
+    <Compile Include="Sources\Requests\PresentRequest.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
     <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />

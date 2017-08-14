@@ -2,12 +2,13 @@
 using System.Linq;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Showzup.Requests;
 using UniRx;
 
 namespace Silphid.Showzup
 {
     //TODO to rename. 
-    public abstract class SinglePresenterControl : PresenterControl
+    public abstract class SinglePresenterControl : PresenterControl, IRequestHandler
     {
         #region State enum
 
@@ -49,6 +50,7 @@ namespace Silphid.Showzup
 
         public string[] Variants;
         public ReadOnlyReactiveProperty<IView> View { get; }
+        public bool ShouldHandlePresentRequests;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -175,6 +177,26 @@ namespace Silphid.Showzup
         #region Virtual and abstract members
 
         protected abstract IObservable<Unit> Present(Presentation presentation);
+
+        #endregion
+
+        #region IRequestHandler members
+
+        public virtual bool CanHandle(IRequest request)
+        {
+            var presentRequest = request as PresentRequest;
+            return presentRequest != null
+                   && ShouldHandlePresentRequests
+                   && CanPresent(presentRequest.Input, presentRequest.Options);
+        }
+
+        public IObservable<Unit> Handle(IRequest request)
+        {
+            var presentRequest = request as PresentRequest;
+            return presentRequest != null && CanHandle(request)
+                ? Present(presentRequest.Input, presentRequest.Options).AsSingleUnitObservable()
+                : null;
+        }
 
         #endregion
     }
