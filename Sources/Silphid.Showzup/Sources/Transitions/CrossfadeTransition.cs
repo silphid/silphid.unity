@@ -4,6 +4,7 @@ using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
 using UnityEngine;
+using Sequence = Silphid.Sequencit.Sequence;
 
 namespace Silphid.Showzup
 {
@@ -13,6 +14,7 @@ namespace Silphid.Showzup
         public bool FadeOutSource { get; set; } = true;
         public bool FadeInTarget { get; set; } = true;
         public bool SourceAboveTarget { get; set; } = true;
+        public bool IsSequential { get; set; } = false;
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {
@@ -29,22 +31,26 @@ namespace Silphid.Showzup
 
         public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
         {
-            return Parallel.Create(parallel =>
-            {
-                if (sourceContainer != null && FadeOutSource)
-                    sourceContainer.GetComponent<CanvasGroup>()
-                        .DOFadeOut(duration)
-                        .SetEase(Ease)
-                        .SetAutoKill()
-                        .In(parallel);
+            var sequencer = IsSequential ? (ISequencer) Sequence.Create() : Parallel.Create();
+            PerformTransition(sourceContainer, targetContainer, duration, sequencer);
+            return sequencer;
+        }
 
-                if (FadeInTarget)
-                    targetContainer.GetComponent<CanvasGroup>()
-                        .DOFadeIn(duration)
-                        .SetEase(Ease)
-                        .SetAutoKill()
-                        .In(parallel);
-            });
+        private void PerformTransition(GameObject sourceContainer, GameObject targetContainer, float duration, ISequencer sequencer)
+        {
+            if (sourceContainer != null && FadeOutSource)
+                sourceContainer.GetComponent<CanvasGroup>()
+                    .DOFadeOut(duration)
+                    .SetEase(Ease)
+                    .SetAutoKill()
+                    .In(sequencer);
+
+            if (FadeInTarget)
+                targetContainer.GetComponent<CanvasGroup>()
+                    .DOFadeIn(duration)
+                    .SetEase(Ease)
+                    .SetAutoKill()
+                    .In(sequencer);
         }
 
         public override void Complete(GameObject sourceContainer, GameObject targetContainer)
