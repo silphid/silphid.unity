@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.Mime;
 using Silphid.Loadzup.Caching;
 
 namespace Silphid.Loadzup
