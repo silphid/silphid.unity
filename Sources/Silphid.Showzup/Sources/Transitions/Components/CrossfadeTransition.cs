@@ -8,6 +8,7 @@ namespace Silphid.Showzup.Components
         public bool FadeOutSource = true;
         public bool FadeInTarget = true;
         public bool SourceAboveTarget = true;
+        public bool IsSequential;
 
         protected override ITransition CreateTransition() =>
             new Showzup.CrossfadeTransition
@@ -15,7 +16,7 @@ namespace Silphid.Showzup.Components
                 Ease = Ease,
                 FadeOutSource = FadeOutSource,
                 FadeInTarget = FadeInTarget,
-                SourceAboveTarget = SourceAboveTarget
+                IsSequential = IsSequential
             };
     }
 }
