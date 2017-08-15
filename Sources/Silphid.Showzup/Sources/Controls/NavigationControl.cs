@@ -268,11 +268,8 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public bool CanHandle(IRequest request) =>
-            ShouldHandleBackRequests && _canPop.Value;
-
         public IObservable<Unit> Handle(IRequest request) =>
-            CanHandle(request)
+            ShouldHandleBackRequests && _canPop.Value
                 ? Pop().AsSingleUnitObservable()
                 : null;
 

@@ -182,18 +182,12 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public virtual bool CanHandle(IRequest request)
+        public IObservable<Unit> Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
             return presentRequest != null
                    && ShouldHandlePresentRequests
-                   && CanPresent(presentRequest.Input, presentRequest.Options);
-        }
-
-        public IObservable<Unit> Handle(IRequest request)
-        {
-            var presentRequest = request as PresentRequest;
-            return presentRequest != null && CanHandle(request)
+                   && CanPresent(presentRequest.Input, presentRequest.Options)
                 ? Present(presentRequest.Input, presentRequest.Options).AsSingleUnitObservable()
                 : null;
         }
