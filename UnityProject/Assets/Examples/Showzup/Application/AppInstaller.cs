@@ -14,27 +14,27 @@ namespace App
         public Manifest Manifest;
         public NavigationControl NavigationControl;
 
-        protected override void OnBind(IBinder binder)
+        protected override void OnBind()
         {
-            binder.BindInstance(CreateLoader());
+            Container.BindInstance(CreateLoader());
 
-            binder.Bind<IConverter, CompositeConverter>().AsSingle().Using(x =>
+            Container.Bind<IConverter, CompositeConverter>().AsSingle().Using(x =>
             {
                 x.Bind<IConverter, SpriteConverter>().AsList();
                 x.Bind<IConverter, TextureConverter>().AsList();
             });
-            binder.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
+            Container.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
             {
                 x.Bind<ILoader, HttpLoader>().AsList();
                 x.Bind<ILoader, ResourceLoader>().AsList();
             });
-            binder.Bind<IScoreEvaluator, ScoreEvaluator>().AsSingle();
-            binder.Bind<IViewResolver, ViewResolver>().AsSingle();
-            binder.Bind<IViewLoader, ViewLoader>().AsSingle();
-            binder.BindInstance<IManifest>(Manifest);
-            binder.BindInstance<IInjectionAdapter>(new InjectionAdapter(Container));
-            binder.BindInstance(VariantProvider.From<Display, Form, Platform>());
-            binder.BindToSelfAll<IViewModel>(GetType().Assembly);
+            Container.Bind<IScoreEvaluator, ScoreEvaluator>().AsSingle();
+            Container.Bind<IViewResolver, ViewResolver>().AsSingle();
+            Container.Bind<IViewLoader, ViewLoader>().AsSingle();
+            Container.BindInstance<IManifest>(Manifest);
+            Container.BindInstance<IInjectionAdapter>(new InjectionAdapter(Container));
+            Container.BindInstance(VariantProvider.From<Display, Form, Platform>());
+            Container.BindToSelfAll<IViewModel>(GetType().Assembly);
         }
 
         protected override void OnReady()

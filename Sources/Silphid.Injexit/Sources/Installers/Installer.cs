@@ -6,7 +6,7 @@ namespace Silphid.Injexit
     {
         public IContainer Container { get; protected set; }
         public ILogger Logger { get; protected set; }
-        protected abstract void OnBind(IBinder binder);
+        protected abstract void OnBind();
         protected virtual void OnReady() {}
 
         protected void InjectScene()

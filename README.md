@@ -247,7 +247,7 @@ public class Bar : IBar
 
 ### The Container
 
-The `Container` class is the central class in *Injexit*. You create an instance of it at startup, use it to configure all your type *bindings*, and then let it perform its wonders.  That class implements the `IContainer` interface, which itself derives from the `IBinder`, `IResolver` and `IInjector` interface. Those interfaces correspond to the three types of operations you may need to perform in your application. We will explore those three types of operations in the following sections named respectively *Binding*, *Resolving* and *Injecting*.
+The `Container` class is the central class in *Injexit*. You create an instance of it at startup, use it to configure all your type *bindings*, and then let it perform its wonders.  That class implements the `IContainer` interface, which itself derives from the `IBinder`, `IResolver` and `IInjector` interface. Those interfaces correspond to the three types of operations you may need to perform in your application. We will explore those three types of operations in the following sections respectively named *Binding*, *Resolving* and *Injecting*.
 
 ![](Doc/InjexitContainer.png "IContainer")
 
@@ -282,12 +282,12 @@ using Silphid.Injexit;
 
 public class AppInstaller : RootInstaller
 {
-  protected override void OnBind(IBinder binder)
+  protected override void OnBind()
   {
     // Add your bindings here
-    binder.Bind<IFoo, Foo>();
-    binder.Bind<IGoo, Goo>();
-    binder.Bind<IBar, Bar>();
+    Container.Bind<IFoo, Foo>();
+    Container.Bind<IGoo, Goo>();
+    Container.Bind<IBar, Bar>();
   }
   
   protected override void OnReady()
@@ -306,10 +306,10 @@ using Silphid.Injexit;
 
 public class MySceneInstaller : SceneInstaller<AppInstaller>
 {
-  protected override void OnBind(IBinder binder)
+  protected override void OnBind()
   {
     // Add your scene-specific bindings (or overrides) here, if any
-    binder.Bind<IFoo, Foo2>();
+    Container.Bind<IFoo, Foo2>();
   }
   
   protected override void OnReady()
@@ -325,33 +325,35 @@ Because it inherits from `SceneInstaller<AppInstaller>`, it will look for an `Ap
 
 Because the `IContainer` also implements `IBinder`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IBinder`).
 
-#### Binding to a concrete type
+#### Binding concrete types
 
 This is the best type of binding, because it lets *Injexit* create the object and resolve all sub-dependencies:
 
 ```c#
-binder.Bind<IFoo, Foo>();
-binder.Bind<IGoo, Goo>();
-binder.Bind<IBar, Bar>();
+Container.Bind<IFoo, Foo>();
+Container.Bind<IGoo, Goo>();
+Container.Bind<IBar, Bar>();
 ```
 
 Here, all `Bar` instances will automatically have their constructor injected with instances of `Foo` and `Goo`, because the `Bar` constructor has `IFoo` and `IGoo` parameters, which are respectively bound to the `Foo` and `Goo` concrete classes.
 
-#### Binding to an instance
+#### Binding instances
 
 In cases where you already have an instance and simply want to inject it into other objects, use this form:
 
 ```c#
 Foo fooInstance = ...
-binder.BindInstance<IFoo>(fooInstance);
+Container.BindInstance<IFoo>(fooInstance);
 ```
 
 Or if your instance is already downcasted to the proper interface type, you may omit that type for brevity:
 
 ```c#
 IFoo fooInstance = ...
-binder.BindInstance(fooInstance);
+Container.BindInstance(fooInstance);
 ```
+
+*Warning: If you don't specify the generic type, as in the example above, make sure that the variable is exactly of the type that needs to be injected.*
 
 Instance binding is useful when you need to inject a specific game object or component into another object. Just expose a field on you script (that you may assign via the Inspector) and bind that field with ```BindInstance()```:
 
@@ -366,27 +368,27 @@ public class AppInstaller : RootInstaller
 
   protected override void OnBind(IBinder binder)
   {
-    binder.BindInstance(myComponent);
+    Container.BindInstance(myComponent);
     
     // Equivalent to:
-    // binder.BindInstance<MyComponent>(myComponent);
+    // Container.BindInstance<MyComponent>(myComponent);
   }
 }
 ```
 
 For anything else than MonoBehaviours, the downside of binding a specific instance is that the instance will not have its own dependencies injected, because *Injexit* did not instantiate it. For MonoBehaviours part of your scene, that's OK, because they get injected automatically anyway by the Installer.
 
-#### Binding to a shared object
+#### Binding shared objects
 
 By default, *Injexit* will create a new instance of a class for every other class that depends on it. This is a good pattern, because it limits side-effects between objects. However, sometimes you want an object to be shared, so that changes made to it will be visible to all other objects sharing it as a dependency. This is achieved using the `.AsSingle()` suffix:
 
 ```c#
-binder.Bind<IFoo, Foo>().AsSingle();
+Container.Bind<IFoo, Foo>().AsSingle();
 ```
 
 Note that instance binding using `BindInstance()` does not support the `.AsSingle()` suffix, because instances specified explicitly are forcibly always shared.
 
-#### Binding to a list of objects
+#### Binding lists of objects
 
 Sometimes, you want many objects implementing the same interface to be injected together as a `List<T>`, `IEnumerable<T>` or `T[]`:
 
@@ -406,14 +408,127 @@ public class Bar : IBar
 In that case, you would bind them with the `.AsList()` suffix:
 
 ```c#
-binder.Bind<IFoo, Foo1>().AsList();
-binder.Bind<IFoo, Foo2>().AsList();
-binder.Bind<IFoo, Foo3>().AsList();
+var foo3 = new Foo3();
+
+Container.Bind<IFoo, Foo1>().AsList();
+Container.Bind<IFoo, Foo2>().AsList();
+Container.BindInstance<IFoo>(foo3).AsList();
 ```
 
 Here, the `Bar` constructor will be injected with a `List<IFoo>` containing instances of the `Foo1`, `Foo2` and `Foo3` classes.
 
-Note that `.AsList()` will work, no matter if the dependent object expects a `List<T>`, an `IEnumerable<T>` or a `T[]`.
+Note that *Injexit* will automatically combine the injected objects into a `List<T>`, an `IEnumerable<T>` or a `T[]`, depending on the type that is expected at the injection point.
+
+A more convenient syntax to avoid repetition, which is equivalent to the example above, is:
+
+```c#
+Container.BindAsList<IFoo>(x =>
+{
+    x.Bind<Foo1>();
+    x.Bind<Foo2>();
+    x.BindInstance(foo3);
+});
+```
+
+#### Qualifying bindings with identifiers
+
+When you need finer control over what gets injected where, for instance when you need different implementations of an interface to be injected in various places, you will have to tag your bindings with identifiers:
+
+```c#
+Container.Bind<IFoo, Foo1>().WithId("Fire");
+Container.Bind<IFoo, Foo2>().WithId("Rain");
+Container.BindInstance<IFoo>(foo3).WithId("Ice");
+```
+
+And then also tag your injection points with the same identifiers using `[Id]` attributes:
+
+```c#
+public class Bar : IBar
+{
+  // Field injection
+  [Inject]
+  [Id("Fire")]
+  public IFoo Fire;
+
+  // Constructor injection
+  public Bar([Id("Rain")] IFoo rain)
+  {  
+  }
+  
+  // Method injection
+  [Inject]
+  public void Init([Id("Ice")] IFoo ice)
+  {
+  }
+}
+```
+
+Identifiers are also very helpful for lists:
+
+```c#
+Container.BindAsList<IFoo>(x =>
+  {
+    x.Bind<Foo1>();
+    x.Bind<Foo1>();
+    x.Bind<Foo2>();
+  })
+  .WithId("List1");
+
+Container.BindAsList<IFoo>(x =>
+  {
+    x.Bind<Foo2>();
+    x.Bind<Foo3>();
+  })
+  .WithId("List2");
+
+// You can even mix the two syntaxes.
+// This will be added to "List2"
+Container.Bind<IFoo, Foo3>().AsList().WithId("List2");
+```
+
+Finally, simply inject those two lists like so:
+
+```c#
+public class Bar : IBar
+{
+  public Bar(
+      [Id("List1")] List<IFoo> list1,
+      [Id("List2")] List<IFoo> list2)
+  {
+  }
+}
+```
+
+#### Optional injection
+
+When injection is not required, you may tag your injection points with the `[Optional]` attribute:
+
+```c#
+public class Bar : IBar
+{
+  // Field injection
+  [Inject]
+  [Optional]
+  public IFoo Foo;
+
+  // Constructor injection
+  public Bar([Optional] IFoo foo)
+  {
+  }
+  
+  // Method injection
+  [Inject]
+  public void Init([Optional] IFoo foo)
+  {
+  }
+}
+```
+
+The `[Optional]` attribute is not necessary for parameters with default values.
+
+```c#
+TODO: Example with optional int parameters...
+```
 
 #### Controlling the composition tree explicitly
 
@@ -436,7 +551,7 @@ public class CompositeLoader : ILoader
 In order to tell the container specifically how to assemble those three classes, we can use the `Using()` method: 
 
 ```c#
-binder.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
+Container.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
 {
     x.Bind<ILoader, HttpLoader>().AsList();
     x.Bind<ILoader, ResourceLoader>().AsList();
@@ -460,9 +575,9 @@ public class FooGooBar : IFoo, IGoo, IBar {}
 Simply bind the first interface the regular way and then use `BindForward()` to forward the other interfaces to the first one:
 
 ```c#
-binder.Bind<IFoo, FooGooBar>().AsSingle();
-binder.BindForward<IGoo, IFoo>();
-binder.BindForward<IBar, IFoo>();
+Container.Bind<IFoo, FooGooBar>().AsSingle();
+Container.BindForward<IGoo, IFoo>();
+Container.BindForward<IBar, IFoo>();
 ```
 
 Here, the `IFoo`, `IGoo` and `IBar` interfaces will all be bound to the same `FooGooBar` instance. 
@@ -472,8 +587,8 @@ Here, the `IFoo`, `IGoo` and `IBar` interfaces will all be bound to the same `Fo
 Even though it is a best practice to access most of your concrete classes through abstract interfaces, especially in the context of dependency injection, in some cases you might only have a concrete type with no interface and prefer to inject it as is.
 
 ``` c#
-binder.BindToSelf<Foo>();
-binder.BindToSelf<Goo>();
+Container.BindToSelf<Foo>();
+Container.BindToSelf<Goo>();
 ```
 
 *Showzup* uses that approach for models and view models, which do not have each their own interface.
@@ -483,7 +598,7 @@ binder.BindToSelf<Goo>();
 #### Self-binding all of a type's derivatives
 
 ```c#
-binder.BindToSelfAll<IFoo>();
+Container.BindToSelfAll<IFoo>();
 ```
 
 This will scan the assembly where `IFoo` is defined for all classes implementing that interface (for instance, `Foo1`, `Foo2` and `Foo3`) and self-bind them. In this case, the `IFoo` interface serves only as a marker. This approach is used in *Showzup* to automatically bind all view model classes.
@@ -491,7 +606,7 @@ This will scan the assembly where `IFoo` is defined for all classes implementing
 You may also specify the assembly to scan explicitly:
 
 ```c#
-binder.BindToSelfAll<IFoo>(GetType().Assembly);
+Container.BindToSelfAll<IFoo>(GetType().Assembly);
 ```
 
 #### Self-binding multiple instances
@@ -501,28 +616,28 @@ If you want multiple instances of different types, that will only be known at ru
 ``` c#
 IFoo foo = new Foo();
 IGoo goo = new Goo();
-binder.BindInstances(foo, goo);
+Container.BindInstances(foo, goo);
 ```
 
 Or:
 
 ```c#
 var objects = new object[] { new Foo(), new Goo() };
-binder.BindInstances(objects);
+Container.BindInstances(objects);
 ```
 
 This is equivalent to:
 
 ``` c#
 Container.BindInstance<Foo>(foo);
-binder.BindInstance<Goo>(goo);
+Container.BindInstance<Goo>(goo);
 ```
 
 *Note that, even if `foo` and `goo` are downcast to interfaces, `BindInstances()` always binds each object to its own type and disregards the interfaces it implements. That means that the dependent object must also declare its dependencies using those concrete types.*
 
 ### Resolving
 
-You typically won't need to resolve dependencies manually, as *Injexit* will do it automatically for you behind the scenes. *It is considered a best practice to **only** use such explicit dependency resolution in your bootstrapping code and **avoid it completely** everywhere else in your application.*
+You typically won't need to resolve dependencies manually, as *Injexit* will do it automatically for you behind the scenes. *It is considered a best practice to **only** expose the container to bootstrapping code and **abstract it completely away** from the rest of your application. If some of your classes need to create or resolve objects on-the-fly, use a factory classes or factory lambdas to hide the container from them (see* Factories *section).*
 
 Because the `IContainer` also implements `IResolver`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IResolver`).
 
@@ -535,7 +650,7 @@ resolver.Resolve<IFoo>();
 #### Resolving a type only known at run-time
 
 ```c#
-resolver.Resolve(type);
+Container.Resolve(type);
 ```
 
 #### Overriding bindings at resolution-time
@@ -544,8 +659,72 @@ When you want to specify bindings that should only apply to the current resoluti
 
 ```c#
 resolver
-  .Using(binder => binder.Bind<IFoo, Foo2>())
+  .Using(binder => Container.Bind<IFoo, Foo2>())
   .Resolve<IBar>();
+```
+
+#### Factories
+
+When a class needs to create or resolve objects on-the-fly, you can use factory classes or lambdas. Here we will only look at the simplest approach, using factory lambda functions. Let's consider the following class, that gets injected a `Func<IFoo>` factory lambda function and uses it at run-time to create instances of `IFoo` on-the-fly:
+
+```c#
+public class Bar : IBar
+{
+  private readonly _fooFactory
+  
+  public Bar(Func<IFoo> fooFactory)
+  {
+    _fooFactory = fooFactory;
+  }
+  
+  // Some method that will be called at run-time that needs to create IFoo instances on-the-fly
+  public void SomeMethod()
+  {
+    var foo = _fooFactory();
+  }
+}
+```
+
+Now, let's configure that factory lambda and bind it:
+
+```c#
+Container.BindInstance(() => Container.Resolve<IFoo>());
+```
+
+Note that what we are binding here is an instance of the *lambda*, **not** an instance of IFoo.
+
+##### Passing parameters to factored objects
+
+In the previous example, because we are using `Container.Resolve<IFoo>()` to resolve our object, any dependency that it might have will also be resolved automatically for you. That's why you should avoid using the `new` keyword in your factories. But what about if you need to pass a specific parameter at run-time? Let's say our `Foo` class needs to know its parent `IBar` that created it, and maybe some other `IGoo` object:
+
+```c#
+public class Foo : IFoo
+{
+  public Foo(IBar parentBar, IGoo someGoo)
+  {
+    // ...
+  }
+}
+```
+
+Then we can add an `IBar` parameter to the factory lambda and temporarily add that object to the resolver with `.Using()` just before calling `.Resolve()`:
+
+```c#
+Container.Bind<IGoo, Goo>();
+
+Container.BindInstance(
+  (IBar parentBar) => Container
+    .Using(x => x.BindInstance(parentBar))
+    .Resolve<IFoo>());
+```
+
+Notice that `IGoo` will be resolved and injected automatically behind the scene. In this particular scenario, we only want to pass `IBar` explicitly to the factory.  So, let's call our factory with the `IBar` parameter (in this case, `this` is the parent `IBar` we want to inject):
+
+```c#
+  public void SomeMethod()
+  {
+    var foo = _fooFactory(this);
+  }
 ```
 
 ### Injecting
@@ -555,7 +734,7 @@ Because the `IContainer` also implements `IInjector`, all the following examples
 #### Injecting an existing instance
 
 ``` c#
-injector.Inject(instance);
+Container.Inject(instance);
 ```
 
 This will only inject the dependencies of given instance.
@@ -563,7 +742,7 @@ This will only inject the dependencies of given instance.
 #### Injecting all scripts of a game object
 
 ```c#
-injector.Inject(gameObject);
+Container.Inject(gameObject);
 ```
 
 This will recursively inject the dependencies of all `MonoBehaviour` scripts attached to given `GameObject` and its descendants.
@@ -573,7 +752,7 @@ This will recursively inject the dependencies of all `MonoBehaviour` scripts att
 After you have set up all your bindings, the `RootInstaller` and `SceneInstaller` will automatically call this method to inject all game objects in your scene:
 
 ```c#
-injector.InjectScene(gameObject.scene);
+Container.InjectScene(gameObject.scene);
 ```
 
 #### Overriding bindings at injection-time
@@ -582,17 +761,13 @@ When you want to specify bindings that should only apply to the current injectio
 
 ``` c#
 injector
-  .Using(binder => binder.Bind<IFoo, Foo2>())
+  .Using(binder => Container.Bind<IFoo, Foo2>())
   .Inject(obj);
 ```
 
 ### Logging
 
 (TODO: Add documentation)
-
-### Wishlist
-
-- Caching the injection info, in order to spare the reflection overhead
 
 # <a id="Machina"></a>Machina
 
