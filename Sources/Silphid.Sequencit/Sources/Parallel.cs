@@ -5,7 +5,7 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Parallel : ISequencer
+    public class Parallel : IObservableSequencer
     {
         public static Parallel Create(Action<Parallel> action)
         {
