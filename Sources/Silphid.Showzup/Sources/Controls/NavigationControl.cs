@@ -80,6 +80,10 @@ namespace Silphid.Showzup
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.SelectMany(x => Present(x, options));
+
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
             
             return Observable
