@@ -3,15 +3,15 @@ using Silphid.Sequencit;
 using UniRx;
 
 [TestFixture]
-public class SequenceQueueTest : SequencingTestBase
+public class LiveSequenceTest : SequencingTestBase
 {
-    private SequenceQueue _sequenceQueue;
+    private LiveSequence _liveSequence;
 
     [SetUp]
     public override void Setup()
     {
         base.Setup();
-        _sequenceQueue = new SequenceQueue();
+        _liveSequence = new LiveSequence();
     }
 
     [Test]
@@ -19,41 +19,41 @@ public class SequenceQueueTest : SequencingTestBase
     {
         Assert.That(_value, Is.EqualTo(0));
 
-        _sequenceQueue.AddAction(() => _value = 123);
+        _liveSequence.AddAction(() => _value = 123);
         Assert.That(_value, Is.EqualTo(0));
     }
 
     [Test]
     public void Start_ExecutesAllInstantActionsInstantly()
     {
-        _sequenceQueue.AddAction(() => _value = 1);
-        _sequenceQueue.AddAction(() => _value = 2);
-        _sequenceQueue.AddAction(() => _value = 3);
+        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.AddAction(() => _value = 2);
+        _liveSequence.AddAction(() => _value = 3);
 
         Assert.That(_value, Is.EqualTo(0));
 
-        _sequenceQueue.Start();
+        _liveSequence.Start();
         Assert.That(_value, Is.EqualTo(3));
     }
 
     [Test]
     public void Static_Create_DoesNotStartSequencer()
     {
-        SequenceQueue.Create(s => s.AddAction(() => _value = 123));
+        LiveSequence.Create(s => s.AddAction(() => _value = 123));
         Assert.That(_value, Is.EqualTo(0));
     }
 
     [Test]
     public void Static_Start_DoesStartSequencer()
     {
-        SequenceQueue.Start(s => s.AddAction(() => _value = 123));
+        LiveSequence.Start(s => s.AddAction(() => _value = 123));
         Assert.That(_value, Is.EqualTo(123));
     }
 
     [Test]
     public void Stop_DisposesCurrentlyExecutingObservable()
     {
-        var seq = SequenceQueue.Start(s =>
+        var seq = LiveSequence.Start(s =>
         {
             s.AddAction(() => _value = 1);
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 2));
@@ -83,7 +83,7 @@ public class SequenceQueueTest : SequencingTestBase
     [Test]
     public void Start_AfterStop_ExecutionResumesInstantlyWithNextItem()
     {
-        var seq = SequenceQueue.Start(s =>
+        var seq = LiveSequence.Start(s =>
         {
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
             s.Add(() =>
@@ -120,12 +120,12 @@ public class SequenceQueueTest : SequencingTestBase
     [Test]
     public void Add_AddedActionIsStartedImmediatelyWhenQueueIsEmpty()
     {
-        _sequenceQueue.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
-        _sequenceQueue.Start();
+        _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _liveSequence.Start();
         _scheduler.AdvanceTo(10);
         Assert.That(_value, Is.EqualTo(1));
 
-        _sequenceQueue.Add(() =>
+        _liveSequence.Add(() =>
         {
             _value = 2;
             return CreateDelay(10).DoOnCompleted(() => _value = 3);
@@ -136,41 +136,109 @@ public class SequenceQueueTest : SequencingTestBase
     [Test]
     public void Add_AddedActionIsNotStartedWhenSequencerStopped()
     {
-        _sequenceQueue.Start();
-        _sequenceQueue.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _liveSequence.Start();
+        _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
         _scheduler.AdvanceTo(10);
         Assert.That(_value, Is.EqualTo(1));
 
-        _sequenceQueue.Stop();
-        _sequenceQueue.AddAction(() => _value = 2);
+        _liveSequence.Stop();
+        _liveSequence.AddAction(() => _value = 2);
         Assert.That(_value, Is.EqualTo(1));
     }
 
     [Test]
-    public void SkipToMarker()
+    public void SkipBefore()
     {
-        _sequenceQueue.Start();
-        _sequenceQueue.Add(Observable.Never<Unit>());
-        _sequenceQueue.AddAction(() => _value = 1);
-        var marker = _sequenceQueue.AddMarker();
-        _sequenceQueue.AddAction(() => _value = 2);
+        var obs = CreateDelay(10);
+        
+        _liveSequence.Start();
+        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(obs);
+        _liveSequence.AddAction(() => _value = 2);
 
         Assert.That(_value, Is.EqualTo(0));
-        _sequenceQueue.SkipTo(marker);
+        
+        _liveSequence.SkipBefore(obs);
+        Assert.That(_value, Is.EqualTo(0));
+        
+        _scheduler.AdvanceBy(9);
+        Assert.That(_value, Is.EqualTo(1));
+        
+        _scheduler.AdvanceBy(1);
+        Assert.That(_value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void SkipAfter()
+    {
+        var obs = CreateDelay(10);
+        
+        _liveSequence.Start();
+        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(obs);
+        _liveSequence.AddAction(() => _value = 2);
+
+        Assert.That(_value, Is.EqualTo(0));
+        
+        _liveSequence.SkipAfter(obs);
+        Assert.That(_value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void TruncateBefore()
+    {
+        var obs = Sequence.Create(seq =>
+        {
+            seq.AddAction(() => _value = 100);
+            _liveSequence.Add(CreateDelay(10));
+            seq.AddAction(() => _value = 200);
+        });
+        
+        _liveSequence.Start();
+        _liveSequence.Add(CreateDelay(10));
+        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(obs);
+        _liveSequence.AddAction(() => _value = 2);
+
+        Assert.That(_value, Is.EqualTo(0));
+        
+        _liveSequence.SkipBefore(obs);
+        Assert.That(_value, Is.EqualTo(0));
+        
+        _scheduler.AdvanceBy(9);
+        Assert.That(_value, Is.EqualTo(1));
+        
+        _scheduler.AdvanceBy(1);
+        Assert.That(_value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void AddMarker()
+    {
+        _liveSequence.Start();
+        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.AddAction(() => _value = 1);
+        var marker = _liveSequence.AddMarker();
+        _liveSequence.AddAction(() => _value = 2);
+
+        Assert.That(_value, Is.EqualTo(0));
+        _liveSequence.SkipBefore(marker);
         Assert.That(_value, Is.EqualTo(2));
     }
 
     [Test]
     public void Clear()
     {
-        _sequenceQueue.Start();
-        _sequenceQueue.Add(Observable.Never<Unit>());
-        _sequenceQueue.AddAction(() => _value = 1);
+        _liveSequence.Start();
+        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.AddAction(() => _value = 1);
 
         Assert.That(_value, Is.EqualTo(0));
         
-        _sequenceQueue.Clear();
-        _sequenceQueue.AddAction(() => _value = 2);
+        _liveSequence.Clear();
+        _liveSequence.AddAction(() => _value = 2);
         Assert.That(_value, Is.EqualTo(2));
     }
 }
