@@ -36,9 +36,10 @@ namespace Silphid.Loadzup.Resource
 
         private IObservable<Object> LoadAsync<T>(string path)
         {
-            return Resources
-                .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
-                .AsObservable<Object>();
+            return Observable.Defer(() =>
+                Resources
+                    .LoadAsync(path, IsUnityObject<T>() ? typeof(T) : typeof(Object))
+                    .AsObservable<Object>());
         }
 
         private IObservable<T> Convert<T>(Object obj, ContentType contentType)

@@ -15,19 +15,21 @@ namespace Silphid.Loadzup.Bundles
         }
 
         public IObservable<T> LoadAsset<T>(string assetName) =>
-            _bundle
-                .LoadAssetAsync<T>(assetName)
-                .AsAsyncOperationObservable()
-                .Select(x =>
-                {
-                    if (x.asset == null)
-                        throw new InvalidOperationException(
-                            $"Failed to load asset with name \"{assetName}\" from bundle {_bundle.name} with type {typeof(T)}");
+            Observable.Defer(() =>
+                _bundle
+                    .LoadAssetAsync<T>(assetName)
+                    .AsAsyncOperationObservable()
+                    .Select(x =>
+                    {
+                        if (x.asset == null)
+                            throw new InvalidOperationException(
+                                $"Failed to load asset with name \"{assetName}\" from bundle {_bundle.name} with type {typeof(T)}");
 
-                    return (T) (object) x.asset;
-                });
+                        return (T) (object) x.asset;
+                    }));
 
         public IObservable<T[]> LoadAllAssets<T>() =>
+            Observable.Defer(() =>
                 _bundle
                     .LoadAllAssetsAsync<T>()
                     .AsAsyncOperationObservable()
@@ -38,7 +40,7 @@ namespace Silphid.Loadzup.Bundles
                                 $"Failed to load all asset from bundle {_bundle.name}");
 
                         return x.allAssets.Cast<T>().ToArray();
-                    });
+                    }));
 
         public void Unload()
         {
