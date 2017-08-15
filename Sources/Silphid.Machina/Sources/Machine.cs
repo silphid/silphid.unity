@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Silphid.Extensions;
 using Silphid.Machina.Internals;
 using UniRx;
@@ -16,9 +17,12 @@ namespace Silphid.Machina
             State = new ReactiveProperty<TState>(initialState);
         }
 
-        public void Set(TState state) =>
-            State.Value = state;
-        
+        public void Set(TState state)
+        {
+            if (!State.Value.Equals(state))
+                State.Value = state;
+        }
+
         public bool Is(TState state) =>
             State.Value.Is(state);
 
@@ -31,5 +35,12 @@ namespace Silphid.Machina
 
         public IStateConfig For(TState state) =>
             _stateInfos.GetOrCreateValue(state, () => new StateInfo());
+
+        public IStateConfig For(TState state, Action<IStateConfig> action)
+        {
+            var config = For(state);
+            action(config);
+            return config;
+        }
     }
 }
