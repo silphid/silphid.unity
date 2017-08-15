@@ -5,7 +5,7 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Sequence : ISequencer, IObservable<Unit>
+    public class Sequence : IObservableSequencer
     {
         private readonly List<IObservable<Unit>> _observables = new List<IObservable<Unit>>();
 
