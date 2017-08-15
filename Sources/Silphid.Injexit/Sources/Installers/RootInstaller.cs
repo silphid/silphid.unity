@@ -17,7 +17,7 @@ namespace Silphid.Injexit
 
             Logger?.Log($"Installing {GetType().Name}");
 
-            OnBind(Container);
+            OnBind();
             InjectScene();
             OnReady();
         }

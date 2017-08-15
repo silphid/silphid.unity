@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {
@@ -25,6 +28,14 @@ namespace Silphid.Injexit
             var binding = _binder.BindInstance<TAbstraction>(instance).AsList();
             _bindings.Add(binding);
             return binding;
+        }
+
+        public void BindImplementations(Assembly assembly = null)
+        {
+            var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();
+            types
+                .Where(x => !x.IsAbstract && x.IsAssignableTo<TAbstraction>())
+                .ForEach(x => _bindings.Add(_binder.Bind<TAbstraction>(x).AsList()));
         }
     }
 }

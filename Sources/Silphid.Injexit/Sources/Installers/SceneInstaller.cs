@@ -10,7 +10,7 @@ namespace Silphid.Injexit
     public abstract class SceneInstaller<TParent> : Installer
         where TParent : IInstaller
     {
-        protected override void OnBind(IBinder binder)
+        protected override void OnBind()
         {
         }
 
@@ -22,7 +22,7 @@ namespace Silphid.Injexit
             
             Logger?.Log($"Installing {GetType().Name}");
 
-            OnBind(Container);
+            OnBind();
             InjectScene();
             OnReady();
         }

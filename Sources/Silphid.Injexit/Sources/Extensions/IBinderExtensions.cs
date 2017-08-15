@@ -41,7 +41,7 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
-        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null)
+        public static void BindToSelfImplementationsOf<T>(this IBinder This, Assembly assembly = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
             types
@@ -60,10 +60,17 @@ namespace Silphid.Injexit
 
         #region BindAsList
 
-        public static IBinding BindAsList<TSourceAbstraction>(this IBinder This, Action<IListBinder<TSourceAbstraction>> action)
+        public static IBinding BindAsListOf<TAbstraction>(this IBinder This, Action<IListBinder<TAbstraction>> action)
         {
-            var listBinder = new ListBinder<TSourceAbstraction>(This);
+            var listBinder = new ListBinder<TAbstraction>(This);
             action(listBinder);
+            return listBinder.CompositeBinding;
+        }
+
+        public static IBinding BindAsListImplementationsOf<TAbstraction>(this IBinder This, Assembly assembly = null)
+        {
+            var listBinder = new ListBinder<TAbstraction>(This);
+            listBinder.BindImplementations(assembly);
             return listBinder.CompositeBinding;
         }
 
