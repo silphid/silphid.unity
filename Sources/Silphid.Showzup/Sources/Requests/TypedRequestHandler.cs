@@ -1,5 +1,4 @@
 ﻿using System;
-using UniRx;
 
 namespace Silphid.Showzup.Requests
 {
@@ -7,14 +6,12 @@ namespace Silphid.Showzup.Requests
     {
         public Type SupportedRequestType => typeof(TRequest);
         
-        public IObservable<Unit> Handle(IRequest request)
+        public bool Handle(IRequest request)
         {
             var req = request as TRequest;
-            return req != null
-                ? Handle(req)
-                : null;
+            return req != null && Handle(req);
         }
 
-        protected abstract IObservable<Unit> Handle(TRequest request);
+        protected abstract bool Handle(TRequest request);
     }
 }

@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Silphid.Machina
 {
-    public class Machine<TState> : IMachine<TState> where TState : IState
+    public class Machine<TState> : IMachine<TState>
     {
         private readonly Dictionary<TState, StateInfo> _stateInfos = new Dictionary<TState, StateInfo>();
         
@@ -24,7 +24,7 @@ namespace Silphid.Machina
         }
 
         public bool Is(TState state) =>
-            State.Value.Is(state);
+            IMachineExtensions.IsStateEquivalent(State.Value, state);
 
         public bool Trigger(object trigger)
         {

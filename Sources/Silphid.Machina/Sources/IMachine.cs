@@ -2,7 +2,7 @@
 
 namespace Silphid.Machina
 {
-	public interface IMachine<TState> where TState : IState
+	public interface IMachine<TState>
 	{
 		IReactiveProperty<TState> State { get; }
 		bool Trigger(object trigger);

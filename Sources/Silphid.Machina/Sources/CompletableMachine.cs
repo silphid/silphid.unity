@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Silphid.Machina
 {
-    public class CompletableMachine<TState> : Machine<TState>, ICompletableMachine<TState> where TState : IState
+    public class CompletableMachine<TState> : Machine<TState>, ICompletableMachine<TState>
     {
         private readonly Lapse _lapse = new Lapse();
         private readonly Subject<Unit> _startedSubject = new Subject<Unit>();
