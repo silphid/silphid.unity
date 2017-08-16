@@ -20,7 +20,7 @@ namespace Silphid.Sequencit
             Create(seq => selectors.ForEach(selector => seq.Add(Observable.Defer(selector))));
 
         public static Sequence Create(IEnumerable<IObservable<Unit>> observables) =>
-            Create(seq => observables.ForEach(seq.Add));
+            Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<Sequence> action) =>
             Create(action).AutoDetach().Subscribe();
@@ -38,8 +38,11 @@ namespace Silphid.Sequencit
 
         #region ISequencer members
 
-        public void Add(IObservable<Unit> observable) =>
+        public IObservable<Unit> Add(IObservable<Unit> observable)
+        {
             _observables.Add(observable);
+            return observable;
+        }
 
         #endregion
 

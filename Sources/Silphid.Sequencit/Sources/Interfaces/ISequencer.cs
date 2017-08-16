@@ -5,6 +5,6 @@ namespace Silphid.Sequencit
 {
     public interface ISequencer : IObservable<Unit>
     {
-        void Add(IObservable<Unit> observable);
+        IObservable<Unit> Add(IObservable<Unit> observable);
     }
 }

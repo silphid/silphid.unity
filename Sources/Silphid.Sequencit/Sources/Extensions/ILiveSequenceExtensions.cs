@@ -11,7 +11,7 @@
         /// </summary>
         /// <returns>True if marker was added at the end of sequence, or False if marker
         /// was already present in sequence and everything after it was truncated instead.</returns>
-        public static bool AddMarkerOrTruncate(this LiveSequence This, Marker marker)
+        public static bool AddMarkerOrTruncateAfter(this LiveSequence This, Marker marker)
         {
             if (This.TruncateAfter(marker))
                 return false;

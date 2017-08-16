@@ -20,7 +20,7 @@ namespace Silphid.Sequencit
             Create(p => selectors.ForEach(selector => p.Add(selector())));
 
         public static Parallel Create(IEnumerable<IObservable<Unit>> observables) =>
-            Create(seq => observables.ForEach(seq.Add));
+            Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<Parallel> action) =>
             Create(action).AutoDetach().Subscribe();
@@ -38,12 +38,13 @@ namespace Silphid.Sequencit
 
         #region ISequencer members
 
-        public void Add(IObservable<Unit> observable)
+        public IObservable<Unit> Add(IObservable<Unit> observable)
         {
             if (_observables == null)
                 _observables = new List<IObservable<Unit>>();
 
             _observables.Add(observable);
+            return observable;
         }
 
         #endregion

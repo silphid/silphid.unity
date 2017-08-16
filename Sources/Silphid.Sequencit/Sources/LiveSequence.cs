@@ -42,18 +42,21 @@ namespace Silphid.Sequencit
                 _isStarted = true;
                 StartNext();
             }
-            
-            return _subscriptionLapse.Subscribe(observer);
+
+            return new CompositeDisposable(
+                Disposable.Create(Complete),
+                _subscriptionLapse.Subscribe(observer));
         }
 
         #endregion
 
         #region ISequencer members
 
-        public void Add(IObservable<Unit> observable)
+        public IObservable<Unit> Add(IObservable<Unit> observable)
         {
             _observables.Enqueue(observable);
             StartNext();
+            return observable;
         }
 
         #endregion
@@ -123,11 +126,8 @@ namespace Silphid.Sequencit
             if (!_observables.Contains(observable))
                 return false;
 
-            if (!_isStarted)
-            {
-                _isExecuting = false;
-                _currentExecution?.Dispose();
-            }
+            _isExecuting = false;
+            _currentExecution?.Dispose();
             
             while (_observables.Peek() != observable)
                 _observables.Dequeue();
@@ -146,8 +146,9 @@ namespace Silphid.Sequencit
             var index = _observables.IndexOf(observable);
             if (index == -1)
                 return false;
-            
-            _observables = new Queue<IObservable<Unit>>(_observables.Take(index));
+
+            var count = isInclusive ? index : index + 1;
+            _observables = new Queue<IObservable<Unit>>(_observables.Take(count));
             return true;
         }
 

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
+using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
 
@@ -17,10 +19,10 @@ public class LiveSequenceTest : SequencingTestBase
     [Test]
     public void SequencerIsNotStartedInitially()
     {
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
 
         _liveSequence.AddAction(() => _value = 123);
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
     }
 
     [Test]
@@ -30,30 +32,30 @@ public class LiveSequenceTest : SequencingTestBase
         _liveSequence.AddAction(() => _value = 2);
         _liveSequence.AddAction(() => _value = 3);
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
 
-        _liveSequence.Start();
-        Assert.That(_value, Is.EqualTo(3));
+        _liveSequence.Subscribe();
+        AssertValue(3);
     }
 
     [Test]
     public void Static_Create_DoesNotStartSequencer()
     {
         LiveSequence.Create(s => s.AddAction(() => _value = 123));
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
     }
 
     [Test]
     public void Static_Start_DoesStartSequencer()
     {
         LiveSequence.Start(s => s.AddAction(() => _value = 123));
-        Assert.That(_value, Is.EqualTo(123));
+        AssertValue(123);
     }
 
     [Test]
     public void Stop_DisposesCurrentlyExecutingObservable()
     {
-        var seq = LiveSequence.Start(s =>
+        var disposable = LiveSequence.Start(s =>
         {
             s.AddAction(() => _value = 1);
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 2));
@@ -68,22 +70,22 @@ public class LiveSequenceTest : SequencingTestBase
             s.AddAction(() => _value = 6);
         });
 
-        Assert.That(_value, Is.EqualTo(1));
+        AssertValue(1);
 
         _scheduler.AdvanceTo(10);
-        Assert.That(_value, Is.EqualTo(3));
+        AssertValue(3);
 
-        seq.Stop();
-        Assert.That(_value, Is.EqualTo(100));
+        disposable.Dispose();
+        AssertValue(100);
 
         _scheduler.AdvanceTo(1000);
-        Assert.That(_value, Is.EqualTo(100));
+        AssertValue(100);
     }
 
     [Test]
-    public void Start_AfterStop_ExecutionResumesInstantlyWithNextItem()
+    public void SubscribeAfterDisposeOfPreviousSubscription_ExecutionResumesInstantlyWithNextItem()
     {
-        var seq = LiveSequence.Start(s =>
+        var seq = LiveSequence.Create(s =>
         {
             s.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
             s.Add(() =>
@@ -98,52 +100,52 @@ public class LiveSequenceTest : SequencingTestBase
             });
             s.AddAction(() => _value = 5);
         });
+        var disposable = seq.Subscribe();
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
 
         _scheduler.AdvanceTo(10);
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
 
-        seq.Stop();
-        Assert.That(_value, Is.EqualTo(3));
+        disposable.Dispose();
+        AssertValue(3);
 
         _scheduler.AdvanceTo(1000);
-        Assert.That(_value, Is.EqualTo(3));
+        AssertValue(3);
 
-        seq.Start();
-        Assert.That(_value, Is.EqualTo(4));
+        seq.Subscribe();
+        AssertValue(4);
 
         _scheduler.AdvanceBy(10);
-        Assert.That(_value, Is.EqualTo(5));
+        AssertValue(5);
     }
 
     [Test]
     public void Add_AddedActionIsStartedImmediatelyWhenQueueIsEmpty()
     {
         _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
-        _liveSequence.Start();
+        _liveSequence.Subscribe();
         _scheduler.AdvanceTo(10);
-        Assert.That(_value, Is.EqualTo(1));
+        AssertValue(1);
 
         _liveSequence.Add(() =>
         {
             _value = 2;
             return CreateDelay(10).DoOnCompleted(() => _value = 3);
         });
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
     }
 
     [Test]
-    public void Add_AddedActionIsNotStartedWhenSequencerStopped()
+    public void Add_AddedActionIsNotExecutedAfterSubscriptionDisposed()
     {
-        _liveSequence.Start();
+        var disposable = _liveSequence.Subscribe();
         _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
         _scheduler.AdvanceTo(10);
-        Assert.That(_value, Is.EqualTo(1));
+        AssertValue(1);
 
-        _liveSequence.Stop();
-        _liveSequence.AddAction(() => _value = 2);
-        Assert.That(_value, Is.EqualTo(1));
+        disposable.Dispose();
+        _liveSequence.AddAction(ShouldNotReachThisPoint);
     }
 
     [Test]
@@ -151,22 +153,23 @@ public class LiveSequenceTest : SequencingTestBase
     {
         var obs = CreateDelay(10);
         
-        _liveSequence.Start();
-        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.Subscribe();
         _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(Observable.Never<Unit>());
+        _liveSequence.AddAction(ShouldNotReachThisPoint);
         _liveSequence.Add(obs);
         _liveSequence.AddAction(() => _value = 2);
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(1);
         
         _liveSequence.SkipBefore(obs);
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(1);
         
         _scheduler.AdvanceBy(9);
-        Assert.That(_value, Is.EqualTo(1));
+        AssertValue(1);
         
         _scheduler.AdvanceBy(1);
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
     }
 
     [Test]
@@ -174,71 +177,149 @@ public class LiveSequenceTest : SequencingTestBase
     {
         var obs = CreateDelay(10);
         
-        _liveSequence.Start();
+        _liveSequence.Subscribe();
         _liveSequence.Add(Observable.Never<Unit>());
         _liveSequence.AddAction(() => _value = 1);
         _liveSequence.Add(obs);
         _liveSequence.AddAction(() => _value = 2);
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
         
         _liveSequence.SkipAfter(obs);
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
     }
 
     [Test]
     public void TruncateBefore()
     {
-        var obs = Sequence.Create(seq =>
-        {
-            seq.AddAction(() => _value = 100);
-            _liveSequence.Add(CreateDelay(10));
-            seq.AddAction(() => _value = 200);
-        });
+        var checkpoint1 = false;
+        var checkpoint2 = false;
         
-        _liveSequence.Start();
-        _liveSequence.Add(CreateDelay(10));
-        _liveSequence.AddAction(() => _value = 1);
-        _liveSequence.Add(obs);
-        _liveSequence.AddAction(() => _value = 2);
+        _liveSequence.Subscribe();
+        var lapse1 = _liveSequence.AddLapse();
+        _liveSequence.AddAction(() => checkpoint1 = true);
+        var obs = _liveSequence.AddAction(() => checkpoint2 = true);
+        _liveSequence.AddAction(ShouldNotReachThisPoint);
 
-        Assert.That(_value, Is.EqualTo(0));
+        Assert.That(checkpoint1, Is.False);
+        Assert.That(checkpoint2, Is.False);
+       
+        _liveSequence.TruncateBefore(obs);
         
-        _liveSequence.SkipBefore(obs);
-        Assert.That(_value, Is.EqualTo(0));
+        lapse1.Dispose();
+        Assert.That(checkpoint1, Is.True);
+        Assert.That(checkpoint2, Is.False);
+    }
+    
+    [Test]
+    public void TruncateAfter()
+    {
+        var checkpoint1 = false;
+        var checkpoint2 = false;
         
-        _scheduler.AdvanceBy(9);
-        Assert.That(_value, Is.EqualTo(1));
+        _liveSequence.Subscribe();
+        var lapse1 = _liveSequence.AddLapse();
+        _liveSequence.AddAction(() => checkpoint1 = true);
+        var obs = _liveSequence.AddAction(() => checkpoint2 = true);
+        _liveSequence.AddAction(ShouldNotReachThisPoint);
+
+        Assert.That(checkpoint1, Is.False);
+        Assert.That(checkpoint2, Is.False);
+       
+        _liveSequence.TruncateAfter(obs);
         
-        _scheduler.AdvanceBy(1);
-        Assert.That(_value, Is.EqualTo(2));
+        lapse1.Dispose();
+        Assert.That(checkpoint1, Is.True);
+        Assert.That(checkpoint2, Is.True);
     }
 
     [Test]
     public void AddMarker()
     {
-        _liveSequence.Start();
+        _liveSequence.Subscribe();
         _liveSequence.Add(Observable.Never<Unit>());
         _liveSequence.AddAction(() => _value = 1);
         var marker = _liveSequence.AddMarker();
         _liveSequence.AddAction(() => _value = 2);
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
         _liveSequence.SkipBefore(marker);
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
+    }
+
+    [Test]
+    public void AddMarkerOrTruncateAfter()
+    {
+        var checkpoint1 = false;
+        
+        var marker = new Marker();
+        
+        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(CreateDelay(10));
+        _liveSequence.AddAction(() => checkpoint1 = true);
+        _liveSequence.Add(marker);
+        _liveSequence.AddAction(ShouldNotReachThisPoint);
+
+        _liveSequence.Subscribe();
+        _scheduler.AdvanceBy(5);
+        AssertValue(1);
+
+        // Marker already in sequence: will truncate after it
+        _liveSequence.AddMarkerOrTruncateAfter(marker);
+        _liveSequence.AddAction(() => _value = 2);
+        _liveSequence.Add(CreateDelay(100));
+        _liveSequence.AddAction(() => _value = 3);
+
+        Assert.That(checkpoint1, Is.False);
+        _scheduler.AdvanceBy(5);
+        Assert.That(checkpoint1, Is.True);
+        AssertValue(2);
+
+        // Marker no longer in sequence: will add marker
+        _liveSequence.AddMarkerOrTruncateAfter(marker);
+        _liveSequence.Add(CreateDelay(200));
+        _liveSequence.AddAction(() => _value = 4);
+        AssertValue(2);
+
+        _scheduler.AdvanceBy(100);
+        AssertValue(3);
+
+        _scheduler.AdvanceBy(200);
+        AssertValue(4);
+    }
+
+    [Test]
+    public void DoesNotCompleteUntilItReachesAnExplicitAddComplete()
+    {
+        _liveSequence.AddAction(() => _value = 1);
+
+        var isCompleted = false;
+        _liveSequence.SubscribeCompletion(() => isCompleted = true);
+        AssertValue(1);
+        Assert.That(isCompleted, Is.False);
+
+        _liveSequence.Add(CreateDelay(10));
+        _liveSequence.AddAction(() => _value = 2);
+        _liveSequence.AddComplete();
+        AssertValue(1);
+        Assert.That(isCompleted, Is.False);
+        
+        _scheduler.AdvanceBy(10);
+        AssertValue(2);
+        Assert.That(isCompleted, Is.True);
     }
 
     [Test]
     public void Clear()
     {
-        _liveSequence.Start();
+        _liveSequence.Subscribe();
         _liveSequence.Add(Observable.Never<Unit>());
         _liveSequence.AddAction(() => _value = 1);
 
-        Assert.That(_value, Is.EqualTo(0));
+        AssertValue(0);
         
         _liveSequence.Clear();
         _liveSequence.AddAction(() => _value = 2);
-        Assert.That(_value, Is.EqualTo(2));
+        AssertValue(2);
     }
 }
