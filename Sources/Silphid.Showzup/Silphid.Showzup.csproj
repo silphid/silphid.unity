@@ -91,6 +91,7 @@
     <Compile Include="Sources\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
+    <Compile Include="Sources\Extensions\IPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
@@ -121,6 +122,10 @@
     <Compile Include="Sources\Navigation\INestedSelectHandler.cs" />
     <Compile Include="Sources\Navigation\MoveHandler.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\DirectionPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\ParametersPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\PushModePresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\VariantsPresenterDecorator.cs" />
     <Compile Include="Sources\Phases\CoordinationBase.cs" />
     <Compile Include="Sources\Phases\CoordinatorBase.cs" />
     <Compile Include="Sources\Phases\DelayedLoadTransitionCoordination.cs" />
@@ -138,6 +143,7 @@
     <Compile Include="Sources\Phases\PhasePerformer.cs" />
     <Compile Include="Sources\Phases\PhaseStarting.cs" />
     <Compile Include="Sources\Phases\PhaseState.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\OptionsPresenterDecoratorBase.cs" />
     <Compile Include="Sources\Requests\BackRequest.cs" />
     <Compile Include="Sources\Requests\IRequest.cs" />
     <Compile Include="Sources\Requests\IRequestHandler.cs" />
