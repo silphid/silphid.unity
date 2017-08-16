@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class LiveSequence : ISequencer
+    public class LiveSequence : ISequencer, IDisposable
     {
         #region Static methods
 
@@ -15,6 +15,13 @@ namespace Silphid.Sequencit
             var sequence = new LiveSequence();
             action(sequence);
             return sequence;
+        }
+
+        public static LiveSequence Start()
+        {
+            var liveSequence = new LiveSequence();
+            liveSequence.SubscribeAndForget();
+            return liveSequence;
         }
 
         public static IDisposable Start(Action<LiveSequence> action) =>
@@ -57,6 +64,15 @@ namespace Silphid.Sequencit
             _observables.Enqueue(observable);
             StartNext();
             return observable;
+        }
+
+        #endregion
+
+        #region IDisposable members
+
+        public void Dispose()
+        {
+            Complete();
         }
 
         #endregion
