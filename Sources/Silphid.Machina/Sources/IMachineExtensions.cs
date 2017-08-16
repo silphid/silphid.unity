@@ -6,11 +6,8 @@ namespace Silphid.Machina
 {
     public static class IMachineExtensions
     {
-	    public static IObservable<Change<TState>> Changes<TState>(this IObservable<TState> This) =>
-		    This.PairWithPrevious().Select(x => new Change<TState>(x.Item1, x.Item2));
-
 	    public static IObservable<Change<TState>> Changes<TState>(this IMachine<TState> This) =>
-		    This.State.Changes();
+		    This.State.PairWithPrevious().Select(x => new Change<TState>(x.Item1, x.Item2));
 
         public static bool Is(this IState This, IState state)
 		{
