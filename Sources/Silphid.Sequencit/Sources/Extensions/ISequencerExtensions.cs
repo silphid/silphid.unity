@@ -91,11 +91,11 @@ namespace Silphid.Sequencit
         public static IObservable<Unit> AddInterval(this ISequencer This, TimeSpan interval, IScheduler scheduler) =>
             This.Add(Observable.ReturnUnit().Delay(interval, scheduler));
 
-        public static Marker AddMarker(this ISequencer This)
+        public static IObservable<Unit> AddInstant(this ISequencer This)
         {
-            var marker = new Marker();
-            This.Add(marker);
-            return marker;
+            var instant = new Instant();
+            This.Add(instant);
+            return instant;
         }
     }
 }

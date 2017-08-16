@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
@@ -239,11 +238,11 @@ public class LiveSequenceTest : SequencingTestBase
         _liveSequence.Subscribe();
         _liveSequence.Add(Observable.Never<Unit>());
         _liveSequence.AddAction(() => _value = 1);
-        var marker = _liveSequence.AddMarker();
+        var instant = _liveSequence.AddInstant();
         _liveSequence.AddAction(() => _value = 2);
 
         AssertValue(0);
-        _liveSequence.SkipBefore(marker);
+        _liveSequence.SkipBefore(instant);
         AssertValue(2);
     }
 
@@ -252,12 +251,12 @@ public class LiveSequenceTest : SequencingTestBase
     {
         var checkpoint1 = false;
         
-        var marker = new Marker();
+        var instant = new Instant();
         
         _liveSequence.AddAction(() => _value = 1);
         _liveSequence.Add(CreateDelay(10));
         _liveSequence.AddAction(() => checkpoint1 = true);
-        _liveSequence.Add(marker);
+        _liveSequence.Add(instant);
         _liveSequence.AddAction(ShouldNotReachThisPoint);
 
         _liveSequence.Subscribe();
@@ -265,7 +264,7 @@ public class LiveSequenceTest : SequencingTestBase
         AssertValue(1);
 
         // Marker already in sequence: will truncate after it
-        _liveSequence.AddMarkerOrTruncateAfter(marker);
+        _liveSequence.AddOrTruncateAfter(instant);
         _liveSequence.AddAction(() => _value = 2);
         _liveSequence.Add(CreateDelay(100));
         _liveSequence.AddAction(() => _value = 3);
@@ -276,7 +275,7 @@ public class LiveSequenceTest : SequencingTestBase
         AssertValue(2);
 
         // Marker no longer in sequence: will add marker
-        _liveSequence.AddMarkerOrTruncateAfter(marker);
+        _liveSequence.AddOrTruncateAfter(instant);
         _liveSequence.Add(CreateDelay(200));
         _liveSequence.AddAction(() => _value = 4);
         AssertValue(2);

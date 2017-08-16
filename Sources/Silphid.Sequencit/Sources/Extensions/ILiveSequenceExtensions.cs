@@ -1,4 +1,7 @@
-﻿namespace Silphid.Sequencit
+﻿using System;
+using UniRx;
+
+namespace Silphid.Sequencit
 {
     public static class ILiveSequenceExtensions
     {
@@ -6,17 +9,17 @@
             This.AddAction(This.Complete);
 
         /// <summary>
-        /// Tries to add given marker at the end of sequence, but if marker was already
+        /// Tries to add given observable at the end of sequence, but if observable was already
         /// present in sequence, truncate everything after it instead.
         /// </summary>
-        /// <returns>True if marker was added at the end of sequence, or False if marker
+        /// <returns>True if observable was added at the end of sequence, or False if observable
         /// was already present in sequence and everything after it was truncated instead.</returns>
-        public static bool AddMarkerOrTruncateAfter(this LiveSequence This, Marker marker)
+        public static bool AddOrTruncateAfter(this LiveSequence This, IObservable<Unit> observable)
         {
-            if (This.TruncateAfter(marker))
+            if (This.TruncateAfter(observable))
                 return false;
             
-            This.Add(marker);
+            This.Add(observable);
             return true;
         }
     }
