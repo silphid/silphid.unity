@@ -47,6 +47,20 @@ namespace Silphid.Sequencit
             This.Add(() => Sequence.Create(observables));
         }
 
+        public static LiveSequence AddLiveSequence(this ISequencer This)
+        {
+            var liveSequence = new LiveSequence();
+            This.Add(liveSequence);
+            return liveSequence;
+        }
+
+        public static LiveSequence AddLiveSequence(this ISequencer This, Action<LiveSequence> action)
+        {
+            var liveSequence = LiveSequence.Create(action);
+            This.Add(liveSequence);
+            return liveSequence;
+        }
+
         public static void AddAction(this ISequencer This, Action action)
         {
             This.Add(() =>

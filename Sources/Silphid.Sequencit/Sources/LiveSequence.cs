@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
 using UniRx;
-using Rx = UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class LiveSequence : ISequencer, IDisposable
+    public class LiveSequence : ISequencer
     {
-        private Queue<IObservable<Unit>> _observables = new Queue<IObservable<Unit>>();
-        private IDisposable _currentExecution;
-        private bool _isStarted;
-        private bool _isExecuting;
+        #region Static methods
 
         public static LiveSequence Create(Action<LiveSequence> action)
         {
@@ -21,36 +17,62 @@ namespace Silphid.Sequencit
             return sequence;
         }
 
-        public static LiveSequence Start(Action<LiveSequence> action)
+        public static IDisposable Start(Action<LiveSequence> action) =>
+            Create(action).Subscribe();
+
+        #endregion
+
+        #region Private fields
+
+        private Queue<IObservable<Unit>> _observables = new Queue<IObservable<Unit>>();
+        private IDisposable _currentExecution;
+        private bool _isStarted;
+        private bool _isExecuting;
+        private Lapse _subscriptionLapse;
+        
+        #endregion
+        
+        #region IObservable<Unit> members
+
+        public IDisposable Subscribe(IObserver<Unit> observer)
         {
-            var sequence = Create(action);
-            sequence.Start();
-            return sequence;
+            if (!_isStarted)
+            {
+                _subscriptionLapse = new Lapse(); 
+                _isStarted = true;
+                StartNext();
+            }
+            
+            return _subscriptionLapse.Subscribe(observer);
         }
 
-        public void Start()
-        {
-            if (_isStarted)
-                return;
+        #endregion
 
-            _isStarted = true;
+        #region ISequencer members
+
+        public void Add(IObservable<Unit> observable)
+        {
+            _observables.Enqueue(observable);
             StartNext();
         }
 
-        public void Stop()
+        #endregion
+        
+        #region Public methods
+
+        public void Complete()
         {
             if (!_isStarted)
                 return;
 
+            _subscriptionLapse.Dispose();
+            _subscriptionLapse = null;
             _isStarted = false;
             _currentExecution?.Dispose();
         }
-
+        
         public void Clear()
         {
-            if (!_isStarted)
-                return;
-
             _observables.Clear();
             _isExecuting = false;
             _currentExecution?.Dispose();
@@ -74,16 +96,6 @@ namespace Silphid.Sequencit
         public bool TruncateAfter(IObservable<Unit> observable) =>
             Truncate(observable, isInclusive: false);
 
-        private bool Truncate(IObservable<Unit> observable, bool isInclusive)
-        {
-            var index = _observables.IndexOf(observable);
-            if (index == -1)
-                return false;
-            
-            _observables = new Queue<IObservable<Unit>>(_observables.Take(index));
-            return true;
-        }
-
         /// <summary>
         /// Removes observables from sequence, starting with first one and up to given item exclusively.
         /// If the sequence was running, currently executing item (if any) is cancelled/disposed and the
@@ -101,6 +113,10 @@ namespace Silphid.Sequencit
         /// <returns>Whether the given item was found and the truncation occurred.</returns>
         public bool SkipAfter(IObservable<Unit> observable) =>
             Skip(observable, isInclusive: true);
+
+        #endregion
+
+        #region Private methods
 
         private bool Skip(IObservable<Unit> observable, bool isInclusive)
         {
@@ -125,10 +141,14 @@ namespace Silphid.Sequencit
             return true;
         }
 
-        public void Add(IObservable<Unit> observable)
+        private bool Truncate(IObservable<Unit> observable, bool isInclusive)
         {
-            _observables.Enqueue(observable);
-            StartNext();
+            var index = _observables.IndexOf(observable);
+            if (index == -1)
+                return false;
+            
+            _observables = new Queue<IObservable<Unit>>(_observables.Take(index));
+            return true;
         }
 
         private void StartNext()
@@ -141,15 +161,12 @@ namespace Silphid.Sequencit
             _currentExecution = observable
                 .DoOnCancel(() => _isExecuting = false)
                 .SubscribeCompletion(() =>
-            {
-                _isExecuting = false;
-                StartNext();
-            });
+                {
+                    _isExecuting = false;
+                    StartNext();
+                });
         }
 
-        public void Dispose()
-        {
-            Stop();
-        }
+        #endregion
     }
 }
