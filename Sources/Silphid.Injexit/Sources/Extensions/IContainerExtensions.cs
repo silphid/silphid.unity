@@ -35,5 +35,32 @@ namespace Silphid.Injexit
         /// </summary>
         public static IContainer Child(this IContainer This) =>
             new CompositeContainer(This.Create(), This);
+                
+        public static IBinding BindDefaultFactory<TAbstraction>(this IContainer This) =>
+            This.BindInstance<Func<TAbstraction>>(() => This.Resolve<TAbstraction>());
+                
+        public static IBinding BindDefaultFactory<T1, TAbstraction>(this IContainer This) =>
+            This.BindInstance<Func<T1, TAbstraction>>(t1 => This
+                .Using(x => x.BindInstance(t1))
+                .Resolve<TAbstraction>());
+                
+        public static IBinding BindDefaultFactory<T1, T2, TAbstraction>(this IContainer This) =>
+            This.BindInstance<Func<T1, T2, TAbstraction>>((t1, t2) => This
+                .Using(x =>
+                {
+                    x.BindInstance(t1);
+                    x.BindInstance(t2);
+                })
+                .Resolve<TAbstraction>());
+                
+        public static IBinding BindDefaultFactory<T1, T2, T3, TAbstraction>(this IContainer This) =>
+            This.BindInstance<Func<T1, T2, T3, TAbstraction>>((t1, t2, t3) => This
+                .Using(x =>
+                {
+                    x.BindInstance(t1);
+                    x.BindInstance(t2);
+                    x.BindInstance(t3);
+                })
+                .Resolve<TAbstraction>());
     }
 }
