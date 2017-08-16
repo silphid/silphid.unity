@@ -670,7 +670,7 @@ When a class needs to create or resolve objects on-the-fly, you can use factory 
 ```c#
 public class Bar : IBar
 {
-  private readonly _fooFactory
+  private readonly Func<IFoo> _fooFactory
   
   public Bar(Func<IFoo> fooFactory)
   {
@@ -688,10 +688,17 @@ public class Bar : IBar
 Now, let's configure that factory lambda and bind it:
 
 ```c#
-Container.BindInstance(() => Container.Resolve<IFoo>());
+Container.BindInstance<Func<IFoo>>(
+  () => Container.Resolve<IFoo>());
 ```
 
 Note that what we are binding here is an instance of the *lambda*, **not** an instance of IFoo.
+
+Because this simple type of factory with no parameters is quite common, there is a shorthand syntax, equivalent to the above binding:
+
+```c#
+Container.BindDefaultFactory<IFoo>();
+```
 
 ##### Passing parameters to factored objects
 
@@ -712,7 +719,7 @@ Then we can add an `IBar` parameter to the factory lambda and temporarily add th
 ```c#
 Container.Bind<IGoo, Goo>();
 
-Container.BindInstance(
+Container.BindInstance<Func<IFoo>>(
   (IBar parentBar) => Container
     .Using(x => x.BindInstance(parentBar))
     .Resolve<IFoo>());
@@ -721,10 +728,28 @@ Container.BindInstance(
 Notice that `IGoo` will be resolved and injected automatically behind the scene. In this particular scenario, we only want to pass `IBar` explicitly to the factory.  So, let's call our factory with the `IBar` parameter (in this case, `this` is the parent `IBar` we want to inject):
 
 ```c#
+public class Bar : IBar
+{
+  private readonly Func<IBar, IFoo> _fooFactory
+  
+  public Bar(Func<IBar, IFoo> fooFactory)
+  {
+    _fooFactory = fooFactory;
+  }
+  
   public void SomeMethod()
   {
     var foo = _fooFactory(this);
   }
+}
+```
+
+There is also a shorthand syntax for default factories with up to three parameters:
+
+```c#
+Container.BindDefaultFactory<IBar, IFoo>();                // Func<IBar1, IFoo>
+Container.BindDefaultFactory<IBar1, IBar2, IFoo>();        // Func<IBar1, IBar2, IFoo>
+Container.BindDefaultFactory<IBar1, IBar2, IBar3, IFoo>(); // Func<IBar1, IBar2, IBar3, IFoo>
 ```
 
 ### Injecting
