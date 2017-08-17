@@ -430,6 +430,20 @@ Container.BindAsList<IFoo>(x =>
 });
 ```
 
+#### Binding all of a type's derivatives as a list
+
+```c#
+Container.BindAsListAll<IFoo>();
+```
+
+This will scan the assembly where `IFoo` is defined for all classes implementing that interface (for instance, `Foo1`, `Foo2` and `Foo3`) and bind them as a list of `IFoo`.
+
+You may also specify the assembly to scan explicitly:
+
+```c#
+Container.BindAsListAll<IFoo>(GetType().Assembly);
+```
+
 #### Qualifying bindings with identifiers
 
 When you need finer control over what gets injected where, for instance when you need different implementations of an interface to be injected in various places, you will have to tag your bindings with identifiers:
@@ -633,7 +647,7 @@ Container.BindInstance<Foo>(foo);
 Container.BindInstance<Goo>(goo);
 ```
 
-*Note that, even if `foo` and `goo` are downcast to interfaces, `BindInstances()` always binds each object to its own type and disregards the interfaces it implements. That means that the dependent object must also declare its dependencies using those concrete types.*
+*Note that, even if `foo` and `goo` are passed as interfaces `IFoo` and `IGoo` or as an array of `object`s , the `BindInstances()` method always binds each object to its own concrete type (ie: `Foo` or `Goo`). That means that the dependent object must also declare its dependencies using those concrete types.*
 
 ### Resolving
 
@@ -659,9 +673,37 @@ When you want to specify bindings that should only apply to the current resoluti
 
 ```c#
 resolver
-  .Using(binder => Container.Bind<IFoo, Foo2>())
+  .Using(x =>
+    {
+      x.Bind<IFoo, Foo2>())
+      x.Bind<IGoo, Goo2>())
+    })
   .Resolve<IBar>();
 ```
+
+When you need to override bindings with specifics instances...
+
+```c#
+resolver
+  .Using(x =>
+    {
+      x.BindInstance(foo))
+      x.BindInstance(goo))
+    })
+  .Resolve<IBar>();
+```
+
+…there is an equivalent shorthand syntax that supports from one to three instances:
+
+```c#
+resolver.UsingInstance(foo).Resolve<IBar>();
+resolver.UsingInstances(foo, goo).Resolve<IBar>();
+resolver.UsingInstances(foo, goo, hoo).Resolve<IBar>();
+```
+
+
+
+We will see this syntax in action in the *Factories* section below.
 
 #### Factories
 
@@ -688,6 +730,8 @@ public class Bar : IBar
 Now, let's configure that factory lambda and bind it:
 
 ```c#
+Container.Bind<IFoo, Foo>(); // This is still needed, as the factory needs to resolve IFoo
+
 Container.BindInstance<Func<IFoo>>(
   () => Container.Resolve<IFoo>());
 ```
@@ -700,7 +744,7 @@ Because this simple type of factory with no parameters is quite common, there is
 Container.BindDefaultFactory<IFoo>();
 ```
 
-##### Passing parameters to factored objects
+##### Parametrized factories
 
 In the previous example, because we are using `Container.Resolve<IFoo>()` to resolve our object, any dependency that it might have will also be resolved automatically for you. That's why you should avoid using the `new` keyword in your factories. But what about if you need to pass a specific parameter at run-time? Let's say our `Foo` class needs to know its parent `IBar` that created it, and maybe some other `IGoo` object:
 
@@ -717,11 +761,13 @@ public class Foo : IFoo
 Then we can add an `IBar` parameter to the factory lambda and temporarily add that object to the resolver with `.Using()` just before calling `.Resolve()`:
 
 ```c#
+Container.Bind<IFoo, Foo>();
 Container.Bind<IGoo, Goo>();
+Container.Bind<IBar, Bar>();
 
-Container.BindInstance<Func<IFoo>>(
+Container.BindInstance<Func<IBar, IFoo>>(
   (IBar parentBar) => Container
-    .Using(x => x.BindInstance(parentBar))
+    .UsingInstance(parentBar)
     .Resolve<IFoo>());
 ```
 
@@ -744,12 +790,22 @@ public class Bar : IBar
 }
 ```
 
-There is also a shorthand syntax for default factories with up to three parameters:
+There is a shorthand syntax for default factories with zero up to three parameters:
 
 ```c#
+Container.BindDefaultFactory<IFoo>();                      // Func<IFoo>
 Container.BindDefaultFactory<IBar, IFoo>();                // Func<IBar1, IFoo>
 Container.BindDefaultFactory<IBar1, IBar2, IFoo>();        // Func<IBar1, IBar2, IFoo>
 Container.BindDefaultFactory<IBar1, IBar2, IBar3, IFoo>(); // Func<IBar1, IBar2, IBar3, IFoo>
+```
+
+##### Typed factories
+
+```c#
+Container.BindTypedFactory<IFoo>();                        // Func<Type, IFoo>
+Container.BindTypedFactory<IBar, IFoo>();                  // Func<Type, IBar, IFoo>
+Container.BindTypedFactory<IBar1, IBar2, IFoo>();          // Func<Type, IBar1, IBar2, IFoo>
+Container.BindTypedFactory<IBar1, IBar2, IBar3, IFoo>();   // Func<Type, IBar1, IBar2, IBar3, IFoo>
 ```
 
 ### Injecting
