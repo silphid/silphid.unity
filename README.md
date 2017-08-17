@@ -422,7 +422,7 @@ Note that *Injexit* will automatically combine the injected objects into a `List
 A more convenient syntax to avoid repetition, which is equivalent to the example above, is:
 
 ```c#
-Container.BindAsList<IFoo>(x =>
+Container.BindAsListOf<IFoo>(x =>
 {
     x.Bind<Foo1>();
     x.Bind<Foo2>();
@@ -430,10 +430,10 @@ Container.BindAsList<IFoo>(x =>
 });
 ```
 
-#### Binding all of a type's derivatives as a list
+#### Binding all implementations/derivatives as a list
 
 ```c#
-Container.BindAsListAll<IFoo>();
+Container.BindAllAsListOf<IFoo>();
 ```
 
 This will scan the assembly where `IFoo` is defined for all classes implementing that interface (for instance, `Foo1`, `Foo2` and `Foo3`) and bind them as a list of `IFoo`.
@@ -441,7 +441,7 @@ This will scan the assembly where `IFoo` is defined for all classes implementing
 You may also specify the assembly to scan explicitly:
 
 ```c#
-Container.BindAsListAll<IFoo>(GetType().Assembly);
+Container.BindAllAsListOf<IFoo>(GetType().Assembly);
 ```
 
 #### Qualifying bindings with identifiers
