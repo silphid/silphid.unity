@@ -30,7 +30,7 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        public void BindImplementations(Assembly assembly = null)
+        public void BindAll(Assembly assembly = null)
         {
             var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();
             types

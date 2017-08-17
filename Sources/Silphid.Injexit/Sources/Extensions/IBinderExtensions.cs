@@ -21,9 +21,6 @@ namespace Silphid.Injexit
                 ? new CompositeBinding(instances.Select(This.BindInstance))
                 : Binding.Null;
 
-        public static IBinding BindInstances(this IBinder This, params object[] instances) =>
-            This.BindInstances((IEnumerable<object>) instances);
-
         #endregion
 
         #region Bind
@@ -41,7 +38,7 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
-        public static void BindToSelfImplementationsOf<T>(this IBinder This, Assembly assembly = null)
+        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
             types
@@ -67,10 +64,10 @@ namespace Silphid.Injexit
             return listBinder.CompositeBinding;
         }
 
-        public static IBinding BindAsListImplementationsOf<TAbstraction>(this IBinder This, Assembly assembly = null)
+        public static IBinding BindAllAsListOf<TAbstraction>(this IBinder This, Assembly assembly = null)
         {
             var listBinder = new ListBinder<TAbstraction>(This);
-            listBinder.BindImplementations(assembly);
+            listBinder.BindAll(assembly);
             return listBinder.CompositeBinding;
         }
 
