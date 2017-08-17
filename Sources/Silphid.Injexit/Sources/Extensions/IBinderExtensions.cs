@@ -57,14 +57,14 @@ namespace Silphid.Injexit
 
         #region BindAsList
 
-        public static IBinding BindAsListOf<TAbstraction>(this IBinder This, Action<IListBinder<TAbstraction>> action)
+        public static IBinding BindList<TAbstraction>(this IBinder This, Action<IListBinder<TAbstraction>> action)
         {
             var listBinder = new ListBinder<TAbstraction>(This);
             action(listBinder);
             return listBinder.CompositeBinding;
         }
 
-        public static IBinding BindAllAsListOf<TAbstraction>(this IBinder This, Assembly assembly = null)
+        public static IBinding BindAllAsList<TAbstraction>(this IBinder This, Assembly assembly = null)
         {
             var listBinder = new ListBinder<TAbstraction>(This);
             listBinder.BindAll(assembly);

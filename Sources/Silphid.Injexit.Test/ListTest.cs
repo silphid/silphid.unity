@@ -71,11 +71,11 @@ namespace Silphid.Injexit.Test
         public void BindAsListWithNewSyntax()
         {
             var container = new Container(new Reflector());
-            container.BindAsListOf<IBeing>(x =>
+            container.BindList<IBeing>(x =>
             {
-                x.Bind<Man>();
-                x.Bind<Woman>();
-                x.BindInstance(_dog);
+                x.Add<Man>();
+                x.Add<Woman>();
+                x.AddInstance(_dog);
             });
 
             var list = container.Resolve<List<IBeing>>();
@@ -111,19 +111,19 @@ namespace Silphid.Injexit.Test
             var container = new Container(new Reflector());
 
             container
-                .BindAsListOf<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<Man>();
-                    x.Bind<Man>();
-                    x.Bind<Woman>();
+                    x.Add<Man>();
+                    x.Add<Man>();
+                    x.Add<Woman>();
                 })
                 .WithId("List1");
 
             container
-                .BindAsListOf<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<Woman>();
-                    x.Bind<Man>();
+                    x.Add<Woman>();
+                    x.Add<Man>();
                 })
                 .WithId("List2");
 
@@ -151,10 +151,10 @@ namespace Silphid.Injexit.Test
             var container = new Container(new Reflector());
 
             container
-                .BindAsListOf<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<ManWithDog>().UsingInstance(_dog);
-                    x.Bind<Man>();
+                    x.Add<ManWithDog>().UsingInstance(_dog);
+                    x.Add<Man>();
                 });
             
             var list = container.Resolve<List<Being>>();
