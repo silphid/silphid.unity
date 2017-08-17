@@ -3,7 +3,7 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public static class ILiveSequenceExtensions
+    public static class LiveSequenceExtensions
     {
         public static void AddComplete(this LiveSequence This) =>
             This.AddAction(This.Complete);
