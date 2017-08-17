@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Silphid.Machina.Internals
+namespace Silphid.Machina
 {
     public interface IStateConfig
     {

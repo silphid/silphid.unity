@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Silphid.Machina.Internals
+namespace Silphid.Machina
 {
     public class StateInfo : IStateConfig
     {

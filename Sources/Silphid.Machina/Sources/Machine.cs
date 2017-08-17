@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Silphid.Extensions;
-using Silphid.Machina.Internals;
 using UniRx;
 
 namespace Silphid.Machina
