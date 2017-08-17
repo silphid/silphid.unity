@@ -93,8 +93,9 @@ namespace Silphid.Showzup
                     image.sprite = x;
                     image.enabled = true;
 
-                    Disposable.Create(() => Destroy(image.sprite.texture))
-                        .AddTo(this);
+                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset)
+                        Disposable.Create(() => Destroy(image.sprite.texture))
+                            .AddTo(this);
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
