@@ -76,12 +76,6 @@ namespace Silphid.Showzup
 
         #region IPresenter members
 
-        public override bool CanPresent(object input, Options options = null)
-        {
-            var target = options?.Target;
-            return target == null || VariantSet.Contains(target);
-        }
-
         public override IObservable<IView> Present(object input, Options options = null)
         {
             var observable = input as IObservable<object>;
@@ -185,7 +179,7 @@ namespace Silphid.Showzup
         public bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
-            if (presentRequest != null && ShouldHandlePresentRequests && CanPresent(presentRequest.Input, presentRequest.Options))
+            if (presentRequest != null && ShouldHandlePresentRequests)
             {
                 Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
                 return true;

@@ -99,12 +99,6 @@ namespace Silphid.Showzup
         public IView GetViewAtIndex(int? index) =>
             index.HasValue ? _views[index.Value] : null;
 
-        public override bool CanPresent(object input, Options options = null)
-        {
-            var target = options?.Target;
-            return target == null || VariantSet.Contains(target);
-        }
-
         [Pure]
         public override IObservable<IView> Present(object input, Options options = null)
         {

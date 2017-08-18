@@ -58,9 +58,6 @@ namespace Silphid.Showzup
                 .AddTo(this);
         }
 
-        public override bool CanPresent(object input, Options options = null) =>
-            TabSelectionControl.CanPresent(input, options);
-
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 

@@ -21,11 +21,6 @@ namespace Silphid.Showzup
         public VariantSet Variants { get; set; } = VariantSet.Empty;
         
         /// <summary>
-        /// Allows routing presenters to forward presentation request to a presenter supporting given variant.
-        /// </summary>
-        public IVariant Target { get; set; }
-        
-        /// <summary>
         /// With TransitionControl, what transition to use. If none specified, falls back to presenter's default
         /// transition or to InstantTransition.
         /// </summary>
@@ -52,7 +47,6 @@ namespace Silphid.Showzup
                 Direction = other?.Direction ?? Direction.Default,
                 PushMode = other?.PushMode ?? PushMode.Default,
                 Variants = other?.Variants ?? VariantSet.Empty,
-                Target = other?.Target,
                 Transition = other?.Transition,
                 TransitionDuration = other?.TransitionDuration,
                 Parameters = other?.Parameters
