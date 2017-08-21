@@ -13,6 +13,9 @@ namespace Silphid.Showzup
 
         public TypeToUriMapping(Type source, Uri target, VariantSet variants) : base(source, variants)
         {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
             _target = target.ToString();
         }
 

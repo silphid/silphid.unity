@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
 using UnityEditor;
@@ -23,31 +24,43 @@ namespace Silphid.Showzup
         
         public void OnEnable()
         {
-            _normalStyle = new GUIStyle(EditorStyles.boldLabel);
+            _normalStyle = CreateBoldStyle();
             _normalStyle.stretchWidth = false;
             _normalStyle.normal.textColor = EditorGUIUtility.isProSkin
                 ? new Color(0.69f, 0.69f, 0.69f)
                 : new Color(0.28f, 0.28f, 0.28f);
 
-            _mappingArrowStyle = new GUIStyle(EditorStyles.boldLabel);
+            _mappingArrowStyle = CreateBoldStyle();
             _mappingArrowStyle.stretchWidth = false;
             _mappingArrowStyle.normal.textColor = EditorGUIUtility.isProSkin
                 ? new Color(0.83f, 0.68f, 0.52f)
                 : new Color(0.6f, 0.49f, 0.37f);
 
-            _explicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
+            _explicitVariantStyle = CreateBoldStyle();
             _explicitVariantStyle.stretchWidth = false;
             _explicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
                 ? new Color(0.97f, 0.55f, 0f)
                 : new Color(0.67f, 0.35f, 0f);
 
-            _implicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
+            _implicitVariantStyle = CreateBoldStyle();
             _implicitVariantStyle.stretchWidth = false;
             _implicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
                 ? new Color(0.74f, 0.38f, 0f)
                 : new Color(0f, 0.18f, 0.58f);
         }
-        
+
+        private static GUIStyle CreateBoldStyle()
+        {
+            try
+            {
+                return new GUIStyle(EditorStyles.boldLabel);
+            }
+            catch (NullReferenceException)
+            {
+                return new GUIStyle();
+            }
+        }
+
         public void OnGUI()
         {
             var manifest = ManifestManager.Manifest;

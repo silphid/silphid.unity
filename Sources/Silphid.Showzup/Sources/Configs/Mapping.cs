@@ -14,6 +14,12 @@ namespace Silphid.Showzup
 
         public Mapping(ClassTypeReference source, VariantSet variants)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (variants == null)
+                throw new ArgumentNullException(nameof(variants));
+
             _source = source;
             _variants = variants;
         }

@@ -19,6 +19,9 @@ namespace Silphid.Showzup
 
         public TypeToTypeMapping(Type source, Type target, VariantSet variants) : base(source, variants)
         {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            
             _target = target;
         }
 
