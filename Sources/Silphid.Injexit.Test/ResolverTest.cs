@@ -99,14 +99,15 @@ namespace Silphid.Injexit.Test
             AssertExceptionThrownWhenMissingBindingForDependencyOf<BarWithFooEnumerable, IEnumerable<IFoo>>();
         }
 
-        private void AssertExceptionThrownWhenMissingBindingForDependencyOf<TBar, TMissing>() where TBar : IBar
+        private void AssertExceptionThrownWhenMissingBindingForDependencyOf<TDependent, TDependency>() where TDependent : IBar
         {
-            _fixture.Bind<IBar, TBar>();
+            _fixture.Bind<IBar, TDependent>();
             
-            var ex = Assert.Throws<UnresolvedTypeException>(() =>
+            var ex = Assert.Throws<UnresolvedDependencyException>(() =>
                 _fixture.Resolve<IBar>());
             
-            Assert.That(ex.Type, Is.EqualTo(typeof(TMissing)));
+            Assert.That(ex.DependentType, Is.EqualTo(typeof(TDependent)));
+            Assert.That(ex.DependencyType, Is.EqualTo(typeof(TDependency)));
         }
         
         [Test]

@@ -208,29 +208,29 @@ namespace Silphid.Injexit
                 if (typeInfo.Constructor.ConstructorException != null)
                     throw typeInfo.Constructor.ConstructorException;
                 
-                var parameters = ResolveParameters(typeInfo.Constructor.Parameters, resolver);
+                var parameters = ResolveParameters(concretionType, typeInfo.Constructor.Parameters, resolver);
 
                 var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
                 Inject(instance, resolver);
                 return instance;
             };
 
-        private object[] ResolveParameters(IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>
+        private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>
             parameters
-                .Select(x => ResolveParameter(x, resolver))
+                .Select(x => ResolveParameter(dependentType, x, resolver))
                 .ToArray();
 
-        private object ResolveParameter(InjectParameterInfo parameter, IResolver resolver)
+        private object ResolveParameter(Type dependentType, InjectParameterInfo parameter, IResolver resolver)
         {
             _logger?.Log($"Resolving parameter {parameter.Name}");
             try
             {
                 return resolver.Resolve(parameter.Type, parameter.Id);
             }
-            catch (UnresolvedTypeException)
+            catch (UnresolvedTypeException ex)
             {
                 if (!parameter.IsOptional)
-                    throw;
+                    throw new UnresolvedDependencyException(dependentType, ex);
                 
                 _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
                 return parameter.DefaultValue;
@@ -330,16 +330,16 @@ namespace Silphid.Injexit
                 _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
                 member.SetValue(obj, value);
             }
-            catch (UnresolvedTypeException)
+            catch (UnresolvedTypeException ex)
             {
                 if (!member.IsOptional)
-                    throw;
+                    throw new UnresolvedDependencyException(obj.GetType(), ex);
             }
         }
 
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
-            var parameters = ResolveParameters(method.Parameters, resolver);
+            var parameters = ResolveParameters(obj.GetType(), method.Parameters, resolver);
             _logger?.Log($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
             method.Method.Invoke(obj, parameters);
         }
