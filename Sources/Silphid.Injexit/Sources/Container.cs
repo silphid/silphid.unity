@@ -119,13 +119,16 @@ namespace Silphid.Injexit
             if (factories.Count == 0)
                 return NullFactory;
             
-            // Array
-            if (abstractionType.IsArray)
+            // Array or Enumerable<T>
+            if (IsArrayOrGenericEnumerable(abstractionType))
                 return resolver => ToTypedArray(factories.Select(x => x(resolver)), elementType);
 
-            // Enumerable/List
+            // List<T>
             return resolver => ToTypedList(factories.Select(x => x(resolver)), elementType);
         }
+
+        private bool IsArrayOrGenericEnumerable(Type type) =>
+            type.IsArray || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
 
         private object ToTypedArray(IEnumerable<object> objects, Type elementType)
         {
@@ -226,6 +229,9 @@ namespace Silphid.Injexit
             }
             catch (UnresolvedTypeException)
             {
+                if (!parameter.IsOptional)
+                    throw;
+                
                 _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
                 return parameter.DefaultValue;
             }
