@@ -34,7 +34,7 @@ namespace Silphid.Injexit
         {
             var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();
             types
-                .Where(x => !x.IsAbstract && x.IsAssignableTo<TAbstraction>())
+                .Where(x => !x.IsAbstract && !x.ContainsGenericParameters && x.IsAssignableTo<TAbstraction>())
                 .ForEach(x => _bindings.Add(_binder.Bind<TAbstraction>(x).AsList()));
         }
     }

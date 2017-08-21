@@ -4,12 +4,12 @@ namespace Silphid.Injexit
 {
     public class UnresolvedTypeException : Exception
     {
-        public Type DependencyType { get; }
+        public Type Type { get; }
         public string Id { get; }
 
-        public UnresolvedTypeException(Type dependencyType, string id)
+        public UnresolvedTypeException(Type type, string id)
         {
-            DependencyType = dependencyType;
+            Type = type;
             Id = id;
         }
 
@@ -18,7 +18,7 @@ namespace Silphid.Injexit
             get
             {
                 var withId = Id != null ? $" with Id {Id}" : "";
-                return $"Failed to resolve type {DependencyType.Name} {withId}.";
+                return $"Failed to resolve type {Type.Name} {withId}.";
             }
         }
     }

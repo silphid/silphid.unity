@@ -10,6 +10,7 @@ namespace Silphid.Injexit.Test
     public class ResolverTest
     {
         public interface IFoo {}
+        public interface IGoo {}
         public interface IBar {}
         public class Foo : IFoo {}
         
@@ -53,6 +54,16 @@ namespace Silphid.Injexit.Test
             public IEnumerable<IFoo> Foos { get; }
 
             public BarWithFooEnumerable(IEnumerable<IFoo> foos) { Foos = foos; }
+        }
+
+        public class GooWithBarDependency : IGoo
+        {
+            public GooWithBarDependency(IBar bar) { }
+        }
+
+        public class BarWithFooDependency : IBar
+        {
+            public BarWithFooDependency(IFoo foo) { }
         }
         
         private IContainer _fixture;
@@ -107,9 +118,22 @@ namespace Silphid.Injexit.Test
                 _fixture.Resolve<IBar>());
             
             Assert.That(ex.DependentType, Is.EqualTo(typeof(TDependent)));
-            Assert.That(ex.DependencyType, Is.EqualTo(typeof(TDependency)));
+            Assert.That(ex.Type, Is.EqualTo(typeof(TDependency)));
         }
         
+        [Test]
+        public void MissingDependencyAtThirdLevel_ShouldThrow_ReportDependentTypeOfSecondLevel()
+        {
+            _fixture.Bind<IGoo, GooWithBarDependency>();
+            _fixture.Bind<IBar, BarWithFooDependency>();
+            
+            var ex = Assert.Throws<UnresolvedDependencyException>(() =>
+                _fixture.Resolve<IGoo>());
+            
+            Assert.That(ex.DependentType, Is.EqualTo(typeof(BarWithFooDependency)));
+            Assert.That(ex.Type, Is.EqualTo(typeof(IFoo)));
+        }
+
         [Test]
         public void ShouldResolveListDependencies_List()
         {

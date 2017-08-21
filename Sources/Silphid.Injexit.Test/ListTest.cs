@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 // ReSharper disable ClassNeverInstantiated.Local
 
@@ -81,6 +82,15 @@ namespace Silphid.Injexit.Test
             var list = container.Resolve<List<IBeing>>();
             Assert.That(list, Is.EqualTo(new IBeing[]{ new Man(), new Woman(), _dog }));
             Assert.That(list[2], Is.SameAs(_dog));
+        }
+        
+        [Test]
+        public void BindAsList_AddNullInstance_Throws()
+        {
+            var container = new Container(new Reflector());
+            Assert.Throws<ArgumentNullException>(() =>
+                container.BindList<IBeing>(x =>
+                    x.AddInstance<Man>(null)));
         }
         
         [Test]

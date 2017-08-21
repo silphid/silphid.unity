@@ -48,6 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinderTest.cs" />
     <Compile Include="ListTest.cs" />
     <Compile Include="IdTest.cs" />
     <Compile Include="OptionalTest.cs" />
