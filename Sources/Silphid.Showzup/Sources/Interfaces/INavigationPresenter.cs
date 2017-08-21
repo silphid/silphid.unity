@@ -9,7 +9,7 @@ namespace Silphid.Showzup
     {
         ReadOnlyReactiveProperty<bool> IsNavigating { get; }
         ReadOnlyReactiveProperty<bool> IsLoading { get; }
-        new ReadOnlyReactiveProperty<bool> CanPresent { get; }
+        ReadOnlyReactiveProperty<bool> CanPresent { get; }
         ReadOnlyReactiveProperty<bool> CanPop { get; }
         ReadOnlyReactiveProperty<IView> View { get; }
         IObservable<Nav> Navigating { get; }

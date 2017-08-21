@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable, IRequestHandler
+    public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable
     {
         #region Fields
 
@@ -272,10 +272,14 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public IObservable<Unit> Handle(IRequest request) =>
-            ShouldHandleBackRequests && _canPop.Value
-                ? Pop().AsSingleUnitObservable()
-                : null;
+        public override bool Handle(IRequest request)
+        {
+            if (!ShouldHandleBackRequests || !_canPop.Value)
+                return false;
+            
+            Pop().SubscribeAndForget();
+            return true;
+        }
 
         #endregion
     }

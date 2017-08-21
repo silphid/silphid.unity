@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Showzup.Requests;
@@ -176,7 +175,7 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public bool Handle(IRequest request)
+        public virtual bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
             if (presentRequest != null && ShouldHandlePresentRequests)
