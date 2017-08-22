@@ -26,18 +26,25 @@ namespace Silphid.Injexit
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
+            if (_resolvers.Length == 0)
+                throw new InvalidOperationException("CompositeResolver must contain at least one child resolver.");
+            
+            UnresolvedTypeException exception = null;
+            
             foreach (var resolver in _resolvers)
             {
                 try
                 {
                     return resolver.ResolveFactory(abstractionType, id);
                 }
-                catch (UnresolvedTypeException)
+                catch (UnresolvedTypeException ex)
                 {
+                    exception = ex;
                 }
             }
             
-            throw new UnresolvedTypeException(abstractionType, id);
+            // ReSharper disable once PossibleNullReferenceException
+            throw exception;
         }
     }
 }

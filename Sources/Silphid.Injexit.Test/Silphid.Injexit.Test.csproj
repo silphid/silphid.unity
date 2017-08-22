@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinderTest.cs" />
+    <Compile Include="InjectorTest.cs" />
     <Compile Include="ListTest.cs" />
     <Compile Include="IdTest.cs" />
     <Compile Include="OptionalTest.cs" />

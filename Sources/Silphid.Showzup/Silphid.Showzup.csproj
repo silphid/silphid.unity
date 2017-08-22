@@ -122,6 +122,7 @@
     <Compile Include="Sources\Navigation\MoveHandler.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\DirectionPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TransitionDurationPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\ParametersPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\PushModePresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\VariantsPresenterDecorator.cs" />

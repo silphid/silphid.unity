@@ -16,6 +16,9 @@ namespace Silphid.Showzup
         public static IPresenter With(this IPresenter This, params IVariant[] variants) =>
             new VariantsPresenterDecorator(This, variants.ToVariantSet());
 
+        public static IPresenter WithDuration(this IPresenter This, float duration) =>
+            new TransitionDurationPresenterDecorator(This, duration);
+
         public static IPresenter WithParameters(this IPresenter This, IEnumerable<object> parameters) =>
             new ParametersPresenterDecorator(This, parameters);
 
