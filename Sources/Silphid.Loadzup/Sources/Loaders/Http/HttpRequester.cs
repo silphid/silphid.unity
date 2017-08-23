@@ -17,17 +17,37 @@ namespace Silphid.Loadzup.Http
             KnownHttpHeaders.Status
         };
 
+        private readonly ILogger _logger;
+
+        public HttpRequester(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWWW
                 .GetWWW(uri.AbsoluteUri, options?.RequestHeaders)
+                .DoOnSubscribe(() => Log($"Requesting Uri: {uri}"))
+                .DoOnError(LogError)
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
                 .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
 
-        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null) =>
-            ObservableWWW
-                .PostWWW(uri.AbsoluteUri, form, options?.RequestHeaders ?? new Dictionary<string, string>())
+        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null)
+        {
+            var headers = options?.RequestHeaders ?? new Dictionary<string, string>();
+            return ObservableWWW
+                .PostWWW(uri.AbsoluteUri, form, headers)
+                .DoOnSubscribe(() => Log($"Posting Uri: {uri}\r\nForm: {form}\r\nHeaders: {headers}"))
+                .DoOnError(LogError)
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
                 .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
+        }
+
+        private void Log(string message) =>
+            _logger?.Log(nameof(HttpRequester), message);
+
+        private void LogError(Exception exception) =>
+            _logger?.LogError(nameof(HttpRequester), $"Request failed: {exception}");
 
         private Dictionary<string, string> GetMeaningfulHeaders(IDictionary<string, string> allHeaders)
         {
