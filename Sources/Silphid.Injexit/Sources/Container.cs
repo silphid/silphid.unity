@@ -227,14 +227,19 @@ namespace Silphid.Injexit
             {
                 return resolver.Resolve(parameter.Type, parameter.Id);
             }
+            catch (UnresolvedDependencyException ex)
+            {
+                if (!parameter.IsOptional)
+                    throw new UnresolvedDependencyException(dependentType, ex);
+            }
             catch (UnresolvedTypeException ex)
             {
                 if (!parameter.IsOptional)
                     throw new UnresolvedDependencyException(dependentType, ex);
-                
-                _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
-                return parameter.DefaultValue;
             }
+
+            _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
+            return parameter.DefaultValue;
         }
 
         #endregion

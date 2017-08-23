@@ -35,8 +35,7 @@ namespace Silphid.Injexit
             });
 
         public static object Resolve(this IResolver This, Type abstractionType, string id = null) =>
-            This.ResolveFactory(abstractionType, id)
-                ?.Invoke(This);
+            This.ResolveFactory(abstractionType, id).Invoke(This);
 
         public static T Resolve<T>(this IResolver This, string id = null) =>
             (T) This.Resolve(typeof(T), id);

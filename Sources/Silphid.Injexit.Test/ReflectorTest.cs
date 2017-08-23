@@ -73,29 +73,29 @@ namespace Silphid.Injexit.Test
             [Inject] public string InjectablePropertyWithNoSetter { get; }
         }
         
-        private class ClassWithInjectablePrivateField
+        private class ClassWithInjectableInternalField
         {
             public int Value => _value;
             
-            [Inject] private int _value;
+            [Inject] internal int _value;
         }
         
-        private class ClassWithInheritedInjectablePrivateField : ClassWithInjectablePrivateField
+        private class ClassWithInheritedInjectableInternalField : ClassWithInjectableInternalField
         {
         }
         
-        private class ClassWithInjectablePrivateMethod
+        private class ClassWithInjectableInternalMethod
         {
             public int Value { get; private set; }
 
             [Inject]
-            private void Inject(int value)
+            internal void Inject(int value)
             {
                 Value = value;
             }
         }
         
-        private class ClassWithInheritedInjectablePrivateMethod : ClassWithInjectablePrivateMethod
+        private class ClassWithInheritedInjectableInternalMethod : ClassWithInjectableInternalMethod
         {
         }
 
@@ -215,18 +215,18 @@ namespace Silphid.Injexit.Test
         }
         
         [Test]
-        public void ClassWithInheritedInjectablePrivateField_InheritedFieldShouldBeDiscovered()
+        public void ClassWithInheritedInjectableInternalField_InheritedFieldShouldBeDiscovered()
         {
-            var typeInfo = GetTypeInfo<ClassWithInheritedInjectablePrivateField>();
+            var typeInfo = GetTypeInfo<ClassWithInheritedInjectableInternalField>();
 
             Assert.That(typeInfo.FieldsAndProperties.Length, Is.EqualTo(1));
             AssertMember<int>(typeInfo.FieldsAndProperties[0], "_value");
         }
         
         [Test]
-        public void ClassWithInheritedInjectablePrivateMethod_InheritedMethodShouldBeDiscovered()
+        public void ClassWithInheritedInjectableInternalMethod_InheritedMethodShouldBeDiscovered()
         {
-            var typeInfo = GetTypeInfo<ClassWithInheritedInjectablePrivateMethod>();
+            var typeInfo = GetTypeInfo<ClassWithInheritedInjectableInternalMethod>();
 
             Assert.That(typeInfo.Methods.Length, Is.EqualTo(1));
             var method = GetMethod(typeInfo.Methods, "Inject");

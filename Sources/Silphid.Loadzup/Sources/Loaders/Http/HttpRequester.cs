@@ -27,7 +27,7 @@ namespace Silphid.Loadzup.Http
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWWW
                 .GetWWW(uri.AbsoluteUri, options?.RequestHeaders)
-                .DoOnSubscribe(() => Log($"Requesting Uri: {uri}"))
+                .DoOnSubscribe(() => Log($"GET {uri}"))
                 .DoOnError(LogError)
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
                 .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
@@ -37,7 +37,7 @@ namespace Silphid.Loadzup.Http
             var headers = options?.RequestHeaders ?? new Dictionary<string, string>();
             return ObservableWWW
                 .PostWWW(uri.AbsoluteUri, form, headers)
-                .DoOnSubscribe(() => Log($"Posting Uri: {uri}\r\nForm: {form}\r\nHeaders: {headers}"))
+                .DoOnSubscribe(() => Log($"POST {uri}\r\nForm: {form}\r\nHeaders: {headers}"))
                 .DoOnError(LogError)
                 .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
                 .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));

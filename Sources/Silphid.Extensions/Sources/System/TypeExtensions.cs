@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
+
 #if UNITY_WSA && !UNITY_EDITOR
 using System.Reflection;
 #endif
@@ -46,6 +47,34 @@ namespace Silphid.Extensions
                 yield return type;
                 type = type.GetBaseType();
             }
+        }
+
+        public static IEnumerable<FieldInfo> GetAllInstanceFields(this Type type)
+        {
+            while (true)
+            {
+                foreach (var fieldInfo in type.GetDeclaredInstanceFields())
+                    yield return fieldInfo;
+
+                var baseType = type.GetBaseType();
+                if (baseType == null || baseType == typeof(object))
+                    break;
+                
+                type = baseType;
+            }
+        }
+
+        public static FieldInfo[] GetDeclaredInstanceFields(this Type type)
+        {
+#if UNITY_WSA && !UNITY_EDITOR
+            return type
+                .GetRuntimeFields()
+                .Where(x => x.DeclaringType == type && !x.IsStatic)
+                .ToArray();
+#else
+            return type.GetFields(
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+#endif
         }
 
 #if UNITY_WSA && !UNITY_EDITOR

@@ -10,7 +10,7 @@ namespace Silphid.Injexit.Test
         {
             public int Value => _value;
             
-            [Inject] private int _value;
+            [Inject] internal int _value;
         }
         
         private class SubClass : BaseClass
@@ -26,7 +26,7 @@ namespace Silphid.Injexit.Test
         }
 
         [Test]
-        public void InjectingSubClass_ShouldInjectPrivateFieldInBaseClass()
+        public void InjectingSubClass_ShouldInjectInternalFieldInBaseClass()
         {
             _fixture.BindInstance(123);
             

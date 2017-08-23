@@ -117,7 +117,7 @@ namespace Silphid.Injexit.Test
             var ex = Assert.Throws<UnresolvedDependencyException>(() =>
                 _fixture.Resolve<IBar>());
             
-            Assert.That(ex.DependentType, Is.EqualTo(typeof(TDependent)));
+            Assert.That(ex.AncestorTypes.Last(), Is.EqualTo(typeof(TDependent)));
             Assert.That(ex.Type, Is.EqualTo(typeof(TDependency)));
         }
         
@@ -130,7 +130,11 @@ namespace Silphid.Injexit.Test
             var ex = Assert.Throws<UnresolvedDependencyException>(() =>
                 _fixture.Resolve<IGoo>());
             
-            Assert.That(ex.DependentType, Is.EqualTo(typeof(BarWithFooDependency)));
+            Assert.That(ex.AncestorTypes, Is.EqualTo(new []
+            {
+                typeof(GooWithBarDependency),
+                typeof(BarWithFooDependency)
+            }));
             Assert.That(ex.Type, Is.EqualTo(typeof(IFoo)));
         }
 
