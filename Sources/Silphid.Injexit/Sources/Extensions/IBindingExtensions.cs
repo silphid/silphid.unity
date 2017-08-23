@@ -29,6 +29,24 @@ namespace Silphid.Injexit
                 x.BindInstance(instance3);
             });
         
+        public static IBinding UsingOptionalInstance<T>(this IBinding This, T instance) =>
+            This.Using(x => x.BindOptionalInstance(instance));
+        
+        public static IBinding UsingOptionalInstances<T1, T2>(this IBinding This, T1 instance1, T2 instance2) =>
+            This.Using(x =>
+            {
+                x.BindOptionalInstance(instance1);
+                x.BindOptionalInstance(instance2);
+            });
+        
+        public static IBinding UsingOptionalInstances<T1, T2, T3>(this IBinding This, T1 instance1, T2 instance2, T3 instance3) =>
+            This.Using(x =>
+            {
+                x.BindOptionalInstance(instance1);
+                x.BindOptionalInstance(instance2);
+                x.BindOptionalInstance(instance3);
+            });
+        
         public static IBinding UsingSelf<TConcretion>(this IBinding This) =>
             This.Using(x => x.BindToSelf<TConcretion>());
         

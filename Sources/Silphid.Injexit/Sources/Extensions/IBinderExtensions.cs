@@ -23,6 +23,21 @@ namespace Silphid.Injexit
 
         #endregion
 
+        #region BindOptionalInstance(s)
+
+        public static IBinding BindOptionalInstance<T>(this IBinder This, T instance) =>
+            instance != null ? This.BindInstance(typeof(T), instance) : Binding.Null;
+
+        public static IBinding BindOptionalInstance(this IBinder This, object instance) =>
+            instance != null ? This.BindInstance(instance.GetType(), instance) : Binding.Null;
+
+        public static IBinding BindOptionalInstances(this IBinder This, IEnumerable<object> instances) =>
+            instances != null
+                ? new CompositeBinding(instances.WhereNotNull().Select(This.BindInstance))
+                : Binding.Null;
+
+        #endregion
+
         #region Bind
 
         public static IBinding Bind<TAbstraction>(this IBinder This, Type concretionType) =>
