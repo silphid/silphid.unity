@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Silphid.Extensions;
 using UnityEngine;
 
 namespace Silphid.Showzup
@@ -18,6 +19,10 @@ namespace Silphid.Showzup
 
             _target = target.ToString();
         }
+
+        public override bool Matches(string filter) =>
+            base.Matches(filter) ||
+            _target.CaseInsensitiveContains(filter);
 
         public override string ToString()
         {

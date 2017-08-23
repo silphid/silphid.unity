@@ -39,11 +39,10 @@ public class ManifestBuilder
 
     private static void MapModelsToViewModels(Manifest manifest, VariantSet allVariants)
     {
-        Debug.Log("*** Mapping Models to ViewModels ***");
         manifest.ModelsToViewModels.Clear();
 
         GetAllTypesInAppDomain()
-            .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract)
+            .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract && !type.IsGenericType)
             .ForEach(viewModelType => MapModelToViewModel(
                 manifest,
                 GetModelForViewModel(viewModelType), viewModelType,
@@ -68,7 +67,6 @@ public class ManifestBuilder
         
         var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
         var mapping = new TypeToTypeMapping(modelType, viewModelType, variants);
-        Debug.Log(mapping);
         manifest.ModelsToViewModels.Add(mapping);
     }
 
@@ -78,7 +76,6 @@ public class ManifestBuilder
 
     private static void MapViewModelsToViews(Manifest manifest, VariantSet allVariants)
     {
-        Debug.Log("*** Mapping ViewModels to Views ***");
         manifest.ViewModelsToViews.Clear();
 
         GetAllTypesInAppDomain()
@@ -110,7 +107,6 @@ public class ManifestBuilder
     {
         var variants = GetVariantsFromTypes(viewModelType, viewType, allVariants);
         var mapping = new TypeToTypeMapping(viewModelType, viewType, variants);
-        Debug.Log(mapping);
         manifest.ViewModelsToViews.Add(mapping);
     }
 
@@ -120,7 +116,6 @@ public class ManifestBuilder
 
     private static void MapViewsToPrefabs(Manifest manifest, VariantSet allVariants)
     {
-        Debug.Log("*** Mapping Views to Prefabs ***");
         manifest.ViewsToPrefabs.Clear();
 
         var guids = AssetDatabase.FindAssets("t:GameObject", new[] {manifest.PrefabsPath});
@@ -142,7 +137,7 @@ public class ManifestBuilder
         var views = asset.GetComponents<IView>().ToList();
         if (!views.Any())
         {
-            Debug.Log($"Skipping non-view prefab: {prefabPath}");
+            Debug.LogWarning($"Skipping non-view prefab: {prefabPath}");
             return;
         }
 
@@ -161,7 +156,6 @@ public class ManifestBuilder
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
 
         var mapping = new TypeToUriMapping(viewType, uri, variants);
-        Debug.Log(mapping);
         manifest.ViewsToPrefabs.Add(mapping);
     }
 
