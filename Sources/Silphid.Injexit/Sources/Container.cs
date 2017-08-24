@@ -377,6 +377,14 @@ namespace Silphid.Injexit
                 .ForEach(x => x.Dispose());
         }
 
+        /// <inheritdoc/>
+        public void InstantiateEagerSingles()
+        {
+            _bindings
+                .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
+                .ForEach(x => this.Resolve(x.AbstractionType, x.Id));
+        }
+
         #endregion        
     }
 }
