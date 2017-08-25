@@ -85,6 +85,9 @@ namespace Silphid.Injexit
                 .First()
                 .Dispose();
 
+        public void InstantiateEagerSingles() =>
+            _containers.ForEach(x => x.InstantiateEagerSingles());
+
         #endregion
     }
 }
