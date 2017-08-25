@@ -46,14 +46,18 @@ namespace Silphid.Showzup
             if (input is Type)
             {
                 var type = (Type) input;
+                
                 if (type.IsAssignableTo<IView>())
                     return ResolveFromViewType(type, requestedVariants);
+
+                if (type.IsAssignableTo<IViewModel>())
+                    return ResolveFromViewModelType(type, requestedVariants);
                 
                 throw new ArgumentException("Only types implementing IView can be passed as input");
             }
             
             var viewInfo = ResolveFromInstance(input, requestedVariants);
-            viewInfo.Parameters = options?.Parameters ?? Enumerable.Empty<object>();
+            viewInfo.Parameters = options?.Parameters?.ToArray() ?? new object[]{};
             return viewInfo;
         }
 
@@ -117,6 +121,19 @@ namespace Silphid.Showzup
             return new ViewInfo
             {
                 View = view,
+                ViewType = viewType,
+                PrefabUri = prefabUri
+            };
+        }
+
+        private ViewInfo ResolveFromViewModelType(Type viewModelType, VariantSet requestedVariants)
+        {
+            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
+            
+            return new ViewInfo
+            {
+                ViewModelType = viewModelType,
                 ViewType = viewType,
                 PrefabUri = prefabUri
             };

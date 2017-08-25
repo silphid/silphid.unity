@@ -1,9 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UniRx;
 
 namespace Silphid.Showzup
 {
     public static class IPresenterExtensions
     {
+        public static IObservable<TView> PresentView<TView>(this IPresenter This) where TView : IView =>
+            This.Present(typeof(TView))
+                .Cast<IView, TView>();
+
+        public static IObservable<IView> PresentViewModel<TViewModel>(this IPresenter This) where TViewModel : IViewModel =>
+            This.Present(typeof(TViewModel));
+        
         public static IPresenter With(this IPresenter This, PushMode pushMode) =>
             new PushModePresenterDecorator(This, pushMode);
 
