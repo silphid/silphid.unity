@@ -48,6 +48,18 @@ namespace Silphid.Showzup
         public bool HasItems => _views.Count > 0;
         public int? LastIndex => HasItems ? _views.Count - 1 : (int?) null;
         public int? FirstIndex => HasItems ? 0 : (int?) null;
+        public Comparer<IView> ViewComparer { get; set; }
+        public Comparer<IViewModel> ViewModelComparer { get; set; }
+        public Comparer<object> ModelComparer { get; set; }
+
+        public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
+            ViewComparer = Comparer<IView>.Create((x, y) => comparer((TView) x, (TView) y));
+
+        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer) where TViewModel : IViewModel =>
+            ViewModelComparer = Comparer<IViewModel>.Create((x, y) => comparer((TViewModel) x, (TViewModel) y));
+
+        public void SetModelComparer<TModel>(Func<TModel, TModel, int> comparer) =>
+            ModelComparer = Comparer<object>.Create((x, y) => comparer((TModel) x, (TModel) y));
 
         #endregion
 
@@ -100,6 +112,22 @@ namespace Silphid.Showzup
             index.HasValue ? _views[index.Value] : null;
 
         [Pure]
+        public IObservable<IView> Add(object input, Options options = null) =>
+            LoadView(ResolveView(input, options))
+                .Do(AddView)
+                .DoOnCompleted(UpdateReactiveViews);
+
+        public void Remove(object input)
+        {
+            var view = _views.FirstOrDefault(x => x == input || x.ViewModel == x || x.ViewModel?.Model == x);
+            if (view == null)
+                return;
+            
+            RemoveView(view.GameObject);
+            UpdateReactiveViews();
+        }
+
+        [Pure]
         public override IObservable<IView> Present(object input, Options options = null)
         {
             //Review this make possible to use Observable.next for populate the list 
@@ -134,9 +162,50 @@ namespace Silphid.Showzup
 
         private void AddView(IView view)
         {
-            _views.Add(view);
+            var index = GetInsertionIndex(view);
+            if (index.HasValue)
+            {
+                _views.Insert(index.Value, view);
+                InsertView(Container, index.Value, view);
+            }
+            else
+            {
+                _views.Add(view);
+                AddView(Container, view);
+            }
+        }
+        
+        private int? GetInsertionIndex(IView view)
+        {
+            if (_views.Count == 0)
+                return null;
 
-            AddView(Container, view);
+            if (ViewComparer != null)
+            {
+                for (var i = 0; i < _views.Count; i++)
+                    if (ViewComparer.Compare(view, _views[i]) < 0)
+                        return i;
+
+                return null;
+            }
+
+            if (ViewModelComparer != null)
+            {
+                for (var i = 0; i < _views.Count; i++)
+                    if (ViewModelComparer.Compare(view.ViewModel, _views[i].ViewModel) < 0)
+                        return i;
+
+                return null;
+            }
+
+            if (ModelComparer != null)
+            {
+                for (var i = 0; i < _views.Count; i++)
+                    if (ModelComparer.Compare(view.ViewModel?.Model, _views[i].ViewModel?.Model) < 0)
+                        return i;
+            }
+
+            return null;
         }
 
         private IObservable<IView> LoadViews(IEnumerable items, Options options)
@@ -149,8 +218,11 @@ namespace Silphid.Showzup
                 .Select(input => ResolveView(input, options))
                 .ToObservable()
                 .SelectMany(view => LoadView(view))
-                .DoOnCompleted(() => _reactiveViews.Value = _views.ToArray());
+                .DoOnCompleted(UpdateReactiveViews);
         }
+
+        private void UpdateReactiveViews() =>
+            _reactiveViews.Value = _views.ToArray();
 
         protected ViewInfo ResolveView(object input, Options options) =>
             ViewResolver.Resolve(input, options);
