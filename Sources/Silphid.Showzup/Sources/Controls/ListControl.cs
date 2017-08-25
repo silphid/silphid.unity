@@ -119,7 +119,7 @@ namespace Silphid.Showzup
 
         public void Remove(object input)
         {
-            var view = _views.FirstOrDefault(x => x == input || x.ViewModel == x || x.ViewModel?.Model == x);
+            var view = _views.FirstOrDefault(x => x == input || x.ViewModel == input || x.ViewModel?.Model == input);
             if (view == null)
                 return;
             
