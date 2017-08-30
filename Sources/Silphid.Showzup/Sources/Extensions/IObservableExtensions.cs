@@ -14,10 +14,10 @@ namespace Silphid.Showzup
             This.Subscribe(x => target.Present(x).SubscribeAndForget());
 
         public static IDisposable BindTo(this Button This, IRequest request) =>
-            This.OnClickAsObservable().Subscribe(_ => This.Handle(request));
+            This.OnClickAsObservable().Subscribe(_ => This.Send(request));
 
         public static IDisposable BindTo<TRequest>(this Button This) where TRequest : IRequest, new() =>
-            This.OnClickAsObservable().Subscribe(_ => This.Handle<TRequest>());
+            This.OnClickAsObservable().Subscribe(_ => This.Send<TRequest>());
 
         #endregion
 
