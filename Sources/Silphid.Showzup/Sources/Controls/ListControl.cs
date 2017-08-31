@@ -59,7 +59,7 @@ namespace Silphid.Showzup
 
         #region Public properties
 
-        public ReadOnlyReactiveProperty<IView[]> Views { get; }
+        public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
         public int Count => _models.Value.Count;
         public bool HasItems => Count > 0;
@@ -71,7 +71,9 @@ namespace Silphid.Showzup
         #region Protected/private fields/properties
 
         protected List<IView> _views = new List<IView>();
-        private readonly ReactiveProperty<IView[]> _reactiveViews = new ReactiveProperty<IView[]>(Array.Empty<IView>());
+
+        private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
+            new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
         private VariantSet _variantSet;
         private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
 
@@ -141,8 +143,11 @@ namespace Silphid.Showzup
         [Pure]
         public IObservable<IView> Add(object input, Options options = null) =>
             LoadView(ResolveView(input, options))
-                .Do(view => AddView(Container, view))
-                .DoOnCompleted(UpdateReactiveViews);
+                .Do(view =>
+                {
+                    AddView(_views.Count, view);
+                    UpdateReactiveViews();
+                });
 
         public void Remove(object input)
         {
@@ -167,7 +172,7 @@ namespace Silphid.Showzup
             
             _models.Value = models;
             _views.Clear();
-            _reactiveViews.Value = Array.Empty<IView>();
+            _reactiveViews.Value = new ReadOnlyCollection<IView>(Array.Empty<IView>());
             RemoveAllViews(Container);
 
             var entries = models
@@ -191,7 +196,7 @@ namespace Silphid.Showzup
         }
 
         private void UpdateReactiveViews() =>
-            _reactiveViews.Value = _views.ToArray();
+            _reactiveViews.Value = _views.AsReadOnly();
         
         private int? GetSortedIndex(IView view)
         {
