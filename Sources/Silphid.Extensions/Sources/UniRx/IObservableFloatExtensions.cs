@@ -196,14 +196,14 @@ namespace Silphid.Extensions
         /// </summary>
         [Pure]
         public static IObservable<float> Minimum(this IObservable<float> This, float min) =>
-            This.Select(x => x.Minimum(min));
+            This.Select(x => x.AtLeast(min));
 
         /// <summary>
         /// Returns value clipped to the [-INF, max] interval
         /// </summary>
         [Pure]
         public static IObservable<float> Maximum(this IObservable<float> This, float max) =>
-            This.Select(x => x.Maximum(max));
+            This.Select(x => x.AtMost(max));
 
         #endregion
     }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Silphid.Showzup.Components
+namespace Silphid.Showzup.ListLayouts.Components
 {
     public abstract class ListLayout : MonoBehaviour, IListLayout
     {
@@ -19,5 +19,8 @@ namespace Silphid.Showzup.Components
         
         public Vector2 GetContainerSize(int count) =>
             Layout.GetContainerSize(count);
+
+        public IndexRange GetVisibleIndexRange(Rect rect) =>
+            Layout.GetVisibleIndexRange(rect);
     }
 }

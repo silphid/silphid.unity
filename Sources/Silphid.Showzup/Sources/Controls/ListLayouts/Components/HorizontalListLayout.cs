@@ -1,8 +1,8 @@
-﻿namespace Silphid.Showzup.Components
+﻿namespace Silphid.Showzup.ListLayouts.Components
 {
     public class HorizontalListLayout : ListLayout
     {
         protected override IListLayout CreateLayout() =>
-            new Showzup.HorizontalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
+            new ListLayouts.HorizontalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace Silphid.Showzup.Components
+﻿namespace Silphid.Showzup.ListLayouts.Components
 {
     public class VerticalListLayout : ListLayout
     {
         protected override IListLayout CreateLayout() =>
-            new Showzup.VerticalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
+            new ListLayouts.VerticalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
     }
 }

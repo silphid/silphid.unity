@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Silphid.Showzup
+namespace Silphid.Showzup.ListLayouts
 {
     public abstract class ListLayout : IListLayout
     {
@@ -16,7 +16,7 @@ namespace Silphid.Showzup
             ItemSpacing = itemSpacing;
             ContainerPadding = containerPadding;
         }
-
+        
         protected Vector2 FirstItemPosition =>
             ContainerPadding + ItemPadding;
 
@@ -25,5 +25,6 @@ namespace Silphid.Showzup
 
         public abstract Rect GetItemRect(int index);
         public abstract Vector2 GetContainerSize(int count);
+        public abstract IndexRange GetVisibleIndexRange(Rect rect);
     }
 }

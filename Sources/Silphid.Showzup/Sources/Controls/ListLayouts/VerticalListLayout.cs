@@ -1,7 +1,7 @@
 ﻿using Silphid.Extensions;
 using UnityEngine;
 
-namespace Silphid.Showzup
+namespace Silphid.Showzup.ListLayouts
 {
     public class VerticalListLayout : ListLayout
     {
@@ -19,6 +19,11 @@ namespace Silphid.Showzup
             ContainerPadding * 2 +
             new Vector2(
                 ItemSize.x + ItemPadding.x * 2,
-                (ItemSize.y + ItemPadding.y * 2) * count + ItemSpacing.y * (count - 1).Minimum(0));
+                (ItemSize.y + ItemPadding.y * 2) * count + ItemSpacing.y * (count - 1).AtLeast(0));
+
+        public override IndexRange GetVisibleIndexRange(Rect rect) =>
+            new IndexRange(
+                ((rect.yMin - FirstItemPosition.y) / ItemOffset.y).FloorInt(),
+                ((rect.yMax - FirstItemPosition.y) / ItemOffset.y).FloorInt() + 1);
     }
 }

@@ -21,6 +21,7 @@ namespace Silphid.Showzup
             public object Model { get; }
             public ViewInfo ViewInfo { get; set; }
             public IView View { get; set; }
+            public IDisposable Disposable { get; set; }
 
             public Entry(int index, object model)
             {
@@ -179,6 +180,11 @@ namespace Silphid.Showzup
                 .Select((x, i) => new Entry(i, x))
                 .ToList();
 
+            return LoadViews(entries, options);
+        }
+
+        protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options)
+        {
             return LoadAllViews(entries, options)
                 .Do(x => AddView(x.Index, x.View))
                 .Select(x => x.View);
@@ -195,7 +201,7 @@ namespace Silphid.Showzup
                 .DoOnCompleted(UpdateReactiveViews);
         }
 
-        private void UpdateReactiveViews() =>
+        protected void UpdateReactiveViews() =>
             _reactiveViews.Value = _views.AsReadOnly();
         
         private int? GetSortedIndex(IView view)

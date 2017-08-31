@@ -69,7 +69,7 @@ namespace Silphid.Extensions
         /// </summary>
         public static int Clamp(this int value, int min, int inclusiveMax)
         {
-            return min < inclusiveMax ? value.Minimum(min).Maximum(inclusiveMax) : value.Minimum(inclusiveMax).Maximum(min);
+            return min < inclusiveMax ? value.AtLeast(min).AtMost(inclusiveMax) : value.AtLeast(inclusiveMax).AtMost(min);
         }
 
         /// <summary>
@@ -83,18 +83,16 @@ namespace Silphid.Extensions
         /// <summary>
         /// Returns value clipped to the [min, +INF] interval
         /// </summary>
-        public static int Minimum(this int value, int min)
-        {
-            return Math.Max(value, min);
-        }
+        public static int AtLeast(this int value, int min) => Math.Max(value, min);
 
         /// <summary>
         /// Returns value clipped to the [-INF, max] interval
         /// </summary>
-        public static int Maximum(this int value, int max)
-        {
-            return Math.Min(value, max);
-        }
+        public static int AtMost(this int value, int max) => Math.Min(value, max);
+
+        public static int Min(this int value, int min) => Math.Min(value, min);
+        
+        public static int Max(this int value, int min) => Math.Max(value, min);
 
         #endregion
 

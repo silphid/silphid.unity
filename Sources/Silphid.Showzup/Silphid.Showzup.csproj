@@ -83,6 +83,7 @@
     <Compile Include="Sources\Controls\ListLayouts\Components\VerticalListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\HorizontalListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\IListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\IndexRange.cs" />
     <Compile Include="Sources\Controls\ListLayouts\ListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\VerticalListLayout.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
