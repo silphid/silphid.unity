@@ -78,6 +78,13 @@
     <Compile Include="Sources\Controls\IFocusable.cs" />
     <Compile Include="Sources\Controls\ItemControl.cs" />
     <Compile Include="Sources\Controls\ListControl.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\Components\HorizontalListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\Components\ListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\Components\VerticalListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\HorizontalListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\IListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\ListLayout.cs" />
+    <Compile Include="Sources\Controls\ListLayouts\VerticalListLayout.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
     <Compile Include="Sources\Controls\PresenterControl.cs" />
     <Compile Include="Sources\Controls\SinglePresenterControl.cs" />
@@ -86,6 +93,7 @@
     <Compile Include="Sources\Controls\TabControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
+    <Compile Include="Sources\Controls\VirtualListControl.cs" />
     <Compile Include="Sources\Exceptions\BindException.cs" />
     <Compile Include="Sources\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />

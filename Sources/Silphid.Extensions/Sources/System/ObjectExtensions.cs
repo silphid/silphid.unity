@@ -4,9 +4,10 @@ namespace Silphid.Extensions
 {
     public static class ObjectExtensions
     {
-        public static IEnumerable<T> ToSingleEnumerable<T>(this T instance)
-        {
-            return new[] { instance };
-        }
+        public static IEnumerable<T> ToSingleItemEnumerable<T>(this T This) =>
+            new[] { This };
+
+        public static List<T> ToSingleItemList<T>(this T This) =>
+            new List<T>(new[] { This });
     }
 }
