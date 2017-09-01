@@ -26,9 +26,15 @@ namespace Silphid.Showzup
         public bool AutoFocus = true;
         public float FocusDelay;
         public bool WrapAround;
+        public bool EnableSelection = true;
 
         protected override void Start()
         {
+            base.Start();
+
+            if (!EnableSelection)
+                return;
+            
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
@@ -54,6 +60,9 @@ namespace Silphid.Showzup
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
         {
             base.RemoveAllViews(container, except);
+
+            if (!EnableSelection)
+                return;
 
             SelectedView.Value = null;
         }
@@ -117,6 +126,11 @@ namespace Silphid.Showzup
 
         protected override void SelectView(IView view)
         {
+            base.SelectView(view);
+            
+            if (!EnableSelection)
+                return;
+
             if (SelectedView.Value == view)
                 SelectedView.Value = null;
             
@@ -125,6 +139,9 @@ namespace Silphid.Showzup
 
         public bool SelectIndex(int index)
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+            
             var viewAtIndex = GetViewAtIndex(index);
 
             if (viewAtIndex == null)
@@ -137,6 +154,9 @@ namespace Silphid.Showzup
 
         public bool SelectFirst()
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+            
             if (!HasItems)
                 return false;
 
@@ -146,6 +166,9 @@ namespace Silphid.Showzup
 
         public bool SelectLast()
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+            
             if (!HasItems)
                 return false;
 
@@ -155,11 +178,17 @@ namespace Silphid.Showzup
 
         public void SelectNone()
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+            
             SelectedView.Value = null;
         }
 
         public bool SelectPrevious()
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+            
             if (!HasItems)
                 return false;
 
@@ -180,6 +209,9 @@ namespace Silphid.Showzup
 
         public bool SelectNext()
         {
+            if (!EnableSelection)
+                throw new InvalidOperationException("Selection not enabled");
+
             if (!HasItems)
                 return false;
 
@@ -200,6 +232,9 @@ namespace Silphid.Showzup
 
         public void OnMove(AxisEventData eventData)
         {
+            if (!EnableSelection)
+                return;
+            
             if (Orientation == NavigationOrientation.Horizontal)
             {
                 if (eventData.moveDir == MoveDirection.Left && SelectPrevious() ||
