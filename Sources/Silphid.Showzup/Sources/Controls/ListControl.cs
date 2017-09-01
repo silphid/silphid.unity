@@ -19,7 +19,7 @@ namespace Silphid.Showzup
         {
             public int Index { get; set; }
             public object Model { get; }
-            public ViewInfo ViewInfo { get; set; }
+            public ViewInfo? ViewInfo { get; set; }
             public IView View { get; set; }
             public IDisposable Disposable { get; set; }
 
@@ -195,7 +195,7 @@ namespace Silphid.Showzup
             return entries
                 .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
                 .ToObservable()
-                .SelectMany(entry => LoadView(entry.ViewInfo)
+                .SelectMany(entry => LoadView(entry.ViewInfo.Value)
                     .Do(view => entry.View = view)
                     .Select(_ => entry))
                 .DoOnCompleted(UpdateReactiveViews);
