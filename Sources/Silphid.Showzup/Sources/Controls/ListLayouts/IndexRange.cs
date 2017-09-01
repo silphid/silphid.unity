@@ -24,6 +24,9 @@ namespace Silphid.Showzup.ListLayouts
         public IndexRange IntersectionWith(IndexRange range) =>
             new IndexRange(Start.Max(range.Start), End.Min(range.End));
 
+        public IndexRange ExpandStartAndEndBy(int count) =>
+            new IndexRange(Start - count, End + count);
+
         public bool Equals(IndexRange other)
         {
             return Start == other.Start && End == other.End;

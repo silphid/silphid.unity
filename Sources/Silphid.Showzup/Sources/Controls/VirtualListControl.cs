@@ -16,6 +16,7 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
+        private readonly ILogger _logger = null; // Debug.unityLogger;
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
@@ -25,6 +26,7 @@ namespace Silphid.Showzup
         
         public ListLayout Layout;
         public RectTransform Viewport;
+        public int ExtraMarginItems = 3;
 
         protected override void Start()
         {
@@ -84,6 +86,7 @@ namespace Silphid.Showzup
             // Get visible range and clamp it to valid range for entries
             var newRange = Layout
                 .GetVisibleIndexRange(VisibleRect)
+                .ExpandStartAndEndBy(ExtraMarginItems)
                 .IntersectionWith(new IndexRange(0, _entries.Count));
             
             // Changed?
@@ -91,7 +94,7 @@ namespace Silphid.Showzup
                 return;
             
             // Update range
-            Debug.Log($"VirtualListControl - Visible range: {newRange}");
+            _logger?.Log($"VirtualListControl - Visible range: {newRange}");
             var oldRange = _currentRange;
             _currentRange = newRange;
 
@@ -108,7 +111,7 @@ namespace Silphid.Showzup
 
         private void AddView(int index)
         {
-            Debug.Log($"VirtualListControl - Adding view {index}");
+            _logger?.Log($"VirtualListControl - Adding view {index}");
             
             var entry = GetEntryWithViewInfo(index);
 
@@ -167,7 +170,7 @@ namespace Silphid.Showzup
 
         private void RemoveView(int index)
         {
-            Debug.Log($"VirtualListControl - Removing view {index}");
+            _logger?.Log($"VirtualListControl - Removing view {index}");
             
             var entry = _entries[index];
             entry.Disposable?.Dispose();
