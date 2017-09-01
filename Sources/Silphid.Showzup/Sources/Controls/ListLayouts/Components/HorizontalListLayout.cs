@@ -3,6 +3,6 @@
     public class HorizontalListLayout : ListLayout
     {
         protected override IListLayout CreateLayout() =>
-            new ListLayouts.HorizontalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
+            new ListLayouts.HorizontalListLayout(ItemSize, Spacing, Padding);
     }
 }

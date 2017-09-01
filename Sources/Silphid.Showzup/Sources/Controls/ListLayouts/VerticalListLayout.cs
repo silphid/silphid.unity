@@ -5,8 +5,8 @@ namespace Silphid.Showzup.ListLayouts
 {
     public class VerticalListLayout : ListLayout
     {
-        public VerticalListLayout(Vector2 itemPadding, Vector2 itemSize, Vector2 itemSpacing, Vector2 containerPadding) :
-            base(itemPadding, itemSize, itemSpacing, containerPadding)
+        public VerticalListLayout(Vector2 itemSize, Vector2 spacing, RectOffset padding) :
+            base(itemSize, spacing, padding)
         {
         }
 
@@ -16,14 +16,13 @@ namespace Silphid.Showzup.ListLayouts
                 ItemSize);
 
         public override Vector2 GetContainerSize(int count) =>
-            ContainerPadding * 2 +
             new Vector2(
-                ItemSize.x + ItemPadding.x * 2,
-                (ItemSize.y + ItemPadding.y * 2) * count + ItemSpacing.y * (count - 1).AtLeast(0));
+                Padding.left + ItemSize.x + Padding.right,
+                Padding.top + ItemSize.y * count + Spacing.y * (count - 1).AtLeast(0) + Padding.bottom);
 
         public override IndexRange GetVisibleIndexRange(Rect rect) =>
             new IndexRange(
-                ((rect.yMin - FirstItemPosition.y) / ItemOffset.y).FloorInt(),
-                ((rect.yMax - FirstItemPosition.y) / ItemOffset.y).FloorInt() + 1);
+                ((rect.yMin + FirstItemPosition.y) / -ItemOffset.y).FloorInt(),
+                ((rect.yMax + FirstItemPosition.y) / -ItemOffset.y).FloorInt() + 1);
     }
 }

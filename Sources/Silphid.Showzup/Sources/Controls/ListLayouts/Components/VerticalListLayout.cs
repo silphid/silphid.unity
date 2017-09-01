@@ -3,6 +3,6 @@
     public class VerticalListLayout : ListLayout
     {
         protected override IListLayout CreateLayout() =>
-            new ListLayouts.VerticalListLayout(ItemPadding, ItemSize, ItemSpacing, ContainerPadding);
+            new ListLayouts.VerticalListLayout(ItemSize, Spacing, Padding);
     }
 }

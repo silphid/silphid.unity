@@ -5,6 +5,7 @@ using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
+using ListLayout = Silphid.Showzup.ListLayouts.Components.ListLayout;
 
 namespace Silphid.Showzup
 {
@@ -16,9 +17,11 @@ namespace Silphid.Showzup
     public class VirtualListControl : ListControl
     {
         private Options _options;
-        private List<Entry> _entries;
+        private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
         private RectTransform _containerRectTransform;
+        private bool _isStarted;
+        private Action _queuedLoadViews;
         
         public ListLayout Layout;
         public RectTransform Viewport;
@@ -33,23 +36,47 @@ namespace Silphid.Showzup
                 throw new ArgumentNullException(nameof(Viewport));
             
             _containerRectTransform = Container.RectTransform();
+            if (_containerRectTransform == null)
+                throw new ArgumentException("Container must have a RectTransform component.");
+            
             _containerRectTransform
                 .ObserveEveryValueChanged(x => x.anchoredPosition)
                 .Subscribe(_ => UpdateVisibleRange())
                 .AddTo(this);
+
+            lock (this)
+            {
+                _isStarted = true;
+                _queuedLoadViews?.Invoke();
+            }
         }
         
         protected override IObservable<IView> LoadViews(List<Entry> entries, Options options)
         {
-            _options = options;
-            _entries?.ForEach(x => x.Disposable?.Dispose());
-            _entries = entries;
-            _views.AddRange(Enumerable.Repeat<IView>(null, _entries.Count));
+            if (!EnqueueLoadViewsIfNotYetStarted(entries, options))
+            {
+                _options = options;
+                _entries?.ForEach(x => x.Disposable?.Dispose());
+                _entries = entries;
+                _views.AddRange(Enumerable.Repeat<IView>(null, _entries.Count));
             
-            UpdateContainerLayout(_entries.Count);
-            UpdateVisibleRange();
+                UpdateContainerLayout(_entries.Count);
+                UpdateVisibleRange();
+            }
                 
             return Observable.Empty<IView>();
+        }
+
+        private bool EnqueueLoadViewsIfNotYetStarted(List<Entry> entries, Options options)
+        {
+            lock (this)
+            {
+                if (_isStarted)
+                    return false;
+
+                _queuedLoadViews = () => LoadViews(entries, options).Subscribe();
+                return true;
+            }
         }
 
         private void UpdateVisibleRange()
@@ -62,8 +89,9 @@ namespace Silphid.Showzup
             // Changed?
             if (newRange.Equals(_currentRange))
                 return;
-
+            
             // Update range
+            Debug.Log($"VirtualListControl - Visible range: {newRange}");
             var oldRange = _currentRange;
             _currentRange = newRange;
 
@@ -80,6 +108,8 @@ namespace Silphid.Showzup
 
         private void AddView(int index)
         {
+            Debug.Log($"VirtualListControl - Adding view {index}");
+            
             var entry = GetEntryWithViewInfo(index);
 
             // Defensive/optional code
@@ -111,16 +141,16 @@ namespace Silphid.Showzup
             var rect = Layout.GetItemRect(index);
             
             var rectTransform = view.GameObject.RectTransform();
-            rectTransform.pivot = Vector2.zero;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.zero;
+            rectTransform.pivot = Vector2.up;
+            rectTransform.anchorMin = Vector2.up;
+            rectTransform.anchorMax = Vector2.up;
             rectTransform.sizeDelta = rect.size;
             rectTransform.anchoredPosition = rect.position;
         }
 
         private void UpdateContainerLayout(int count)
         {
-            Container.RectTransform().sizeDelta = Layout.GetContainerSize(count); 
+            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count); 
         }
 
         private Entry GetEntryWithViewInfo(int index)
@@ -137,6 +167,8 @@ namespace Silphid.Showzup
 
         private void RemoveView(int index)
         {
+            Debug.Log($"VirtualListControl - Removing view {index}");
+            
             var entry = _entries[index];
             entry.Disposable?.Dispose();
             entry.Disposable = null;
@@ -156,7 +188,7 @@ namespace Silphid.Showzup
 
         private Rect VisibleRect =>
             new Rect(
-                -_containerRectTransform.anchoredPosition,
+                _containerRectTransform.anchoredPosition,
                 Viewport.GetSize());
     }
 }

@@ -42,5 +42,10 @@ namespace Silphid.Showzup.ListLayouts
                 return (Start * 397) ^ End;
             }
         }
+
+        public override string ToString()
+        {
+            return $"[{Start}, {End}[";
+        }
     }
 }

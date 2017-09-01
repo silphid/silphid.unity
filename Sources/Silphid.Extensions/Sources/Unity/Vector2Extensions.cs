@@ -15,6 +15,12 @@ namespace Silphid.Extensions
         public static Vector2 Negate(this Vector2 This) => -This;
 
         [Pure]
+        public static Vector2 NegateX(this Vector2 This) => new Vector2(-This.x, This.y);
+
+        [Pure]
+        public static Vector2 NegateY(this Vector2 This) => new Vector2(This.x, -This.y);
+
+        [Pure]
         public static Vector2 Subtract(this Vector2 This, Vector2 other) =>
             new Vector2(This.x - other.x, This.y - other.y);
 

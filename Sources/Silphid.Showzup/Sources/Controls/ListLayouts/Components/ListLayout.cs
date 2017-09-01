@@ -5,9 +5,8 @@ namespace Silphid.Showzup.ListLayouts.Components
     public abstract class ListLayout : MonoBehaviour, IListLayout
     {
         public Vector2 ItemSize;
-        public Vector2 ItemPadding;
-        public Vector2 ItemSpacing;
-        public Vector2 ContainerPadding;
+        public Vector2 Spacing;
+        public RectOffset Padding;
 
         private IListLayout _layout;
         private IListLayout Layout => _layout ?? (_layout = CreateLayout());
