@@ -53,11 +53,11 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
-        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null)
+        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null, Predicate<Type> predicate = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
             types
-                .Where(x => !x.IsAbstract && x.IsAssignableTo<T>())
+                .Where(x => !x.IsAbstract && x.IsAssignableTo<T>() && (predicate == null || predicate(x)))
                 .ForEach(x => This.Bind(x, x));
         }
 
