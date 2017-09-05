@@ -22,6 +22,9 @@ namespace Silphid.Loadzup.Bundles
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
+            if (!Supports<T>(uri))
+                throw new NotSupportedException($"Uri not supported: {uri}");
+
             var assetName = GetAssetName(uri);
             
             // Todo remove absolutePath in bundle uri

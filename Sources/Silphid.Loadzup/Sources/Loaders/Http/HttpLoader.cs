@@ -17,9 +17,14 @@ namespace Silphid.Loadzup.Http
         public bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https;
 
-        public IObservable<T> Load<T>(Uri uri, Options options = null) =>
-            _requester
+        public IObservable<T> Load<T>(Uri uri, Options options = null)
+        {
+            if (!Supports<T>(uri))
+                throw new NotSupportedException($"Uri not supported: {uri}");
+
+            return _requester
                 .Request(uri, options)
                 .ContinueWith(x => _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding));
+        }
     }
 }
