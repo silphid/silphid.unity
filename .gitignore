@@ -2,3 +2,5 @@
 /.idea/
 /Temp/
 /obj/
+/packages/
+*.DotSettings.user
