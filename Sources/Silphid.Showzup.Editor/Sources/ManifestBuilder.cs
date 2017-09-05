@@ -19,12 +19,11 @@ public class ManifestBuilder
 
     public static void Build(Manifest manifest)
     {
-        var allVariants = GetVariantsFromAllAssemblies();
-        Debug.Log($"Detected the following variants: {allVariants.ToDelimitedString(", ")}");
+        manifest.AllVariants = GetVariantsFromAllAssemblies();
 
-        MapModelsToViewModels(manifest, allVariants);
-        MapViewModelsToViews(manifest, allVariants);
-        MapViewsToPrefabs(manifest, allVariants);
+        MapModelsToViewModels(manifest);
+        MapViewModelsToViews(manifest);
+        MapViewsToPrefabs(manifest);
         PropagateImplicitVariants(manifest);
 
         EditorUtility.SetDirty(manifest);
@@ -37,7 +36,7 @@ public class ManifestBuilder
 
     #region ModelsToViewModels
 
-    private static void MapModelsToViewModels(Manifest manifest, VariantSet allVariants)
+    private static void MapModelsToViewModels(Manifest manifest)
     {
         manifest.ModelsToViewModels.Clear();
 
@@ -46,7 +45,7 @@ public class ManifestBuilder
             .ForEach(viewModelType => MapModelToViewModel(
                 manifest,
                 GetModelForViewModel(viewModelType), viewModelType,
-                allVariants));
+                manifest.AllVariants));
         
         manifest.ModelsToViewModels.Sort(MappingSortingComparison);
     }
@@ -74,7 +73,7 @@ public class ManifestBuilder
 
     #region ViewModelsToViews
 
-    private static void MapViewModelsToViews(Manifest manifest, VariantSet allVariants)
+    private static void MapViewModelsToViews(Manifest manifest)
     {
         manifest.ViewModelsToViews.Clear();
 
@@ -83,7 +82,7 @@ public class ManifestBuilder
             .ForEach(viewType => MapViewModelToView(
                 manifest,
                 GetViewModelForView(viewType), viewType,
-                allVariants));
+                manifest.AllVariants));
         
         manifest.ViewModelsToViews.Sort(MappingSortingComparison);
     }
@@ -114,13 +113,13 @@ public class ManifestBuilder
 
     #region ViewsToPrefabs
 
-    private static void MapViewsToPrefabs(Manifest manifest, VariantSet allVariants)
+    private static void MapViewsToPrefabs(Manifest manifest)
     {
         manifest.ViewsToPrefabs.Clear();
 
         var guids = AssetDatabase.FindAssets("t:GameObject", new[] {manifest.PrefabsPath});
         if (guids.Any())
-            guids.ForEach(x => MapViewsToPrefabWithGuid(x, manifest, allVariants));
+            guids.ForEach(x => MapViewsToPrefabWithGuid(x, manifest, manifest.AllVariants));
         else
             Debug.Log($"No view prefab could be found in path: {manifest.PrefabsPath}");
                         
@@ -209,9 +208,9 @@ public class ManifestBuilder
                 !type.IsGenericType &&
                 !type.IsAbstract &&
                 type.IsAssignableTo<IVariant>())
-            .Select(type => type.BaseType?.GetProperty("Group", BindingFlags.Static | BindingFlags.Public))
-            .Where(property => property != null && property.PropertyType.IsAssignableTo<IVariantGroup>())
-            .SelectMany(field => ((IVariantGroup) field.GetValue(null)).Variants)
+            .SelectMany(type => type.GetFields(BindingFlags.Static | BindingFlags.Public))
+            .Where(field => field.FieldType.IsAssignableTo<IVariant>())
+            .Select(field => (IVariant) field.GetValue(null))
             .ToVariantSet();
     }
 
