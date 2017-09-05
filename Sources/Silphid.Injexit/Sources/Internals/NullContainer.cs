@@ -17,5 +17,6 @@ namespace Silphid.Injexit
         public void Inject(IEnumerable<object> objects, IResolver overrideResolver = null) {}
 
         public void Dispose() {}
+        public void InstantiateEagerSingles() {}
     }
 }

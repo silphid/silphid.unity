@@ -8,8 +8,13 @@
         Transient,
 
         /// <summary>
-        /// A single instance is shared for all usages (and it is lazily created, if it was not specified at bind-time).
+        /// A single instance is shared among all dependent objects, and that is lazily created, if it was not specified at bind-time.
         /// </summary>
-        Single
+        Single,
+
+        /// <summary>
+        /// A single instance is shared among all dependent objects, and that is eagerly created.
+        /// </summary>
+        EagerSingle
     }
 }

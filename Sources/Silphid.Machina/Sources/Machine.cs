@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Silphid.Extensions;
-using Silphid.Machina.Internals;
 using UniRx;
 
 namespace Silphid.Machina
@@ -19,7 +18,7 @@ namespace Silphid.Machina
 
         public void Set(TState state)
         {
-            if (!State.Value.Equals(state))
+            if (!(State.Value?.Equals(state) ?? false))
                 State.Value = state;
         }
 
@@ -28,17 +27,20 @@ namespace Silphid.Machina
 
         public bool Trigger(object trigger)
         {
+            if (State.Value == null)
+                return false;
+            
             var stateInfo = _stateInfos.GetValueOrDefault(State.Value);
             var handler = stateInfo?.Handlers.GetValueOrDefault(trigger.GetType());
             return handler?.Invoke(trigger) ?? false;
         }
 
-        public IStateConfig For(TState state) =>
+        public IStateConfig When(TState state) =>
             _stateInfos.GetOrCreateValue(state, () => new StateInfo());
 
-        public IStateConfig For(TState state, Action<IStateConfig> action)
+        public IStateConfig When(TState state, Action<IStateConfig> action)
         {
-            var config = For(state);
+            var config = When(state);
             action(config);
             return config;
         }

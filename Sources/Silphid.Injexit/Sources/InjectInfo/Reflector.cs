@@ -9,6 +9,7 @@ namespace Silphid.Injexit
 {
     public class Reflector : IReflector
     {
+        private const BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private readonly InjectTypeInfo _gameObjectTypeInfo;
         private readonly Dictionary<Type, InjectTypeInfo> _typeInfos = new Dictionary<Type, InjectTypeInfo>();
 
@@ -81,7 +82,7 @@ namespace Silphid.Injexit
 
         private IEnumerable<InjectMethodInfo> GetMethods(Type type)
         {
-            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var methods = type.GetMethods(_bindingFlags);
             foreach (var method in methods)
             {
                 var attribute = method.GetAttribute<InjectAttribute>();
@@ -102,7 +103,7 @@ namespace Silphid.Injexit
 
         private IEnumerable<InjectFieldOrPropertyInfo> GetFields(Type type)
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fields = type.GetFields(_bindingFlags);
             foreach (var field in fields)
             {
                 var attribute = field.GetAttribute<InjectAttribute>();
@@ -117,7 +118,7 @@ namespace Silphid.Injexit
 
         private IEnumerable<InjectFieldOrPropertyInfo> GetProperties(Type type)
         {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var properties = type.GetProperties(_bindingFlags);
             foreach (var property in properties)
             {
                 var attribute = property.GetAttribute<InjectAttribute>();

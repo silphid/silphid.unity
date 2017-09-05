@@ -29,6 +29,12 @@ namespace Silphid.Injexit
             return this;
         }
 
+        public IBinding AsEagerSingle()
+        {
+            _bindings.ForEach(x => x.AsEagerSingle());
+            return this;
+        }
+
         public IBinding Using(IResolver resolver)
         {
             throw new NotImplementedException();

@@ -21,8 +21,20 @@ namespace Silphid.Injexit
                 ? new CompositeBinding(instances.Select(This.BindInstance))
                 : Binding.Null;
 
-        public static IBinding BindInstances(this IBinder This, params object[] instances) =>
-            This.BindInstances((IEnumerable<object>) instances);
+        #endregion
+
+        #region BindOptionalInstance(s)
+
+        public static IBinding BindOptionalInstance<T>(this IBinder This, T instance) =>
+            instance != null ? This.BindInstance(typeof(T), instance) : Binding.Null;
+
+        public static IBinding BindOptionalInstance(this IBinder This, object instance) =>
+            instance != null ? This.BindInstance(instance.GetType(), instance) : Binding.Null;
+
+        public static IBinding BindOptionalInstances(this IBinder This, IEnumerable<object> instances) =>
+            instances != null
+                ? new CompositeBinding(instances.WhereNotNull().Select(This.BindInstance))
+                : Binding.Null;
 
         #endregion
 
@@ -41,7 +53,7 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
-        public static void BindToSelfImplementationsOf<T>(this IBinder This, Assembly assembly = null)
+        public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
             types
@@ -60,17 +72,17 @@ namespace Silphid.Injexit
 
         #region BindAsList
 
-        public static IBinding BindAsListOf<TAbstraction>(this IBinder This, Action<IListBinder<TAbstraction>> action)
+        public static IBinding BindList<TAbstraction>(this IBinder This, Action<IListBinder<TAbstraction>> action)
         {
             var listBinder = new ListBinder<TAbstraction>(This);
             action(listBinder);
             return listBinder.CompositeBinding;
         }
 
-        public static IBinding BindAsListImplementationsOf<TAbstraction>(this IBinder This, Assembly assembly = null)
+        public static IBinding BindAllAsList<TAbstraction>(this IBinder This, Assembly assembly = null)
         {
             var listBinder = new ListBinder<TAbstraction>(This);
-            listBinder.BindImplementations(assembly);
+            listBinder.BindAll(assembly);
             return listBinder.CompositeBinding;
         }
 

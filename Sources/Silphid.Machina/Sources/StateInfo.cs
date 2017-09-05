@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Silphid.Machina.Internals
+namespace Silphid.Machina
 {
     public class StateInfo : IStateConfig
     {
@@ -10,7 +10,7 @@ namespace Silphid.Machina.Internals
         /// <summary>
         /// Adds an handler for given trigger type T, which should return whether it handled the trigger or not.
         /// </summary>
-        public void On<T>(Func<T, bool> handler)
+        public void Handle<T>(Func<T, bool> handler)
         {
             Handlers[typeof(T)] = x => handler((T) x);
         }
@@ -18,7 +18,7 @@ namespace Silphid.Machina.Internals
         /// <summary>
         /// Adds an handler for given trigger type T, which is assumed to always handle the trigger.
         /// </summary>
-        public void On<T>(Action<T> handler)
+        public void Handle<T>(Action<T> handler)
         {
             Handlers[typeof(T)] = x =>
             {

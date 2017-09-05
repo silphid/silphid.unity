@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using UniRx;
@@ -25,40 +24,54 @@ namespace Silphid.Showzup
         public IObservable<IView> Load(ViewInfo viewInfo, CancellationToken cancellationToken)
         {
             if (viewInfo.View != null)
-                return Load(viewInfo.ViewModel, viewInfo.View);
+                return Load(viewInfo.ViewModel, viewInfo.View, viewInfo.Parameters);
 
             if (viewInfo.Model != null && viewInfo.ViewModelType != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
-                return Load(viewInfo.Model, viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
+                return LoadFromModel(viewInfo.Model, viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
 
-            if (viewInfo.ViewType != null && viewInfo.PrefabUri != null)
-                return Load(viewInfo.ViewModel, viewInfo.ViewType, viewInfo.PrefabUri, cancellationToken);
+            if (viewInfo.ViewModel != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
+                return LoadFromViewModel(viewInfo.ViewModel, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
+
+            if (viewInfo.ViewModelType != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
+                return LoadFromViewModelType(viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
 
             return Observable.Return<IView>(null);
         }
 
-        private IObservable<IView> Load(IViewModel viewModel, IView view)
+        private IObservable<IView> Load(IViewModel viewModel, IView view, object[] parameters)
         {
             return Observable.Return(view)
-                .Do(x => InjectView(x, viewModel))
+                .Do(x => InjectView(x, viewModel, parameters))
                 .ContinueWith(x => LoadLoadable(x).ThenReturn(view));
         }
 
-        private IObservable<IView> Load(object model, Type viewModelType, Type viewType, Uri uri, IEnumerable<object> parameters, CancellationToken cancellationToken) =>
-            Load((IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model)), viewType, uri, cancellationToken);
+        private IObservable<IView> LoadFromModel(object model, Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        {
+            _logger?.Log(nameof(ViewLoader), $"Resolving ViewModel {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
+            var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
+            return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+        }
 
-        private IObservable<IView> Load(IViewModel viewModel, Type viewType, Uri uri, CancellationToken cancellationToken)
+        private IObservable<IView> LoadFromViewModelType(Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        {
+            _logger?.Log(nameof(ViewLoader), $"Resolving ViewModel {viewModelType.Name} (without Model) for View {viewType.Name}");
+            var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
+            return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+        }
+
+        private IObservable<IView> LoadFromViewModel(IViewModel viewModel, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
             _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
-            return LoadPrefabView(viewType, uri, cancellationToken)
-                .Do(view => InjectView(view, viewModel))
+            return LoadPrefabView(viewType, uri, parameters, cancellationToken)
+                .Do(view => InjectView(view, viewModel, parameters))
                 .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
         }
 
-        private void InjectView(IView view, IViewModel viewModel)
+        private void InjectView(IView view, IViewModel viewModel, object[] parameters)
         {
             view.ViewModel = viewModel;
             _logger?.Log(nameof(ViewLoader), $"Initializing {view} with ViewModel {viewModel}");
-            _injectionAdaptor.Inject(view.GameObject);
+            _injectionAdaptor.Inject(view.GameObject, parameters);
         }
 
         private IObservable<Unit> LoadLoadable(IView view) =>
@@ -68,7 +81,7 @@ namespace Silphid.Showzup
 
         #region Prefab view loading
 
-        private IObservable<IView> LoadPrefabView(Type viewType, Uri uri, CancellationToken cancellationToken)
+        private IObservable<IView> LoadPrefabView(Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
             _logger?.Log(nameof(ViewLoader), $"LoadPrefabView({viewType}, {uri})");
 

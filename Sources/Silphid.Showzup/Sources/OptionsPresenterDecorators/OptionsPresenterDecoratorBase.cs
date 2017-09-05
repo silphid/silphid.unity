@@ -22,9 +22,6 @@ namespace Silphid.Showzup
             return options;
         }
 
-        public bool CanPresent(object input, Options options = null) =>
-            _presenter.CanPresent(input, GetOptions(options));
-
         public IObservable<IView> Present(object input, Options options = null) =>
             _presenter.Present(input, GetOptions(options));
     }

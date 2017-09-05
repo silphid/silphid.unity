@@ -72,6 +72,32 @@ namespace Silphid.Injexit.Test
         {
             [Inject] public string InjectablePropertyWithNoSetter { get; }
         }
+        
+        private class ClassWithInjectableInternalField
+        {
+            public int Value => _value;
+            
+            [Inject] internal int _value;
+        }
+        
+        private class ClassWithInheritedInjectableInternalField : ClassWithInjectableInternalField
+        {
+        }
+        
+        private class ClassWithInjectableInternalMethod
+        {
+            public int Value { get; private set; }
+
+            [Inject]
+            internal void Inject(int value)
+            {
+                Value = value;
+            }
+        }
+        
+        private class ClassWithInheritedInjectableInternalMethod : ClassWithInjectableInternalMethod
+        {
+        }
 
         private Reflector _fixture;
 
@@ -187,6 +213,26 @@ namespace Silphid.Injexit.Test
             const string propertyName = nameof(ClassWithNonWritableInjectableProperty.InjectablePropertyWithNoSetter);
             Assert.That(exception.Message, Is.EqualTo($"Property {className}.{propertyName} is marked with [Inject] attribute, but has not setter."));
         }
+        
+        [Test]
+        public void ClassWithInheritedInjectableInternalField_InheritedFieldShouldBeDiscovered()
+        {
+            var typeInfo = GetTypeInfo<ClassWithInheritedInjectableInternalField>();
+
+            Assert.That(typeInfo.FieldsAndProperties.Length, Is.EqualTo(1));
+            AssertMember<int>(typeInfo.FieldsAndProperties[0], "_value");
+        }
+        
+        [Test]
+        public void ClassWithInheritedInjectableInternalMethod_InheritedMethodShouldBeDiscovered()
+        {
+            var typeInfo = GetTypeInfo<ClassWithInheritedInjectableInternalMethod>();
+
+            Assert.That(typeInfo.Methods.Length, Is.EqualTo(1));
+            var method = GetMethod(typeInfo.Methods, "Inject");
+            Assert.That(method.Parameters.Length, Is.EqualTo(1));
+            AssertMember<int>(method.Parameters[0], "value");
+        }
 
         private InjectMethodInfo GetMethod(IEnumerable<InjectMethodInfo> methods, string name) =>
             methods.Single(x => x.Name == name);
@@ -204,7 +250,7 @@ namespace Silphid.Injexit.Test
             Assert.That(member.IsOptional, Is.EqualTo(isOptional));
             Assert.That(member.Id, Is.EqualTo(id));
         }
-        
+
         private InjectTypeInfo GetTypeInfo<T>() =>
             _fixture.GetTypeInfo(typeof(T));
     }

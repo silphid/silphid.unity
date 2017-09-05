@@ -7,11 +7,11 @@ namespace Silphid.Loadzup
 {
     public class RequestException : Exception
     {
-        public string RawErrorMessage { get; private set; }
-        public bool HasResponse { get; private set; }
-        public string Text { get; private set; }
-        public HttpStatusCode StatusCode { get; private set; }
-        public Dictionary<string, string> ResponseHeaders { get; private set; }
+        public string RawErrorMessage { get; }
+        public bool HasResponse { get; }
+        public string Text { get; }
+        public HttpStatusCode StatusCode { get; }
+        public Dictionary<string, string> ResponseHeaders { get; }
 
         public RequestException()
         {
