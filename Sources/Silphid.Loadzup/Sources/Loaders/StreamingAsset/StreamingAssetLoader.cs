@@ -22,6 +22,9 @@ namespace Silphid.Loadzup.StreamingAsset
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
+            if (!Supports<T>(uri))
+                throw new NotSupportedException($"Uri not supported: {uri}");
+
             var contentType = options?.ContentType;
             var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, true);
 

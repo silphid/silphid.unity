@@ -20,7 +20,7 @@ namespace Silphid.Loadzup
         {
             var child = _children.FirstOrDefault(x => x.Supports<T>(uri));
             if (child == null)
-                throw new NotSupportedException($"URI not supported: {uri}");
+                throw new NotSupportedException($"Uri not supported: {uri}");
 
             return child.Load<T>(uri, options);
         }
