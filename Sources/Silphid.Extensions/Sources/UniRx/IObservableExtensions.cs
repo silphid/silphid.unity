@@ -76,35 +76,23 @@ namespace Silphid.Extensions
 
         #region SubscribeAndForget
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This) =>
             This.AutoDetach().Subscribe();
-        }
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This, IObserver<T> observer)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, IObserver<T> observer) =>
             This.AutoDetach().Subscribe(observer);
-        }
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext) =>
             This.AutoDetach().Subscribe(onNext);
-        }
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError) =>
             This.AutoDetach().Subscribe(onNext, onError);
-        }
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action onCompleted)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action onCompleted) =>
             This.AutoDetach().Subscribe(onNext, onCompleted);
-        }
 
-        public static void SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted)
-        {
+        public static IDisposable SubscribeAndForget<T>(this IObservable<T> This, Action<T> onNext, Action<Exception> onError, Action onCompleted) =>
             This.AutoDetach().Subscribe(onNext, onError, onCompleted);
-        }
 
         #endregion
 
@@ -157,6 +145,16 @@ namespace Silphid.Extensions
         public static IObservable<T> Repeat<T>(this IObservable<T> This, int count) =>
             This.RepeatInternal(count).Concat();
         
+        #endregion
+
+        #region Prepend/Append
+
+        public static IObservable<T> Prepend<T>(this IObservable<T> This, T item) =>
+            Observable.Return(item).Concat(This);
+
+        public static IObservable<T> Append<T>(this IObservable<T> This, T item) =>
+            This.Concat(Observable.Return(item));
+
         #endregion
     }
 }

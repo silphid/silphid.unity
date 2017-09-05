@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using UniRx;
 // ReSharper disable AccessToDisposedClosure
 
@@ -10,12 +11,12 @@ namespace Silphid.Sequencit.Test
         [Test]
         public void AddLapse_ReturnedDisposable()
         {
-            var disposable = new SerialDisposable();
+            IDisposable disposable = null;
         
             Sequence.Start(s =>
             {
                 s.AddAction(() => _value = 1);
-                disposable.Disposable = s.AddLapse();
+                disposable = s.AddLapse();
                 s.AddAction(() => _value = 2);
             });
 
@@ -28,12 +29,12 @@ namespace Silphid.Sequencit.Test
         [Test]
         public void AddLapse_LambdaDisposable()
         {
-            var disposable = new SerialDisposable();
+            IDisposable disposable = null;
         
             Sequence.Start(s =>
             {
                 s.AddAction(() => _value = 1);
-                s.AddLapse(x => disposable.Disposable = x);
+                s.AddLapse(x => disposable = x);
                 s.AddAction(() => _value = 2);
             });
 
@@ -46,8 +47,6 @@ namespace Silphid.Sequencit.Test
         [Test]
         public void AddLapse_DisposeInLambda_DoesNotWaitAtAll()
         {
-            var disposable = new SerialDisposable();
-        
             Sequence.Start(s =>
             {
                 s.AddAction(() => _value = 1);
@@ -55,9 +54,6 @@ namespace Silphid.Sequencit.Test
                 s.AddAction(() => _value = 2);
             });
 
-            Assert.That(_value, Is.EqualTo(2));
-
-            disposable.Dispose();
             Assert.That(_value, Is.EqualTo(2));
         }
 

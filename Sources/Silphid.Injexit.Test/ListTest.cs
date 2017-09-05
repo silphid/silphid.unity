@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 // ReSharper disable ClassNeverInstantiated.Local
 
@@ -71,16 +72,25 @@ namespace Silphid.Injexit.Test
         public void BindAsListWithNewSyntax()
         {
             var container = new Container(new Reflector());
-            container.BindAsList<IBeing>(x =>
+            container.BindList<IBeing>(x =>
             {
-                x.Bind<Man>();
-                x.Bind<Woman>();
-                x.BindInstance(_dog);
+                x.Add<Man>();
+                x.Add<Woman>();
+                x.AddInstance(_dog);
             });
 
             var list = container.Resolve<List<IBeing>>();
             Assert.That(list, Is.EqualTo(new IBeing[]{ new Man(), new Woman(), _dog }));
             Assert.That(list[2], Is.SameAs(_dog));
+        }
+        
+        [Test]
+        public void BindAsList_AddNullInstance_Throws()
+        {
+            var container = new Container(new Reflector());
+            Assert.Throws<ArgumentNullException>(() =>
+                container.BindList<IBeing>(x =>
+                    x.AddInstance<Man>(null)));
         }
         
         [Test]
@@ -111,19 +121,19 @@ namespace Silphid.Injexit.Test
             var container = new Container(new Reflector());
 
             container
-                .BindAsList<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<Man>();
-                    x.Bind<Man>();
-                    x.Bind<Woman>();
+                    x.Add<Man>();
+                    x.Add<Man>();
+                    x.Add<Woman>();
                 })
                 .WithId("List1");
 
             container
-                .BindAsList<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<Woman>();
-                    x.Bind<Man>();
+                    x.Add<Woman>();
+                    x.Add<Man>();
                 })
                 .WithId("List2");
 
@@ -151,10 +161,10 @@ namespace Silphid.Injexit.Test
             var container = new Container(new Reflector());
 
             container
-                .BindAsList<Being>(x =>
+                .BindList<Being>(x =>
                 {
-                    x.Bind<ManWithDog>().UsingInstance(_dog);
-                    x.Bind<Man>();
+                    x.Add<ManWithDog>().UsingInstance(_dog);
+                    x.Add<Man>();
                 });
             
             var list = container.Resolve<List<Being>>();

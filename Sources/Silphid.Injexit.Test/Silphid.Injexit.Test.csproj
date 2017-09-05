@@ -48,11 +48,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinderTest.cs" />
+    <Compile Include="InjectorTest.cs" />
     <Compile Include="ListTest.cs" />
     <Compile Include="IdTest.cs" />
     <Compile Include="OptionalTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectorTest.cs" />
+    <Compile Include="ResolverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

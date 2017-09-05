@@ -208,6 +208,20 @@ namespace Silphid.Extensions
             return -1;
         }
 
+        public static int IndexOf<T>(this IEnumerable<T> This, T item)
+        {
+            var index = 0;
+            foreach (var candidate in This)
+            {
+                if (candidate.Equals(item))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Compares objects based on their value modulated through custom function.
         /// </summary>

@@ -5,8 +5,10 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Parallel : IObservableSequencer
+    public class Parallel : ISequencer
     {
+        #region Static methods
+
         public static Parallel Create(Action<Parallel> action)
         {
             var parallel = new Parallel();
@@ -18,7 +20,7 @@ namespace Silphid.Sequencit
             Create(p => selectors.ForEach(selector => p.Add(selector())));
 
         public static Parallel Create(IEnumerable<IObservable<Unit>> observables) =>
-            Create(seq => observables.ForEach(seq.Add));
+            Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<Parallel> action) =>
             Create(action).AutoDetach().Subscribe();
@@ -26,15 +28,28 @@ namespace Silphid.Sequencit
         public static IDisposable Start(params IObservable<Unit>[] observables) =>
             Start(p => observables.ForEach(x => x.In(p)));
 
+        #endregion
+
+        #region Private fields
+
         private List<IObservable<Unit>> _observables;
 
-        public void Add(IObservable<Unit> observable)
+        #endregion
+
+        #region ISequencer members
+
+        public IObservable<Unit> Add(IObservable<Unit> observable)
         {
             if (_observables == null)
                 _observables = new List<IObservable<Unit>>();
 
             _observables.Add(observable);
+            return observable;
         }
+
+        #endregion
+
+        #region IObservable<Unit> members
 
         public IDisposable Subscribe(IObserver<Unit> observer)
         {
@@ -48,5 +63,7 @@ namespace Silphid.Sequencit
                 .WhenAll()
                 .Subscribe(observer);
         }
+
+        #endregion
     }
 }

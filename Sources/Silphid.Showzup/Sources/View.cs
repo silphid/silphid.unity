@@ -70,24 +70,32 @@ namespace Silphid.Showzup
         protected void Bind(Image image, Uri uri, bool keepVisible = false)
         {
             if (image != null)
-                BindAsync(image, uri, null, keepVisible)
+                BindAsync(image, uri, false, null, keepVisible)
                     .Subscribe()
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, Loadzup.Options options = null,
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false, Loadzup.Options options = null,
             bool keepVisible = false)
         {
             if (image == null)
                 return Observable.ReturnUnit();
+            
+            if (uri == null)
+            {
+                if (isOptional)
+                    return Observable.ReturnUnit();
+                    
+                return Observable.Throw<Unit>(
+                    new BindException($"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
+            }
 
             image.enabled = keepVisible;
             return Loader
                 .Load<Sprite>(uri, options)
-                .Catch<Sprite, Exception>(
-                    x =>
-                        Observable.Throw<Sprite>(
-                            new BindException($"Unable to resolve image {uri} in view {GetType().Name}", x)))
+                .Catch<Sprite, Exception>(ex =>
+                    Observable.Throw<Sprite>(
+                        new BindException($"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
                 .Do(x =>
                 {
                     image.sprite = x;
@@ -99,18 +107,6 @@ namespace Silphid.Showzup
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
-        }
-
-        protected IObservable<Unit> BindAsyncOrDefault(Image image, Uri uri, Loadzup.Options options = null,
-            bool keepVisible = false)
-        {
-            if (uri == null)
-            {
-                Debug.LogError($"Uri of image is null on {gameObject.name}");
-                return Observable.ReturnUnit();
-            }
-
-            return BindAsync(image, uri, options, keepVisible);
         }
 
         #endregion

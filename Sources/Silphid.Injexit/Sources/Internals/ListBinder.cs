@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {
@@ -13,18 +16,26 @@ namespace Silphid.Injexit
             _binder = binder;
         }
 
-        public IBinding Bind<TConcretion>() where TConcretion : TAbstraction
+        public IBinding Add<TConcretion>() where TConcretion : TAbstraction
         {
             var binding = _binder.Bind<TAbstraction, TConcretion>().AsList();
             _bindings.Add(binding);
             return binding;
         }
 
-        public IBinding BindInstance<TConcretion>(TConcretion instance) where TConcretion : TAbstraction
+        public IBinding AddInstance<TConcretion>(TConcretion instance) where TConcretion : TAbstraction
         {
             var binding = _binder.BindInstance<TAbstraction>(instance).AsList();
             _bindings.Add(binding);
             return binding;
+        }
+
+        public void BindAll(Assembly assembly = null)
+        {
+            var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();
+            types
+                .Where(x => !x.IsAbstract && !x.ContainsGenericParameters && x.IsAssignableTo<TAbstraction>())
+                .ForEach(x => _bindings.Add(_binder.Bind<TAbstraction>(x).AsList()));
         }
     }
 }

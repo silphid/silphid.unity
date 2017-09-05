@@ -33,10 +33,19 @@ namespace Silphid.Injexit
 
         public IBinding AsSingle()
         {
-            if (Lifetime == Lifetime.Single)
-                throw new InvalidOperationException("Already a single binding.");
+            if (Lifetime != Lifetime.Transient)
+                throw new InvalidOperationException($"Lifetime already set to: {Lifetime}");
                 
             Lifetime = Lifetime.Single;
+            return this;
+        }
+
+        public IBinding AsEagerSingle()
+        {
+            if (Lifetime != Lifetime.Transient)
+                throw new InvalidOperationException($"Lifetime already set to: {Lifetime}");
+
+            Lifetime = Lifetime.EagerSingle;
             return this;
         }
 

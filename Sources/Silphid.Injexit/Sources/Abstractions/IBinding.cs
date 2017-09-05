@@ -15,10 +15,18 @@
         IBinding AsList();
         
         /// <summary>
-        /// Marks binding as singleton. Multiple injections of the same
+        /// Marks binding as singleton and for lazy loading. Multiple injections of the same
         /// abstraction type T will share the same instance.
         /// </summary>
         IBinding AsSingle();
+        
+        /// <summary>
+        /// Marks binding as singleton and for eager loading (as opposed to the default, lazy loading).
+        /// All such bindings can be forced to be instantiated by calling the container's
+        /// InstantiateEagerSingles() method. This is particularly useful when no classes depend on them,
+        /// but you want them to be instantiated anyway.
+        /// </summary>
+        IBinding AsEagerSingle();
         
         /// <summary>
         /// Attaches a child resolver to this binding, which will be used

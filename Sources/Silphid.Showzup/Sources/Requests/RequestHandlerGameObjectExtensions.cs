@@ -1,20 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Silphid.Extensions;
-using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup.Requests
 {
     public static class RequestHandlerGameObjectExtensions
     {
-        public static bool CanHandle(this GameObject This, IRequest request) =>
+        public static bool Handle(this GameObject This, IRequest request) =>
             This.SelfAndAncestors<IRequestHandler>()
-                .Any(x => x.CanHandle(request));
+                .Select(x => x.Handle(request))
+                .FirstOrDefault(x => x);
 
-        public static IObservable<Unit> Handle(this GameObject This, IRequest request) =>
-            This.SelfAndAncestors<IRequestHandler>()
-                .FirstOrDefault()
-                ?.Handle(request);
+        public static bool Handle(this Component This, IRequest request) =>
+            This.gameObject.Handle(request);
+
+        public static bool Handle<TRequest>(this Component This) where TRequest : IRequest, new() =>
+            This.Handle(new TRequest());
     }
 }

@@ -54,7 +54,7 @@
     <Compile Include="Sources\LapseTest.cs" />
     <Compile Include="Sources\ParallelTest.cs" />
     <Compile Include="Sources\SequencingTestBase.cs" />
-    <Compile Include="Sources\SequenceQueueTest.cs" />
+    <Compile Include="Sources\LiveSequenceTest.cs" />
     <Compile Include="Sources\SequenceTest.cs" />
     <Compile Include="Sources\TestSchedulerTest.cs" />
   </ItemGroup>

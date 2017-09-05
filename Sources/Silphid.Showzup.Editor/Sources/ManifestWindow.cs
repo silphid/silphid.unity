@@ -23,31 +23,25 @@ namespace Silphid.Showzup
         
         public void OnEnable()
         {
-            _normalStyle = new GUIStyle(EditorStyles.boldLabel);
-            _normalStyle.stretchWidth = false;
-            _normalStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.69f, 0.69f, 0.69f)
-                : new Color(0.28f, 0.28f, 0.28f);
-
-            _mappingArrowStyle = new GUIStyle(EditorStyles.boldLabel);
-            _mappingArrowStyle.stretchWidth = false;
-            _mappingArrowStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.83f, 0.68f, 0.52f)
-                : new Color(0.6f, 0.49f, 0.37f);
-
-            _explicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
-            _explicitVariantStyle.stretchWidth = false;
-            _explicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.97f, 0.55f, 0f)
-                : new Color(0.67f, 0.35f, 0f);
-
-            _implicitVariantStyle = new GUIStyle(EditorStyles.boldLabel);
-            _implicitVariantStyle.stretchWidth = false;
-            _implicitVariantStyle.normal.textColor = EditorGUIUtility.isProSkin
-                ? new Color(0.74f, 0.38f, 0f)
-                : new Color(0f, 0.18f, 0.58f);
+            _normalStyle = CreateLabelStyle(new Color(0.69f, 0.69f, 0.69f), new Color(0.28f, 0.28f, 0.28f));
+            _mappingArrowStyle = CreateLabelStyle(new Color(0.83f, 0.68f, 0.52f), new Color(0.6f, 0.49f, 0.37f));
+            _explicitVariantStyle = CreateLabelStyle(new Color(0.97f, 0.55f, 0f), new Color(0.67f, 0.35f, 0f));
+            _implicitVariantStyle = CreateLabelStyle(new Color(0.74f, 0.38f, 0f), new Color(0f, 0.18f, 0.58f));
         }
-        
+
+        private static GUIStyle CreateLabelStyle(Color proColor, Color normalColor)
+        {
+            var style = new GUIStyle
+            {
+                stretchWidth = false,
+                fontStyle = FontStyle.Bold,
+                margin = new RectOffset(5, 5, 0, 0)
+            };
+
+            style.normal.textColor = EditorGUIUtility.isProSkin ? proColor : normalColor;
+            return style;
+        }
+
         public void OnGUI()
         {
             var manifest = ManifestManager.Manifest;
@@ -87,20 +81,19 @@ namespace Silphid.Showzup
             EditorGUILayout.EndVertical();
         }
 
-        private void Labels(IEnumerable<object> objects)
+        private void Labels(IEnumerable<Mapping> mappings)
         {
-            objects
-                .Select(x => new { Obj = x, Str = x.ToString() })
-                .Where(x => _filter.IsNullOrEmpty() || x.Str.CaseInsensitiveContains(_filter))
-                .ForEach(x => Label(x.Obj, x.Str));
+            mappings
+                .Where(x => x.Matches(_filter))
+                .ForEach(Label);
         }
 
-        private void Label(object obj, string str)
+        private void Label(Mapping mapping)
         {
-            if (obj is TypeToTypeMapping)
-                Label((TypeToTypeMapping) obj);
+            if (mapping is TypeToTypeMapping)
+                Label((TypeToTypeMapping) mapping);
             else
-                Label((TypeToUriMapping) obj);
+                Label((TypeToUriMapping) mapping);
         }
 
         private void Label(TypeToTypeMapping mapping)

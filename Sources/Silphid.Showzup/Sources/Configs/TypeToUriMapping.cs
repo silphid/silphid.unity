@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Silphid.Extensions;
 using UnityEngine;
 
 namespace Silphid.Showzup
@@ -13,8 +14,15 @@ namespace Silphid.Showzup
 
         public TypeToUriMapping(Type source, Uri target, VariantSet variants) : base(source, variants)
         {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
             _target = target.ToString();
         }
+
+        public override bool Matches(string filter) =>
+            base.Matches(filter) ||
+            _target.CaseInsensitiveContains(filter);
 
         public override string ToString()
         {

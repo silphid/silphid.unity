@@ -1,15 +1,23 @@
 ﻿using System;
 using Silphid.Extensions;
+using Silphid.Showzup.Requests;
 using UniRx;
+using UnityEngine.UI;
 
 namespace Silphid.Showzup
 {
-    public static class IObservableNavExtensions
+    public static class IObservableExtensions
     {
         #region IObservable<object>
 
         public static IDisposable BindTo(this IObservable<object> This, IPresenter target) =>
             This.Subscribe(x => target.Present(x).SubscribeAndForget());
+
+        public static IDisposable BindTo(this Button This, IRequest request) =>
+            This.OnClickAsObservable().Subscribe(_ => This.Handle(request));
+
+        public static IDisposable BindTo<TRequest>(this Button This) where TRequest : IRequest, new() =>
+            This.OnClickAsObservable().Subscribe(_ => This.Handle<TRequest>());
 
         #endregion
 

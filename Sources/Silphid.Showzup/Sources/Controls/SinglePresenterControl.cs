@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Showzup.Requests;
@@ -75,12 +74,6 @@ namespace Silphid.Showzup
         }
 
         #region IPresenter members
-
-        public override bool CanPresent(object input, Options options = null)
-        {
-            var target = options?.Target;
-            return target == null || VariantSet.Contains(target);
-        }
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
@@ -182,20 +175,16 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public virtual bool CanHandle(IRequest request)
+        public virtual bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
-            return presentRequest != null
-                   && ShouldHandlePresentRequests
-                   && CanPresent(presentRequest.Input, presentRequest.Options);
-        }
-
-        public IObservable<Unit> Handle(IRequest request)
-        {
-            var presentRequest = request as PresentRequest;
-            return presentRequest != null && CanHandle(request)
-                ? Present(presentRequest.Input, presentRequest.Options).AsSingleUnitObservable()
-                : null;
+            if (presentRequest != null && ShouldHandlePresentRequests)
+            {
+                Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
+                return true;
+            }
+            
+            return false;
         }
 
         #endregion

@@ -61,7 +61,7 @@ namespace Silphid.Injexit.Test
         [Test]
         public void MissingBindingForRequiredText_ShouldThrow()
         {
-            Assert.Throws<UnresolvedTypeException>(() =>
+            Assert.Throws<UnresolvedDependencyException>(() =>
                 _fixture.Resolve<ClassWithRequiredText>());
         }
         

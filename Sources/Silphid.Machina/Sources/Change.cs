@@ -1,6 +1,6 @@
 ﻿namespace Silphid.Machina
 {
-	public class Change<TState> where TState : IState
+	public class Change<TState>
     {
         public TState Source { get; }
         public TState Destination { get; }
