@@ -274,6 +274,9 @@ namespace Silphid.Showzup
 
         public override bool Handle(IRequest request)
         {
+            if (base.Handle(request))
+                return true;
+
             if (!ShouldHandleBackRequests || !_canPop.Value)
                 return false;
             
