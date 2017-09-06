@@ -277,7 +277,9 @@ namespace Silphid.Showzup
             if (base.Handle(request))
                 return true;
 
-            if (!ShouldHandleBackRequests || !_canPop.Value)
+            var req = request as BackRequest;
+
+            if (req == null || !ShouldHandleBackRequests || !_canPop.Value)
                 return false;
             
             Pop().SubscribeAndForget();
