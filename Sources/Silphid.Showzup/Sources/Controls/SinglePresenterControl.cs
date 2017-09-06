@@ -39,9 +39,16 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject]
+        internal IViewResolver ViewResolver { get; set; }
+
+        [Inject]
+        internal IViewLoader ViewLoader { get; set; }
+
+        [Inject]
+        internal IVariantProvider VariantProvider { get; set; }
+
+        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
 
         #endregion
 
@@ -69,6 +76,7 @@ namespace Silphid.Showzup
 
         protected SinglePresenterControl()
         {
+            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             View = _view.ToReadOnlyReactiveProperty();
             View.Subscribe(x => MutableFirstView.Value = x);
         }
@@ -80,9 +88,9 @@ namespace Silphid.Showzup
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => Present(x, options));
-            
+
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
-            
+
             if (_state == State.Ready)
                 return PresentNow(input, options);
 
@@ -153,10 +161,11 @@ namespace Silphid.Showzup
             var cancellationDisposable = new BooleanDisposable();
             var cancellationToken = new CancellationToken(cancellationDisposable);
             var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());
-
+            _isLoading.Value = true;
             return ViewLoader
                 .Load(viewInfo, cancellationToken)
-                .TakeUntil(cancellations);
+                .TakeUntil(cancellations)
+                .DoOnCompleted(() => _isLoading.Value = false);
         }
 
         protected virtual Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options) =>
@@ -183,7 +192,7 @@ namespace Silphid.Showzup
                 Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
                 return true;
             }
-            
+
             return false;
         }
 
