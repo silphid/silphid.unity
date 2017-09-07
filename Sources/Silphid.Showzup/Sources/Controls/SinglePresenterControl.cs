@@ -85,10 +85,6 @@ namespace Silphid.Showzup
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
-            var observable = input as IObservable<object>;
-            if (observable != null)
-                return observable.SelectMany(x => Present(x, options));
-
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             if (_state == State.Ready)
@@ -110,12 +106,17 @@ namespace Silphid.Showzup
 
         private IObservable<IView> PresentNow(object input, Options options)
         {
+            _isLoading.Value = true;
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.SelectMany(x => PresentNow(x, options));
+
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
 
             _state = State.Loading;
             return Observable
-                .Defer(() => LoadView(viewInfo, options))
+                .Defer(() => LoadView(viewInfo, options).DoOnCompleted(() => _isLoading.Value = false))
                 .DoOnError(_ => _state = State.Ready)
                 .ContinueWith(view =>
                 {
@@ -164,8 +165,7 @@ namespace Silphid.Showzup
             _isLoading.Value = true;
             return ViewLoader
                 .Load(viewInfo, cancellationToken)
-                .TakeUntil(cancellations)
-                .DoOnCompleted(() => _isLoading.Value = false);
+                .TakeUntil(cancellations);
         }
 
         protected virtual Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options) =>
