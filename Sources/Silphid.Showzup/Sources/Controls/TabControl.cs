@@ -21,12 +21,13 @@ namespace Silphid.Showzup
         public SelectionControl TabSelectionControl;
         public PresenterControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
-        
+
         private readonly MoveHandler _moveHandler = new MoveHandler();
         private Options _lastOptions;
-        
+
         private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
+        private int _currentIndex;
 
         public void Start()
         {
@@ -35,14 +36,15 @@ namespace Silphid.Showzup
                 .BindTo(TabSelectionControl.SelectedView)
                 .AddTo(this);
 
-            TabSelectionControl.SelectedView
+            _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
+
+            TabSelectionControl.SelectedIndex
                 .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
-                .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
-                .SelectMany(x => ContentTransitionControl.Present(x, _lastOptions))
+                .SelectMany(x => ShowContent(x ?? 0))
                 .Subscribe(x => _contentView.Value = x)
                 .AddTo(this);
-            
+
             _moveHandler.BindBidirectional(
                 ContentTransitionControl,
                 TabSelectionControl,
@@ -56,6 +58,7 @@ namespace Silphid.Showzup
                 .Subscribe(x => ContentTransitionControl.FirstView.Value?.SelectDeferred())
                 .AddTo(this);
         }
+
 
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
@@ -77,9 +80,21 @@ namespace Silphid.Showzup
         {
             if (!TabSelectionControl.IsSelfOrDescendantSelected())
             {
-                _moveHandler.OnMove(new AxisEventData(EventSystem.current) { moveDir = MoveDirection.Up});
+                _moveHandler.OnMove(new AxisEventData(EventSystem.current) {moveDir = MoveDirection.Up});
                 eventData.Use();
             }
+        }
+
+        private IObservable<IView> ShowContent(int index)
+        {
+            var view = TabSelectionControl.GetViewAtIndex(index);
+            var direction = _currentIndex > index ? Direction.Backward : Direction.Forward;
+            _currentIndex = index;
+            return Observable.Return(view)
+                .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
+                .SelectMany(x => ContentTransitionControl
+                    .With(direction)
+                    .Present(x, _lastOptions));
         }
     }
 }
