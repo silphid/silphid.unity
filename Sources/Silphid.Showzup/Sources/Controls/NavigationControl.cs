@@ -16,7 +16,6 @@ namespace Silphid.Showzup
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly ReactiveProperty<bool> _isNavigating = new ReactiveProperty<bool>(false);
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly Subject<Nav> _navigating = new Subject<Nav>();
         private readonly Subject<Nav> _navigated = new Subject<Nav>();
         private ReadOnlyReactiveProperty<bool> _canPush;
@@ -34,7 +33,6 @@ namespace Silphid.Showzup
         public void Inject()
         {
             IsNavigating = _isNavigating.ToReadOnlyReactiveProperty();
-            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             History.PairWithPrevious().Skip(1).Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
@@ -48,7 +46,6 @@ namespace Silphid.Showzup
         #region INavigationPresenter members
 
         public ReadOnlyReactiveProperty<bool> IsNavigating { get; private set; }
-        public ReadOnlyReactiveProperty<bool> IsLoading { get; private set; }
 
         public ReadOnlyReactiveProperty<bool> CanPresent =>
             _canPush ?? (_canPush = IsNavigating.Not().ToReadOnlyReactiveProperty());
@@ -101,13 +98,8 @@ namespace Silphid.Showzup
 
             StartChange();
 
-            _isLoading.Value = true;
             return LoadView(viewInfo, options)
-                .Do(view =>
-                {
-                    _isLoading.Value = false;
-                    presentation.TargetView = view;
-                })
+                .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);
         }
 

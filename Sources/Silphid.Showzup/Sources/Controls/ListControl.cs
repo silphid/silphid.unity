@@ -63,6 +63,8 @@ namespace Silphid.Showzup
 
         #endregion
 
+
+        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<IView[]> _reactiveViews = new ReactiveProperty<IView[]>(Array.Empty<IView>());
         private VariantSet _variantSet;
@@ -74,6 +76,7 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
+            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
         }
 
@@ -122,7 +125,7 @@ namespace Silphid.Showzup
             var view = _views.FirstOrDefault(x => x == input || x.ViewModel == input || x.ViewModel?.Model == input);
             if (view == null)
                 return;
-            
+
             RemoveView(view.GameObject);
             UpdateReactiveViews();
         }
@@ -134,7 +137,7 @@ namespace Silphid.Showzup
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => Present(x, options));
-            
+
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             if (!(input is IEnumerable))
@@ -174,7 +177,7 @@ namespace Silphid.Showzup
                 AddView(Container, view);
             }
         }
-        
+
         private int? GetInsertionIndex(IView view)
         {
             if (_views.Count == 0)
@@ -212,7 +215,7 @@ namespace Silphid.Showzup
         {
             if (items == null)
                 return Observable.Empty<IView>();
-
+            _isLoading.Value = true;
             return items
                 .Cast<object>()
                 .Select(input => ResolveView(input, options))
@@ -221,8 +224,11 @@ namespace Silphid.Showzup
                 .DoOnCompleted(UpdateReactiveViews);
         }
 
-        private void UpdateReactiveViews() =>
+        private void UpdateReactiveViews()
+        {
+            _isLoading.Value = false;
             _reactiveViews.Value = _views.ToArray();
+        }
 
         protected ViewInfo ResolveView(object input, Options options) =>
             ViewResolver.Resolve(input, options);
