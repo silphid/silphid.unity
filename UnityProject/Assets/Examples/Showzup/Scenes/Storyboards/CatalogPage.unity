@@ -113,12 +113,6 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224208107919696988, guid: c6c0b7073ec234d83a324ebf62b519d4,
     type: 2}
   m_PrefabInternal: {fileID: 1932563612}
---- !u!114 &1384906617 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114212662080744378, guid: c6c0b7073ec234d83a324ebf62b519d4,
-    type: 2}
-  m_PrefabInternal: {fileID: 1932563612}
-  m_Script: {fileID: -151430557, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
 --- !u!1 &1859618438
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,11 +429,6 @@ Prefab:
       propertyPath: m_SizeDelta.x
       value: 532
       objectReference: {fileID: 0}
-    - target: {fileID: 114900209354171010, guid: c6c0b7073ec234d83a324ebf62b519d4,
-        type: 2}
-      propertyPath: SelectionControl
-      value: 
-      objectReference: {fileID: 1384906617}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c6c0b7073ec234d83a324ebf62b519d4, type: 2}
   m_IsPrefabParent: 0

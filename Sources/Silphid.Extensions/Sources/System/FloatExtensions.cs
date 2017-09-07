@@ -24,6 +24,12 @@ namespace Silphid.Extensions
         [Pure]
         public static float Ceiling(this float This) => (float)Math.Ceiling(This);
 
+        [Pure]
+        public static int FloorInt(this float This) => (int)Math.Floor(This);
+
+        [Pure]
+        public static int CeilingInt(this float This) => (int)Math.Ceiling(This);
+
         /// <summary>
         /// Returns fractional part of given value.
         /// </summary>
@@ -202,7 +208,7 @@ namespace Silphid.Extensions
         /// </summary>
         [Pure]
         public static float Clamp(this float This, float min, float max) =>
-            min < max ? This.Minimum(min).Maximum(max) : This.Minimum(max).Maximum(min);
+            min < max ? This.AtLeast(min).AtMost(max) : This.AtLeast(max).AtMost(min);
 
         /// <summary>
         /// Returns value clamped to the [0, 1] interval
@@ -214,16 +220,19 @@ namespace Silphid.Extensions
         /// Returns value clipped to the [min, +INF] interval
         /// </summary>
         [Pure]
-        public static float Minimum(this float value, float min) => Math.Max(value, min);
+        public static float AtLeast(this float value, float min) => Math.Max(value, min);
 
         /// <summary>
         /// Returns value clipped to the [-INF, max] interval
         /// </summary>
         [Pure]
-        public static float Maximum(this float value, float max)
-        {
-            return Math.Min(value, max);
-        }
+        public static float AtMost(this float value, float max) => Math.Min(value, max);
+
+        [Pure]
+        public static float Min(this float value, float min) => Math.Min(value, min);
+
+        [Pure]
+        public static float Max(this float value, float min) => Math.Max(value, min);
 
         #endregion
 

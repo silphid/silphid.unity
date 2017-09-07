@@ -4,7 +4,7 @@ namespace Silphid.Machina
 {
     public interface IStateConfig
     {
-        void On<T>(Func<T, bool> handler);
-        void On<T>(Action<T> handler);
+        void Handle<T>(Func<T, bool> handler);
+        void Handle<T>(Action<T> handler);
     }
 }

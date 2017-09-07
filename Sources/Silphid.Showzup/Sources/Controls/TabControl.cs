@@ -3,7 +3,6 @@ using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
@@ -16,7 +15,7 @@ namespace Silphid.Showzup
         Right = MoveDirection.Right
     }
 
-    public class TabControl : PresenterControl, ISelectHandler, IMoveHandler, ICancelHandler
+    public class TabControl : PresenterControl, IMoveHandler, ICancelHandler
     {
         public float SelectionDelay;
         public SelectionControl TabSelectionControl;
@@ -60,6 +59,8 @@ namespace Silphid.Showzup
 
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
+
+        public override ReadOnlyReactiveProperty<bool> IsLoading => TabSelectionControl.IsLoading;
 
         public override void OnSelect(BaseEventData eventData)
         {

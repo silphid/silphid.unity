@@ -35,12 +35,12 @@ namespace Silphid.Machina
             return handler?.Invoke(trigger) ?? false;
         }
 
-        public IStateConfig For(TState state) =>
+        public IStateConfig When(TState state) =>
             _stateInfos.GetOrCreateValue(state, () => new StateInfo());
 
-        public IStateConfig For(TState state, Action<IStateConfig> action)
+        public IStateConfig When(TState state, Action<IStateConfig> action)
         {
-            var config = For(state);
+            var config = When(state);
             action(config);
             return config;
         }

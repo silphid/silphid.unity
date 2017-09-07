@@ -39,22 +39,16 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject]
-        internal IViewResolver ViewResolver { get; set; }
-
-        [Inject]
-        internal IViewLoader ViewLoader { get; set; }
-
-        [Inject]
-        internal IVariantProvider VariantProvider { get; set; }
-
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
+        [Inject] internal IViewResolver ViewResolver { get; set; }
+        [Inject] internal IViewLoader ViewLoader { get; set; }
+        [Inject] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
         #region Properties
 
         public string[] Variants;
+        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
         public ReadOnlyReactiveProperty<IView> View { get; }
         public bool ShouldHandlePresentRequests;
 
@@ -66,6 +60,7 @@ namespace Silphid.Showzup
 
         #region Private fields
 
+        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly Subject<Unit> _loadCancellations = new Subject<Unit>();
         private State _state;
         private PendingRequest _pendingRequest;

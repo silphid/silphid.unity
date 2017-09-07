@@ -1,28 +1,49 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using UniRx;
-using Rx = UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup
 {
     public class ListControl : PresenterControl, IListPresenter
     {
+        #region Entry private class
+
+        protected class Entry
+        {
+            public int Index { get; set; }
+            public object Model { get; }
+            public ViewInfo? ViewInfo { get; set; }
+            public IView View { get; set; }
+            public IDisposable Disposable { get; set; }
+
+            public Entry(int index, object model)
+            {
+                Index = index;
+                Model = model;
+            }
+
+            public Entry(int index, IView view)
+            {
+                Index = index;
+                View = view;
+                Model = view.ViewModel?.Model ?? view.ViewModel;
+            }
+        }
+
+        #endregion
+        
         #region Injected properties
 
-        [Inject]
-        internal IViewResolver ViewResolver { get; set; }
-
-        [Inject]
-        internal IViewLoader ViewLoader { get; set; }
-
-        [Inject]
-        internal IVariantProvider VariantProvider { get; set; }
+        [Inject] internal IViewResolver ViewResolver { get; set; }
+        [Inject] internal IViewLoader ViewLoader { get; set; }
+        [Inject] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -31,26 +52,69 @@ namespace Silphid.Showzup
         public GameObject Container;
         public string[] Variants;
         public bool AutoSelect = true;
+        public Comparer<IView> ViewComparer { get; set; }
+        public Comparer<IViewModel> ViewModelComparer { get; set; }
+        public Comparer<object> ModelComparer { get; set; }
 
         #endregion
 
         #region Public properties
 
-        public ReadOnlyReactiveProperty<IView[]> Views { get; }
-
-        public ReadOnlyReactiveProperty<object[]> Models => _models ?? (_models = _reactiveViews
-                                                                .Select(views => views
-                                                                    .Select(view => view.ViewModel?.Model)
-                                                                    .ToArray())
-                                                                .ToReadOnlyReactiveProperty());
-
-        public int Count => _views.Count;
-        public bool HasItems => _views.Count > 0;
-        public int? LastIndex => HasItems ? _views.Count - 1 : (int?) null;
+        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
+        public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
+        public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
+        public int Count => _models.Value.Count;
+        public bool HasItems => Count > 0;
+        public int? LastIndex => HasItems ? Count - 1 : (int?) null;
         public int? FirstIndex => HasItems ? 0 : (int?) null;
-        public Comparer<IView> ViewComparer { get; set; }
-        public Comparer<IViewModel> ViewModelComparer { get; set; }
-        public Comparer<object> ModelComparer { get; set; }
+
+        #endregion
+
+        #region Protected/private fields/properties
+
+        protected List<IView> _views = new List<IView>();
+        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
+            new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
+        private VariantSet _variantSet;
+        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
+
+        protected VariantSet VariantSet =>
+            _variantSet ??
+            (_variantSet = VariantProvider.GetVariantsNamed(Variants));
+
+        #endregion
+
+        #region Constructor
+
+        public ListControl()
+        {
+            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
+            Views = _reactiveViews.ToReadOnlyReactiveProperty();
+            Models = _models
+                .Select(x => new ReadOnlyCollection<object>(x))
+                .ToReadOnlyReactiveProperty();
+        }
+
+        #endregion
+        
+        #region IPresenter members
+
+        [Pure]
+        public override IObservable<IView> Present(object input, Options options = null)
+        {
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.ContinueWith(x => Present(x, options));
+            
+            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+
+            return Observable.Defer(() => PresentInternal(input, options));
+        }
+
+        #endregion
+        
+        #region Public methods
 
         public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
             ViewComparer = Comparer<IView>.Create((x, y) => comparer((TView) x, (TView) y));
@@ -61,43 +125,8 @@ namespace Silphid.Showzup
         public void SetModelComparer<TModel>(Func<TModel, TModel, int> comparer) =>
             ModelComparer = Comparer<object>.Create((x, y) => comparer((TModel) x, (TModel) y));
 
-        #endregion
-
-
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
-        protected readonly List<IView> _views = new List<IView>();
-        private readonly ReactiveProperty<IView[]> _reactiveViews = new ReactiveProperty<IView[]>(Array.Empty<IView>());
-        private VariantSet _variantSet;
-        private ReadOnlyReactiveProperty<object[]> _models;
-
-        protected VariantSet VariantSet =>
-            _variantSet ??
-            (_variantSet = VariantProvider.GetVariantsNamed(Variants));
-
-        public ListControl()
-        {
-            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
-            Views = _reactiveViews.ToReadOnlyReactiveProperty();
-        }
-
-        protected virtual void Start()
-        {
-            Views
-                .Select(x => x.FirstOrDefault())
-                .Do(x => MutableFirstView.Value = x)
-                .Where(x => AutoSelect)
-                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                .Subscribe(SelectView)
-                .AddTo(this);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view?.SelectDeferred();
-        }
-
         public IView GetViewForViewModel(object viewModel) =>
-            _views.FirstOrDefault(x => x?.ViewModel == viewModel);
+            _views?.FirstOrDefault(x => x?.ViewModel == viewModel);
 
         public int? IndexOfView(IView view)
         {
@@ -117,8 +146,11 @@ namespace Silphid.Showzup
         [Pure]
         public IObservable<IView> Add(object input, Options options = null) =>
             LoadView(ResolveView(input, options))
-                .Do(AddView)
-                .DoOnCompleted(UpdateReactiveViews);
+                .Do(view =>
+                {
+                    AddView(_views.Count, view);
+                    UpdateReactiveViews();
+                });
 
         public void Remove(object input)
         {
@@ -130,55 +162,55 @@ namespace Silphid.Showzup
             UpdateReactiveViews();
         }
 
-        [Pure]
-        public override IObservable<IView> Present(object input, Options options = null)
+        #endregion
+
+        #region Private methods
+
+        private IObservable<IView> PresentInternal(object input, Options options)
         {
-            //Review this make possible to use Observable.next for populate the list 
-            var observable = input as IObservable<object>;
-            if (observable != null)
-                return observable.SelectMany(x => Present(x, options));
-
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
-
-            if (!(input is IEnumerable))
-                input = new[] {input};
-
-            return PresentInternal((IEnumerable) input, options);
-        }
-
-        [Pure]
-        private IObservable<IView> PresentInternal(IEnumerable items, Options options = null)
-        {
-            return Observable
-                .Defer(() => CleanUpAndLoadViews(items, options))
-                .Do(AddView);
-        }
-
-        private IObservable<IView> CleanUpAndLoadViews(IEnumerable items, Options options)
-        {
+            var models = (input as List<object>)?.ToList() ?? 
+                         (input as IEnumerable)?.Cast<object>().ToList() ??
+                         input?.ToSingleItemList() ??
+                         new List<object>();
+            
+            _models.Value = models;
             _views.Clear();
-            _reactiveViews.Value = Array.Empty<IView>();
+            _reactiveViews.Value = new ReadOnlyCollection<IView>(Array.Empty<IView>());
             RemoveAllViews(Container);
 
-            return LoadViews(items, options);
+            var entries = models
+                .Select((x, i) => new Entry(i, x))
+                .ToList();
+
+            return LoadViews(entries, options);
         }
 
-        private void AddView(IView view)
+        protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options) =>
+            LoadAllViews(entries, options)
+                .Do(x => AddView(x.Index, x.View))
+                .Select(x => x.View);
+
+        private IObservable<Entry> LoadAllViews(List<Entry> entries, Options options)
         {
-            var index = GetInsertionIndex(view);
-            if (index.HasValue)
-            {
-                _views.Insert(index.Value, view);
-                InsertView(Container, index.Value, view);
-            }
-            else
-            {
-                _views.Add(view);
-                AddView(Container, view);
-            }
+            _isLoading.Value = true;
+            
+            return entries
+                .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
+                .ToObservable()
+                .SelectMany(entry => LoadView(entry.ViewInfo.Value)
+                    .Do(view => entry.View = view)
+                    .Select(_ => entry))
+                .DoOnCompleted(() =>
+                {
+                		_isLoading.Value = false;
+                		UpdateReactiveViews();
+				});
         }
 
-        private int? GetInsertionIndex(IView view)
+        protected void UpdateReactiveViews() =>
+            _reactiveViews.Value = _views.AsReadOnly();
+        
+        private int? GetSortedIndex(IView view)
         {
             if (_views.Count == 0)
                 return null;
@@ -211,23 +243,39 @@ namespace Silphid.Showzup
             return null;
         }
 
-        private IObservable<IView> LoadViews(IEnumerable items, Options options)
+        #endregion
+
+        #region Protected/virtual methods
+        
+        protected virtual void Start()
         {
-            if (items == null)
-                return Observable.Empty<IView>();
-            _isLoading.Value = true;
-            return items
-                .Cast<object>()
-                .Select(input => ResolveView(input, options))
-                .ToObservable()
-                .SelectMany(view => LoadView(view))
-                .DoOnCompleted(UpdateReactiveViews);
+            Views
+                .Select(x => x.FirstOrDefault())
+                .Do(x => MutableFirstView.Value = x)
+                .Where(x => AutoSelect)
+                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                .Subscribe(SelectView)
+                .AddTo(this);
         }
 
-        private void UpdateReactiveViews()
+        protected virtual void SelectView(IView view)
         {
-            _isLoading.Value = false;
-            _reactiveViews.Value = _views.ToArray();
+            view?.SelectDeferred();
+        }
+
+        protected virtual void AddView(int index, IView view)
+        {
+            var sortedIndex = GetSortedIndex(view);
+            if (sortedIndex != null)
+            {
+                InsertView(Container, sortedIndex.Value, view);
+                _views.Insert(sortedIndex.Value, view);
+            }
+            else
+            {
+                AddView(Container, view);
+                _views.Add(view);
+            }
         }
 
         protected ViewInfo ResolveView(object input, Options options) =>
@@ -235,5 +283,7 @@ namespace Silphid.Showzup
 
         protected virtual IObservable<IView> LoadView(ViewInfo viewInfo) =>
             ViewLoader.Load(viewInfo, CancellationToken.None);
+
+        #endregion
     }
 }

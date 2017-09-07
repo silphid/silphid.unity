@@ -116,17 +116,17 @@ namespace Silphid.Extensions
 
         public static string RemoveRight(this string value, int count)
         {
-            return value.Substring(0, value.Length - count.Maximum(value.Length));
+            return value.Substring(0, value.Length - count.AtMost(value.Length));
         }
 
         public static string Left(this string value, int count)
         {
-            return value.Substring(0, count.Maximum(value.Length));
+            return value.Substring(0, count.AtMost(value.Length));
         }
 
         public static string Right(this string value, int count)
         {
-            return value.Substring(value.Length - count.Maximum(value.Length));
+            return value.Substring(value.Length - count.AtMost(value.Length));
         }
 
         public static bool IsNullOrEmpty(this string value)
