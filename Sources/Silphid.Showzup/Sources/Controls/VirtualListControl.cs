@@ -15,7 +15,7 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
-        private readonly ILogger _logger = null; // Debug.unityLogger;
+        private readonly ILogger _logger = Debug.unityLogger;
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;

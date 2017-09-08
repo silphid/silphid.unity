@@ -52,12 +52,12 @@ namespace Silphid.Extensions
 
         public static void Shuffle<T>(this IList<T> list)
         {
-            Random random = new Random();
+            var random = new Random();
             for (int i = 0; i < list.Count; i++)
             {
                 // Permutate with random item
                 int j = random.Next(list.Count);
-                T temp = list[j];
+                var temp = list[j];
                 list[j] = list[i];
                 list[i] = temp;
             }
@@ -68,12 +68,12 @@ namespace Silphid.Extensions
         /// </summary>
         public static T WithMin<T, U>(this IEnumerable<T> source, Func<T, IComparable<U>> selector)
         {
-            T minElement = default(T);
-            IComparable<U> minValue = default(IComparable<U>);
+            var minElement = default(T);
+            var minValue = default(IComparable<U>);
 
-            foreach (T element in source)
+            foreach (var element in source)
             {
-                IComparable<U> value = selector(element);
+                var value = selector(element);
                 if (Equals(minElement, default(T)) || value.CompareTo((U) minValue) < 0)
                 {
                     minValue = value;
@@ -86,12 +86,12 @@ namespace Silphid.Extensions
 
         public static T WithMax<T, U>(this IEnumerable<T> source, Func<T, IComparable<U>> selector)
         {
-            T maxElement = default(T);
-            IComparable<U> maxValue = default(IComparable<U>);
+            var maxElement = default(T);
+            var maxValue = default(IComparable<U>);
 
-            foreach (T element in source)
+            foreach (var element in source)
             {
-                IComparable<U> value = selector(element);
+                var value = selector(element);
                 if (Equals(maxElement, default(T)) || value.CompareTo((U) maxValue) > 0)
                 {
                     maxValue = value;
@@ -104,8 +104,8 @@ namespace Silphid.Extensions
 
         public static string ToDelimitedString<T>(this IEnumerable<T> source, string delimiter)
         {
-            StringBuilder builder = new StringBuilder();
-            foreach (T t in source)
+            var builder = new StringBuilder();
+            foreach (var t in source)
             {
                 if (builder.Length > 0)
                 {
@@ -129,21 +129,23 @@ namespace Silphid.Extensions
             }
 
             // Compare items one-by-one
-            IEnumerator<T> sourceEnumerator = source.GetEnumerator();
-            IEnumerator<T> otherEnumerator = other.GetEnumerator();
-            bool hasSource, hasOther;
-            while ((hasSource = sourceEnumerator.MoveNext()) &
-                   (hasOther = otherEnumerator.MoveNext()))
-            {
-                if (!Equals(sourceEnumerator.Current, otherEnumerator.Current))
-                    return false;
-            }
-
-            // Any item left in either collection?
-            if (hasSource || hasOther)
-            {
-                return false;
-            }
+            using (var sourceEnumerator = source.GetEnumerator())
+                using (var otherEnumerator = other.GetEnumerator())
+                {
+                    bool hasSource, hasOther;
+                    while ((hasSource = sourceEnumerator.MoveNext()) &
+                           (hasOther = otherEnumerator.MoveNext()))
+                    {
+                        if (!Equals(sourceEnumerator.Current, otherEnumerator.Current))
+                            return false;
+                    }
+    
+                    // Any item left in either collection?
+                    if (hasSource || hasOther)
+                    {
+                        return false;
+                    }
+                }
 
             return true;
         }
@@ -160,6 +162,14 @@ namespace Silphid.Extensions
             return source.Concat(array);
         }
 
+        public static IEnumerable<T> Repeat<T>(this IEnumerable<T> source, int count)
+        {
+            source = source as T[] ?? source as IList<T> ?? source.ToList();
+            for (int i = 0; i < count; i++)
+                foreach (var s in source)
+                    yield return s;
+        }
+
         public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T obj)
         {
             return source.Where(s => !s.Equals(obj));
@@ -167,7 +177,7 @@ namespace Silphid.Extensions
 
         public static List<T> Shuffled<T>(this IEnumerable<T> source)
         {
-            List<T> list = source.ToList();
+            var list = source.ToList();
             list.Shuffle();
             return list;
         }
@@ -175,7 +185,7 @@ namespace Silphid.Extensions
         public static int FirstIndex<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
             int index = 0;
-            foreach (T item in source)
+            foreach (var item in source)
             {
                 if (predicate(item))
                 {
@@ -188,10 +198,10 @@ namespace Silphid.Extensions
 
         public static int LastIndex<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
-            List<T> list = source.ToList();
+            var list = source.ToList();
             list.Reverse();
             int index = list.Count - 1;
-            foreach (T item in list)
+            foreach (var item in list)
             {
                 if (predicate(item))
                 {
