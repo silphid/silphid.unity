@@ -5,24 +5,24 @@ namespace Silphid.Showzup.ListLayouts
 {
     public class VerticalListLayout : ListLayout
     {
-        public VerticalListLayout(Vector2 itemSize, Vector2 spacing, RectOffset padding) :
-            base(itemSize, spacing, padding)
-        {
-        }
+        public float VerticalSpacing;
+        public float ItemHeight;
 
-        public override Rect GetItemRect(int index) =>
+        protected float ItemOffsetY => ItemHeight + VerticalSpacing;
+
+        public override Rect GetItemRect(int index, Vector2 viewportSize) =>
             new Rect(
-                FirstItemPosition + ItemOffset.WithX(0) * index,
-                ItemSize);
+                FirstItemPosition + new Vector2(0, ItemOffsetY * index),
+                new Vector2(viewportSize.x - (Padding.left + Padding.right), ItemHeight));
 
-        public override Vector2 GetContainerSize(int count) =>
+        public override Vector2 GetContainerSize(int count, Vector2 viewportSize) =>
             new Vector2(
-                Padding.left + ItemSize.x + Padding.right,
-                Padding.top + ItemSize.y * count + Spacing.y * (count - 1).AtLeast(0) + Padding.bottom);
+                viewportSize.x,
+                Padding.top + ItemHeight * count + VerticalSpacing * (count - 1).AtLeast(0) + Padding.bottom);
 
         public override IndexRange GetVisibleIndexRange(Rect rect) =>
             new IndexRange(
-                ((rect.yMin + FirstItemPosition.y) / -ItemOffset.y).FloorInt(),
-                ((rect.yMax + FirstItemPosition.y) / -ItemOffset.y).FloorInt() + 1);
+                ((rect.yMin + FirstItemPosition.y) / -ItemOffsetY).FloorInt(),
+                ((rect.yMax + FirstItemPosition.y) / -ItemOffsetY).FloorInt() + 1);
     }
 }

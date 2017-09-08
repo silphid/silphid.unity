@@ -5,24 +5,24 @@ namespace Silphid.Showzup.ListLayouts
 {
     public class HorizontalListLayout : ListLayout
     {
-        public HorizontalListLayout(Vector2 itemSize, Vector2 spacing, RectOffset padding) :
-            base(itemSize, spacing, padding)
-        {
-        }
+        public float HorizontalSpacing;
+        public float ItemWidth;
 
-        public override Rect GetItemRect(int index) =>
+        protected float ItemOffsetX => ItemWidth + HorizontalSpacing;
+        
+        public override Rect GetItemRect(int index, Vector2 viewportSize) =>
             new Rect(
-                FirstItemPosition + ItemOffset.WithY(0) * index,
-                ItemSize);
+                FirstItemPosition + new Vector2(ItemOffsetX * index, 0),
+                new Vector2(ItemWidth, viewportSize.y - (Padding.top + Padding.bottom)));
 
-        public override Vector2 GetContainerSize(int count) =>
+        public override Vector2 GetContainerSize(int count, Vector2 viewportSize) =>
             new Vector2(
-                Padding.left + ItemSize.x * count + Spacing.x * (count - 1).AtLeast(0) + Padding.right,
-                Padding.top + ItemSize.y + Padding.bottom);
+                Padding.left + ItemWidth * count + HorizontalSpacing * (count - 1).AtLeast(0) + Padding.right,
+                viewportSize.y);
 
         public override IndexRange GetVisibleIndexRange(Rect rect) =>
             new IndexRange(
-                ((rect.xMin - FirstItemPosition.x) / ItemOffset.x).FloorInt(),
-                ((rect.xMax - FirstItemPosition.x) / ItemOffset.x).FloorInt() + 1);
+                ((rect.xMin - FirstItemPosition.x) / ItemOffsetX).FloorInt(),
+                ((rect.xMax - FirstItemPosition.x) / ItemOffsetX).FloorInt() + 1);
     }
 }
