@@ -5,7 +5,6 @@ using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
-using ListLayout = Silphid.Showzup.ListLayouts.Components.ListLayout;
 
 namespace Silphid.Showzup
 {
@@ -143,7 +142,7 @@ namespace Silphid.Showzup
 
         private void UpdateViewLayout(IView view, int index)
         {
-            var rect = Layout.GetItemRect(index);
+            var rect = Layout.GetItemRect(index, Viewport.GetSize());
             
             var rectTransform = view.GameObject.RectTransform();
             rectTransform.pivot = Vector2.up;
@@ -155,7 +154,7 @@ namespace Silphid.Showzup
 
         private void UpdateContainerLayout(int count)
         {
-            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count); 
+            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count, Viewport.GetSize()); 
         }
 
         private Entry GetEntryWithViewInfo(int index)
