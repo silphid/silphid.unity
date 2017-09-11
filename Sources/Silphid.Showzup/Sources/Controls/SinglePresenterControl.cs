@@ -1,6 +1,7 @@
 ﻿using System;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Requests;
 using Silphid.Showzup.Requests;
 using UniRx;
 

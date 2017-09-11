@@ -1,10 +1,15 @@
-﻿using UniRx;
+﻿using Silphid.Requests;
+using UniRx;
 
 namespace Silphid.Machina
 {
-	public interface IMachine<TState>
+	public interface IMachine : IRequestHandler
 	{
-		IReactiveProperty<TState> State { get; }
-		bool Trigger(object trigger);
+		
+	}
+	
+	public interface IMachine<TState> : IMachine
+	{
+		ReadOnlyReactiveProperty<TState> State { get; }
 	}
 }

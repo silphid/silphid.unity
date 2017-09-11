@@ -1,4 +1,4 @@
-﻿namespace Silphid.Showzup.Requests
+﻿namespace Silphid.Requests
 {
     public interface IRequest
     {

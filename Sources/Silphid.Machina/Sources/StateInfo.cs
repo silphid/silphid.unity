@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using Silphid.Requests;
 
 namespace Silphid.Machina
 {
     public class StateInfo : IStateConfig
     {
-        public readonly Dictionary<Type, Func<object, bool>> Handlers = new Dictionary<Type, Func<object, bool>>();
+        public readonly Dictionary<Type, Func<object, IRequest>> Handlers = new Dictionary<Type, Func<object, IRequest>>();
         
         /// <summary>
         /// Adds an handler for given trigger type T, which should return whether it handled the trigger or not.
         /// </summary>
-        public void Handle<T>(Func<T, bool> handler)
+        public void Handle<T>(Func<T, IRequest> handler)
         {
             Handlers[typeof(T)] = x => handler((T) x);
         }
@@ -23,7 +24,7 @@ namespace Silphid.Machina
             Handlers[typeof(T)] = x =>
             {
                 handler((T) x);
-                return true;
+                return null;
             };
         }
     }

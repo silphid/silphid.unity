@@ -153,13 +153,7 @@
     <Compile Include="Sources\Phases\PhaseState.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\OptionsPresenterDecoratorBase.cs" />
     <Compile Include="Sources\Requests\BackRequest.cs" />
-    <Compile Include="Sources\Requests\IRequest.cs" />
-    <Compile Include="Sources\Requests\IRequestHandler.cs" />
-    <Compile Include="Sources\Requests\IRequestHandlerExtensions.cs" />
-    <Compile Include="Sources\Requests\ITypedRequestHandler.cs" />
-    <Compile Include="Sources\Requests\RequestHandlerGameObjectExtensions.cs" />
     <Compile Include="Sources\Requests\PresentRequest.cs" />
-    <Compile Include="Sources\Requests\TypedRequestHandler.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
     <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Silphid.Extensions;
+using Silphid.Requests;
 using UniRx;
 
 namespace Silphid.Machina
@@ -9,11 +10,23 @@ namespace Silphid.Machina
     {
         private readonly Dictionary<TState, StateInfo> _stateInfos = new Dictionary<TState, StateInfo>();
         
-        public IReactiveProperty<TState> State { get; }
+        private readonly ReactiveProperty<object> _stateOrMachine;
+        public ReadOnlyReactiveProperty<object> StateOrMachine { get; }
+        public ReadOnlyReactiveProperty<TState> State { get; }
+        public ReadOnlyReactiveProperty<IMachine> SubMachine { get; }
 
         public Machine(TState initialState = default(TState))
         {
-            State = new ReactiveProperty<TState>(initialState);
+            _stateOrMachine = new ReactiveProperty<object>(initialState);
+            StateOrMachine = _stateOrMachine.ToReadOnlyReactiveProperty();
+            State = _stateOrMachine.Select(x => x as TState).ToReadOnlyReactiveProperty();
+            State = _stateOrMachine.ToReadOnlyReactiveProperty();
+        }
+
+        public Machine(IMachine initialSubMachine = null)
+        {
+            _stateOrMachine = new ReactiveProperty<object>(initialSubMachine);
+            State = _stateOrMachine.ToReadOnlyReactiveProperty();
         }
 
         public void Set(TState state)
@@ -22,13 +35,21 @@ namespace Silphid.Machina
                 State.Value = state;
         }
 
+        public void Set(IMachine machine)
+        {
+            if (!(State.Value?.Equals(state) ?? false))
+                State.Value = state;
+        }
+
         public bool Is(TState state) =>
             IMachineExtensions.IsStateEquivalent(State.Value, state);
 
-        public bool Trigger(object trigger)
+        public IRequest Handle(IRequest request)
         {
             if (State.Value == null)
-                return false;
+                return request;
+            
+            if (State.Value ==)
             
             var stateInfo = _stateInfos.GetValueOrDefault(State.Value);
             var handler = stateInfo?.Handlers.GetValueOrDefault(trigger.GetType());

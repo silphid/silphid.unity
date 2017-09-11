@@ -1,17 +1,20 @@
 ﻿using System;
 
-namespace Silphid.Showzup.Requests
+namespace Silphid.Requests
 {
     public abstract class TypedRequestHandler<TRequest> : ITypedRequestHandler where TRequest : class, IRequest
     {
         public Type SupportedRequestType => typeof(TRequest);
         
-        public bool Handle(IRequest request)
+        public IRequest Handle(IRequest request)
         {
             var req = request as TRequest;
-            return req != null && Handle(req);
+            if (req != null)
+                return Handle(req);
+
+            return request;
         }
 
-        protected abstract bool Handle(TRequest request);
+        protected abstract IRequest Handle(TRequest request);
     }
 }
