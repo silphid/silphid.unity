@@ -100,6 +100,14 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewModel(IViewModel viewModel, VariantSet requestedVariants)
         {
+            try
+            {
+                return ResolveFromModel(viewModel, requestedVariants);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
             var viewModelType = viewModel.GetType();
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
