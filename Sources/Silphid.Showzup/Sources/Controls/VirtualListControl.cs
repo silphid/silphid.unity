@@ -148,12 +148,15 @@ namespace Silphid.Showzup
             rectTransform.pivot = Vector2.up;
             rectTransform.anchorMin = Vector2.up;
             rectTransform.anchorMax = Vector2.up;
-            rectTransform.sizeDelta = rect.size;
             rectTransform.anchoredPosition = rect.position;
+            rectTransform.sizeDelta = rect.size;
         }
 
         private void UpdateContainerLayout(int count)
         {
+            _containerRectTransform.pivot = Vector2.up;
+            _containerRectTransform.anchorMin = Vector2.up;
+            _containerRectTransform.anchorMax = Vector2.up;
             _containerRectTransform.sizeDelta = Layout.GetContainerSize(count, Viewport.GetSize()); 
         }
 
