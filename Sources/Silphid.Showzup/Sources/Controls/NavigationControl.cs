@@ -70,19 +70,15 @@ namespace Silphid.Showzup
                 base.RemoveView(viewObject);
                 return;
             }
-            
+
             viewObject.SetActive(false);
             viewObject.transform.SetParent(HistoryContainer.transform, false);
         }
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
-            var observable = input as IObservable<object>;
-            if (observable != null)
-                return observable.SelectMany(x => Present(x, options));
-
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
-            
+
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
                 .ContinueWith(NavigateAndCompletePush);
@@ -91,6 +87,11 @@ namespace Silphid.Showzup
         private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
         {
             //Debug.Log($"#Nav# Present({input}, {options})");
+
+            _isLoading.Value = true;
+            var observable = input as IObservable<object>;
+            if (observable != null)
+                return observable.SelectMany(x => StartPushAndLoadView(x, options));
             AssertCanPresent();
 
             var viewInfo = ResolveView(input, options);
@@ -99,6 +100,7 @@ namespace Silphid.Showzup
             StartChange();
 
             return LoadView(viewInfo, options)
+                .DoOnCompleted(() => _isLoading.Value = false)
                 .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);
         }
@@ -168,7 +170,7 @@ namespace Silphid.Showzup
 
             StartChange();
 
-            var options = new Options { Direction = Direction.Backward };
+            var options = new Options {Direction = Direction.Backward};
             var presentation = CreatePresentation(null, _view.Value, view?.GetType(), options);
             presentation.TargetView = view;
             var nav = StartNavigation(presentation);
@@ -273,7 +275,7 @@ namespace Silphid.Showzup
 
             if (req == null || !ShouldHandleBackRequests || !_canPop.Value)
                 return false;
-            
+
             Pop().SubscribeAndForget();
             return true;
         }
