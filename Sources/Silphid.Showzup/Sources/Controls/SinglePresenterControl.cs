@@ -60,7 +60,7 @@ namespace Silphid.Showzup
 
         #region Private fields
 
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
+        protected readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly Subject<Unit> _loadCancellations = new Subject<Unit>();
         private State _state;
         private PendingRequest _pendingRequest;
@@ -157,7 +157,6 @@ namespace Silphid.Showzup
             var cancellationDisposable = new BooleanDisposable();
             var cancellationToken = new CancellationToken(cancellationDisposable);
             var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());
-            _isLoading.Value = true;
             return ViewLoader
                 .Load(viewInfo, cancellationToken)
                 .TakeUntil(cancellations);
