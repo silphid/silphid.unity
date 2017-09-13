@@ -158,6 +158,7 @@ namespace Silphid.Showzup
             if (view == null)
                 return;
 
+            _views.Remove(view);
             RemoveView(view.GameObject);
             UpdateReactiveViews();
         }
