@@ -37,10 +37,11 @@ namespace Silphid.Showzup
                 .AddTo(this);
 
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
-
+            
             TabSelectionControl.SelectedIndex
-                .WhereNotNull() // TODO SelectionControl should keep selection but can't with current unity select system
+                .WhereNotNull()
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
+                .DistinctUntilChanged()
                 .SelectMany(x => ShowContent(x ?? 0))
                 .Subscribe(x => _contentView.Value = x)
                 .AddTo(this);
