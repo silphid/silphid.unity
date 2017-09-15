@@ -33,6 +33,9 @@ namespace Silphid.Injexit
                 x.BindInstance(instance2);
                 x.BindInstance(instance3);
             });
+        
+        public static IResolver UsingInstances(this IResolver This, object[] instances) =>
+            This.Using(x => x.BindInstances(instances));
 
         public static object Resolve(this IResolver This, Type abstractionType, string id = null) =>
             This.ResolveFactory(abstractionType, id).Invoke(This);
