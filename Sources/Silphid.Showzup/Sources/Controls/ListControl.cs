@@ -167,7 +167,7 @@ namespace Silphid.Showzup
 
         #region Private methods
 
-        private IObservable<IView> PresentInternal(object input, Options options)
+        public virtual IObservable<IView> PresentInternal(object input, Options options)
         {
             var models = (input as List<object>)?.ToList() ?? 
                          (input as IEnumerable)?.Cast<object>().ToList() ??
