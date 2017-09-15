@@ -36,7 +36,7 @@ namespace Silphid.Showzup
 
         public ViewInfo Resolve(object input, Options options = null)
         {
-            _logger?.Log("#Views# Resolving input: {input}");
+            _logger?.Log($"#Views# Resolving input: {input}");
             
             if (input == null)
             {
