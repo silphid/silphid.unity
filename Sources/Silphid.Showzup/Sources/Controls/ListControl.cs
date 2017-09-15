@@ -158,6 +158,7 @@ namespace Silphid.Showzup
             if (view == null)
                 return;
 
+            _views.Remove(view);
             RemoveView(view.GameObject);
             UpdateReactiveViews();
         }
@@ -166,7 +167,7 @@ namespace Silphid.Showzup
 
         #region Private methods
 
-        private IObservable<IView> PresentInternal(object input, Options options)
+        public virtual IObservable<IView> PresentInternal(object input, Options options)
         {
             var models = (input as List<object>)?.ToList() ?? 
                          (input as IEnumerable)?.Cast<object>().ToList() ??

@@ -20,5 +20,22 @@ namespace Silphid.Extensions
 
             return This;
         }
+        
+        public static MoveDirection FlipXY(this MoveDirection This)
+        {
+            if (This == MoveDirection.Up)
+                return MoveDirection.Left;
+
+            if (This == MoveDirection.Left)
+                return MoveDirection.Up;
+
+            if (This == MoveDirection.Right)
+                return MoveDirection.Down;
+            
+            if (This == MoveDirection.Down)
+                return MoveDirection.Right;
+
+            return This;
+        }
     }
 }

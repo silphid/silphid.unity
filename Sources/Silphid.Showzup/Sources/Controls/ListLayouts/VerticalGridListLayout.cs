@@ -12,14 +12,16 @@ namespace Silphid.Showzup.ListLayouts
             new Vector2(index % Columns, index / Columns);
 
         protected override Vector2 GetItemSize(Vector2 viewportSize) =>
-            new Vector2((viewportSize.x - (Padding.left + Padding.right) - (Columns - 1) * Spacing.x) / Columns, ItemSize.y);
+            new Vector2(
+                (viewportSize.x - (Padding.left + Padding.right) - (Columns - 1) * Spacing.x) / Columns,
+                ItemSize.y);
 
         public override Vector2 GetContainerSize(int count, Vector2 viewportSize)
         {
             int rows = (count + Columns - 1) / Columns;
             return new Vector2(
                 viewportSize.x,
-                Padding.top + ItemSize.y * count + Spacing.y * (rows - 1).AtLeast(0) + Padding.bottom);
+                Padding.top + ItemSize.y * rows + Spacing.y * (rows - 1).AtLeast(0) + Padding.bottom);
         }
 
         public override IndexRange GetVisibleIndexRange(Rect rect) =>

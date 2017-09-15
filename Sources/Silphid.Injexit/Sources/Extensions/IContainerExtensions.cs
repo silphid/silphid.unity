@@ -56,6 +56,11 @@ namespace Silphid.Injexit
                 .UsingInstances(t1, t2, t3)
                 .Resolve(type));
 
+        public static IBinding BindTypedFactoryUsingInstances<TAbstraction>(this IContainer This) =>
+            This.BindInstance<Func<Type, object[], TAbstraction>>((type, instances) => (TAbstraction) This
+                .UsingInstances(instances)
+                .Resolve(type));
+
         #endregion
 
         #region Default factories
