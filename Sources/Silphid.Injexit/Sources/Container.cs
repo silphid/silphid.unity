@@ -230,12 +230,12 @@ namespace Silphid.Injexit
             catch (UnresolvedDependencyException ex)
             {
                 if (!parameter.IsOptional)
-                    throw new UnresolvedDependencyException(dependentType, ex);
+                    throw new UnresolvedDependencyException(dependentType, ex, ex.MemberName);
             }
             catch (UnresolvedTypeException ex)
             {
                 if (!parameter.IsOptional)
-                    throw new UnresolvedDependencyException(dependentType, ex);
+                    throw new UnresolvedDependencyException(dependentType, ex, parameter.Name);
             }
 
             _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
@@ -338,7 +338,7 @@ namespace Silphid.Injexit
             catch (UnresolvedTypeException ex)
             {
                 if (!member.IsOptional)
-                    throw new UnresolvedDependencyException(obj.GetType(), ex);
+                    throw new UnresolvedDependencyException(obj.GetType(), ex, member.Name);
             }
         }
 

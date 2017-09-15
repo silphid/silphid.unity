@@ -1,5 +1,6 @@
 ﻿using System;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using Silphid.Loadzup;
 using UniRx;
 using UnityEngine;
@@ -47,36 +48,68 @@ namespace Silphid.Showzup
 
         private IObservable<IView> LoadFromModel(object model, Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
-            _logger?.Log(nameof(ViewLoader), $"Resolving ViewModel {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
-            var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
-            return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+            try
+            {
+                _logger?.Log(nameof(ViewLoader), $"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
+                var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
+                return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+
+            }
+            catch (UnresolvedDependencyException ex)
+            {
+                throw new LoadException($"Failed to resolve {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}", ex);
+            }
         }
 
         private IObservable<IView> LoadFromViewModelType(Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
-            _logger?.Log(nameof(ViewLoader), $"Resolving ViewModel {viewModelType.Name} (without Model) for View {viewType.Name}");
-            var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
-            return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+            try
+            {
+                _logger?.Log(nameof(ViewLoader), $"Resolving {viewModelType.Name} (without Model) for View {viewType.Name}");
+                var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
+                return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
+
+            }
+            catch (UnresolvedDependencyException ex)
+            {
+                throw new LoadException($"Failed to resolve {viewModelType.Name} (without Model) for View {viewType.Name}", ex);
+            }
         }
 
         private IObservable<IView> LoadFromViewModel(IViewModel viewModel, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
-            _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
-            return LoadPrefabView(viewType, uri, parameters, cancellationToken)
-                .Do(view => InjectView(view, viewModel, parameters))
-                .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
+            try
+            {
+                _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
+                return LoadPrefabView(viewType, uri, parameters, cancellationToken)
+                    .Do(view => InjectView(view, viewModel, parameters))
+                    .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
+
+            }
+            catch (Exception ex)
+            {
+                throw new LoadException($"Failed to loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}", ex);
+            }
         }
 
         private void InjectView(IView view, IViewModel viewModel, object[] parameters)
         {
-            view.ViewModel = viewModel;
-            _logger?.Log(nameof(ViewLoader), $"Initializing {view} with ViewModel {viewModel}");
-            _injectionAdaptor.Inject(view.GameObject, parameters);
+            try
+            {
+                _logger?.Log(nameof(ViewLoader), $"Initializing {view} with {viewModel}");
+                view.ViewModel = viewModel;
+                _injectionAdaptor.Inject(view.GameObject, parameters);
+
+            }
+            catch (UnresolvedDependencyException ex)
+            {
+                throw new LoadException($"Failed injecting {view} with parameters: {parameters.ToDelimitedString(", ")}", ex);
+            }
         }
 
         private IObservable<Unit> LoadLoadable(IView view) =>
             (view as ILoadable)?.Load()?
-                .Catch<Unit, Exception>(e => Observable.Throw<Unit>(new LoadException($"Exception when load {view.GetType().Name}", e)))
+                .Catch<Unit, Exception>(ex => Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex)))
             ?? Observable.ReturnUnit();
 
         #region Prefab view loading
@@ -91,7 +124,7 @@ namespace Silphid.Showzup
                 .Select(x => Instantiate(x, cancellationToken))
                 .WhereNotNull()
                 .DoOnError(ex => _logger?.LogError(nameof(ViewLoader),
-                    $"Failed to load view {viewType} from {uri} with error:{Environment.NewLine}{ex}"))
+                    $"Failed to load {viewType} from {uri} with error:{Environment.NewLine}{ex}"))
                 .Select(x => GetViewFromPrefab(x, viewType));
         }
 
