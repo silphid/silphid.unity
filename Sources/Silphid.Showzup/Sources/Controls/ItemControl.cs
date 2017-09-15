@@ -48,30 +48,22 @@ namespace Silphid.Showzup
 
         private void PreHide(IView view, Options options)
         {
-            var preHide = view as IPreHide;
-            if (preHide != null)
-                preHide.OnPreHide(options);
+            (view as IPreHide)?.OnPreHide(options);
         }
 
         private void PreShow(IView view, Options options)
         {
-            var preShow = view as IPreShow;
-            if (preShow != null)
-                preShow.OnPreShow(options);
+            (view as IPreShow)?.OnPreShow(options);
         }
 
         private void PostShow(IView view, Options options)
         {
-            var postShow = view as IPostShow;
-            if (postShow != null)
-                postShow.OnPostShow(options);
+            (view as IPostShow)?.OnPostShow(options);
         }
 
         private void PostHide(IView view, Options options)
         {
-            var postHide = view as IPostHide;
-            if (postHide != null)
-                postHide.OnPostHide(options);
+            (view as IPostHide)?.OnPostHide(options);
         }
     }
 }

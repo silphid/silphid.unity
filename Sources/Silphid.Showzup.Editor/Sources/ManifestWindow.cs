@@ -57,9 +57,17 @@ namespace Silphid.Showzup
             // Filter
             EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Filter", EditorStyles.boldLabel);
-            _filter = GUILayout.TextField(_filter, GUILayout.ExpandWidth(true));
+            GUILayout.Label("Filter", EditorStyles.boldLabel, GUILayout.ExpandWidth(false));
+            EditorGUILayout.BeginVertical();
+            GUILayout.Space(6);
+            _filter = GUILayout.TextField(_filter, GUILayout.MaxWidth(200));
+            EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
+            
+            // Variants
+            EditorGUILayout.Separator();
+            GUILayout.Label("Variants", EditorStyles.whiteLargeLabel);
+            ShowVariants(manifest.AllVariants);
             
             // Models => View Models
             EditorGUILayout.Separator();
@@ -79,6 +87,29 @@ namespace Silphid.Showzup
             // End scroll
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
+        }
+
+        private void ShowVariants(VariantSet manifestAllVariants)
+        {
+            var groups = manifestAllVariants
+                .GroupBy(x => x.Group)
+                .OrderBy(x => x.Key.Name);
+            
+            foreach (var group in groups)
+            {
+                EditorGUILayout.BeginHorizontal();
+            
+                GUILayout.Label(group.Key.Name, _normalStyle);
+                GUILayout.Label(" : ", _mappingArrowStyle);
+
+                var formattedVariants = group
+                    .Select(x => $"[{x.Name}]")
+                    .ToDelimitedString(" ");
+                
+                GUILayout.Label(formattedVariants, _explicitVariantStyle);
+
+                EditorGUILayout.EndHorizontal();
+            }
         }
 
         private void Labels(IEnumerable<Mapping> mappings)

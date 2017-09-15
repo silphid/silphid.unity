@@ -60,6 +60,7 @@ namespace Silphid.Showzup
 
         #region Public properties
 
+        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
         public int Count => _models.Value.Count;
@@ -72,7 +73,7 @@ namespace Silphid.Showzup
         #region Protected/private fields/properties
 
         protected List<IView> _views = new List<IView>();
-
+        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
         private VariantSet _variantSet;
@@ -88,6 +89,7 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
+            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
@@ -155,7 +157,8 @@ namespace Silphid.Showzup
             var view = _views.FirstOrDefault(x => x == input || x.ViewModel == input || x.ViewModel?.Model == input);
             if (view == null)
                 return;
-            
+
+            _views.Remove(view);
             RemoveView(view.GameObject);
             UpdateReactiveViews();
         }
@@ -183,22 +186,26 @@ namespace Silphid.Showzup
             return LoadViews(entries, options);
         }
 
-        protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options)
-        {
-            return LoadAllViews(entries, options)
+        protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options) =>
+            LoadAllViews(entries, options)
                 .Do(x => AddView(x.Index, x.View))
                 .Select(x => x.View);
-        }
 
         private IObservable<Entry> LoadAllViews(List<Entry> entries, Options options)
         {
+            _isLoading.Value = true;
+            
             return entries
                 .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
                 .ToObservable()
                 .SelectMany(entry => LoadView(entry.ViewInfo.Value)
                     .Do(view => entry.View = view)
                     .Select(_ => entry))
-                .DoOnCompleted(UpdateReactiveViews);
+                .DoOnCompleted(() =>
+                {
+                		_isLoading.Value = false;
+                		UpdateReactiveViews();
+				});
         }
 
         protected void UpdateReactiveViews() =>

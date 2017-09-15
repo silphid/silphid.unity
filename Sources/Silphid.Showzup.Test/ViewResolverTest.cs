@@ -39,7 +39,7 @@ namespace Silphid.Showzup.Test
         
         private readonly VariantSet Empty = VariantSet.Empty;
         private readonly VariantSet Fast = new VariantSet(Speed.Fast);
-
+        
         #endregion
 
         #region MVVM classes
@@ -60,6 +60,22 @@ namespace Silphid.Showzup.Test
         private class AnimalView : View<AnimalViewModel> {}
         private class DogView : View<DogViewModel> {}
 
+        private class InnerViewModel : IViewModel
+        {
+            public object Model => null;
+        }
+
+        private class OuterViewModel : ViewModel<InnerViewModel>
+        {
+            public OuterViewModel(InnerViewModel model) : base(model)
+            {
+            }
+        }
+
+        private class OuterView : View<OuterViewModel>
+        {
+        }
+
         #endregion
         
         private IManifest _manifest;
@@ -67,21 +83,27 @@ namespace Silphid.Showzup.Test
 
         private static readonly Uri AnimalPrefabUri = new Uri("res://Animal");
         private static readonly Uri DogPrefabUri = new Uri("res://Dog");
+        private static readonly Uri OuterPrefabUri = new Uri("res://Outer");
 
         [SetUp]
         public void SetUp()
         {
             _manifest = new DummyManifest();
 
-            // Animal -(Fast)> AnimalViewModel -(Fast)> AnimalView -[Fast](Fast)> AnimalPrefab 
+            // Animal -(Fast)> AnimalViewModel -(Fast)> AnimalView -[Fast](Fast)> AnimalPrefabUri
             _manifest.ModelsToViewModels.Add(CreateMapping<Animal, AnimalViewModel>(Empty, Fast));
             _manifest.ViewModelsToViews.Add(CreateMapping<AnimalViewModel, AnimalView>(Empty, Fast));
             _manifest.ViewsToPrefabs.Add(CreateMapping<AnimalView>(AnimalPrefabUri, Fast));
 
-            // Dog -> DogViewModel -> DogView -> DogPrefab 
+            // Dog -> DogViewModel -> DogView -> DogPrefabUri
             _manifest.ModelsToViewModels.Add(CreateMapping<Dog, DogViewModel>(Empty, Empty));
             _manifest.ViewModelsToViews.Add(CreateMapping<DogViewModel, DogView>(Empty, Empty));
             _manifest.ViewsToPrefabs.Add(CreateMapping<DogView>(DogPrefabUri, Empty));
+
+            // InnerViewModel -> OuterViewModel -> OuterView -> OuterPrefabUri
+            _manifest.ModelsToViewModels.Add(CreateMapping<InnerViewModel, OuterViewModel>(Empty, Empty));
+            _manifest.ViewModelsToViews.Add(CreateMapping<OuterViewModel, OuterView>(Empty, Empty));
+            _manifest.ViewsToPrefabs.Add(CreateMapping<OuterView>(OuterPrefabUri, Empty));
             
             var variantProvider = Substitute.For<IVariantProvider>();
             variantProvider.AllVariantGroups.Returns(new[] {Temper.Group, Speed.Group}.ToList());
@@ -118,6 +140,21 @@ namespace Silphid.Showzup.Test
             Assert.That(info.View, Is.Null);
             Assert.That(info.ViewType, Is.EqualTo(typeof(DogView)));
             Assert.That(info.PrefabUri, Is.EqualTo(DogPrefabUri));
+        }
+
+        [Test]
+        public void RequestingInnerViewModel_ResolveToOuterView()
+        {
+            var inner = new InnerViewModel();
+            var info = _fixture.Resolve(inner);
+
+            Assert.That(info.Model, Is.SameAs(inner));
+            Assert.That(info.ModelType, Is.EqualTo(typeof(InnerViewModel)));
+            Assert.That(info.ViewModel, Is.Null);
+            Assert.That(info.ViewModelType, Is.EqualTo(typeof(OuterViewModel)));
+            Assert.That(info.View, Is.Null);
+            Assert.That(info.ViewType, Is.EqualTo(typeof(OuterView)));
+            Assert.That(info.PrefabUri, Is.EqualTo(OuterPrefabUri));
         }
 
         private TypeToTypeMapping CreateMapping<T, U>(VariantSet explicitVariants = null, VariantSet implicitVariants = null) =>

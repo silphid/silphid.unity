@@ -5,7 +5,6 @@ using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
-using ListLayout = Silphid.Showzup.ListLayouts.Components.ListLayout;
 
 namespace Silphid.Showzup
 {
@@ -16,7 +15,7 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
-        private readonly ILogger _logger = null; // Debug.unityLogger;
+        private readonly ILogger _logger = Debug.unityLogger;
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
@@ -27,6 +26,8 @@ namespace Silphid.Showzup
         public ListLayout Layout;
         public RectTransform Viewport;
         public int ExtraMarginItems = 3;
+
+        public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
 
         protected override void Start()
         {
@@ -141,19 +142,22 @@ namespace Silphid.Showzup
 
         private void UpdateViewLayout(IView view, int index)
         {
-            var rect = Layout.GetItemRect(index);
+            var rect = Layout.GetItemRect(index, Viewport.GetSize());
             
             var rectTransform = view.GameObject.RectTransform();
             rectTransform.pivot = Vector2.up;
             rectTransform.anchorMin = Vector2.up;
             rectTransform.anchorMax = Vector2.up;
-            rectTransform.sizeDelta = rect.size;
             rectTransform.anchoredPosition = rect.position;
+            rectTransform.sizeDelta = rect.size;
         }
 
         private void UpdateContainerLayout(int count)
         {
-            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count); 
+            _containerRectTransform.pivot = Vector2.up;
+            _containerRectTransform.anchorMin = Vector2.up;
+            _containerRectTransform.anchorMax = Vector2.up;
+            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count, Viewport.GetSize()); 
         }
 
         private Entry GetEntryWithViewInfo(int index)

@@ -36,6 +36,8 @@ namespace Silphid.Showzup
 
         public ViewInfo Resolve(object input, Options options = null)
         {
+            _logger?.Log("#Views# Resolving input: {input}");
+            
             if (input == null)
             {
                 _logger?.Log("#Views# Resolved null input to null View.");
@@ -46,6 +48,7 @@ namespace Silphid.Showzup
             if (input is Type)
             {
                 var type = (Type) input;
+                _logger?.Log($"#Views# Resolving type: {type}");
                 
                 if (type.IsAssignableTo<IView>())
                     return ResolveFromViewType(type, requestedVariants);
@@ -83,6 +86,8 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromModel(object model, VariantSet requestedVariants)
         {
+            _logger?.Log($"#Views# Resolving model: {model}");
+
             var modelType = model.GetType();
             var viewModelType = ResolveTargetType(modelType, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
@@ -100,6 +105,16 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewModel(IViewModel viewModel, VariantSet requestedVariants)
         {
+            try
+            {
+                return ResolveFromModel(viewModel, requestedVariants);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            _logger?.Log($"#Views# Resolving viewModel: {viewModel}");
+
             var viewModelType = viewModel.GetType();
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
@@ -115,6 +130,8 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromView(IView view, VariantSet requestedVariants)
         {
+            _logger?.Log($"#Views# Resolving view: {view}");
+
             var viewType = view.GetType();
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
@@ -128,6 +145,8 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewModelType(Type viewModelType, VariantSet requestedVariants)
         {
+            _logger?.Log($"#Views# Resolving viewModelType: {viewModelType}");
+
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
@@ -141,6 +160,8 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewType(Type viewType, VariantSet requestedVariants)
         {
+            _logger?.Log($"#Views# Resolving viewType: {viewType}");
+
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
             return new ViewInfo

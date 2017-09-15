@@ -12,10 +12,12 @@ namespace Silphid.Loadzup.Resource
         private const string _pathSeparator = "/";
 
         private readonly IConverter _converter;
+        private readonly ILogger _logger;
 
-        public ResourceLoader(IConverter converter)
+        public ResourceLoader(IConverter converter, ILogger logger = null)
         {
             _converter = converter;
+            _logger = logger;
         }
 
         public bool Supports<T>(Uri uri) =>
@@ -31,8 +33,7 @@ namespace Silphid.Loadzup.Resource
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))
-//                .DoOnCompleted(() => Debug.Log($"#Loadzup# Asset '{path}' loaded from resources."))
-                .DoOnError(error => Debug.Log($"#Loadzup# Failed to load asset '{path}' from resources: {error}"));
+                .DoOnError(ex => _logger?.LogError($"#Loadzup# Failed to load resource at '{path}' to type {typeof(T)}.", ex));
         }
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();

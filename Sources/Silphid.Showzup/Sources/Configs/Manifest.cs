@@ -8,6 +8,7 @@ namespace Silphid.Showzup
     {
         public string PrefabsPath;
         public string UriPrefix;
+        public VariantSet AllVariants;
 
         [SerializeField] private List<TypeToTypeMapping> _modelsToViewModels = new List<TypeToTypeMapping>();
         [SerializeField] private List<TypeToTypeMapping> _viewModelsToViews = new List<TypeToTypeMapping>();

@@ -75,8 +75,6 @@ GameObject:
   - component: {fileID: 224271772750163508}
   - component: {fileID: 114379218531504670}
   - component: {fileID: 222930031903439234}
-  - component: {fileID: 114831501003369004}
-  - component: {fileID: 114086812796210740}
   - component: {fileID: 114212662080744378}
   m_Layer: 5
   m_Name: SelectionControl
@@ -156,17 +154,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114086812796210740
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1157293854861292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114097236711825896
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -456,17 +443,6 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
---- !u!114 &114831501003369004
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1157293854861292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114872572608714630
 MonoBehaviour:
   m_ObjectHideFlags: 1

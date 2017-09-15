@@ -2,12 +2,10 @@
 using Silphid.Showzup;
 using UniRx;
 
-public class CatalogView : View<CatalogViewModel>, ILoadable
+public class CatalogView : View<CatalogViewModel>
 {
     public SelectionControl SelectionControl;
 
-    public IObservable<Unit> Load()
-    {
-        return SelectionControl.Present(ViewModel.Photos).AsSingleUnitObservable();
-    }
+    public override IObservable<Unit> Load() =>
+        SelectionControl.Present(ViewModel.Photos).AsSingleUnitObservable();
 }
