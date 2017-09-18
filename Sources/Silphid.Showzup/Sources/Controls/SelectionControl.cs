@@ -26,23 +26,27 @@ namespace Silphid.Showzup
         public bool AutoFocus = true;
         public float FocusDelay;
         public bool WrapAround;
+        public bool KeepLastSelection = true;
+        public int RowsOrColumns = 1;
 
         protected override void Start()
         {
             if (Orientation == NavigationOrientation.None)
-                throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
+                throw new InvalidOperationException(
+                    $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
             if (AutoSelect)
                 Views
                     .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
                     .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
                     .AddTo(this);
-            
+
             SubscribeToUpdateFocusables(SelectedView);
 
-            SelectedView
-                .BindTo(_lastSelectedView)
-                .AddTo(this);
+            if (KeepLastSelection)
+                SelectedView
+                    .BindTo(_lastSelectedView)
+                    .AddTo(this);
 
             SubscribeToSynchOther(SelectedView, () =>
                 SelectedIndex.Value = IndexOfView(SelectedView.Value));
@@ -66,7 +70,7 @@ namespace Silphid.Showzup
                 {
                     RemoveFocus(x.Item1 as IFocusable);
                     SetFocus(x.Item2 as IFocusable);
-                    AutoSelectView(x.Item2 as IView);                        
+                    AutoSelectView(x.Item2 as IView);
                 })
                 .AddTo(this);
         }
@@ -104,14 +108,14 @@ namespace Silphid.Showzup
         private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
         {
             observable.Subscribe(x =>
-                {
-                    if (_isSynching)
-                        return;
+            {
+                if (_isSynching)
+                    return;
 
-                    _isSynching = true;
-                    synchAction();
-                    _isSynching = false;
-                })
+                _isSynching = true;
+                synchAction();
+                _isSynching = false;
+            })
                 .AddTo(this);
         }
 
@@ -119,7 +123,7 @@ namespace Silphid.Showzup
         {
             if (SelectedView.Value == view)
                 SelectedView.Value = null;
-            
+
             SelectedView.Value = view;
         }
 
@@ -200,18 +204,22 @@ namespace Silphid.Showzup
 
         public void OnMove(AxisEventData eventData)
         {
-            if (Orientation == NavigationOrientation.Horizontal)
-            {
-                if (eventData.moveDir == MoveDirection.Left && SelectPrevious() ||
-                    eventData.moveDir == MoveDirection.Right && SelectNext())
-                    eventData.Use();
-            }
-            else if (Orientation == NavigationOrientation.Vertical)
-            {
-                if (eventData.moveDir == MoveDirection.Up && SelectPrevious() ||
-                    eventData.moveDir == MoveDirection.Down && SelectNext())
-                    eventData.Use();
-            }
+            if (!HasItems || SelectedIndex.Value == null)
+                return;
+
+            var moveDirection = Orientation == NavigationOrientation.Vertical
+                ? eventData.moveDir.FlipXY()
+                : eventData.moveDir;
+
+            if ((moveDirection == MoveDirection.Up && SelectedIndex.Value % RowsOrColumns > 0 &&
+                 SelectIndex(SelectedIndex.Value.Value - 1)) ||
+                (moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 &&
+                 SelectIndex(SelectedIndex.Value.Value + 1)) ||
+                (moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns &&
+                 SelectIndex(SelectedIndex.Value.Value - RowsOrColumns)) ||
+                (moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&
+                 SelectIndex(SelectedIndex.Value.Value + RowsOrColumns)))
+                eventData.Use();
         }
     }
 }
