@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using log4net;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
 using UniRx;
@@ -14,6 +15,8 @@ namespace Silphid.Loadzup.Caching
 
         private readonly IRequester _requester;
         private readonly ICacheStorage _cacheStorage;
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CachedRequester));
 
         public CachedRequester(IRequester requester, ICacheStorage cacheStorage)
         {
@@ -106,7 +109,7 @@ namespace Silphid.Loadzup.Caching
                 return LoadFromOrigin(policy, uri, options)
                     .Catch<Response, RequestException>(ex =>
                     {
-                        Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (Status: {ex.StatusCode}, Error: {ex}), falling back to cached version.");
+                        Log.Info($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (Status: {ex.StatusCode}, Error: {ex}), falling back to cached version.");
                         return LoadFromCache(uri, responseHeaders);
                     });
 

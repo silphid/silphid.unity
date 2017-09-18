@@ -42,6 +42,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a">
+      <HintPath>Sources\Dependencies\net35\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Core" />
@@ -91,26 +94,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>/Applications/Unity-2017.1.0f1/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>/Applications/Unity-2017.1.0f1/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>/Applications/Unity-2017.1.0f1/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>/Applications/Unity-2017.1.0f1/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Sources\Silphid.Extensions.DOTween\Silphid.Extensions.DOTween.csproj">
       <Project>{47797ee4-1e8c-4305-9f45-655ca2710a3d}</Project>
       <Name>Silphid.Extensions.DOTween</Name>
@@ -143,5 +126,8 @@
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="UnityProject\Assets\Examples\Showzup\Resources\Log4net.xml" />
   </ItemGroup>
 </Project>

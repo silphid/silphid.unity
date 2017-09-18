@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UnityEngine;
 using Rx = UniRx;
@@ -24,23 +25,23 @@ namespace Silphid.Showzup
         private readonly IManifest _manifest;
         private readonly IVariantProvider _variantProvider;
         private readonly IScoreEvaluator _scoreEvaluator;
-        private readonly ILogger _logger;
+        
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ViewResolver));
 
-        public ViewResolver(IManifest manifest, IVariantProvider variantProvider, IScoreEvaluator scoreEvaluator, ILogger logger = null)
+        public ViewResolver(IManifest manifest, IVariantProvider variantProvider, IScoreEvaluator scoreEvaluator)
         {
             _manifest = manifest;
             _variantProvider = variantProvider;
             _scoreEvaluator = scoreEvaluator;
-            _logger = logger;
         }
 
         public ViewInfo Resolve(object input, Options options = null)
         {
-            _logger?.Log("#Views# Resolving input: {input}");
+            Log.Debug("Resolving input: {input}");
             
             if (input == null)
             {
-                _logger?.Log("#Views# Resolved null input to null View.");
+                Log.Debug("Resolved null input to null View.");
                 return ViewInfo.Null;
             }
 
@@ -48,7 +49,7 @@ namespace Silphid.Showzup
             if (input is Type)
             {
                 var type = (Type) input;
-                _logger?.Log($"#Views# Resolving type: {type}");
+                Log.Debug($"Resolving type: {type}");
                 
                 if (type.IsAssignableTo<IView>())
                     return ResolveFromViewType(type, requestedVariants);
@@ -86,7 +87,7 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromModel(object model, VariantSet requestedVariants)
         {
-            _logger?.Log($"#Views# Resolving model: {model}");
+            Log.Debug($"Resolving model: {model}");
 
             var modelType = model.GetType();
             var viewModelType = ResolveTargetType(modelType, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
@@ -113,7 +114,7 @@ namespace Silphid.Showzup
             {
             }
 
-            _logger?.Log($"#Views# Resolving viewModel: {viewModel}");
+            Log.Debug($"Resolving viewModel: {viewModel}");
 
             var viewModelType = viewModel.GetType();
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
@@ -130,7 +131,7 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromView(IView view, VariantSet requestedVariants)
         {
-            _logger?.Log($"#Views# Resolving view: {view}");
+            Log.Debug($"Resolving view: {view}");
 
             var viewType = view.GetType();
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
@@ -145,7 +146,7 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewModelType(Type viewModelType, VariantSet requestedVariants)
         {
-            _logger?.Log($"#Views# Resolving viewModelType: {viewModelType}");
+            Log.Debug($"Resolving viewModelType: {viewModelType}");
 
             var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
@@ -160,7 +161,7 @@ namespace Silphid.Showzup
 
         private ViewInfo ResolveFromViewType(Type viewType, VariantSet requestedVariants)
         {
-            _logger?.Log($"#Views# Resolving viewType: {viewType}");
+            Log.Debug($"Resolving viewType: {viewType}");
 
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
@@ -188,10 +189,10 @@ namespace Silphid.Showzup
             if (resolved == null)
                 throw new InvalidOperationException($"Failed to resolve {sourceKind} {type} to some {targetKind} (Variants: {requestedVariants})");
 
-            _logger?.Log($"#Views# Resolved {sourceKind} {type} to {targetKind} {resolved.Target} (Variants: {resolved.Variants})");
+            Log.Debug($"Resolved {sourceKind} {type} to {targetKind} {resolved.Target} (Variants: {resolved.Variants})");
 
             if (candidates.Count > 1)
-                _logger?.Log($"#Views# Other candidates were:{Environment.NewLine}" +
+                Log.Debug($"Other candidates were:{Environment.NewLine}" +
                           $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
             
             return resolved.Target;
@@ -213,10 +214,10 @@ namespace Silphid.Showzup
             if (resolved == null)
                 throw new InvalidOperationException($"Failed to resolve View {viewType} to some Prefab (Variants: {requestedVariants})");
 
-            _logger?.Log($"#Views# Resolved View {viewType} to Prefab {resolved.Target} (Variants: {resolved.Variants})");
+            Log.Debug($"Resolved View {viewType} to Prefab {resolved.Target} (Variants: {resolved.Variants})");
 
             if (candidates.Count > 1)
-                _logger?.Log($"#Views# Other candidates were:{Environment.NewLine}" +
+                Log.Debug($"Other candidates were:{Environment.NewLine}" +
                           $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
             
             return resolved.Target;

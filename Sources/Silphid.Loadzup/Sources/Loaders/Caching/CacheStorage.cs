@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using log4net;
 using Silphid.Extensions;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace Silphid.Loadzup.Caching
 {
     public class CacheStorage : ICacheStorage
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CacheStorage));
+        
         public void Clear()
         {
             Directory
@@ -41,7 +44,7 @@ namespace Silphid.Loadzup.Caching
         public void Save(Uri uri, byte[] bytes, IDictionary<string, string> headers)
         {
             var filePath = GetFilePath(uri);
-            Debug.Log($"#Loadzup# Save cache to: {filePath}");
+            Log.Debug($"Save cache to: {filePath}");
             File.WriteAllBytes(filePath, bytes);
             File.WriteAllLines(GetHeadersFile(filePath), headers.Select(x => $"{x.Key}: {x.Value}").ToArray());
         }
@@ -68,7 +71,7 @@ namespace Silphid.Loadzup.Caching
                       Path.DirectorySeparatorChar +
                       "Silphid.Loadzup.Cache";
 
-            Debug.Log($"#Loadzup# Cache path: {path}");
+            Log.Debug($"Cache path: {path}");
             Directory.CreateDirectory(path);
             return path;
         }
