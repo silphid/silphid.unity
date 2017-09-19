@@ -17,5 +17,6 @@ namespace Silphid.Machina
 	{
 		void Enter(TState state);
 		void Enter(IMachine machine);
+		void ExitState();
 	}
 }

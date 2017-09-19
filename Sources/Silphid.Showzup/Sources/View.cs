@@ -35,6 +35,8 @@ namespace Silphid.Showzup
         public GameObject GameObject => gameObject;
         public TViewModel ViewModel => (TViewModel) _viewModel;
 
+        public override string ToString() => GetType().Name;
+
         [Inject] protected ILoader Loader;
 
         protected void Bind(Text text, string value)

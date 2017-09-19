@@ -16,7 +16,6 @@ namespace Silphid.Machina
         public ReadOnlyReactiveProperty<object> State { get; }
         public IObservable<Transition> Transitions { get; }
 
-        protected virtual string MachineName => GetType().Name;
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
         protected bool IsDisposed { get; private set; }
 
@@ -26,7 +25,10 @@ namespace Silphid.Machina
             _disposeOnCompleted = disposeOnCompleted;
             _state = new ReactiveProperty<object>(initialState);
             State = _state.ToReadOnlyReactiveProperty();
-            Transitions = _state.PairWithPrevious().Select(x => new Transition(x.Item1, x.Item2));
+            Transitions = _state
+                .DistinctUntilChanged()
+                .PairWithPrevious()
+                .Select(x => new Transition(x.Item1, x.Item2));
 
             this.Entering<IMachine>()
                 .Subscribe(x => x.Start())
@@ -35,11 +37,19 @@ namespace Silphid.Machina
             this.Exiting<IMachine>()
                 .Subscribe(x => x.Complete())
                 .AddTo(Disposables);
+            
+            Transitions
+                .Subscribe(x => Debug.Log($"{Name} - {x.Source ?? "null"} -> {x.Target ?? "null"}"))
+                .AddTo(Disposables);
         }
+
+        public virtual string Name => GetType().Name;
+        public override string ToString() => Name;
 
         public void Start(object initialState = null)
         {
             AssertNotDisposed();
+            Debug.Log($"{Name} - Started");
             OnStarting(initialState);
         }
 
@@ -53,16 +63,22 @@ namespace Silphid.Machina
             EnterInternal(machine);
         }
 
+        public void ExitState()
+        {
+            EnterInternal(null);
+        }
+
         private void EnterInternal(object state)
         {
             AssertNotDisposed();
             OnEnter(state);
         }
 
-        public void Complete()
+        void IMachine.Complete()
         {
             AssertNotDisposed();
             OnCompleted();
+            Debug.Log($"{Name} - Completed");
         }
 
         private void AssertNotDisposed()
@@ -73,16 +89,14 @@ namespace Silphid.Machina
 
         public IRequest Handle(IRequest request)
         {
-            if (State.Value == null)
-                return request;
-
             var state = State.Value;
-            Debug.Log($"{MachineName}.{state} trying to handle {request}");
-
-            request = HandleWithState(request, state);
-            if (request == null)
-                return null;
-
+            if (state != null)
+            {
+                request = HandleWithState(request, state);
+                if (request == null)
+                    return null;
+            }
+            
             return HandleWithRules(request, state);
         }
 
@@ -94,9 +108,9 @@ namespace Silphid.Machina
             
             var outRequest = handler.Handle(request);
             if (outRequest == null)
-                Debug.Log($"IRequestHandler implementation of {MachineName}.{state} handled {request}");
+                Debug.Log($"{Name} - {state} - State handled {request}");
             else if (outRequest != request)
-                Debug.Log($"IRequestHandler implementation of {MachineName}.{state} handled {request} and returned {outRequest}");
+                Debug.Log($"{Name} - {state} - State handled {request} and returned {outRequest}");
 
             return outRequest;
         }
@@ -105,19 +119,19 @@ namespace Silphid.Machina
         {
             foreach (var rule in _rules)
             {
-                if (rule.MatchesState(state))
+                if (rule.Matches(state, request))
                 {
                     var outRequest = rule.Handle(request);
                     
                     if (outRequest == null)
                     {
-                        Debug.Log($"Rule for {MachineName}.{state} handled {request}");
+                        Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request}");
                         return null;
                     }
 
                     if (outRequest != request)
                     {
-                        Debug.Log($"Rule for {MachineName}.{state} handled {request} and returned {outRequest}");
+                        Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request} and returned {outRequest}");
                         return Handle(outRequest);
                     }
                 }

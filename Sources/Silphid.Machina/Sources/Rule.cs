@@ -7,14 +7,24 @@ namespace Silphid.Machina
     {
         private readonly Predicate<object> _predicate;
         private Func<IRequest, IRequest> _handler;
+        private Type _supportedRequestType;
 
         public Rule(Predicate<object> predicate)
         {
             _predicate = predicate;
         }
 
-        public bool MatchesState(object state) => _predicate(state);
-        public IRequest Handle(IRequest request) => _handler?.Invoke(request) ?? request;
+        public bool Matches(object state, IRequest request) =>
+            (_supportedRequestType?.IsInstanceOfType(request) ?? false) &&
+            _predicate(state);
+        
+        public IRequest Handle(IRequest request)
+        {
+            if (_handler == null)
+                throw new InvalidOperationException("Rule with missing Handle()");
+                
+            return _handler.Invoke(request);
+        }
 
         /// <summary>
         /// Adds an handler for given request type TRequest, which should return null (if request was fully handled)
@@ -25,7 +35,8 @@ namespace Silphid.Machina
         {
             if (_handler != null)
                 throw new InvalidOperationException("Can only set request handler once per state rule.");
-                
+
+            _supportedRequestType = typeof(TRequest);
             _handler = x => handler((TRequest) x);
         }
 
@@ -37,6 +48,7 @@ namespace Silphid.Machina
             if (_handler != null)
                 throw new InvalidOperationException("Can only set request handler once per state rule.");
                 
+            _supportedRequestType = typeof(TRequest);
             _handler = x =>
             {
                 handler((TRequest) x);
@@ -52,6 +64,7 @@ namespace Silphid.Machina
             if (_handler != null)
                 throw new InvalidOperationException("Can only set request handler once per state rule.");
                 
+            _supportedRequestType = typeof(TRequest);
             _handler = x =>
             {
                 handler((TRequest) x);

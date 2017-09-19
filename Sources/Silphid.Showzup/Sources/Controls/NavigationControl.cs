@@ -34,7 +34,7 @@ namespace Silphid.Showzup
         public void Inject()
         {
             IsNavigating = _isNavigating.ToReadOnlyReactiveProperty();
-            History.PairWithPrevious().Skip(1).Subscribe(DisposeDroppedViews).AddTo(_disposables);
+            History.PairWithPrevious().Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
         public void Dispose()
