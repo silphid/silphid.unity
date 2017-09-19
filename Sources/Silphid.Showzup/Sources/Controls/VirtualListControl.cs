@@ -26,8 +26,9 @@ namespace Silphid.Showzup
         
         public ListLayout Layout;
         public RectTransform Viewport;
+        public RectTransform ScrollingContent;
         public int ExtraMarginItems = 3;
-
+        
         public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
 
         protected override void Start()
@@ -39,7 +40,7 @@ namespace Silphid.Showzup
             if (Viewport == null)
                 throw new ArgumentNullException(nameof(Viewport));
             
-            _containerRectTransform = Container.RectTransform();
+            _containerRectTransform = ScrollingContent ?? Container.RectTransform();
             if (_containerRectTransform == null)
                 throw new ArgumentException("Container must have a RectTransform component.");
             
