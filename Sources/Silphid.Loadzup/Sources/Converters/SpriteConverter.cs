@@ -15,15 +15,14 @@ namespace Silphid.Loadzup
         };
 
         public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            _imageMediaTypes.Contains(contentType.MediaType);
+            _imageMediaTypes.Contains(contentType.MediaType) && typeof(T) == typeof(DisposableSprite);
 
         public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
         {
             var texture = new Texture2D(2, 2) {wrapMode = TextureWrapMode.Clamp};
             texture.LoadImage(bytes, true);
 
-            return Observable.Return((T) (object) Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                                new Vector2(0.5f, 0.5f)));
+            return Observable.Return((T) (object) new DisposableSprite(texture));
         }
     }
 }

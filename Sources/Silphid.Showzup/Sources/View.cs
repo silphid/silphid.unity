@@ -92,17 +92,17 @@ namespace Silphid.Showzup
 
             image.enabled = keepVisible;
             return Loader
-                .Load<Sprite>(uri, options)
-                .Catch<Sprite, Exception>(ex =>
-                    Observable.Throw<Sprite>(
+                .Load<DisposableSprite>(uri, options)
+                .Catch<DisposableSprite, Exception>(ex =>
+                    Observable.Throw<DisposableSprite>(
                         new BindException($"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
                 .Do(x =>
                 {
-                    image.sprite = x;
+                    image.sprite = x.Sprite;
                     image.enabled = true;
 
                     if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset)
-                        Disposable.Create(() => Destroy(image.sprite.texture))
+                        Disposable.Create(x.Dispose)
                             .AddTo(this);
                 })
                 .AutoDetach()

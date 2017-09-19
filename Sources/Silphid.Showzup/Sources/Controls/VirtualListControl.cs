@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
-        private readonly ILogger _logger = Debug.unityLogger;
+        [Inject, Optional] private readonly ILogger _logger;
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;

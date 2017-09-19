@@ -57,6 +57,7 @@
     <Compile Include="Sources\Abstractions\RequestException.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
+    <Compile Include="Sources\DisposableSprite.cs" />
     <Compile Include="Sources\Loaders\Bundles\AssetBundleAdaptor.cs" />
     <Compile Include="Sources\Loaders\Bundles\AssetBundleManifestAdaptor.cs" />
     <Compile Include="Sources\Loaders\Bundles\AssetLoader.cs" />
