@@ -273,10 +273,11 @@ namespace Silphid.Showzup
 
             var req = request as BackRequest;
 
-            if (req == null || !ShouldHandleBackRequests || !_canPop.Value)
+            if (req == null || !ShouldHandleBackRequests)
                 return false;
 
-            Pop().SubscribeAndForget();
+            if (CanPop.Value)
+                Pop().SubscribeAndForget();
             return true;
         }
 
