@@ -10,7 +10,12 @@ namespace Silphid.Machina
 		IObservable<Transition> Transitions { get; }
 
 		void Start(object initialState = null);
-		void Enter(object state);
 		void Complete();
+	}
+	
+	public interface IMachine<in TState> : IMachine
+	{
+		void Enter(TState state);
+		void Enter(IMachine machine);
 	}
 }

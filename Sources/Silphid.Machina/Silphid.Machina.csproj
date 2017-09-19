@@ -48,7 +48,6 @@
     <Compile Include="Sources\IRule.cs" />
     <Compile Include="Sources\Machine.cs" />
     <Compile Include="Sources\MachineBehaviour.cs" />
-    <Compile Include="Sources\State.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Rule.cs" />
   </ItemGroup>

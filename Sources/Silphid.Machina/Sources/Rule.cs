@@ -43,5 +43,20 @@ namespace Silphid.Machina
                 return null;
             };
         }
+
+        /// <summary>
+        /// Adds an handler for given request type TRequest, which is assumed to never handle the request fully.
+        /// </summary>
+        public void HandlePartially<TRequest>(Action<TRequest> handler)
+        {
+            if (_handler != null)
+                throw new InvalidOperationException("Can only set request handler once per state rule.");
+                
+            _handler = x =>
+            {
+                handler((TRequest) x);
+                return x;
+            };
+        }
     }
 }

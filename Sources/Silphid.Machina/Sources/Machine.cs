@@ -7,18 +7,18 @@ using UnityEngine;
 
 namespace Silphid.Machina
 {
-    public class Machine : IMachine, IDisposable
+    public class Machine<TState> : IMachine<TState>, IDisposable
     {
         private readonly object _initialState;
         private readonly bool _disposeOnCompleted;
-        private bool _isDisposed;
         private readonly List<Rule> _rules = new List<Rule>();
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly ReactiveProperty<object> _state;
         public ReadOnlyReactiveProperty<object> State { get; }
         public IObservable<Transition> Transitions { get; }
 
         protected virtual string MachineName => GetType().Name;
+        protected readonly CompositeDisposable Disposables = new CompositeDisposable();
+        protected bool IsDisposed { get; private set; }
 
         public Machine(object initialState = null, bool disposeOnCompleted = false)
         {
@@ -30,35 +30,45 @@ namespace Silphid.Machina
 
             this.Entering<IMachine>()
                 .Subscribe(x => x.Start())
-                .AddTo(_disposables);
+                .AddTo(Disposables);
 
             this.Exiting<IMachine>()
                 .Subscribe(x => x.Complete())
-                .AddTo(_disposables);
+                .AddTo(Disposables);
         }
 
         public void Start(object initialState = null)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(nameof(Machine));
-            
+            AssertNotDisposed();
             OnStarting(initialState);
         }
 
-        public void Enter(object state)
+        public void Enter(TState state)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(nameof(Machine));
-            
+            EnterInternal(state);
+        }
+
+        public void Enter(IMachine machine)
+        {
+            EnterInternal(machine);
+        }
+
+        private void EnterInternal(object state)
+        {
+            AssertNotDisposed();
             OnEnter(state);
         }
 
         public void Complete()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(nameof(Machine));
-            
+            AssertNotDisposed();
             OnCompleted();
+        }
+
+        private void AssertNotDisposed()
+        {
+            if (IsDisposed)
+                throw new ObjectDisposedException(nameof(Machine<TState>));
         }
 
         public IRequest Handle(IRequest request)
@@ -116,23 +126,48 @@ namespace Silphid.Machina
             return request;
         }
 
-        public IRule When<TState>()
+        public IRule Always()
         {
-            var rule = new Rule(x => x is TState);
+            var rule = new Rule(_ => true);
             _rules.Add(rule);
             return rule;
         }
 
-        public IRule When<TState>(TState state)
+        public IRule When<T>() where T : TState =>
+            WhenInternal<T>();
+
+        public IRule When<T>(T state) where T : TState =>
+            WhenInternal(state);
+
+        public IRule When<T>(Predicate<T> predicate) where T : TState =>
+            WhenInternal(predicate);
+
+        public IRule WhenMachine<TMachine>() where TMachine : IMachine =>
+            WhenInternal<TMachine>();
+
+        public IRule WhenMachine<TMachine>(TMachine state) where TMachine : IMachine =>
+            WhenInternal(state);
+
+        public IRule WhenMachine<TMachine>(Predicate<TMachine> predicate) where TMachine : IMachine =>
+            WhenInternal(predicate);
+
+        private IRule WhenInternal<T>()
+        {
+            var rule = new Rule(x => x is T);
+            _rules.Add(rule);
+            return rule;
+        }
+
+        private IRule WhenInternal<T>(T state)
         {
             var rule = new Rule(x => Equals(x, state));
             _rules.Add(rule);
             return rule;
         }
 
-        public IRule When<TState>(Predicate<TState> predicate)
+        private IRule WhenInternal<T>(Predicate<T> predicate)
         {
-            var rule = new Rule(x => x is TState && predicate((TState) x));
+            var rule = new Rule(x => x is T && predicate((T) x));
             _rules.Add(rule);
             return rule;
         }
@@ -155,15 +190,15 @@ namespace Silphid.Machina
                 Dispose();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            if (_isDisposed)
+            if (IsDisposed)
                 return;
             
-            _disposables.Dispose();
+            Disposables.Dispose();
             _state.Dispose();
             State.Dispose();
-            _isDisposed = true;
+            IsDisposed = true;
         }
     }
 }

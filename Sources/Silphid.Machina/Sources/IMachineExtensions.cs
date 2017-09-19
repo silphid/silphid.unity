@@ -5,9 +5,6 @@ namespace Silphid.Machina
 {
     public static class IMachineExtensions
     {
-	    public static void Enter<TState>(this IMachine This) where TState : new() =>
-		    This.Enter(new TState());
-
 	    public static IObservable<Transition<TSource, TTarget>> Transitioning<TSource, TTarget>(this IMachine This) =>
 		    This.Transitions
 			    .Where(x => x.Source is TSource && x.Target is TTarget)

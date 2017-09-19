@@ -7,5 +7,6 @@ namespace Silphid.Machina
     {
         void Handle<TRequest>(Func<TRequest, IRequest> handler);
         void Handle<TRequest>(Action<TRequest> handler);
+        void HandlePartially<TRequest>(Action<TRequest> handler);
     }
 }
