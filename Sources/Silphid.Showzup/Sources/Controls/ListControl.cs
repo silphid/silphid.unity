@@ -175,9 +175,9 @@ namespace Silphid.Showzup
                          new List<object>();
             
             _models.Value = models;
+            RemoveViews(Container, _views);
             _views.Clear();
             _reactiveViews.Value = new ReadOnlyCollection<IView>(Array.Empty<IView>());
-            RemoveAllViews(Container);
 
             var entries = models
                 .Select((x, i) => new Entry(i, x))
