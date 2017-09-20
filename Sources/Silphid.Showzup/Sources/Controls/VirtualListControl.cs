@@ -191,6 +191,8 @@ namespace Silphid.Showzup
                     .Where(x => x.View != null)
                     .ForEach((i, entry) =>
                         UpdateViewLayout(entry.View, i));
+                
+                UpdateVisibleRange();
             }
         }
 
