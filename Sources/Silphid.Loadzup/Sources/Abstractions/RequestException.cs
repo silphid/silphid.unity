@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using UniRx;
+using UnityEngine.Networking;
 
 namespace Silphid.Loadzup
 {
@@ -13,8 +14,19 @@ namespace Silphid.Loadzup
         public HttpStatusCode StatusCode { get; }
         public Dictionary<string, string> ResponseHeaders { get; }
 
-        public RequestException()
+        public RequestException(UnityWebRequest request)
         {
+            RawErrorMessage = request.error;
+            HasResponse = false;
+            Text = request.downloadHandler.text;
+            ResponseHeaders = request.GetResponseHeaders();
+
+            var splitted = RawErrorMessage.Split(' ', ':');
+            if (splitted.Length == 0) return;
+            int statusCode;
+            if (!int.TryParse(splitted[0], out statusCode)) return;
+            HasResponse = true;
+            StatusCode = (HttpStatusCode)statusCode;
         }
 
         public RequestException(HttpStatusCode statusCode)
@@ -32,6 +44,7 @@ namespace Silphid.Loadzup
             StatusCode = exception.StatusCode;
             ResponseHeaders = exception.ResponseHeaders;
         }
+        
 
         public override string ToString() => $"{RawErrorMessage} {Text}";
     }
