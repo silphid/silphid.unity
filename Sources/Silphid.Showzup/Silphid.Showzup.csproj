@@ -97,6 +97,7 @@
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Controls\VirtualListControl.cs" />
+    <Compile Include="Sources\DesignTime\SelfDestroy.cs" />
     <Compile Include="Sources\Exceptions\BindException.cs" />
     <Compile Include="Sources\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />

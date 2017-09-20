@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
+using Silphid.Injexit;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
@@ -15,7 +17,8 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
-        private readonly ILogger _logger = Debug.unityLogger;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(VirtualListControl));
+        
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
@@ -25,8 +28,9 @@ namespace Silphid.Showzup
         
         public ListLayout Layout;
         public RectTransform Viewport;
+        public RectTransform ScrollingContent;
         public int ExtraMarginItems = 3;
-
+        
         public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
 
         protected override void Start()
@@ -38,7 +42,7 @@ namespace Silphid.Showzup
             if (Viewport == null)
                 throw new ArgumentNullException(nameof(Viewport));
             
-            _containerRectTransform = Container.RectTransform();
+            _containerRectTransform = ScrollingContent ?? Container.RectTransform();
             if (_containerRectTransform == null)
                 throw new ArgumentException("Container must have a RectTransform component.");
             
@@ -101,7 +105,7 @@ namespace Silphid.Showzup
                 return;
             
             // Update range
-            _logger?.Log($"VirtualListControl - Visible range: {newRange}");
+            Log.Debug($"VirtualListControl - Visible range: {newRange}");
             var oldRange = _currentRange;
             _currentRange = newRange;
 
@@ -118,7 +122,7 @@ namespace Silphid.Showzup
 
         private void AddView(int index)
         {
-            _logger?.Log($"VirtualListControl - Adding view {index}");
+            Log.Debug($"VirtualListControl - Adding view {index}");
             
             var entry = GetEntryWithViewInfo(index);
 
@@ -180,7 +184,7 @@ namespace Silphid.Showzup
 
         private void RemoveView(int index)
         {
-            _logger?.Log($"VirtualListControl - Removing view {index}");
+            Log.Debug($"VirtualListControl - Removing view {index}");
             if(_entries.Count<=index) return;
             var entry = _entries[index];
             entry.Disposable?.Dispose();
