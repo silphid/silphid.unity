@@ -42,7 +42,8 @@ namespace Silphid.Showzup
             if (Viewport == null)
                 throw new ArgumentNullException(nameof(Viewport));
             
-            _containerRectTransform = ScrollingContent ?? Container.RectTransform();
+            _containerRectTransform = ScrollingContent != null ? ScrollingContent : Container.RectTransform();
+            
             if (_containerRectTransform == null)
                 throw new ArgumentException("Container must have a RectTransform component.");
             
