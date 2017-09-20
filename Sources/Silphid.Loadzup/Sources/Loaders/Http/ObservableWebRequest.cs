@@ -38,24 +38,24 @@ namespace Silphid.Loadzup.Http
         }
 
 
-        private static IEnumerator Fetch(UnityWebRequest www, IObserver<UnityWebRequest> observer)
+        private static IEnumerator Fetch(UnityWebRequest webRequest, IObserver<UnityWebRequest> observer)
         {
-            using (www)
+            using (webRequest)
             {
-                yield return www.Send();
-                if (!www.error.IsNullOrEmpty())
+                yield return webRequest.Send();
+                if (!webRequest.error.IsNullOrEmpty())
                 {
-                    observer.OnError(new Exception(www.downloadHandler.text));
+                    observer.OnError(new Exception(webRequest.downloadHandler.text));
                 }
                 else
                 {
-                    observer.OnNext(www);
+                    observer.OnNext(webRequest);
                     observer.OnCompleted();
                 }
             }
         }
 
-        private static IEnumerator FetchExemple(UnityWebRequest www, IObserver<byte[]> observer, IProgress<float> reportProgress, CancellationToken cancel)
+        private static IEnumerator FetchRef(UnityWebRequest www, IObserver<byte[]> observer, IProgress<float> reportProgress, CancellationToken cancel)
         {
             using (www)
             {
