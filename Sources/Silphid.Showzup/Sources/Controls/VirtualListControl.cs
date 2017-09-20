@@ -6,6 +6,7 @@ using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Silphid.Showzup
 {
@@ -192,6 +193,7 @@ namespace Silphid.Showzup
                     .ForEach((i, entry) =>
                         UpdateViewLayout(entry.View, i));
                 
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_containerRectTransform);
                 UpdateVisibleRange();
             }
         }
