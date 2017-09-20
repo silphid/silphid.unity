@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
@@ -14,6 +15,12 @@ namespace Silphid.Showzup
         {
             if (container)
                 container.Children().Where(x => x != except).ForEach(RemoveView);
+        }
+
+        protected void RemoveViews(GameObject viewObject, IEnumerable<IView> views)
+        {
+            foreach (var view in views)
+                RemoveView(view.GameObject);
         }
 
         protected virtual void RemoveView(GameObject viewObject)

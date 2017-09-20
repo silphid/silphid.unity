@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using log4net;
 using Silphid.Loadzup.Caching;
 using UniRx;
 
@@ -10,6 +11,8 @@ namespace Silphid.Loadzup.Bundles
     {
         private readonly string _baseUri;
 
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BundleCachedLoader));
+        
         private static readonly Action<BundleRefCount, string> AddRootRefAction = (refCount, x) => refCount.AddRootRef();
         private static readonly Action<BundleRefCount, string> AddDependencyRefAction = (refCount, dependencyWithBundleNamed) => refCount.AddDependencyRef(dependencyWithBundleNamed);
         private static readonly Action<BundleRefCount, string> AddLoadingRefAction = (refCount,x) => refCount.AddLoadingRef();
@@ -170,7 +173,7 @@ namespace Silphid.Loadzup.Bundles
                 // No bundle to unload
                 if (!_bundleRefCounts.TryGetValue(bundleName, out refCount))
                 {
-                    UnityEngine.Debug.Log($"Can't unload bundle named {bundleName} because it is not loaded yet");
+                    Log.Info($"Can't unload bundle named {bundleName} because it is not loaded yet");
                     return false;
                 }
 

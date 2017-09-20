@@ -1,20 +1,20 @@
 ﻿using System;
+using log4net;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Loadzup.Http
 {
     public class HttpLoader : ILoader
-    {
+    {    
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpLoader));
+        
         private readonly IRequester _requester;
         private readonly IConverter _converter;
-        private readonly ILogger _logger;
 
-        public HttpLoader(IRequester requester, IConverter converter, ILogger logger = null)
+        public HttpLoader(IRequester requester, IConverter converter)
         {
             _requester = requester;
             _converter = converter;
-            _logger = logger;
         }
 
         public bool Supports<T>(Uri uri) =>
@@ -29,7 +29,7 @@ namespace Silphid.Loadzup.Http
                 .Request(uri, options)
                 .ContinueWith(x => _converter
                     .Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding)
-                    .DoOnError(ex => _logger?.LogError($"Failed to convert response from Uri {uri} to type {typeof(T)} : {x.Encoding.GetString(x.Bytes)}", ex)));
+                    .DoOnError(ex => Log.Error($"Failed to convert response from Uri {uri} to type {typeof(T)} : {x.Encoding.GetString(x.Bytes)}", ex)));
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UnityEngine;
 
@@ -9,23 +10,23 @@ namespace Silphid.Injexit
     public class Container : IContainer
     {
         public static readonly IContainer Null = new NullContainer();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
+        
         
         #region Private fields
 
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
         private readonly IReflector _reflector;
-        private readonly ILogger _logger;
         private static readonly Func<IResolver, object> NullFactory = null;
 
         #endregion
 
         #region Constructors
 
-        public Container(IReflector reflector, ILogger logger = null)
+        public Container(IReflector reflector)
         {
             _reflector = reflector;
-            _logger = logger;
         }
 
         #endregion
@@ -33,7 +34,7 @@ namespace Silphid.Injexit
         #region IContainer members
 
         public IContainer Create() =>
-            new Container(_reflector, _logger);
+            new Container(_reflector);
 
         #endregion
         
@@ -92,7 +93,7 @@ namespace Silphid.Injexit
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
-            _logger?.Log($"Resolving {abstractionType.Name}...");
+            Log.Info($"Resolving {abstractionType.Name}...");
 
             abstractionType = ResolveForward(abstractionType);
 
@@ -175,7 +176,7 @@ namespace Silphid.Injexit
                 x.Id == id);
             
             if (binding != null)
-                _logger?.Log($"Resolved {binding}");
+                Log.Info($"Resolved {binding}");
 
             return binding;
         }
@@ -222,7 +223,7 @@ namespace Silphid.Injexit
 
         private object ResolveParameter(Type dependentType, InjectParameterInfo parameter, IResolver resolver)
         {
-            _logger?.Log($"Resolving parameter {parameter.Name}");
+            Log.Info($"Resolving parameter {parameter.Name}");
             try
             {
                 return resolver.Resolve(parameter.Type, parameter.Id);
@@ -238,7 +239,7 @@ namespace Silphid.Injexit
                     throw new UnresolvedDependencyException(dependentType, ex, parameter.Name);
             }
 
-            _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
+            Log.Info($"Falling back to default value: {parameter.DefaultValue}");
             return parameter.DefaultValue;
         }
 
@@ -303,7 +304,7 @@ namespace Silphid.Injexit
             if (behaviour != null)
                 return true;
             
-            _logger?.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
+            Log.Warn("Skipping null MonoBehaviour.");
             return false;
         }
         
@@ -332,7 +333,7 @@ namespace Silphid.Injexit
             try
             {
                 var value = resolver.Resolve(member.Type, member.Id);
-                _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                Log.Info($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
                 member.SetValue(obj, value);
             }
             catch (UnresolvedTypeException ex)
@@ -345,7 +346,7 @@ namespace Silphid.Injexit
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
             var parameters = ResolveParameters(obj.GetType(), method.Parameters, resolver);
-            _logger?.Log($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
+            Log.Debug($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
             method.Method.Invoke(obj, parameters);
         }
 
