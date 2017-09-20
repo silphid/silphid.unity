@@ -16,7 +16,7 @@ namespace Silphid.Showzup
     /// </summary>
     public class VirtualListControl : ListControl
     {
-        [Inject, Optional] private readonly ILogger _logger;
+        [Inject, Optional] internal ILogger _logger;
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
@@ -40,7 +40,8 @@ namespace Silphid.Showzup
             if (Viewport == null)
                 throw new ArgumentNullException(nameof(Viewport));
             
-            _containerRectTransform = ScrollingContent ?? Container.RectTransform();
+            _containerRectTransform = ScrollingContent != null ? ScrollingContent : Container.RectTransform();
+            
             if (_containerRectTransform == null)
                 throw new ArgumentException("Container must have a RectTransform component.");
             
