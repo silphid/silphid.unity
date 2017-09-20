@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Silphid.Extensions;
-using Silphid.Injexit;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
 using UnityEngine;
@@ -32,6 +31,7 @@ namespace Silphid.Showzup
         public int ExtraMarginItems = 3;
         
         public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
+        public override int Count => _entries.Count;
 
         protected override void Start()
         {
@@ -59,7 +59,7 @@ namespace Silphid.Showzup
             }
         }
 
-        public override IObservable<IView> PresentInternal(object input, Options options = null)
+        public override IObservable<IView> PresentInternal(object input, Options options)
         {
             _currentRange = IndexRange.Empty;
             return base.PresentInternal(input, options);
@@ -74,7 +74,7 @@ namespace Silphid.Showzup
                 _entries = entries;
                 _views.AddRange(Enumerable.Repeat<IView>(null, _entries.Count));
             
-                UpdateContainerLayout(_entries.Count);
+                UpdateContainerLayout();
                 UpdateVisibleRange();
             }
                 
@@ -113,48 +113,66 @@ namespace Silphid.Showzup
             // Remove views that moved out of range 
             for (var i = oldRange.Start; i < oldRange.End; i++)
                 if (!newRange.Contains(i))
-                    RemoveView(i);
+                    UnloadViewAt(i);
 
             // Add views that moved into range 
             for (var i = newRange.Start; i < newRange.End; i++)
                 if (!oldRange.Contains(i))
-                    AddView(i);
+                    LoadViewAt(i);
         }
 
-        private void AddView(int index)
+        private void LoadViewAt(int index)
         {
-            Log.Debug($"VirtualListControl - Adding view {index}");
-            
-            var entry = GetEntryWithViewInfo(index);
+            lock (this)
+            {
+                Log.Debug($"VirtualListControl - Adding view {index}");
+           
+                var entry = GetEntryWithViewInfo(index);
+                entry.Disposable?.Dispose();
 
-            // Defensive/optional code
-            if (entry.View != null)
-                return;
-            entry.Disposable?.Dispose();
+                var disposables = new CompositeDisposable();
+                entry.Disposable = disposables;
+                disposables.Add(
+                    LoadView(entry.ViewInfo.Value)
+                        .Subscribe(view => AddView(view, index, entry, disposables)));
+            }
+        }
 
-            var disposables = new CompositeDisposable();
-            entry.Disposable = disposables;
-            disposables.Add(
-                LoadView(entry.ViewInfo.Value)
-                    .Subscribe(view =>
-                    {
-                        // Optimization/optional
-                        if (disposables.IsDisposed)
-                            return;
+        private void UnloadViewAt(int index)
+        {
+            lock (this)
+            {
+                Log.Debug($"VirtualListControl - Removing view {index}");
 
-                        entry.View = view;
-                        disposables.Add(
-                            Disposable.Create(() =>
-                                RemoveView(view, index)));
-                        UpdateViewLayout(view, index);
-                        AddView(Container, view);
-                    }));
+                if (_entries.Count <= index)
+                    return;
+
+                var entry = _entries[index];
+                entry.Disposable?.Dispose();
+                entry.Disposable = null;
+            }
+        }
+
+        private void AddView(IView view, int index, Entry entry, CompositeDisposable disposables)
+        {
+            lock (this)
+            {
+                if (disposables.IsDisposed)
+                    return;
+
+                entry.View = view;
+                disposables.Add(
+                    Disposable.Create(() =>
+                        RemoveView(view, index)));
+                UpdateViewLayout(view, index);
+                AddView(Container, view);
+            }
         }
 
         private void UpdateViewLayout(IView view, int index)
         {
             var rect = Layout.GetItemRect(index, Viewport.GetSize());
-            
+
             var rectTransform = view.GameObject.RectTransform();
             rectTransform.pivot = Vector2.up;
             rectTransform.anchorMin = Vector2.up;
@@ -163,12 +181,25 @@ namespace Silphid.Showzup
             rectTransform.sizeDelta = rect.size;
         }
 
-        private void UpdateContainerLayout(int count)
+        public void UpdateLayout()
+        {
+            lock (this)
+            {
+                UpdateContainerLayout();
+                
+                _entries
+                    .Where(x => x.View != null)
+                    .ForEach((i, entry) =>
+                        UpdateViewLayout(entry.View, i));
+            }
+        }
+
+        private void UpdateContainerLayout()
         {
             _containerRectTransform.pivot = Vector2.up;
             _containerRectTransform.anchorMin = Vector2.up;
             _containerRectTransform.anchorMax = Vector2.up;
-            _containerRectTransform.sizeDelta = Layout.GetContainerSize(count, Viewport.GetSize()); 
+            _containerRectTransform.sizeDelta = Layout.GetContainerSize(_entries.Count, Viewport.GetSize()); 
         }
 
         private Entry GetEntryWithViewInfo(int index)
@@ -183,25 +214,19 @@ namespace Silphid.Showzup
             return entry;
         }
 
-        private void RemoveView(int index)
-        {
-            Log.Debug($"VirtualListControl - Removing view {index}");
-            if(_entries.Count<=index) return;
-            var entry = _entries[index];
-            entry.Disposable?.Dispose();
-            entry.Disposable = null;
-        }
-
         private void RemoveView(IView view, int index)
         {
-            var entry = _entries[index];
+            lock (this)
+            {
+                var entry = _entries[index];
             
-            // Defensive/optional code
-            if (entry.View != view)
-                return;
+                // Defensive/optional code
+                if (entry.View != view)
+                    return;
             
-            RemoveView(view.GameObject);
-            entry.View = null;
+                RemoveView(view.GameObject);
+                entry.View = null;
+            }
         }
 
         private Rect VisibleRect =>

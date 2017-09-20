@@ -63,7 +63,7 @@ namespace Silphid.Showzup
         public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
-        public int Count => _models.Value.Count;
+        public virtual int Count => _views.Count;
         public bool HasItems => Count > 0;
         public int? LastIndex => HasItems ? Count - 1 : (int?) null;
         public int? FirstIndex => HasItems ? 0 : (int?) null;
