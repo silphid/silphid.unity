@@ -102,8 +102,7 @@ namespace Silphid.Showzup
                     image.enabled = true;
 
                     if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset)
-                        Disposable.Create(x.Dispose)
-                            .AddTo(this);
+                        x.AddTo(this);
                 })
                 .AutoDetach()
                 .AsSingleUnitObservable();
