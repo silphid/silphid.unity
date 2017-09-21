@@ -46,9 +46,7 @@ namespace Silphid.Showzup.ListLayouts
             }
         }
 
-        public override string ToString()
-        {
-            return $"[{Start}, {End}[";
-        }
+        public override string ToString() =>
+            $"[{Start}, {End-1}]";
     }
 }

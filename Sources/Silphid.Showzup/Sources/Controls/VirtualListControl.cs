@@ -23,8 +23,7 @@ namespace Silphid.Showzup
         private List<Entry> _entries = new List<Entry>();
         private IndexRange _currentRange = IndexRange.Empty;
         private RectTransform _containerRectTransform;
-        private bool _isStarted;
-        private Action _queuedLoadViews;
+        private bool _isInitialized;
         
         public ListLayout Layout;
         public RectTransform Viewport;
@@ -34,10 +33,12 @@ namespace Silphid.Showzup
         public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
         public override int Count => _entries.Count;
 
-        protected override void Start()
+        private void EnsureInitialized()
         {
-            base.Start();
-
+            if (_isInitialized)
+                return;
+            _isInitialized = true;
+            
             if (Layout == null)
                 throw new ArgumentNullException(nameof(Layout));
             if (Viewport == null)
@@ -52,45 +53,28 @@ namespace Silphid.Showzup
                 .ObserveEveryValueChanged(x => x.anchoredPosition)
                 .Subscribe(_ => UpdateVisibleRange())
                 .AddTo(this);
-
-            lock (this)
-            {
-                _isStarted = true;
-                _queuedLoadViews?.Invoke();
-            }
         }
 
         public override IObservable<IView> PresentInternal(object input, Options options)
         {
+            EnsureInitialized();
             _currentRange = IndexRange.Empty;
             return base.PresentInternal(input, options);
         }
 
         protected override IObservable<IView> LoadViews(List<Entry> entries, Options options)
         {
-            if (!EnqueueLoadViewsIfNotYetStarted(entries, options))
+            lock (this)
             {
                 _options = options;
                 _entries?.ForEach(x => x.Disposable?.Dispose());
                 _entries = entries;
                 _views.AddRange(Enumerable.Repeat<IView>(null, _entries.Count));
-            
+
                 UpdateContainerLayout();
                 UpdateVisibleRange();
-            }
-                
-            return Observable.Empty<IView>();
-        }
 
-        private bool EnqueueLoadViewsIfNotYetStarted(List<Entry> entries, Options options)
-        {
-            lock (this)
-            {
-                if (_isStarted)
-                    return false;
-
-                _queuedLoadViews = () => LoadViews(entries, options).Subscribe();
-                return true;
+                return Observable.Empty<IView>();
             }
         }
 
@@ -187,11 +171,14 @@ namespace Silphid.Showzup
             lock (this)
             {
                 UpdateContainerLayout();
-                
-                _entries
-                    .Where(x => x.View != null)
-                    .ForEach((i, entry) =>
-                        UpdateViewLayout(entry.View, i));
+
+                int index = 0;
+                foreach (var entry in _entries)
+                {
+                    if (entry.View != null)
+                        UpdateViewLayout(entry.View, index);
+                    index++;
+                }
                 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_containerRectTransform);
                 UpdateVisibleRange();
