@@ -1,8 +1,11 @@
-﻿<Properties StartupItem="Assembly-CSharp.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Examples/Sequencit/Sequencing1.cs">
+﻿<Properties StartupItem="UnityProject.Plugins.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Examples\Showzup\Resources\Log4NetConfig.xml">
     <Files>
-      <File FileName="Assets/Examples/Sequencit/Sequencing1.cs" Line="116" Column="1" />
+      <File FileName="Assets\Examples\Sequencit\Sequencing1.cs" Line="1" Column="1" />
+      <File FileName="Assets\Examples\Showzup\Application\AppInstaller.cs" Line="1" Column="1" />
+      <File FileName="Assets\Examples\Showzup\Application\UnityAppender.cs" Line="1" Column="1" />
+      <File FileName="Assets\Examples\Showzup\Resources\Log4NetConfig.xml" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

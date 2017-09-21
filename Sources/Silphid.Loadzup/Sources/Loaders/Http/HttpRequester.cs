@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
@@ -17,37 +19,34 @@ namespace Silphid.Loadzup.Http
             KnownHttpHeaders.Status
         };
 
-        private readonly ILogger _logger;
-
-        public HttpRequester(ILogger logger = null)
-        {
-            _logger = logger;
-        }
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
-            ObservableWWW
-                .GetWWW(uri.AbsoluteUri, options?.RequestHeaders)
-                .DoOnSubscribe(() => Log($"GET {uri}"))
+            ObservableWebRequest
+                .Get(uri.AbsoluteUri, options?.RequestHeaders)
+                .DoOnSubscribe(() => LogMessage($"GET {uri}"))
                 .DoOnError(LogError)
-                .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
-                .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
+                .Select(www => new Response(www.downloadHandler.data, GetMeaningfulHeaders(www.GetResponseHeaders())));
 
-        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null)
-        {
-            var headers = options?.RequestHeaders ?? new Dictionary<string, string>();
-            return ObservableWWW
-                .PostWWW(uri.AbsoluteUri, form, headers)
-                .DoOnSubscribe(() => Log($"POST {uri}\r\nForm: {form}\r\nHeaders: {headers}"))
-                .DoOnError(LogError)
-                .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
-                .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
-        }
+        public IObservable<Response> Get(Uri uri, Options options = null) => Request(uri, options);
 
-        private void Log(string message) =>
-            _logger?.Log(nameof(HttpRequester), message);
+        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null) => ObservableWebRequest
+            .Post(uri.AbsoluteUri, form, options?.RequestHeaders)
+            .DoOnSubscribe(() => LogMessage($"POST {uri}\r\nForm: {form}\r\nHeaders: {options?.RequestHeaders}"))
+            .DoOnError(LogError)
+            .Select(www => new Response(www.downloadHandler.data, GetMeaningfulHeaders(www.GetResponseHeaders())));
+
+        public IObservable<Response> Put(Uri uri, string body, Options options = null) => ObservableWebRequest
+            .Put(uri.AbsoluteUri, body, options?.RequestHeaders)
+            .DoOnSubscribe(() => LogMessage($"PUT {uri}\r\nBody: {body}\r\nHeaders: {options?.RequestHeaders}"))
+            .DoOnError(LogError)
+            .Select(www => new Response(www.downloadHandler.data, GetMeaningfulHeaders(www.GetResponseHeaders())));
+
+        private void LogMessage(string message) =>
+            Log.Debug(message);
 
         private void LogError(Exception exception) =>
-            _logger?.LogError(nameof(HttpRequester), $"Request failed: {exception}");
+            Log.Error($"Request failed: {exception}");
 
         private Dictionary<string, string> GetMeaningfulHeaders(IDictionary<string, string> allHeaders)
         {

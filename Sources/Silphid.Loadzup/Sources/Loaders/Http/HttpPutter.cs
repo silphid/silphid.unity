@@ -1,0 +1,25 @@
+﻿using System;
+using UniRx;
+using UnityEngine;
+
+namespace Silphid.Loadzup.Http
+{
+    public class HttpPutter : IPutter
+    {
+        private readonly IRequester _requester;
+        private readonly IConverter _converter;
+
+        public HttpPutter(IRequester requester, IConverter converter)
+        {
+            _requester = requester;
+            _converter = converter;
+        }
+
+        public IObservable<T> Put<T>(Uri uri, string body, Options options = null) =>
+            _requester
+                .Put(uri, body, options)
+                .ContinueWith(x => typeof(T) != typeof(Response)
+                    ? _converter.Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding)
+                    : Observable.Return((T) (object) x));
+    }
+}

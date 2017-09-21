@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using log4net;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
 using UniRx;
@@ -15,6 +16,8 @@ namespace Silphid.Loadzup.Caching
         private readonly IRequester _requester;
         private readonly ICacheStorage _cacheStorage;
 
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CachedRequester));
+
         public CachedRequester(IRequester requester, ICacheStorage cacheStorage)
         {
             _requester = requester;
@@ -22,6 +25,13 @@ namespace Silphid.Loadzup.Caching
         }
 
         public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IObservable<Response> Get(Uri uri, Options options = null) => Request(uri, options);
+
+        public IObservable<Response> Put(Uri uri, string body, Options options = null)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +57,7 @@ namespace Silphid.Loadzup.Caching
                     return LoadFromOrigin(policy, uri, options)
                         .Catch<Response, RequestException>(ex =>
                         {
-                          //  Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (error: {ex}), falling back to cached version.");
+                            //  Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (error: {ex}), falling back to cached version.");
                             return LoadFromCache(uri, responseHeaders);
                         });
 
@@ -63,7 +73,7 @@ namespace Silphid.Loadzup.Caching
             else
             {
                 // Not cached
-              //  Debug.Log($"#Loadzup# {policy} - Resource not found in cache: {uri}");
+                //  Debug.Log($"#Loadzup# {policy} - Resource not found in cache: {uri}");
 
                 if (policy == CachePolicy.CacheOnly)
                     return Observable.Throw<Response>(new InvalidOperationException($"Policy is {policy} but resource not found in cache"));
@@ -95,7 +105,7 @@ namespace Silphid.Loadzup.Caching
 
         private IObservable<Response> LoadWithLastModified(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
-           // Debug.Log($"#Loadzup# LoadWithLastModified");
+            // Debug.Log($"#Loadzup# LoadWithLastModified");
             var lastModified = responseHeaders.GetValueOrDefault(KnownHttpHeaders.LastModified);
             if (lastModified == null)
                 return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
@@ -106,7 +116,7 @@ namespace Silphid.Loadzup.Caching
                 return LoadFromOrigin(policy, uri, options)
                     .Catch<Response, RequestException>(ex =>
                     {
-                        Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (Status: {ex.StatusCode}, Error: {ex}), falling back to cached version.");
+                        Log.Info($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (Status: {ex.StatusCode}, Error: {ex}), falling back to cached version.");
                         return LoadFromCache(uri, responseHeaders);
                     });
 
@@ -116,7 +126,7 @@ namespace Silphid.Loadzup.Caching
 
         private IObservable<Response> LoadFromCacheThenOrigin(CachePolicy policy, Uri uri, Options options, Dictionary<string, string> responseHeaders)
         {
-           // Debug.Log($"#Loadzup# LoadFromCacheThenOrigin");
+            // Debug.Log($"#Loadzup# LoadFromCacheThenOrigin");
             return LoadFromCache(uri, responseHeaders)
                 .Concat(Observable.Defer(() => LoadFromOrigin(policy, uri, options)
                     .Catch<Response, RequestException>(ex => ex.StatusCode == HttpStatusCode.NotModified
@@ -141,7 +151,7 @@ namespace Silphid.Loadzup.Caching
                     if (x.Headers.TryGetValue(KnownHttpHeaders.Status, out statusCode))
                     {
                         var code = statusCode.Split(' ');
-                        if (code.Length >= 2 && code[1] == ((int)HttpStatusCode.NotModified).ToString())
+                        if (code.Length >= 2 && code[1] == ((int) HttpStatusCode.NotModified).ToString())
                             throw new RequestException(HttpStatusCode.NotModified);
                     }
 

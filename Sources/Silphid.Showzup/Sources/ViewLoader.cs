@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Loadzup;
@@ -11,15 +12,15 @@ namespace Silphid.Showzup
 {
     public class ViewLoader : IViewLoader
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ViewLoader));
+        
         private readonly ILoader _loader;
         private readonly IInjectionAdapter _injectionAdaptor;
-        private readonly ILogger _logger;
 
-        public ViewLoader(ILoader loader, IInjectionAdapter injectionAdaptor, ILogger logger = null)
+        public ViewLoader(ILoader loader, IInjectionAdapter injectionAdaptor)
         {
             _loader = loader;
             _injectionAdaptor = injectionAdaptor;
-            _logger = logger;
         }
 
         public IObservable<IView> Load(ViewInfo viewInfo, CancellationToken cancellationToken)
@@ -50,7 +51,7 @@ namespace Silphid.Showzup
         {
             try
             {
-                _logger?.Log(nameof(ViewLoader), $"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
+                Log.Debug($"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
                 var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
                 return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
 
@@ -65,7 +66,7 @@ namespace Silphid.Showzup
         {
             try
             {
-                _logger?.Log(nameof(ViewLoader), $"Resolving {viewModelType.Name} (without Model) for View {viewType.Name}");
+                Log.Debug($"Resolving {viewModelType.Name} (without Model) for View {viewType.Name}");
                 var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
                 return LoadFromViewModel(viewModel, viewType, uri, parameters, cancellationToken);
 
@@ -80,7 +81,7 @@ namespace Silphid.Showzup
         {
             try
             {
-                _logger?.Log(nameof(ViewLoader), $"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
+                Log.Debug($"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
                 return LoadPrefabView(viewType, uri, parameters, cancellationToken)
                     .Do(view => InjectView(view, viewModel, parameters))
                     .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
@@ -96,7 +97,7 @@ namespace Silphid.Showzup
         {
             try
             {
-                _logger?.Log(nameof(ViewLoader), $"Initializing {view} with {viewModel}");
+                Log.Debug($"Initializing {view} with {viewModel}");
                 view.ViewModel = viewModel;
                 _injectionAdaptor.Inject(view.GameObject, parameters);
 
@@ -116,14 +117,14 @@ namespace Silphid.Showzup
 
         private IObservable<IView> LoadPrefabView(Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
-            _logger?.Log(nameof(ViewLoader), $"LoadPrefabView({viewType}, {uri})");
+            Log.Debug($"LoadPrefabView({viewType}, {uri})");
 
             return _loader.Load<GameObject>(uri)
                 .Last()
                 .Where(obj => CheckCancellation(cancellationToken))
                 .Select(x => Instantiate(x, cancellationToken))
                 .WhereNotNull()
-                .DoOnError(ex => _logger?.LogError(nameof(ViewLoader),
+                .DoOnError(ex => Log.Error(
                     $"Failed to load {viewType} from {uri} with error:{Environment.NewLine}{ex}"))
                 .Select(x => GetViewFromPrefab(x, viewType));
         }

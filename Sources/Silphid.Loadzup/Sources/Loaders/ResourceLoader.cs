@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using log4net;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
@@ -12,12 +13,11 @@ namespace Silphid.Loadzup.Resource
         private const string _pathSeparator = "/";
 
         private readonly IConverter _converter;
-        private readonly ILogger _logger;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResourceLoader));
 
-        public ResourceLoader(IConverter converter, ILogger logger = null)
+        public ResourceLoader(IConverter converter)
         {
             _converter = converter;
-            _logger = logger;
         }
 
         public bool Supports<T>(Uri uri) =>
@@ -33,7 +33,7 @@ namespace Silphid.Loadzup.Resource
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))
-                .DoOnError(ex => _logger?.LogError($"#Loadzup# Failed to load resource at '{path}' to type {typeof(T)}.", ex));
+                .DoOnError(ex => Log.Error($"Failed to load resource at '{path}' to type {typeof(T)}.", ex));
         }
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();
