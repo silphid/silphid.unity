@@ -7,6 +7,8 @@ namespace Silphid.Showzup
     {
         public abstract IObservable<IView> Present(object input, Options options = null);
         public abstract ReadOnlyReactiveProperty<bool> IsLoading { get; }
+        
+        public bool AutoSelect = true;
 
         protected ReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
         public ReadOnlyReactiveProperty<IView> FirstView => MutableFirstView.ToReadOnlyReactiveProperty();

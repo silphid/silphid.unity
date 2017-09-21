@@ -4,6 +4,7 @@ using Silphid.Extensions;
 using Silphid.Injexit;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
@@ -38,6 +39,13 @@ namespace Silphid.Showzup
         {
             Container1.SetActive(false);
             Container2.SetActive(false);
+                        
+            if (AutoSelect)
+                View
+                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
+                    .WhereNotNull()
+                    .Subscribe(x => x.SelectDeferred())
+                    .AddTo(this);
         }
 
         #endregion

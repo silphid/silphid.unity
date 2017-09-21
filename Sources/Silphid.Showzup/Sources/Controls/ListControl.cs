@@ -51,7 +51,6 @@ namespace Silphid.Showzup
 
         public GameObject Container;
         public string[] Variants;
-        public bool AutoSelect = true;
         public Comparer<IView> ViewComparer { get; set; }
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }

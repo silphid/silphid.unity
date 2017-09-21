@@ -8,7 +8,6 @@ namespace Silphid.Showzup
     public class ItemControl : SinglePresenterControl
     {
         public GameObject Container;
-        public bool AutoSelect = true;
 
         protected override IObservable<Unit> Present(Presentation presentation)
         {
@@ -43,7 +42,7 @@ namespace Silphid.Showzup
 
         protected virtual void SelectView(IView view)
         {
-            view.GameObject.SelectDeferred();
+            view.SelectDeferred();
         }
 
         private void PreHide(IView view, Options options)
