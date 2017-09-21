@@ -274,7 +274,7 @@ namespace Silphid.Showzup
                 return request;
 
             var backRequest = request as BackRequest;
-            if (backRequest == null || !ShouldHandleBackRequests)
+            if (backRequest == null || !ShouldHandleBackRequests || !CanPop.Value)
                 return request;
 
             Pop().SubscribeAndForget();
