@@ -3,6 +3,7 @@ using System.Collections;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
+using Silphid.Requests;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ namespace Silphid.Showzup
     public abstract class View<TViewModel> :
         MonoBehaviour, IView<TViewModel>, ILoadable where TViewModel : IViewModel
     {
+        [Inject] protected ILoader Loader;
+        
         #region IView members
 
         private IViewModel _viewModel;
@@ -35,10 +38,25 @@ namespace Silphid.Showzup
         public GameObject GameObject => gameObject;
         public TViewModel ViewModel => (TViewModel) _viewModel;
 
+        #endregion
+        
+        #region ILoadable members
+
+        public virtual IObservable<Unit> Load()
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region Object members
+
         public override string ToString() => GetType().Name;
-
-        [Inject] protected ILoader Loader;
-
+        
+        #endregion
+        
+        #region Binding helpers
+        
         protected void Bind(Text text, string value)
         {
             if (text != null)
@@ -112,13 +130,14 @@ namespace Silphid.Showzup
 
         #endregion
 
-        #region ILoadable members
+        #region Request helpers
 
-        public virtual IObservable<Unit> Load()
-        {
-            return null;
-        }
+        protected void Send(IRequest request) =>
+            gameObject.Send(request);
 
+        protected void Send<TRequest>() where TRequest : IRequest, new() =>
+            gameObject.Send(new TRequest());
+        
         #endregion
     }
 }

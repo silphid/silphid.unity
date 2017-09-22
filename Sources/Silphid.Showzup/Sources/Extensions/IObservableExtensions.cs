@@ -1,7 +1,6 @@
 ﻿using System;
 using Silphid.Extensions;
 using Silphid.Requests;
-using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine.UI;
 
