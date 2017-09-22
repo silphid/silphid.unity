@@ -93,7 +93,7 @@ namespace Silphid.Injexit
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
         {
-            Log.Info($"Resolving {abstractionType.Name}...");
+            Log.Debug($"Resolving {abstractionType.Name}");
 
             abstractionType = ResolveForward(abstractionType);
 
@@ -176,7 +176,7 @@ namespace Silphid.Injexit
                 x.Id == id);
             
             if (binding != null)
-                Log.Info($"Resolved {binding}");
+                Log.Debug($"Resolved {binding}");
 
             return binding;
         }
@@ -223,7 +223,7 @@ namespace Silphid.Injexit
 
         private object ResolveParameter(Type dependentType, InjectParameterInfo parameter, IResolver resolver)
         {
-            Log.Info($"Resolving parameter {parameter.Name}");
+            Log.Debug($"Resolving parameter {parameter.Name}");
             try
             {
                 return resolver.Resolve(parameter.Type, parameter.Id);
@@ -239,7 +239,7 @@ namespace Silphid.Injexit
                     throw new UnresolvedDependencyException(dependentType, ex, parameter.Name);
             }
 
-            Log.Info($"Falling back to default value: {parameter.DefaultValue}");
+            Log.Debug($"Falling back to default value: {parameter.DefaultValue}");
             return parameter.DefaultValue;
         }
 
@@ -333,7 +333,7 @@ namespace Silphid.Injexit
             try
             {
                 var value = resolver.Resolve(member.Type, member.Id);
-                Log.Info($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
                 member.SetValue(obj, value);
             }
             catch (UnresolvedTypeException ex)

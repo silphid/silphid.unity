@@ -103,7 +103,7 @@ namespace Silphid.Machina
             var handler = state as IRequestHandler;
             if (handler?.Handle(request) ?? false)
             {
-                Log.Info($"{Name} - {state} - State handled {request}");
+                Log.Info($"{Name} - {state} - {request} handled by state");
                 return true;
             }
             
@@ -114,7 +114,7 @@ namespace Silphid.Machina
         {
             if (_rules.Any(rule => rule.Matches(state, request) && rule.Handle(request)))
             {
-                Log.Info($"{Name} - {state ?? "null"} - Rule handled {request}");
+                Log.Info($"{Name} - {state ?? "null"} - {request} handled by rule");
                 return true;
             }
 
