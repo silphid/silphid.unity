@@ -18,8 +18,10 @@ namespace Silphid.Showzup.Navigation
             public bool IsBidirectional { get; }
             public Func<bool> Condition { get; }
             public Func<bool> BackwardCondition { get; }
+            public Action<MoveDirection> OnHandledAction { get; }
 
-            public Binding(GameObject source, GameObject target, MoveDirection direction, bool isBidirectional, Func<bool> condition, Func<bool> backwardCondition = null)
+            public Binding(GameObject source, GameObject target, MoveDirection direction, bool isBidirectional,
+                Func<bool> condition, Func<bool> backwardCondition = null, Action<MoveDirection> onHandledAction = null)
             {
                 Source = source;
                 Target = target;
@@ -27,45 +29,46 @@ namespace Silphid.Showzup.Navigation
                 IsBidirectional = isBidirectional;
                 Condition = condition;
                 BackwardCondition = condition;
+                OnHandledAction = onHandledAction;
             }
         }
-        
+
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly HashSet<GameObject> _gameObjects = new HashSet<GameObject>();
-        
+
         private readonly ReactiveProperty<GameObject> _selectedGameObject = new ReactiveProperty<GameObject>();
 
         public ReadOnlyReactiveProperty<GameObject> SelectedGameObject =>
             _selectedGameObject.ToReadOnlyReactiveProperty();
 
         public void BindUnidirectional(GameObject source, GameObject target, MoveDirection direction,
-            Func<bool> condition = null)
+            Func<bool> condition = null, Action<MoveDirection> onHandledAction = null)
         {
-            AddBinding(source, target, direction, false, condition);
+            AddBinding(source, target, direction, false, condition, null, onHandledAction);
         }
 
         public void BindBidirectional(GameObject source, GameObject target, MoveDirection direction,
-            Func<bool> condition = null, Func<bool> backwardCondition = null)
+            Func<bool> condition = null, Func<bool> backwardCondition = null, Action<MoveDirection> onHandledAction = null)
         {
-            AddBinding(source, target, direction, true, condition, backwardCondition ?? condition);
+            AddBinding(source, target, direction, true, condition, backwardCondition ?? condition, onHandledAction);
         }
 
         public void BindUnidirectional(Component source, Component target, MoveDirection direction,
-            Func<bool> condition = null)
+            Func<bool> condition = null, Action<MoveDirection> onHandledAction = null)
         {
-            BindUnidirectional(source.gameObject, target.gameObject, direction, condition);
+            BindUnidirectional(source.gameObject, target.gameObject, direction, condition, onHandledAction);
         }
 
         public void BindBidirectional(Component source, Component target, MoveDirection direction,
-            Func<bool> condition = null, Func<bool> backwardCondition = null)
+            Func<bool> condition = null, Func<bool> backwardCondition = null, Action<MoveDirection> onHandledAction = null)
         {
-            BindBidirectional(source.gameObject, target.gameObject, direction, condition, backwardCondition);
+            BindBidirectional(source.gameObject, target.gameObject, direction, condition, backwardCondition, onHandledAction);
         }
 
         private void AddBinding(GameObject source, GameObject target, MoveDirection direction, bool isBidirectional,
-            Func<bool> condition, Func<bool> backwardCondition = null)
+            Func<bool> condition, Func<bool> backwardCondition = null, Action<MoveDirection> onHandledAction = null)
         {
-            _bindings.Add(new Binding(source, target, direction, isBidirectional, condition, backwardCondition));
+            _bindings.Add(new Binding(source, target, direction, isBidirectional, condition, backwardCondition, onHandledAction));
             _gameObjects.Add(source);
             _gameObjects.Add(target);
         }
@@ -90,20 +93,34 @@ namespace Silphid.Showzup.Navigation
         private GameObject GetForwardTarget(GameObject selected, MoveDirection direction) =>
             _bindings
                 .FirstOrDefault(x =>
-                    x.Direction == direction &&
-                    x.Source == selected &&
-                    x.Target.activeInHierarchy &&
-                    (x.Condition?.Invoke() ?? true))
+                {
+                    var isHandled = x.Direction == direction &&
+                           x.Source == selected &&
+                           x.Target.activeInHierarchy &&
+                           (x.Condition?.Invoke() ?? true);
+                    
+                    if(isHandled)
+                        x.OnHandledAction?.Invoke(x.Direction);
+
+                    return isHandled;
+                })
                 ?.Target;
 
         private GameObject GetBackwardTarget(GameObject selected, MoveDirection oppositeDirection) =>
             _bindings
                 .FirstOrDefault(x =>
-                    x.IsBidirectional &&
-                    x.Direction == oppositeDirection &&
-                    x.Target == selected &&
-                    x.Source.activeInHierarchy &&
-                    (x.BackwardCondition?.Invoke() ?? true))
+                {
+                    var isHandled = x.IsBidirectional &&
+                           x.Direction == oppositeDirection &&
+                           x.Target == selected &&
+                           x.Source.activeInHierarchy &&
+                           (x.BackwardCondition?.Invoke() ?? true);
+                    
+                    if(isHandled)
+                        x.OnHandledAction?.Invoke(x.Direction);
+
+                    return isHandled;
+                })
                 ?.Source;
     }
 }

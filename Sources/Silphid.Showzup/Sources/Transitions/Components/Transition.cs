@@ -12,7 +12,9 @@ namespace Silphid.Showzup.Components
         protected abstract ITransition CreateTransition();
         protected ITransition GetTransition() => _transition ?? (_transition = CreateTransition());
 
-        public float Duration =>
+        public float Duration = 1f;
+
+        float ITransition.Duration =>
             GetTransition().Duration;
         
         public void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction) =>

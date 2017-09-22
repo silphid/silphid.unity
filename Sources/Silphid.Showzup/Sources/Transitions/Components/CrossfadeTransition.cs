@@ -13,6 +13,7 @@ namespace Silphid.Showzup.Components
         protected override ITransition CreateTransition() =>
             new Showzup.CrossfadeTransition
             {
+                Duration = Duration,
                 Ease = Ease,
                 FadeOutSource = FadeOutSource,
                 FadeInTarget = FadeInTarget,
