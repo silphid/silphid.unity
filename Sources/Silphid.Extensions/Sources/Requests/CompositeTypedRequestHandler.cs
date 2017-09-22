@@ -18,36 +18,22 @@ namespace Silphid.Requests
             _typedRequestHandlers = typedRequestHandlers.ToDictionary(x => x.SupportedRequestType);
         }
 
-        public IRequest Handle(IRequest request)
+        public bool Handle(IRequest request)
         {
-            while (true)
+            Log.Debug($"CompositeTypedRequestHandler received {request}");
+
+            var handler = _typedRequestHandlers.GetValueOrDefault(request.GetType());
+            if (handler != null)
             {
-                Log.Debug($"CompositeTypedRequestHandler received {request}");
-
-                var handler = _typedRequestHandlers.GetValueOrDefault(request.GetType());
-                if (handler != null)
+                Log.Debug($"Trying to handle {request} with {handler}");
+                if (handler.Handle(request))
                 {
-                    Log.Debug($"Trying to handle {request} with {handler}");
-                    var outRequest = handler.Handle(request);
-                    
-                    // Request handled successfully
-                    if (outRequest == null)
-                    {
-                        Log.Debug($"{request} was handled successfully by {handler}");
-                        return null;
-                    }
-
-                    // Handler returned new request to handle?
-                    if (outRequest != request)
-                    {
-                        Log.Debug($"{handler} returned new {request}");
-                        request = outRequest;
-                        continue;
-                    }
+                    Log.Debug($"{request} was handled successfully by {handler}");
+                    return true;
                 }
-
-                return request;
             }
+
+            return false;
         }
     }
 }

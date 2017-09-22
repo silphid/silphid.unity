@@ -267,18 +267,17 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public override IRequest Handle(IRequest request)
+        public override bool Handle(IRequest request)
         {
-            var outRequest = base.Handle(request);
-            if (outRequest != request)
-                return request;
+            if (base.Handle(request))
+                return true;
 
             var backRequest = request as BackRequest;
             if (backRequest == null || !ShouldHandleBackRequests || !CanPop.Value)
-                return request;
+                return false;
 
             Pop().SubscribeAndForget();
-            return null;
+            return true;
         }
 
         #endregion

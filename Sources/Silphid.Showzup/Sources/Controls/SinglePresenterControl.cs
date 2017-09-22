@@ -179,16 +179,16 @@ namespace Silphid.Showzup
 
         #region IRequestHandler members
 
-        public virtual IRequest Handle(IRequest request)
+        public virtual bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
             if (presentRequest != null && ShouldHandlePresentRequests)
             {
                 Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
-                return null;
+                return true;
             }
 
-            return request;
+            return false;
         }
 
         #endregion

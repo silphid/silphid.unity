@@ -6,7 +6,7 @@ namespace Silphid.Machina
     public class Rule : IRule, IRequestHandler
     {
         private readonly Predicate<object> _predicate;
-        private Func<IRequest, IRequest> _handler;
+        private Func<IRequest, bool> _handler;
         private Type _supportedRequestType;
 
         public Rule(Predicate<object> predicate)
@@ -18,7 +18,7 @@ namespace Silphid.Machina
             (_supportedRequestType?.IsInstanceOfType(request) ?? false) &&
             _predicate(state);
         
-        public IRequest Handle(IRequest request)
+        public bool Handle(IRequest request)
         {
             if (_handler == null)
                 throw new InvalidOperationException("Rule with missing Handle()");
@@ -31,7 +31,7 @@ namespace Silphid.Machina
         /// or the same request (if it still needs to be handled) or another request (if another request should
         /// be handled instead).
         /// </summary>
-        public void Handle<TRequest>(Func<TRequest, IRequest> handler)
+        public void Handle<TRequest>(Func<TRequest, bool> handler)
         {
             if (_handler != null)
                 throw new InvalidOperationException("Can only set request handler once per state rule.");
@@ -52,7 +52,7 @@ namespace Silphid.Machina
             _handler = x =>
             {
                 handler((TRequest) x);
-                return null;
+                return true;
             };
         }
 
@@ -68,7 +68,7 @@ namespace Silphid.Machina
             _handler = x =>
             {
                 handler((TRequest) x);
-                return x;
+                return false;
             };
         }
     }

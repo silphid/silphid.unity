@@ -6,15 +6,15 @@ namespace Silphid.Requests
     {
         public Type SupportedRequestType => typeof(TRequest);
         
-        public IRequest Handle(IRequest request)
+        public bool Handle(IRequest request)
         {
             var req = request as TRequest;
             if (req != null)
                 return Handle(req);
 
-            return request;
+            return false;
         }
 
-        protected abstract IRequest Handle(TRequest request);
+        protected abstract bool Handle(TRequest request);
     }
 }

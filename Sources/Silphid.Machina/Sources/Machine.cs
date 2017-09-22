@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Silphid.Extensions;
 using Silphid.Requests;
 using UniRx;
@@ -87,57 +88,34 @@ namespace Silphid.Machina
                 throw new ObjectDisposedException(nameof(Machine<TState>));
         }
 
-        public IRequest Handle(IRequest request)
+        public bool Handle(IRequest request)
         {
             var state = State.Value;
-            if (state != null)
-            {
-                request = HandleWithState(request, state);
-                if (request == null)
-                    return null;
-            }
-            
-            return HandleWithRules(request, state);
+            return state != null && HandleWithState(request, state) ||
+                   HandleWithRules(request, state);
         }
 
-        private IRequest HandleWithState(IRequest request, object state)
+        private bool HandleWithState(IRequest request, object state)
         {
             var handler = state as IRequestHandler;
-            if (handler == null)
-                return request;
-            
-            var outRequest = handler.Handle(request);
-            if (outRequest == null)
+            if (handler?.Handle(request) ?? false)
+            {
                 Debug.Log($"{Name} - {state} - State handled {request}");
-            else if (outRequest != request)
-                Debug.Log($"{Name} - {state} - State handled {request} and returned {outRequest}");
-
-            return outRequest;
+                return true;
+            }
+            
+            return false;
         }
 
-        private IRequest HandleWithRules(IRequest request, object state)
+        private bool HandleWithRules(IRequest request, object state)
         {
-            foreach (var rule in _rules)
+            if (_rules.Any(rule => rule.Matches(state, request) && rule.Handle(request)))
             {
-                if (rule.Matches(state, request))
-                {
-                    var outRequest = rule.Handle(request);
-                    
-                    if (outRequest == null)
-                    {
-                        Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request}");
-                        return null;
-                    }
-
-                    if (outRequest != request)
-                    {
-                        Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request} and returned {outRequest}");
-                        return Handle(outRequest);
-                    }
-                }
+                Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request}");
+                return true;
             }
 
-            return request;
+            return false;
         }
 
         public IRule Always()
