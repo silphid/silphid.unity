@@ -49,7 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\DataTypes\HSVColor.cs" />
     <Compile Include="Sources\DataTypes\ObjectEnum.cs" />
-<<<<<<< HEAD
     <Compile Include="Sources\Extensions\System\ArrayExtensions.cs" />
     <Compile Include="Sources\Extensions\System\CollectionExtensions.cs" />
     <Compile Include="Sources\Extensions\System\DateTimeExtensions.cs" />
@@ -99,7 +98,6 @@
     <Compile Include="Sources\Requests\Request.cs" />
     <Compile Include="Sources\Requests\RequestHandlerGameObjectExtensions.cs" />
     <Compile Include="Sources\Requests\TypedRequestHandler.cs" />
-=======
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Log4Net\Log4NetSrc\Appender\AdoNetAppender.cs" />
     <Compile Include="Sources\Log4Net\Log4NetSrc\Appender\AnsiColorTerminalAppender.cs" />
@@ -325,49 +323,6 @@
     <Compile Include="Sources\Log4Net\Log4NetUnityImpl\UnityLogManager.cs" />
     <Compile Include="Sources\Log4Net\Log4NetUnityImpl\UnityLogWrapper.cs" />
     <Compile Include="Sources\Log4Net\Log4NetUnityImpl\UnityObjectPair.cs" />
-    <Compile Include="Sources\System\ArrayExtensions.cs" />
-    <Compile Include="Sources\System\CollectionExtensions.cs" />
-    <Compile Include="Sources\System\DateTimeExtensions.cs" />
-    <Compile Include="Sources\System\DecimalExtensions.cs" />
-    <Compile Include="Sources\System\DictionaryExtensions.cs" />
-    <Compile Include="Sources\System\FloatExtensions.cs" />
-    <Compile Include="Sources\System\IEnumerableExtensions.cs" />
-    <Compile Include="Sources\System\Int32Extensions.cs" />
-    <Compile Include="Sources\System\IntegerExtensions.cs" />
-    <Compile Include="Sources\System\LongExtensions.cs" />
-    <Compile Include="Sources\System\ICustomAttributeProviderExtensions.cs" />
-    <Compile Include="Sources\System\ObjectExtensions.cs" />
-    <Compile Include="Sources\System\RandomExtension.cs" />
-    <Compile Include="Sources\System\StringExtensions.cs" />
-    <Compile Include="Sources\System\TimeSpanExtensions.cs" />
-    <Compile Include="Sources\System\TypeExtensions.cs" />
-    <Compile Include="Sources\UniRx\AsyncOperationExtensions.cs" />
-    <Compile Include="Sources\UniRx\IEnumerableExtensions.cs" />
-    <Compile Include="Sources\UniRx\IObservableExtensions.cs" />
-    <Compile Include="Sources\UniRx\IObservableFloatExtensions.cs" />
-    <Compile Include="Sources\UniRx\IObservableQuaternionExtensions.cs" />
-    <Compile Include="Sources\UniRx\IObservableVector2Extensions.cs" />
-    <Compile Include="Sources\UniRx\IObservableVector3Extensions.cs" />
-    <Compile Include="Sources\UniRx\ReactivePropertyExtensions.cs" />
-    <Compile Include="Sources\UniRx\Schedulers\ISchedulerProvider.cs" />
-    <Compile Include="Sources\UniRx\Schedulers\SchedulerProvider.cs" />
-    <Compile Include="Sources\UniRx\Schedulers\TestScheduler.cs" />
-    <Compile Include="Sources\UniRx\Schedulers\TestSchedulerProvider.cs" />
-    <Compile Include="Sources\UniRx\Schedulers\VirtualTimeScheduler.cs" />
-    <Compile Include="Sources\Unity\ColorExtensions.cs" />
-    <Compile Include="Sources\Unity\ComponentExtensions.cs" />
-    <Compile Include="Sources\Unity\GameObjectExtensions.cs" />
-    <Compile Include="Sources\Unity\ImageExtensions.cs" />
-    <Compile Include="Sources\Unity\MoveDirectionExtensions.cs" />
-    <Compile Include="Sources\Unity\QuaternionExtensions.cs" />
-    <Compile Include="Sources\Unity\RectExtensions.cs" />
-    <Compile Include="Sources\Unity\RectTransformExtensions.cs" />
-    <Compile Include="Sources\Unity\TransformExtensions.cs" />
-    <Compile Include="Sources\Unity\UIExtensions.cs" />
-    <Compile Include="Sources\Unity\UnityAppender.cs" />
-    <Compile Include="Sources\Unity\Vector2Extensions.cs" />
-    <Compile Include="Sources\Unity\Vector3Extensions.cs" />
->>>>>>> origin/Log4net
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UniRx\UniRx.csproj">

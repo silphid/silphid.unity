@@ -10,6 +10,7 @@ namespace Silphid.Machina
 {
     public class Machine<TState> : IMachine<TState>, IDisposable
     {
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly ILog Log = LogManager.GetLogger(typeof(IMachine));
         
         private readonly object _initialState;
@@ -52,7 +53,7 @@ namespace Silphid.Machina
         public void Start(object initialState = null)
         {
             AssertNotDisposed();
-            Log.Debug($"{Name} - Started");
+            Log.Info($"{Name} - Started");
             OnStarting(initialState);
         }
 
@@ -81,7 +82,7 @@ namespace Silphid.Machina
         {
             AssertNotDisposed();
             OnCompleted();
-            Log.Debug($"{Name} - Completed");
+            Log.Info($"{Name} - Completed");
         }
 
         private void AssertNotDisposed()
@@ -102,7 +103,7 @@ namespace Silphid.Machina
             var handler = state as IRequestHandler;
             if (handler?.Handle(request) ?? false)
             {
-                Log.Debug($"{Name} - {state} - State handled {request}");
+                Log.Info($"{Name} - {state} - State handled {request}");
                 return true;
             }
             
@@ -113,7 +114,7 @@ namespace Silphid.Machina
         {
             if (_rules.Any(rule => rule.Matches(state, request) && rule.Handle(request)))
             {
-                Log.Debug($"{Name} - {state ?? "null"} - Rule handled {request}");
+                Log.Info($"{Name} - {state ?? "null"} - Rule handled {request}");
                 return true;
             }
 
