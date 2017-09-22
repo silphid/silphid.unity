@@ -44,7 +44,13 @@ namespace Silphid.Showzup
                 View
                     .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
                     .WhereNotNull()
-                    .Subscribe(x => x.SelectDeferred())
+                    .Subscribe(x =>
+                    {
+                        if (!IsSelected.Value)
+                            return;
+                        
+                        x.SelectDeferred();
+                    })
                     .AddTo(this);
         }
 
