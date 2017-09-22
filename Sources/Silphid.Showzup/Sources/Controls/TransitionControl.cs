@@ -46,7 +46,7 @@ namespace Silphid.Showzup
                     .WhereNotNull()
                     .Subscribe(x =>
                     {
-                        if (!IsSelected.Value)
+                        if (!this.IsSelfOrDescendantSelected())
                             return;
                         
                         x.SelectDeferred();
