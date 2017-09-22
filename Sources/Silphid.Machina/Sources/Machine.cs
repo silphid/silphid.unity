@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using Silphid.Requests;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Machina
 {
     public class Machine<TState> : IMachine<TState>, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(IMachine));
+        
         private readonly object _initialState;
         private readonly bool _disposeOnCompleted;
         private readonly List<Rule> _rules = new List<Rule>();
@@ -40,7 +42,7 @@ namespace Silphid.Machina
                 .AddTo(Disposables);
             
             Transitions
-                .Subscribe(x => Debug.Log($"{Name} - {x.Source ?? "null"} -> {x.Target ?? "null"}"))
+                .Subscribe(x => Log.Debug($"{Name} - {x.Source ?? "null"} -> {x.Target ?? "null"}"))
                 .AddTo(Disposables);
         }
 
@@ -50,7 +52,7 @@ namespace Silphid.Machina
         public void Start(object initialState = null)
         {
             AssertNotDisposed();
-            Debug.Log($"{Name} - Started");
+            Log.Debug($"{Name} - Started");
             OnStarting(initialState);
         }
 
@@ -79,7 +81,7 @@ namespace Silphid.Machina
         {
             AssertNotDisposed();
             OnCompleted();
-            Debug.Log($"{Name} - Completed");
+            Log.Debug($"{Name} - Completed");
         }
 
         private void AssertNotDisposed()
@@ -100,7 +102,7 @@ namespace Silphid.Machina
             var handler = state as IRequestHandler;
             if (handler?.Handle(request) ?? false)
             {
-                Debug.Log($"{Name} - {state} - State handled {request}");
+                Log.Debug($"{Name} - {state} - State handled {request}");
                 return true;
             }
             
@@ -111,7 +113,7 @@ namespace Silphid.Machina
         {
             if (_rules.Any(rule => rule.Matches(state, request) && rule.Handle(request)))
             {
-                Debug.Log($"{Name} - {state ?? "null"} - Rule handled {request}");
+                Log.Debug($"{Name} - {state ?? "null"} - Rule handled {request}");
                 return true;
             }
 

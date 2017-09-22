@@ -11,12 +11,12 @@ namespace Silphid.Machina
 
 		void Start(object initialState = null);
 		void Complete();
+		void Enter(IMachine machine);
+		void ExitState();
 	}
 	
 	public interface IMachine<in TState> : IMachine
 	{
 		void Enter(TState state);
-		void Enter(IMachine machine);
-		void ExitState();
 	}
 }
