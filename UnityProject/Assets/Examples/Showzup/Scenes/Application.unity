@@ -180,9 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e17d58c68ad5e4e859f2e46a501bfb75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LogContainer: 0
-  LogAll: 1
-  Manifest: {fileID: 11400000, guid: 5d074d5ad9b567e408e89d378863dba3, type: 2}
+  LogResourceFile: Log4net
+  Manifest: {fileID: 11400000, guid: 50d5beb9ef3184e04ae78dc919307c1f, type: 2}
   NavigationControl: {fileID: 870891447}
 --- !u!4 &554429614
 Transform:
@@ -371,6 +370,13 @@ MonoBehaviour:
   m_Script: {fileID: -455708996, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ease: 10
+  FadeOutSource: 1
+  FadeInTarget: 1
+  SourceAboveTarget: 1
+  IsSequential: 0
+  StartScale: 0.8
+  EndScale: 1.2
 --- !u!114 &870891447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,17 +385,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 870891443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1029033404, guid: e099c822f75ff7344ab2beadd06826f4, type: 3}
+  m_Script: {fileID: -1029033404, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Variants: []
+  Variants:
+  - Page
   ShouldHandlePresentRequests: 0
   Container1: {fileID: 2008876462}
   Container2: {fileID: 411554991}
-  DefaultTransition: {fileID: 0}
+  DefaultTransition: {fileID: 870891446}
   TransitionInstantlyFromNull: 0
   TransitionInstantlyToNull: 0
-  HistoryContainer: {fileID: 0}
+  HistoryContainer: {fileID: 595017915}
   CanPopTopLevelView: 0
   ShouldHandleBackRequests: 0
 --- !u!1 &1387079288
