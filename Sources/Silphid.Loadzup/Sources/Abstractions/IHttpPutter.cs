@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public interface IPutter
+    public interface IHttpPutter
     {
         IObservable<T> Put<T>(Uri uri, string body, Options options = null);
     }

@@ -1,10 +1,9 @@
 ﻿using System;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpPutter : IPutter
+    public class HttpPutter : IHttpPutter
     {
         private readonly IHttpRequester _requester;
         private readonly IConverter _converter;

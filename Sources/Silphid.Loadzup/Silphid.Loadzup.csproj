@@ -43,8 +43,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Abstractions\ContentType.cs" />
-    <Compile Include="Sources\Abstractions\IPoster.cs" />
-    <Compile Include="Sources\Abstractions\IPutter.cs" />
+    <Compile Include="Sources\Abstractions\IHttpPoster.cs" />
+    <Compile Include="Sources\Abstractions\IHttpPutter.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
@@ -93,7 +93,7 @@
     <Compile Include="Sources\Loaders\Http\KnownHttpHeaders.cs" />
     <Compile Include="Sources\Loaders\Http\ObservableWebRequest.cs" />
     <Compile Include="Sources\Loaders\ILoaderExtensions.cs" />
-    <Compile Include="Sources\Loaders\IPosterExtensions.cs" />
+    <Compile Include="Sources\Loaders\IHttpPosterExtensions.cs" />
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
     <Compile Include="Sources\Loaders\UriExtensions.cs" />
