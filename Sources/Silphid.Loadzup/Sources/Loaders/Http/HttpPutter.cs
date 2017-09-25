@@ -6,10 +6,10 @@ namespace Silphid.Loadzup.Http
 {
     public class HttpPutter : IPutter
     {
-        private readonly IRequester _requester;
+        private readonly IHttpRequester _requester;
         private readonly IConverter _converter;
 
-        public HttpPutter(IRequester requester, IConverter converter)
+        public HttpPutter(IHttpRequester requester, IConverter converter)
         {
             _requester = requester;
             _converter = converter;

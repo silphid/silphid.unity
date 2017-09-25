@@ -7,12 +7,12 @@ namespace Silphid.Loadzup
 {
     public class JsonConverter : IConverter
     {
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            contentType.MediaType == KnownMediaType.ApplicationJson;
+        public bool Supports<T>(object input, ContentType contentType) =>
+            input is byte[] && contentType.MediaType == KnownMediaType.ApplicationJson;
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding)
         {
-            return Observable.Return(JsonUtility.FromJson<T>(encoding.GetString(bytes)));
+            return Observable.Return(JsonUtility.FromJson<T>(encoding.GetString((byte[]) input)));
         }
     }
 }

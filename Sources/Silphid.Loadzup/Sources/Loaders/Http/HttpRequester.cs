@@ -5,11 +5,10 @@ using log4net;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpRequester : IRequester
+    public class HttpRequester : IHttpRequester
     {
         private static readonly string[] MeaningfulHeaders =
         {

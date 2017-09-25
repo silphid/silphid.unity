@@ -7,11 +7,12 @@ namespace Silphid.Loadzup.Bundles
 {
     public class BundleConverter : IConverter
     {
-        public bool Supports<T>(byte[] bytes, ContentType contentType) => typeof(T) == typeof(IBundle);
+        public bool Supports<T>(object input, ContentType contentType) =>
+            input is byte[] && typeof(T) == typeof(IBundle);
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding) =>
+        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding) =>
             AssetBundle
-                .LoadFromMemoryAsync(bytes)
+                .LoadFromMemoryAsync((byte[]) input)
                 .AsAsyncOperationObservable()
                 .Select(x =>
                 {

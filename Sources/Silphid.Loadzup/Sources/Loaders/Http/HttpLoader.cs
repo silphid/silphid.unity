@@ -8,10 +8,10 @@ namespace Silphid.Loadzup.Http
     {    
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpLoader));
         
-        private readonly IRequester _requester;
+        private readonly IHttpRequester _requester;
         private readonly IConverter _converter;
 
-        public HttpLoader(IRequester requester, IConverter converter)
+        public HttpLoader(IHttpRequester requester, IConverter converter)
         {
             _requester = requester;
             _converter = converter;

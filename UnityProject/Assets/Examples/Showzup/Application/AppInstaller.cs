@@ -91,7 +91,8 @@ namespace App
             
             Container.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
             {
-                x.Bind<ILoader, HttpLoader>().AsList();
+                x.Bind<ILoader, HttpLoader>().AsList()
+                    .Using<IHttpRequester, HttpRequester>();
                 x.Bind<ILoader, ResourceLoader>().AsList();
             });
         }

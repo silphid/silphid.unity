@@ -8,10 +8,10 @@ namespace Silphid.Loadzup.StreamingAsset
     public class StreamingAssetLoader : ILoader
     {
         private const string _pathSeparator = "/";
-        private readonly IRequester _requester;
+        private readonly IHttpRequester _requester;
         private readonly IConverter _converter;
 
-        public StreamingAssetLoader(IRequester requester, IConverter converter)
+        public StreamingAssetLoader(IHttpRequester requester, IConverter converter)
         {
             _requester = requester;
             _converter = converter;
