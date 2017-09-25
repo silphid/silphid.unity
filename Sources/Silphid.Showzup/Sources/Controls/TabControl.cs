@@ -24,9 +24,11 @@ namespace Silphid.Showzup
 
         private readonly MoveHandler _moveHandler = new MoveHandler();
         private Options _lastOptions;
+        private readonly Subject<object> _presentingContent = new Subject<object>();
 
         private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
+        public IObservable<object> PresentingContent => _presentingContent;
         private int _currentIndex;
 
         public void Start()
@@ -93,6 +95,7 @@ namespace Silphid.Showzup
             _currentIndex = index;
             return Observable.Return(view)
                 .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
+                .Do(x => _presentingContent.OnNext(x))
                 .SelectMany(x => ContentTransitionControl
                     .With(direction)
                     .Present(x, _lastOptions));
