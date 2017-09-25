@@ -90,6 +90,7 @@ namespace Silphid.Showzup
                 Deconstruct(sourceView, options, seq);
                 PreShow(targetView, options, seq);
 
+                seq.Add(() => Observable.NextFrame());
                 seq.Add(() => transition.Perform(_sourceContainer, _targetContainer, options.GetDirection(), duration));
 
                 PostHide(sourceView, options, seq);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
@@ -87,16 +88,16 @@ namespace Silphid.Showzup
                 .AutoDetach()
             ?? Observable.ReturnUnit();
 
-        protected void Bind(Image image, Uri uri, bool keepVisible = false)
+        protected void Bind(Image image, Uri uri, bool keepVisible = false, float? fadeDuration = null)
         {
             if (image != null)
-                BindAsync(image, uri, false, null, keepVisible)
+                BindAsync(image, uri, false, null, keepVisible, fadeDuration)
                     .Subscribe()
                     .AddTo(this);
         }
 
         protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false, Loadzup.Options options = null,
-            bool keepVisible = false)
+            bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
                 return Observable.ReturnUnit();
@@ -110,7 +111,11 @@ namespace Silphid.Showzup
                     new BindException($"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
 
-            image.enabled = keepVisible;
+            if (fadeDuration != null)
+                image.color = Color.clear;
+            else
+                image.enabled = keepVisible;
+            
             return Loader
                 .Load<DisposableSprite>(uri, options)
                 .Catch<DisposableSprite, Exception>(ex =>
@@ -120,6 +125,10 @@ namespace Silphid.Showzup
                 {
                     image.sprite = x.Sprite;
                     image.enabled = true;
+
+                    if (fadeDuration != null)
+                        Observable.NextFrame().SubscribeAndForget(_ =>
+                            image.DOColor(Color.white, fadeDuration.Value));
 
                     if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset)
                         x.AddTo(this);
