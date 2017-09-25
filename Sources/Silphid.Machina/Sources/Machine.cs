@@ -91,7 +91,7 @@ namespace Silphid.Machina
                 throw new ObjectDisposedException(nameof(Machine<TState>));
         }
 
-        public bool Handle(IRequest request)
+        public virtual bool Handle(IRequest request)
         {
             var state = State.Value;
             return state != null && HandleWithState(request, state) ||
