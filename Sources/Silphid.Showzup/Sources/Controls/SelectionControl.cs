@@ -129,12 +129,10 @@ namespace Silphid.Showzup
 
         public bool SelectIndex(int index)
         {
-            var viewAtIndex = GetViewAtIndex(index);
-
-            if (viewAtIndex == null)
+            if (index >= Views.Value.Count)
                 return false;
 
-            SelectedView.Value = viewAtIndex;
+            SelectedIndex.Value = index;
 
             return true;
         }
