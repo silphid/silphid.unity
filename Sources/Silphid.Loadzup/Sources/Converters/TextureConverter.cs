@@ -15,13 +15,13 @@ namespace Silphid.Loadzup
             "application/octet-stream"
         };
 
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            _imageMediaTypes.Contains(contentType.MediaType);
+        public bool Supports<T>(object input, ContentType contentType) =>
+            input is byte[] && _imageMediaTypes.Contains(contentType.MediaType);
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding)
         {
             var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
-            texture.LoadImage(bytes);
+            texture.LoadImage((byte[]) input);
             return Observable.Return((T)(object)texture);
         }
     }

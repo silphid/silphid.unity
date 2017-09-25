@@ -9,16 +9,16 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Caching
 {
-    public class CachedRequester : IRequester
+    public class CachedHttpRequester : IHttpRequester
     {
         public CachePolicy DefaultPolicy { get; set; } = CachePolicy.OriginOnly;
 
-        private readonly IRequester _requester;
+        private readonly IHttpRequester _requester;
         private readonly ICacheStorage _cacheStorage;
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CachedRequester));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CachedHttpRequester));
 
-        public CachedRequester(IRequester requester, ICacheStorage cacheStorage)
+        public CachedHttpRequester(IHttpRequester requester, ICacheStorage cacheStorage)
         {
             _requester = requester;
             _cacheStorage = cacheStorage;

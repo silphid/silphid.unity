@@ -11,9 +11,9 @@ using ContentType = System.Net.Mime.ContentType;
 
 public class CachedRequesterTest
 {
-    private IRequester _innerRequester;
+    private IHttpRequester _innerRequester;
     private ICacheStorage _cacheStorage;
-    private CachedRequester _fixture;
+    private CachedHttpRequester _fixture;
 
     private static readonly Uri AvailableUri = new Uri("http://test.com/data.json");
     private static readonly Uri NotFoundUri = new Uri("http://test.com/not_found");
@@ -28,7 +28,7 @@ public class CachedRequesterTest
     [SetUp]
     public void SetUp()
     {
-        _innerRequester = Substitute.For<IRequester>();
+        _innerRequester = Substitute.For<IHttpRequester>();
         _innerRequester.Request(NotFoundUri, Arg.Any<Options>())
             .Returns(Observable.Throw<Response>(new RequestException(HttpStatusCode.NotFound)));
         _innerRequester.Request(NotModifiedUri, Arg.Any<Options>())
@@ -37,7 +37,7 @@ public class CachedRequesterTest
         _cacheStorage = Substitute.For<ICacheStorage>();
         _cacheStorage.LoadHeaders(Arg.Any<Uri>()).Returns((Dictionary<string, string>) null);
 
-        _fixture = new CachedRequester(_innerRequester, _cacheStorage);
+        _fixture = new CachedHttpRequester(_innerRequester, _cacheStorage);
     }
 
     private void SetupRequest(Uri uri, byte[] bytes, ContentType contentType, string eTag)

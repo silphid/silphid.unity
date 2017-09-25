@@ -986,7 +986,7 @@ All your view prefabs must be contained within your resources or asset bundles, 
 - `ListControl` displays a collection of items as multiple *views* (potentially of different types); 
 - `SelectionControl` extends `ListControl` to add current item awareness;
 - `TransitionControl` extends `ItemControl` to add visual transitions between *views*;
-- `NavigationControl` extends `ItemControl` to add browser-like Back/Forward navigation support.
+- `NavigationControl` extends `TransitionControl` to add browser-like Back/Forward navigation support.
 
 ### IPresenter
 

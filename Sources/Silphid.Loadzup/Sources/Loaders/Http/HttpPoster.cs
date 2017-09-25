@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpPoster : IPoster
+    public class HttpPoster : IHttpPoster
     {
-        private readonly IRequester _requester;
+        private readonly IHttpRequester _requester;
         private readonly IConverter _converter;
 
-        public HttpPoster(IRequester requester, IConverter converter)
+        public HttpPoster(IHttpRequester requester, IConverter converter)
         {
             _requester = requester;
             _converter = converter;

@@ -10,7 +10,7 @@ public class PhotoView : View<PhotoViewModel>
     
     public override IObservable<Unit> Load()
     {
-        Bind(Image, ViewModel.ImageUri);
+        Bind(Image, ViewModel.ImageUri, true, 0.3f);
         Bind(PhotographerName, ViewModel.Photographer.Name);
         return null;
     }

@@ -5,7 +5,7 @@ namespace Silphid.Loadzup
 {
     public interface IConverter
     {
-        bool Supports<T>(byte[] bytes, ContentType contentType);
-        IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding);
+        bool Supports<T>(object input, ContentType contentType);
+        IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding);
     }
 }

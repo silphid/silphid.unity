@@ -43,8 +43,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Abstractions\ContentType.cs" />
-    <Compile Include="Sources\Abstractions\IPoster.cs" />
-    <Compile Include="Sources\Abstractions\IPutter.cs" />
+    <Compile Include="Sources\Abstractions\IHttpPoster.cs" />
+    <Compile Include="Sources\Abstractions\IHttpPutter.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
@@ -54,7 +54,7 @@
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
     <Compile Include="Sources\Abstractions\ILoader.cs" />
-    <Compile Include="Sources\Abstractions\IRequester.cs" />
+    <Compile Include="Sources\Abstractions\IHttpRequester.cs" />
     <Compile Include="Sources\Abstractions\RequestException.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
@@ -81,7 +81,7 @@
     <Compile Include="Sources\Loaders\Bundles\SceneManagerAdaptor.cs" />
     <Compile Include="Sources\Loaders\Bundles\SimulatedAssetLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedLoader.cs" />
-    <Compile Include="Sources\Loaders\Caching\CachedRequester.cs" />
+    <Compile Include="Sources\Loaders\Caching\CachedHttpRequester.cs" />
     <Compile Include="Sources\Loaders\Caching\CachePolicy.cs" />
     <Compile Include="Sources\Loaders\Caching\CacheStorage.cs" />
     <Compile Include="Sources\Loaders\Caching\ICacheStorage.cs" />
@@ -93,7 +93,7 @@
     <Compile Include="Sources\Loaders\Http\KnownHttpHeaders.cs" />
     <Compile Include="Sources\Loaders\Http\ObservableWebRequest.cs" />
     <Compile Include="Sources\Loaders\ILoaderExtensions.cs" />
-    <Compile Include="Sources\Loaders\IPosterExtensions.cs" />
+    <Compile Include="Sources\Loaders\IHttpPosterExtensions.cs" />
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
     <Compile Include="Sources\Loaders\UriExtensions.cs" />

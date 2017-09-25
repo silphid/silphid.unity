@@ -57,6 +57,9 @@ namespace Silphid.Loadzup.Resource
                 return _converter.Convert<T>(textAsset.bytes, contentType, Encoding.UTF8);
             }
 
+            if (_converter.Supports<T>(obj, contentType))
+                return _converter.Convert<T>(obj, contentType, Encoding.UTF8);
+
             throw new NotSupportedException($"Conversion not supported from {obj.GetType().Name} to {typeof(T).Name}.");
         }
     }

@@ -15,13 +15,13 @@ namespace Silphid.Loadzup
             "text/xml"
         };
         
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            _xmlMediaTypes.Contains(contentType.MediaType);
+        public bool Supports<T>(object input, ContentType contentType) =>
+            input is byte[] && _xmlMediaTypes.Contains(contentType.MediaType);
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding)
         {
             var serializer = new XmlSerializer(typeof(T));
-            using (var stream = new MemoryStream(bytes))
+            using (var stream = new MemoryStream((byte[]) input))
                 return Observable.Return((T) serializer.Deserialize(stream));
         }
     }

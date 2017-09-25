@@ -7,8 +7,9 @@ namespace Silphid.Injexit
 {
     public abstract class RootInstaller : Installer
     {
-        public string LogResourceFile = "Log4net";
         private static readonly ILog Log = LogManager.GetLogger(typeof(RootInstaller));
+        
+        public string LogResourceFile = "Log4net";
         
         public virtual void Start()
         {

@@ -8,6 +8,7 @@
         protected override ITransition CreateTransition() =>
             new Showzup.ZoomTransition
             {
+                Duration = Duration,
                 Ease = Ease,
                 FadeOutSource = FadeOutSource,
                 FadeInTarget = FadeInTarget,
