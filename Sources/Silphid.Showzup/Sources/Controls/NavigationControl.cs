@@ -147,9 +147,9 @@ namespace Silphid.Showzup
         {
             AssertCanPop();
 
-            var view = History.Value.First();
+            var view = CanPopTopLevelView ? null : History.Value.First();
             //Debug.Log($"#Nav# PopToRoot({view})");
-            var history = History.Value.Take(1).ToList();
+            var history = CanPopTopLevelView ? new List<IView>() : History.Value.Take(1).ToList();
 
             return PopInternal(view, history);
         }
