@@ -31,10 +31,10 @@ namespace Silphid.Showzup
 
         public void Start()
         {
-            TabSelectionControl.Views
+           /* TabSelectionControl.Views
                 .Select(x => x.FirstOrDefault())
                 .BindTo(TabSelectionControl.SelectedView)
-                .AddTo(this);
+                .AddTo(this);*/
 
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
             
