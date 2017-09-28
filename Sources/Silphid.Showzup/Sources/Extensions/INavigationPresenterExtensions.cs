@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using log4net;
+using Silphid.Extensions;
 
 namespace Silphid.Showzup
 {
     public static class INavigationPresenterExtensions
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(INavigationPresenter));
+        
         public static void DropFromHistory(this INavigationPresenter This, int count)
         {
-            Debug.Log($"#Nav# DropFromHistory({count})");
+            Log.Debug($"DropFromHistory({count})");
             This.AssertCanAlterHistory();
 
             if (count > This.History.Value.Count)
@@ -22,10 +24,10 @@ namespace Silphid.Showzup
 
         public static void ClearHistory(this INavigationPresenter This)
         {
-            Debug.Log("#Nav# ClearHistory()");
+            Log.Debug("ClearHistory()");
             This.AssertCanAlterHistory();
 
-            This.History.Value = new List<IView>();
+            This.History.Value = This.History.Value.Last().ToSingleItemList();
         }
 
         private static void AssertCanAlterHistory(this INavigationPresenter This)
