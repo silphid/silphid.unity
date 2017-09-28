@@ -13,13 +13,6 @@ namespace Silphid.Extensions
         public static Tween TweenTo(this ReactiveProperty<float> This, float endValue, float duration) =>
             DOTween.To(() => This.Value, x => This.Value = x, endValue, duration);
 
-        public static Tweener DOFade(this Graphic This, float endValue, float duration)
-        {
-            return
-                DOTween.ToAlpha(() => This.color, x => This.color = x, endValue, duration)
-                    .SetUpdate(UpdateType.Normal, true);
-        }
-
         public static Tween DOFadeOut(this Graphic This, float duration)
         {
             if (!This.enabled)
