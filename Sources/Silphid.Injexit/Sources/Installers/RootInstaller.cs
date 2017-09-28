@@ -30,11 +30,14 @@ namespace Silphid.Injexit
 
         protected virtual void OnConfigureLogging()
         {
-            var textAsset = Resources.Load<TextAsset>(LogResourceFile); 
+            var textAsset = Resources.Load<TextAsset>(LogResourceFile);
+            var text = textAsset.text.Replace("${DataPath}", UnityEngine.Application.dataPath);
             var xmldoc = new XmlDocument();
-            xmldoc.LoadXml (textAsset.text);
-            
-            XmlConfigurator.Configure(xmldoc.DocumentElement);
+            xmldoc.LoadXml (text);
+
+            var repository = LogManager.GetRepository(GetType().Assembly);
+            XmlConfigurator.Configure(repository, xmldoc.DocumentElement);
+            Log.Info("Logging initialized");
         }
     }
 }

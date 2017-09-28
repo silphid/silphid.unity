@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,8 @@ namespace Silphid.Injexit
     public abstract class SceneInstaller<TParent> : Installer
         where TParent : IInstaller
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Installer));
+        
         protected override void OnBind()
         {
         }
@@ -18,9 +21,8 @@ namespace Silphid.Injexit
         {
             var parent = GetParentInstaller();
             Container = parent.Container.Child();
-            Logger = parent.Logger;
             
-            Logger?.Log($"Installing {GetType().Name}");
+            Log.Info($"Installing {GetType().Name}");
 
             OnBind();
             InjectScene();
