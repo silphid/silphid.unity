@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace Silphid.Loadzup
 {
-    public class RequestException : Exception
+    public class HttpException : Exception
     {
         public string RawErrorMessage { get; }
         public bool HasResponse { get; }
@@ -14,7 +14,7 @@ namespace Silphid.Loadzup
         public HttpStatusCode StatusCode { get; }
         public Dictionary<string, string> ResponseHeaders { get; }
 
-        public RequestException(UnityWebRequest request)
+        public HttpException(UnityWebRequest request)
         {
             RawErrorMessage = request.error;
             HasResponse = false;
@@ -26,17 +26,23 @@ namespace Silphid.Loadzup
             int statusCode;
             if (!int.TryParse(splitted[0], out statusCode)) return;
             HasResponse = true;
-            StatusCode = (HttpStatusCode)statusCode;
+            StatusCode = (HttpStatusCode) statusCode;
         }
 
-        public RequestException(HttpStatusCode statusCode)
+        public HttpException(HttpStatusCode statusCode)
         {
             RawErrorMessage = statusCode.ToString();
             Text = ((int) statusCode).ToString();
             StatusCode = statusCode;
         }
 
-        public RequestException(WWWErrorException exception)
+        public HttpException(string message, bool hasResponse)
+        {
+            Text = message;
+            HasResponse = hasResponse;
+        }
+
+        public HttpException(WWWErrorException exception)
         {
             RawErrorMessage = exception.RawErrorMessage;
             HasResponse = exception.HasResponse;
@@ -44,7 +50,7 @@ namespace Silphid.Loadzup
             StatusCode = exception.StatusCode;
             ResponseHeaders = exception.ResponseHeaders;
         }
-        
+
 
         public override string ToString() => $"{RawErrorMessage} {Text}";
     }

@@ -55,7 +55,7 @@ namespace Silphid.Loadzup.Caching
 
                 if (policy == CachePolicy.OriginOtherwiseCache)
                     return LoadFromOrigin(policy, uri, options)
-                        .Catch<Response, RequestException>(ex =>
+                        .Catch<Response, HttpException>(ex =>
                         {
                             //  Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (error: {ex}), falling back to cached version.");
                             return LoadFromCache(uri, responseHeaders);
@@ -93,7 +93,7 @@ namespace Silphid.Loadzup.Caching
 
             if (policy == CachePolicy.OriginIfETagOtherwiseCache)
                 return LoadFromOrigin(policy, uri, options)
-                    .Catch<Response, RequestException>(ex =>
+                    .Catch<Response, HttpException>(ex =>
                     {
                         //Debug.Log($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (error: {ex}), falling back to cached version.");
                         return LoadFromCache(uri, responseHeaders);
@@ -114,7 +114,7 @@ namespace Silphid.Loadzup.Caching
 
             if (policy == CachePolicy.OriginIfETagOtherwiseCache)
                 return LoadFromOrigin(policy, uri, options)
-                    .Catch<Response, RequestException>(ex =>
+                    .Catch<Response, HttpException>(ex =>
                     {
                         Log.Info($"#Loadzup# {policy} - Failed to retrieve {uri} from origin (Status: {ex.StatusCode}, Error: {ex}), falling back to cached version.");
                         return LoadFromCache(uri, responseHeaders);
@@ -129,7 +129,7 @@ namespace Silphid.Loadzup.Caching
             // Debug.Log($"#Loadzup# LoadFromCacheThenOrigin");
             return LoadFromCache(uri, responseHeaders)
                 .Concat(Observable.Defer(() => LoadFromOrigin(policy, uri, options)
-                    .Catch<Response, RequestException>(ex => ex.StatusCode == HttpStatusCode.NotModified
+                    .Catch<Response, HttpException>(ex => ex.StatusCode == HttpStatusCode.NotModified
                         ? Observable.Empty<Response>()
                         : Observable.Throw<Response>(ex))));
         }
@@ -152,7 +152,7 @@ namespace Silphid.Loadzup.Caching
                     {
                         var code = statusCode.Split(' ');
                         if (code.Length >= 2 && code[1] == ((int) HttpStatusCode.NotModified).ToString())
-                            throw new RequestException(HttpStatusCode.NotModified);
+                            throw new HttpException(HttpStatusCode.NotModified);
                     }
 
                     if (policy != CachePolicy.OriginOnly)

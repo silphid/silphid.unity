@@ -30,9 +30,9 @@ public class CachedRequesterTest
     {
         _innerRequester = Substitute.For<IHttpRequester>();
         _innerRequester.Request(NotFoundUri, Arg.Any<Options>())
-            .Returns(Observable.Throw<Response>(new RequestException(HttpStatusCode.NotFound)));
+            .Returns(Observable.Throw<Response>(new HttpException(HttpStatusCode.NotFound)));
         _innerRequester.Request(NotModifiedUri, Arg.Any<Options>())
-            .Returns(Observable.Throw<Response>(new RequestException(HttpStatusCode.NotModified)));
+            .Returns(Observable.Throw<Response>(new HttpException(HttpStatusCode.NotModified)));
 
         _cacheStorage = Substitute.For<ICacheStorage>();
         _cacheStorage.LoadHeaders(Arg.Any<Uri>()).Returns((Dictionary<string, string>) null);
@@ -91,7 +91,7 @@ public class CachedRequesterTest
 	[Test]
 	public void OriginOnly_OriginNotAvailable_ThrowsException()
 	{
-	    Assert.Throws<RequestException>(() =>
+	    Assert.Throws<HttpException>(() =>
 	            Request(NotFoundUri, CachePolicy.OriginOnly).Wait());
 
 	    _innerRequester.Received(1).Request(NotFoundUri, Arg.Any<Options>());
@@ -199,7 +199,7 @@ public class CachedRequesterTest
         SetupCacheStorage(NotFoundUri, Bytes1, TestContentType, TestETag1);
 
         var responses = new List<Response>();
-        Assert.Throws<RequestException>(() =>
+        Assert.Throws<HttpException>(() =>
             Request(NotFoundUri, CachePolicy.CacheThenOrigin)
                 .Do(x => responses.Add(x)).Wait());
 
@@ -231,7 +231,7 @@ public class CachedRequesterTest
     [Test]
     public void CacheThenOrigin_NeitherCacheNorOriginAvailable_ThrowsException()
     {
-        Assert.Throws<RequestException>(() =>
+        Assert.Throws<HttpException>(() =>
             Request(NotModifiedUri, CachePolicy.CacheThenOrigin).Wait());
     }
 
@@ -258,7 +258,7 @@ public class CachedRequesterTest
 //        SetupCacheStorage(NotFoundUri, Bytes1, TestContentType, TestETag1);
 //
 //        var responses = new List<Response>();
-//        Assert.Throws<RequestException>(() =>
+//        Assert.Throws<HttpException>(() =>
 //            Request(NotFoundUri, CachePolicy.CacheThenOriginIfETag)
 //                .Do(x => responses.Add(x)).Wait());
 //
@@ -290,7 +290,7 @@ public class CachedRequesterTest
     [Test]
     public void CacheThenOriginIfETag_NeitherCacheNorOriginAvailable_ThrowsException()
     {
-        Assert.Throws<RequestException>(() =>
+        Assert.Throws<HttpException>(() =>
             Request(NotModifiedUri, CachePolicy.CacheThenOriginIfETag).Wait());
     }
 }

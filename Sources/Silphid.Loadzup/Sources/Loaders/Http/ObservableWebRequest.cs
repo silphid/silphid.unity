@@ -103,7 +103,7 @@ namespace Silphid.Loadzup.Http
 
                 if (!string.IsNullOrEmpty(www.error))
                 {
-                    observer.OnError(new RequestException(www));
+                    observer.OnError(new HttpException(www));
                 }
                 else
                 {

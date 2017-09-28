@@ -95,6 +95,8 @@
     <Compile Include="Sources\Requests\IRequestHandlerExtensions.cs" />
     <Compile Include="Sources\Requests\ITypedRequestHandler.cs" />
     <Compile Include="Sources\Requests\Request.cs" />
+    <Compile Include="Sources\Requests\RequestException.cs" />
+    <Compile Include="Sources\Requests\RequestHandlerExtension.cs" />
     <Compile Include="Sources\Requests\RequestHandlerGameObjectExtensions.cs" />
     <Compile Include="Sources\Requests\TypedRequestHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

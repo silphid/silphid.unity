@@ -176,12 +176,12 @@ namespace Silphid.Sequencit
             var observable = _observables.Dequeue();
             _isExecuting = true;
             _currentExecution = observable
-                .DoOnCancel(() => _isExecuting = false)
-                .SubscribeCompletion(() =>
+                .Finally(() =>
                 {
                     _isExecuting = false;
                     StartNext();
-                });
+                })
+                .Subscribe();
         }
 
         #endregion

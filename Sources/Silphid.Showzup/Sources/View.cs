@@ -143,6 +143,9 @@ namespace Silphid.Showzup
 
         protected void Send(IRequest request) =>
             gameObject.Send(request);
+        
+        protected void Send(Exception exception) =>
+            gameObject.Send(exception);
 
         protected void Send<TRequest>() where TRequest : IRequest, new() =>
             gameObject.Send(new TRequest());
