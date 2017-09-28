@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Silphid.Extensions;
-using UnityEngine;
 using Rx = UniRx;
 
 namespace Silphid.Showzup
@@ -33,6 +32,16 @@ namespace Silphid.Showzup
             _manifest = manifest;
             _variantProvider = variantProvider;
             _scoreEvaluator = scoreEvaluator;
+            
+            ValidateManifest();
+        }
+
+        private void ValidateManifest()
+        {
+            if (_manifest.ModelsToViewModels.Any(x => x.Source == null || x.Target == null || x.Variants == null) ||
+                _manifest.ViewModelsToViews.Any(x => x.Source == null || x.Target == null || x.Variants == null) ||
+                _manifest.ViewsToPrefabs.Any(x => x.Source == null || x.Target == null || x.Variants == null))
+                throw new InvalidOperationException("Manifest needs to be rebuilt.");
         }
 
         public ViewInfo Resolve(object input, Options options = null)
@@ -174,6 +183,9 @@ namespace Silphid.Showzup
 
         private Type ResolveTargetType(Type type, string sourceKind, string targetKind, List<TypeToTypeMapping> mappings, VariantSet requestedVariants)
         {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            
             var candidates = mappings
                 .Where(x => type.IsAssignableTo(x.Source))
                 .ToList();
