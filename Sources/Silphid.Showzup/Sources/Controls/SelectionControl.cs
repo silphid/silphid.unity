@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -11,7 +10,6 @@ namespace Silphid.Showzup
     public class SelectionControl : ListControl, IMoveHandler
     {
         private bool _isSynching;
-        private readonly SerialDisposable _focusDisposable = new SerialDisposable();
         private readonly ReactiveProperty<IView> _lastSelectedView = new ReactiveProperty<IView>();
         private ReadOnlyReactiveProperty<IView> _lastSelectedViewReadOnly;
 
@@ -23,25 +21,27 @@ namespace Silphid.Showzup
             ?? (_lastSelectedViewReadOnly = _lastSelectedView.ToReadOnlyReactiveProperty());
 
         public NavigationOrientation Orientation;
-        public bool AutoFocus = true;
-        public float FocusDelay;
         public bool WrapAround;
         public bool KeepLastSelection = true;
         public int RowsOrColumns = 1;
-
+        
         protected override void Start()
         {
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException(
                     $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
-            if (AutoSelect)
-                Views
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
-                    .AddTo(this);
-
-            SubscribeToUpdateFocusables(SelectedView);
+            Views
+                .Select(x => x.GetAtOrDefault(SelectedIndex.Value ?? -1))
+                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (selectedView, _) => selectedView)
+                .Subscribe(selectedView =>
+                {
+                    if (selectedView != null)
+                        selectedView.Focus();
+                    else
+                        this.Focus();
+                })
+                .AddTo(this);
 
             if (KeepLastSelection)
                 SelectedView
@@ -62,71 +62,21 @@ namespace Silphid.Showzup
             SelectedView.Value = null;
         }
 
-        private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
+        private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
         {
             observable
-                .PairWithPrevious()
                 .Subscribe(x =>
                 {
-                    RemoveFocus(x.Item1 as IFocusable);
-                    SetFocus(x.Item2 as IFocusable);
-                    AutoSelectView(x.Item2 as IView);
+                    if (_isSynching)
+                        return;
+
+                    _isSynching = true;
+                    synchAction();
+                    _isSynching = false;
                 })
                 .AddTo(this);
         }
-
-        private void AutoSelectView(IView view)
-        {
-            if (AutoSelect && view != null)
-                base.SelectView(view);
-        }
-
-        private void SetFocus(IFocusable focusable)
-        {
-            if (!AutoFocus || focusable == null)
-                return;
-
-            if (FocusDelay.IsAlmostZero())
-            {
-                focusable.IsFocused.Value = true;
-                return;
-            }
-
-            _focusDisposable.Disposable = Observable
-                .Timer(TimeSpan.FromSeconds(FocusDelay))
-                .Subscribe(_ => focusable.IsFocused.Value = true);
-        }
-
-        private void RemoveFocus(IFocusable focusable)
-        {
-            if (!AutoFocus || focusable == null)
-                return;
-
-            focusable.IsFocused.Value = false;
-        }
-
-        private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
-        {
-            observable.Subscribe(x =>
-            {
-                if (_isSynching)
-                    return;
-
-                _isSynching = true;
-                synchAction();
-                _isSynching = false;
-            })
-                .AddTo(this);
-        }
-
-        protected override void SelectView(IView view)
-        {
-            if (SelectedView.Value == view)
-                SelectedView.Value = null;
-
-            SelectedView.Value = view;
-        }
-
+        
         public bool SelectIndex(int index)
         {
             if (index >= Views.Value.Count)
@@ -209,14 +159,14 @@ namespace Silphid.Showzup
                 ? eventData.moveDir.FlipXY()
                 : eventData.moveDir;
 
-            if ((moveDirection == MoveDirection.Up && SelectedIndex.Value % RowsOrColumns > 0 &&
-                 SelectIndex(SelectedIndex.Value.Value - 1)) ||
-                (moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 &&
-                 SelectIndex(SelectedIndex.Value.Value + 1)) ||
-                (moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns &&
-                 SelectIndex(SelectedIndex.Value.Value - RowsOrColumns)) ||
-                (moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&
-                 SelectIndex(SelectedIndex.Value.Value + RowsOrColumns)))
+            if (moveDirection == MoveDirection.Up && SelectedIndex.Value % RowsOrColumns > 0 &&
+                SelectIndex(SelectedIndex.Value.Value - 1) ||
+                moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 &&
+                SelectIndex(SelectedIndex.Value.Value + 1) ||
+                moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns &&
+                SelectIndex(SelectedIndex.Value.Value - RowsOrColumns) ||
+                moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&
+                SelectIndex(SelectedIndex.Value.Value + RowsOrColumns))
                 eventData.Use();
         }
     }

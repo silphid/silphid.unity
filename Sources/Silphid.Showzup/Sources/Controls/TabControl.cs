@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -31,10 +30,9 @@ namespace Silphid.Showzup
 
         public void Start()
         {
-           /* TabSelectionControl.Views
-                .Select(x => x.FirstOrDefault())
-                .BindTo(TabSelectionControl.SelectedView)
-                .AddTo(this);*/
+            IsFocused
+                .WhereTrue()
+                .Subscribe(_ => TabSelectionControl.Focus());
 
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
             
@@ -51,26 +49,15 @@ namespace Silphid.Showzup
                 TabSelectionControl,
                 (MoveDirection) TabPlacement);
 
-            // Combining with view to select gameobject when view is loaded
-            _moveHandler.SelectedGameObject
-                .WhereNotNull()
-                .CombineLatest(ContentTransitionControl.FirstView, (x, y) => x)
-                .Where(x => x == ContentTransitionControl.gameObject)
-                .Subscribe(x => ContentTransitionControl.FirstView.Value?.SelectDeferred())
-                .AddTo(this);
+            _moveHandler.BindCancel(
+                ContentTransitionControl,
+                TabSelectionControl);
         }
-
 
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
         public override ReadOnlyReactiveProperty<bool> IsLoading => TabSelectionControl.IsLoading;
-
-        public override void OnSelect(BaseEventData eventData)
-        {
-            base.OnSelect(eventData);
-            TabSelectionControl.SelectFirst();
-        }
 
         public void OnMove(AxisEventData eventData)
         {
@@ -79,11 +66,7 @@ namespace Silphid.Showzup
 
         public void OnCancel(BaseEventData eventData)
         {
-            if (!TabSelectionControl.IsSelfOrDescendantSelected())
-            {
-                _moveHandler.OnMove(new AxisEventData(EventSystem.current) {moveDir = MoveDirection.Up});
-                eventData.Use();
-            }
+            _moveHandler.OnCancel(eventData);
         }
 
         private IObservable<IView> ShowContent(int index)

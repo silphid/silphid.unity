@@ -4,7 +4,6 @@ using Silphid.Extensions;
 using Silphid.Injexit;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
@@ -35,23 +34,12 @@ namespace Silphid.Showzup
 
         #region Life-time
 
-        internal void Start()
+        protected override void Start()
         {
+            base.Start();
+            
             Container1.SetActive(false);
             Container2.SetActive(false);
-                        
-            if (AutoSelect)
-                View
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .WhereNotNull()
-                    .Subscribe(x =>
-                    {
-                        if (!this.IsSelfOrDescendantSelected())
-                            return;
-                        
-                        x.SelectDeferred();
-                    })
-                    .AddTo(this);
         }
 
         #endregion

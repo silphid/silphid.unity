@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -110,6 +111,32 @@ namespace Silphid.Extensions
             }
 
             return common;
+        }
+
+        public static Tuple<List<GameObject>, List<GameObject>> DivergingBranchesWith(this Transform This, Transform other)
+        {
+            if (This == null || other == null)
+                return null;
+            
+            if (This == other)
+                return Tuple.Create(new List<GameObject>(), new List<GameObject>());
+            
+            var list1 = This.SelfAndAncestors().ToList();
+            var list2 = other.SelfAndAncestors().ToList();
+
+            for (int i1 = list1.Count - 1, i2 = list2.Count - 1; i1 >= 0 && i2 >= 0; i1--, i2--)
+            {
+                var item1 = list1[i1];
+                var item2 = list2[i2];
+
+                if (item1 != item2)
+                    break;
+                
+                list1.RemoveAt(i1);
+                list2.RemoveAt(i2);
+            }
+
+            return Tuple.Create(list1, list2);
         }
 
         public static void SetX(this Transform This, float x)

@@ -1,5 +1,4 @@
 ﻿using System;
-using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
 
@@ -30,19 +29,6 @@ namespace Silphid.Showzup
             PostShow(targetView, options);
 
             return Observable.ReturnUnit();
-        }
-
-        protected virtual void Start()
-        {
-            if (AutoSelect)
-                _view
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(SelectView);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view.SelectDeferred();
         }
 
         private void PreHide(IView view, Options options)

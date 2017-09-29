@@ -226,6 +226,25 @@ namespace Silphid.Extensions
             return -1;
         }
 
+        public static T GetAtOrDefault<T>(this IEnumerable<T> This, int index, T defaultValue = default(T))
+        {
+            if (index < 0)
+                return defaultValue;
+
+            var list = This as IList<T>;
+            if (list != null)
+                return index < list.Count
+                    ? list[index]
+                    : defaultValue;
+
+            var i = 0;
+            foreach (var item in This)
+                if (i++ == index)
+                    return item;
+            
+            return defaultValue;
+        }
+
         /// <summary>
         /// Compares objects based on their value modulated through custom function.
         /// </summary>

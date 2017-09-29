@@ -6,6 +6,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
 
@@ -251,16 +252,9 @@ namespace Silphid.Showzup
         {
             Views
                 .Select(x => x.FirstOrDefault())
-                .Do(x => MutableFirstView.Value = x)
-                .Where(x => AutoSelect)
-                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                .Subscribe(SelectView)
+                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (x, y) => x)
+                .Subscribe(x => x.Focus())
                 .AddTo(this);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view?.SelectDeferred();
         }
 
         protected virtual void AddView(int index, IView view)

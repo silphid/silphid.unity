@@ -1,6 +1,7 @@
 ﻿using System;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Showzup.Navigation;
 using Silphid.Showzup.Requests;
 using UniRx;
 
@@ -74,6 +75,20 @@ namespace Silphid.Showzup
             IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             View = _view.ToReadOnlyReactiveProperty();
             View.Subscribe(x => MutableFirstView.Value = x);
+        }
+
+        protected virtual void Start()
+        {
+            View
+                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (x, y) => x)
+                .Subscribe(x =>
+                {
+                    if (x != null)
+                        x.Focus();
+                    else
+                        this.Focus();
+                })
+                .AddTo(this);
         }
 
         #region IPresenter members

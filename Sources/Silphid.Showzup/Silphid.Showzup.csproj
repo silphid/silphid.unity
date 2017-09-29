@@ -75,7 +75,6 @@
     <Compile Include="Sources\Configs\Manifest.cs" />
     <Compile Include="Sources\Configs\VariantSet.cs" />
     <Compile Include="Sources\Controls\Control.cs" />
-    <Compile Include="Sources\Controls\IFocusable.cs" />
     <Compile Include="Sources\Controls\ItemControl.cs" />
     <Compile Include="Sources\Controls\ListControl.cs" />
     <Compile Include="Sources\Controls\ListLayouts\GridListLayout.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\IPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
-    <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IContentProvider.cs" />
@@ -124,9 +122,12 @@
     <Compile Include="Sources\Interfaces\IViewLoader.cs" />
     <Compile Include="Sources\Interfaces\IViewModel.cs" />
     <Compile Include="Sources\Interfaces\IViewResolver.cs" />
+    <Compile Include="Sources\Navigation\GameObjectExtensions.cs" />
+    <Compile Include="Sources\Navigation\IFocusable.cs" />
+    <Compile Include="Sources\Navigation\INavigationService.cs" />
+    <Compile Include="Sources\Navigation\NavigationService.cs" />
     <Compile Include="Sources\Navigation\CustomInputModule.cs" />
-    <Compile Include="Sources\Navigation\INestedDeselectHandler.cs" />
-    <Compile Include="Sources\Navigation\INestedSelectHandler.cs" />
+    <Compile Include="Sources\Navigation\ISelectable.cs" />
     <Compile Include="Sources\Navigation\MoveHandler.cs" />
     <Compile Include="Sources\Navigation\NavigationOrientation.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\DirectionPresenterDecorator.cs" />

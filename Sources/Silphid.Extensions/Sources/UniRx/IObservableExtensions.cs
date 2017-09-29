@@ -53,6 +53,36 @@ namespace Silphid.Extensions
             This.Where(x => x != null);
 
         [Pure]
+        public static IObservable<T> WhereNotNull<T>(this IObservable<T> This, Action nullHandler) =>
+            This.Where(x =>
+            {
+                if (x == null)
+                {
+                    nullHandler();
+                    return false;
+                }                
+                return true;
+            });
+
+        [Pure]
+        public static IObservable<TR> SelectNotNull<T, TR>(this IObservable<T> This, Func<T, TR> selector) =>
+            This.Select(selector)
+                .WhereNotNull();
+
+        [Pure]
+        public static IObservable<TR> SelectNotNull<T, TR>(this IObservable<T> This, Func<T, TR> selector, Action<T> nullHandler)
+        {
+            return This.Select(x =>
+                {
+                    var result = selector(x);
+                    if (result == null)
+                        nullHandler(x);
+                    return result;
+                })
+                .WhereNotNull();
+        }
+
+        [Pure]
         public static IObservable<Unit> WhereTrue(this IObservable<bool> This) =>
             This.Where(x => x).Select(_ => Unit.Default);
 
@@ -99,11 +129,10 @@ namespace Silphid.Extensions
         #region Misc
 
         [Pure]
-        public static IObservable<Tuple<TSource, TSource>> PairWithPrevious<TSource>(this IObservable<TSource> source)
-            =>
-            source.Scan(
-                Tuple.Create(default(TSource), default(TSource)),
-                (acc, current) => Tuple.Create(acc.Item2, current));
+        public static IObservable<Tuple<TSource, TSource>> PairWithPrevious<TSource>(this IObservable<TSource> source) =>
+            source
+                .Scan(Tuple.Create(default(TSource), default(TSource)), (acc, current) => Tuple.Create(acc.Item2, current))
+                .Skip(1);
 
         public static IDisposable SubscribeCompletion<T>(this IObservable<T> This, Action onCompleted) =>
             This.AutoDetach().Subscribe(Observer.Create<T>(_ => {}, ex => { throw ex; }, onCompleted));
