@@ -57,10 +57,10 @@ namespace Silphid.Injexit
                 .First()
                 .BindInstance(abstractionType, instance);
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType) =>
+        public void BindToAlias(Type sourceAbstractionType, string alias) =>
             _containers
                 .First()
-                .BindForward(sourceAbstractionType, targetAbstractionType);
+                .BindToAlias(sourceAbstractionType, alias);
 
         #endregion
 

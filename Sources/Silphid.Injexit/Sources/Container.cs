@@ -12,11 +12,10 @@ namespace Silphid.Injexit
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
         
-        
         #region Private fields
 
         private readonly List<Binding> _bindings = new List<Binding>();
-        private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
+        private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
         private readonly IReflector _reflector;
         private static readonly Func<IResolver, object> NullFactory = null;
 
@@ -40,12 +39,15 @@ namespace Silphid.Injexit
         
         #region IBinder members
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
+        public void BindToAlias(Type sourceAbstractionType, string alias)
         {
-            if (_forwards.ContainsKey(sourceAbstractionType))
-                throw new InvalidOperationException($"Cannot specify same source abstraction type {sourceAbstractionType.Name} in more than one forward binding.");
+            if (alias == null)
+                throw new ArgumentNullException(nameof(alias));
 
-            _forwards[sourceAbstractionType] = targetAbstractionType;
+            if (_aliases.ContainsKey(sourceAbstractionType))
+                throw new InvalidOperationException($"Cannot specify same source abstraction type {sourceAbstractionType.Name} in more than one BindToAlias().");
+
+            _aliases[sourceAbstractionType] = alias;
         }
 
         public IBinding BindInstance(Type abstractionType, object instance)
@@ -95,15 +97,24 @@ namespace Silphid.Injexit
         {
             Log.Debug($"Resolving {abstractionType.Name}");
 
-            abstractionType = ResolveForward(abstractionType);
-
-            return ResolveFromTypeMappings(abstractionType, id) ??
+            return ResolveAlias(abstractionType) ??
+                   ResolveFromTypeMappings(abstractionType, id) ??
                    ResolveFromListMappings(abstractionType, id) ??
                    ThrowUnresolvedType(abstractionType, id);
         }
 
-        private Type ResolveForward(Type abstractionType) =>
-            _forwards.GetValueOrDefault(abstractionType) ?? abstractionType;
+        private Func<IResolver, object> ResolveAlias(Type abstractionType)
+        {
+            var alias = _aliases.GetValueOrDefault(abstractionType);
+            if (alias == null)
+                return null;
+            
+            var binding = _bindings.FirstOrDefault(x => x.Alias == alias);
+            if (binding == null)
+                throw new InvalidOperationException($"Missing binding with alias {alias}");
+                
+            return ResolveFactoryInternal(binding);
+        }
 
         private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string id)
         {

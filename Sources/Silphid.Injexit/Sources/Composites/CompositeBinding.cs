@@ -46,6 +46,11 @@ namespace Silphid.Injexit
             return this;
         }
 
+        public IBinding AsAlias(string alias)
+        {
+            throw new NotImplementedException();
+        }
+
         public IBinding Using(Action<IBinder> bind)
         {
             _bindings.ForEach(x => x.AsList());

@@ -14,6 +14,7 @@ namespace Silphid.Injexit
         public object Instance { get; set; }
         public bool IsList { get; private set; }
         public string Id { get; private set; }
+        public string Alias { get; private set; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -64,6 +65,15 @@ namespace Silphid.Injexit
                 throw new InvalidOperationException("Already specified binding Id.");
                     
             Id = id;
+            return this;
+        }
+
+        public IBinding AsAlias(string alias)
+        {
+            if (Alias != null)
+                throw new InvalidOperationException("Already specified binding Alias.");
+                    
+            Alias = alias;
             return this;
         }
 

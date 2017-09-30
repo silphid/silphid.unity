@@ -41,5 +41,11 @@
         /// for which members using [Inject(Id="SomeId")] attributes.
         /// </summary>
         IBinding WithId(string id);
+        
+        /// <summary>
+        /// Marks binding with given Alias, to allow reuse of binding in
+        /// different contexts.
+        /// </summary>
+        IBinding AsAlias(string alias);
     }
 }

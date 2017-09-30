@@ -9,7 +9,7 @@ namespace Silphid.Injexit
 
         public IBinding Bind(Type abstractionType, Type concretionType) => Binding.Null;
         public IBinding BindInstance(Type abstractionType, object instance) => Binding.Null;
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType) {}
+        public void BindToAlias(Type sourceAbstractionType, string alias) {}
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null) => _ => null;
         

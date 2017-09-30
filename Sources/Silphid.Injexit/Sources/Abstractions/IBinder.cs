@@ -15,7 +15,7 @@ namespace Silphid.Injexit
         /// to a given object instance.
         /// </summary>
         IBinding BindInstance(Type abstractionType, object instance);
-        
+
         /// <summary>
         /// Adds a binding to forward all requests for a given abstraction type
         /// to another abstraction type binding. The target abstraction type must
@@ -23,6 +23,6 @@ namespace Silphid.Injexit
         /// when an object implements multiple interfaces (only configure a binding
         /// for one of its interfaces, and forward all others to first one).
         /// </summary>
-        void BindForward(Type sourceAbstractionType, Type targetAbstractionType);
+        void BindToAlias(Type sourceAbstractionType, string alias);
     }
 }
