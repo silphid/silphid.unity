@@ -183,11 +183,11 @@ namespace Silphid.Injexit
 
             if (binding.Reference != null)
             {
-                var aliasBinding = _bindings.FirstOrDefault(x => x.Id == binding.Reference);
-                if (aliasBinding == null)
-                    throw new InvalidOperationException($"Failed to resolve reference to alias {binding.Reference}");
+                var referenceBinding = _bindings.FirstOrDefault(x => x.Id == binding.Reference);
+                if (referenceBinding == null)
+                    throw new UnresolvedTypeException(binding.AbstractionType, $"Failed to resolve Reference to Id {binding.Reference}");
                 
-                return GetFactory(aliasBinding);
+                return GetFactory(referenceBinding);
             }
             
             if (binding.Lifetime == Lifetime.Transient)

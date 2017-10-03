@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Silphid.Injexit.Test
 {
     [TestFixture]
-    public class Id
+    public class NamedTest
     {
         private class Service
         {
