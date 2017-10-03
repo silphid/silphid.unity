@@ -24,21 +24,26 @@ namespace Silphid.Showzup
         public bool WrapAround;
         public bool KeepLastSelection = true;
         public int RowsOrColumns = 1;
-        
+
         protected override void Start()
         {
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException(
                     $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
-            Views
-                .Select(x => x.GetAtOrDefault(SelectedIndex.Value ?? -1))
+            IsSelfOrDescendantFocused
+                .Subscribe(x => { Debug.Log(x); });
+
+            SelectedView
+                //.Select(x => x.GetAtOrDefault(SelectedIndex.Value ?? -1))
                 .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
                 .Where(tuple => tuple.Item2)
                 .Subscribe(tuple =>
                 {
                     if (tuple.Item1 != null)
+                    {
                         tuple.Item1.Focus();
+                    }
                     else
                         this.Focus();
                 })
@@ -77,7 +82,7 @@ namespace Silphid.Showzup
                 })
                 .AddTo(this);
         }
-        
+
         public bool SelectIndex(int index)
         {
             if (index >= Views.Value.Count)
