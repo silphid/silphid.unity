@@ -30,6 +30,13 @@ namespace Silphid.Injexit
             return binding;
         }
 
+        public IBinding AddReference(string id)
+        {
+            var binding = _binder.BindReference<TAbstraction>(id).InList();
+            _bindings.Add(binding);
+            return binding;
+        }
+
         public void BindAll(Assembly assembly = null)
         {
             var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();

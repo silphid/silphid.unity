@@ -4,5 +4,6 @@
     {
         IBinding Add<TConcretion>() where TConcretion : TAbstraction;
         IBinding AddInstance<TConcretion>(TConcretion instance) where TConcretion : TAbstraction;
+        IBinding AddReference(string id);
     }
 }
