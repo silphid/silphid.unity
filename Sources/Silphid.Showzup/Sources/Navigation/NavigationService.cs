@@ -12,7 +12,7 @@ namespace Silphid.Showzup.Navigation
         #region Fields
         
         // TODO: To be replaced with Log4net
-        private const bool IsLogEnabled = false;
+        private const bool IsLogEnabled = true;
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly EventSystem _eventSystem;
         
