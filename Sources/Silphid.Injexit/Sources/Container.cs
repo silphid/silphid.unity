@@ -183,7 +183,7 @@ namespace Silphid.Injexit
 
             if (binding.Reference != null)
             {
-                var aliasBinding = _bindings.FirstOrDefault(x => x.Alias == binding.Reference);
+                var aliasBinding = _bindings.FirstOrDefault(x => x.Id == binding.Reference);
                 if (aliasBinding == null)
                     throw new InvalidOperationException($"Failed to resolve reference to alias {binding.Reference}");
                 

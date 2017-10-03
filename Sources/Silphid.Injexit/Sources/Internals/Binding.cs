@@ -14,7 +14,7 @@ namespace Silphid.Injexit
         public object Instance { get; set; }
         public bool InList { get; private set; }
         public string Name { get; private set; }
-        public string Alias { get; private set; }
+        public string Id { get; private set; }
         public string Reference { get; set; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
@@ -58,12 +58,12 @@ namespace Silphid.Injexit
             return this;
         }
 
-        IBinding IBinding.Alias(string alias)
+        IBinding IBinding.Id(string id)
         {
-            if (Alias != null)
-                throw new InvalidOperationException("Already marked binding as Alias.");
+            if (Id != null)
+                throw new InvalidOperationException("Already marked binding as Id.");
                     
-            Alias = alias;
+            Id = id;
             return this;
         }
 
@@ -88,7 +88,7 @@ namespace Silphid.Injexit
         public override string ToString()
         {
             var overrides = OverrideResolver != null ? " with overrides" : "";
-            var alias = Alias != null ? $" alias {Alias}" : "";
+            var alias = Id != null ? $" id {Id}" : "";
             var list = InList ? " in list" : "";
             var instance = Instance != null ? $" using instance {Instance}" : "";
             

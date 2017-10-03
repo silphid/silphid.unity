@@ -37,7 +37,7 @@ namespace Silphid.Injexit
 
         public IBinding Using(IResolver resolver)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IBinding Named(string name)
@@ -46,9 +46,9 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding Alias(string alias)
+        public IBinding Id(string id)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IBinding Using(Action<IBinder> bind)
