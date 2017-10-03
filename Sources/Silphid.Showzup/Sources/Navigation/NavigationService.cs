@@ -14,6 +14,7 @@ namespace Silphid.Showzup.Navigation
         // TODO: To be replaced with Log4net
         private const bool IsLogEnabled = false;
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly EventSystem _eventSystem;
         
         #endregion
         
@@ -21,6 +22,7 @@ namespace Silphid.Showzup.Navigation
 
         public NavigationService(EventSystem eventSystem)
         {
+            _eventSystem = eventSystem;
             if (Instance != null)
                 throw new InvalidOperationException("NavigationService should only be instantiated once by InputModule.");
             Instance = this;
@@ -119,6 +121,10 @@ namespace Silphid.Showzup.Navigation
                     .GetComponents<ISelectable>()
                     .ForEach(x => x.IsSelfOrDescendantSelected.Value = value));
 
+
+            // Ensure Unity's selection is synched with this selection
+            _eventSystem.SetSelectedGameObject(change.Item2);
+                
             // Ensure focus follows selection (should typically be the other way around,
             // but might happen if selection is set outside of focus for some reason) 
             Focus.Value = change.Item2;

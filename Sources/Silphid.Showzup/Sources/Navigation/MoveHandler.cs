@@ -102,7 +102,7 @@ namespace Silphid.Showzup.Navigation
         {
             var selected = _gameObjects.FirstOrDefault(x => x.IsSelfOrDescendantSelected());
             if (selected == null)
-                return;
+                throw new InvalidOperationException("Game object should not receive OnMove() when not selected.");
 
             var target = GetForwardTarget(selected, eventData.moveDir) ??
                          GetBackwardTarget(selected, eventData.moveDir.Opposite());
@@ -118,7 +118,7 @@ namespace Silphid.Showzup.Navigation
         {
             var selected = _gameObjects.FirstOrDefault(x => x.IsSelfOrDescendantSelected());
             if (selected == null)
-                return;
+                throw new InvalidOperationException("Game object should not receive OnCancel() when not selected.");
 
             var target = _cancelBindings
                 .FirstOrDefault(x =>

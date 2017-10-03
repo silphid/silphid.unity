@@ -252,8 +252,15 @@ namespace Silphid.Showzup
         {
             Views
                 .Select(x => x.FirstOrDefault())
-                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (x, y) => x)
-                .Subscribe(x => x.Focus())
+                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
+                .Where(tuple => tuple.Item2)
+                .Subscribe(tuple =>
+                {
+                    if (tuple.Item1 != null)
+                        tuple.Item1.Focus();
+                    else
+                        this.Focus();
+                })
                 .AddTo(this);
         }
 

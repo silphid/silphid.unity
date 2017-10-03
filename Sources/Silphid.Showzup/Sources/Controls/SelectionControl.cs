@@ -33,11 +33,12 @@ namespace Silphid.Showzup
 
             Views
                 .Select(x => x.GetAtOrDefault(SelectedIndex.Value ?? -1))
-                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (selectedView, _) => selectedView)
-                .Subscribe(selectedView =>
+                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
+                .Where(tuple => tuple.Item2)
+                .Subscribe(tuple =>
                 {
-                    if (selectedView != null)
-                        selectedView.Focus();
+                    if (tuple.Item1 != null)
+                        tuple.Item1.Focus();
                     else
                         this.Focus();
                 })

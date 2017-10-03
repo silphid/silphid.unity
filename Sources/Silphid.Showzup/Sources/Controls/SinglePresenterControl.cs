@@ -80,11 +80,12 @@ namespace Silphid.Showzup
         protected virtual void Start()
         {
             View
-                .CombineLatest(IsSelfOrDescendantFocused.WhereTrue(), (x, y) => x)
-                .Subscribe(x =>
+                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
+                .Where(tuple => tuple.Item2)
+                .Subscribe(tuple =>
                 {
-                    if (x != null)
-                        x.Focus();
+                    if (tuple.Item1 != null)
+                        tuple.Item1.Focus();
                     else
                         this.Focus();
                 })
