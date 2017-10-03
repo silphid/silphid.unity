@@ -12,8 +12,10 @@ namespace Silphid.Injexit
         public Lifetime Lifetime { get; set; }
         public IResolver OverrideResolver { get; private set; }
         public object Instance { get; set; }
-        public bool IsList { get; private set; }
-        public string Id { get; private set; }
+        public bool InList { get; private set; }
+        public string Name { get; private set; }
+        public string Alias { get; private set; }
+        public string Reference { get; set; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -22,12 +24,19 @@ namespace Silphid.Injexit
             ConcretionType = concretionType;
         }
 
-        public IBinding AsList()
+        public Binding(IContainer container, Type abstractionType, string reference)
         {
-            if (IsList)
+            Container = container;
+            AbstractionType = abstractionType;
+            Reference = reference;
+        }
+
+        IBinding IBinding.InList()
+        {
+            if (InList)
                 throw new InvalidOperationException("Already a list binding.");
                 
-            IsList = true;
+            InList = true;
             return this;
         }
 
@@ -49,6 +58,15 @@ namespace Silphid.Injexit
             return this;
         }
 
+        IBinding IBinding.Alias(string alias)
+        {
+            if (Alias != null)
+                throw new InvalidOperationException("Already marked binding as Alias.");
+                    
+            Alias = alias;
+            return this;
+        }
+
         public IBinding Using(IResolver resolver)
         {
             if (OverrideResolver != null)
@@ -58,22 +76,23 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding WithId(string id)
+        IBinding IBinding.Named(string name)
         {
-            if (Id != null)
-                throw new InvalidOperationException("Already specified binding Id.");
+            if (Name != null)
+                throw new InvalidOperationException("Already specified binding name.");
                     
-            Id = id;
+            Name = Reflector.GetCanonicalName(name);
             return this;
         }
 
         public override string ToString()
         {
             var overrides = OverrideResolver != null ? " with overrides" : "";
-            var list = IsList ? " into list" : "";
+            var alias = Alias != null ? $" alias {Alias}" : "";
+            var list = InList ? " in list" : "";
             var instance = Instance != null ? $" using instance {Instance}" : "";
             
-            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{list}{instance}";
+            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{alias}{list}{instance}";
         }
     }
 }

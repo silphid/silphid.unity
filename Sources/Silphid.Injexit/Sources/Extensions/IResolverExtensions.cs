@@ -37,8 +37,8 @@ namespace Silphid.Injexit
         public static IResolver UsingInstances(this IResolver This, object[] instances) =>
             This.Using(x => x.BindInstances(instances));
 
-        public static object Resolve(this IResolver This, Type abstractionType, string id = null) =>
-            This.ResolveFactory(abstractionType, id).Invoke(This);
+        public static object Resolve(this IResolver This, Type abstractionType, string name = null) =>
+            This.ResolveFactory(abstractionType, name).Invoke(This);
 
         public static T Resolve<T>(this IResolver This, string id = null) =>
             (T) This.Resolve(typeof(T), id);

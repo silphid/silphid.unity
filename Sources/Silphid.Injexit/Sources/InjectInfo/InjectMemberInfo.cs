@@ -7,14 +7,14 @@ namespace Silphid.Injexit
         public string Name { get; }
         public Type Type { get; }
         public bool IsOptional { get; }
-        public string Id { get; }
+        public string CanonicalName { get; }
 
-        public InjectMemberInfo(string name, Type type, bool isOptional, string id)
+        public InjectMemberInfo(string name, Type type, bool isOptional)
         {
             Name = name;
             Type = type;
             IsOptional = isOptional;
-            Id = id;
+            CanonicalName = Reflector.GetCanonicalName(name);
         }
     }
 }

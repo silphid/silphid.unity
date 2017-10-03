@@ -17,15 +17,15 @@ namespace Silphid.Injexit
             _bindings.FirstOrDefault()?.Container
             ?? Injexit.Container.Null;
 
-        public IBinding AsList()
+        public IBinding InList()
         {
-            _bindings.ForEach(x => x.AsList());
+            _bindings.ForEach(x => x.InList());
             return this;
         }
 
         public IBinding AsSingle()
         {
-            _bindings.ForEach(x => x.AsList());
+            _bindings.ForEach(x => x.InList());
             return this;
         }
 
@@ -40,15 +40,20 @@ namespace Silphid.Injexit
             throw new NotImplementedException();
         }
 
-        public IBinding WithId(string id)
+        public IBinding Named(string name)
         {
-            _bindings.ForEach(x => x.WithId(id));
+            _bindings.ForEach(x => x.Named(name));
             return this;
+        }
+
+        public IBinding Alias(string alias)
+        {
+            throw new NotImplementedException();
         }
 
         public IBinding Using(Action<IBinder> bind)
         {
-            _bindings.ForEach(x => x.AsList());
+            _bindings.ForEach(x => x.InList());
             return this;
         }
     }

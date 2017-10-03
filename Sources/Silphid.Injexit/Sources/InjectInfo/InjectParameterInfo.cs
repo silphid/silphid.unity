@@ -8,8 +8,8 @@ namespace Silphid.Injexit
         public bool IsOptional { get; }
         public object DefaultValue { get; }
         
-        public InjectParameterInfo(ParameterInfo parameterInfo, bool isOptional, string id) :
-            base(parameterInfo.Name, parameterInfo.ParameterType, isOptional, id)
+        public InjectParameterInfo(ParameterInfo parameterInfo, bool isOptional) :
+            base(parameterInfo.Name, parameterInfo.ParameterType, isOptional)
         {
             IsOptional = isOptional;
             

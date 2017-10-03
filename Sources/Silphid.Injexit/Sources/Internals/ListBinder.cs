@@ -18,14 +18,14 @@ namespace Silphid.Injexit
 
         public IBinding Add<TConcretion>() where TConcretion : TAbstraction
         {
-            var binding = _binder.Bind<TAbstraction, TConcretion>().AsList();
+            var binding = _binder.Bind<TAbstraction, TConcretion>().InList();
             _bindings.Add(binding);
             return binding;
         }
 
         public IBinding AddInstance<TConcretion>(TConcretion instance) where TConcretion : TAbstraction
         {
-            var binding = _binder.BindInstance<TAbstraction>(instance).AsList();
+            var binding = _binder.BindInstance<TAbstraction>(instance).InList();
             _bindings.Add(binding);
             return binding;
         }
@@ -35,7 +35,7 @@ namespace Silphid.Injexit
             var types = (assembly ?? typeof(TAbstraction).Assembly).GetTypes();
             types
                 .Where(x => !x.IsAbstract && !x.ContainsGenericParameters && x.IsAssignableTo<TAbstraction>())
-                .ForEach(x => _bindings.Add(_binder.Bind<TAbstraction>(x).AsList()));
+                .ForEach(x => _bindings.Add(_binder.Bind<TAbstraction>(x).InList()));
         }
     }
 }

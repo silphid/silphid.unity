@@ -27,20 +27,20 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
             foreach (var container in _containers)
             {
                 try
                 {
-                    return container.ResolveFactory(abstractionType, id);
+                    return container.ResolveFactory(abstractionType, name);
                 }
                 catch (UnresolvedTypeException)
                 {
                 }
             }
             
-            throw new UnresolvedTypeException(abstractionType, id);
+            throw new UnresolvedTypeException(abstractionType, name);
         }
 
         #endregion
@@ -57,10 +57,10 @@ namespace Silphid.Injexit
                 .First()
                 .BindInstance(abstractionType, instance);
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType) =>
+        public IBinding BindReference(Type sourceAbstractionType, string id) =>
             _containers
                 .First()
-                .BindForward(sourceAbstractionType, targetAbstractionType);
+                .BindReference(sourceAbstractionType, id);
 
         #endregion
 

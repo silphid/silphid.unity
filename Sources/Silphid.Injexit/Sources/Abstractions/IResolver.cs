@@ -14,10 +14,10 @@ namespace Silphid.Injexit
         /// concrete objects of that type.
         /// </summary>
         /// <param name="abstractionType">Abstraction type that object must derive from or implement (if it's an interface)</param>
-        /// <param name="id">Optional Id to match on binding (if not specified/null, binding must not have any Id associated with it in order to match)</param>
+        /// <param name="name">Optional Named to match on binding (if not specified/null, binding must not have any Named associated with it in order to match)</param>
         /// <param name="isOptional">Whether to return null upon failure (isOptional=true) or throw an exception (isOptional=false)</param>
         Func<IResolver, object> ResolveFactory(
             Type abstractionType,
-            string id = null);
+            string name = null);
     }
 }

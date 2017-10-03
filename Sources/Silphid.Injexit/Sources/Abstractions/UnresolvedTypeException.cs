@@ -17,7 +17,7 @@ namespace Silphid.Injexit
         {
             get
             {
-                var withId = Id != null ? $" with Id {Id}" : "";
+                var withId = Id != null ? $" with Named {Id}" : "";
                 return $"Failed to resolve type {Type.Name} {withId}.";
             }
         }

@@ -12,11 +12,9 @@ namespace Silphid.Injexit
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
         
-        
         #region Private fields
 
         private readonly List<Binding> _bindings = new List<Binding>();
-        private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
         private readonly IReflector _reflector;
         private static readonly Func<IResolver, object> NullFactory = null;
 
@@ -40,12 +38,14 @@ namespace Silphid.Injexit
         
         #region IBinder members
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
+        public IBinding BindReference(Type abstractionType, string reference)
         {
-            if (_forwards.ContainsKey(sourceAbstractionType))
-                throw new InvalidOperationException($"Cannot specify same source abstraction type {sourceAbstractionType.Name} in more than one forward binding.");
+            if (reference == null)
+                throw new ArgumentNullException(nameof(reference));
 
-            _forwards[sourceAbstractionType] = targetAbstractionType;
+            var binding = new Binding(this, abstractionType, reference);
+            _bindings.Add(binding);
+            return binding;
         }
 
         public IBinding BindInstance(Type abstractionType, object instance)
@@ -91,19 +91,14 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
             Log.Debug($"Resolving {abstractionType.Name}");
 
-            abstractionType = ResolveForward(abstractionType);
-
-            return ResolveFromTypeMappings(abstractionType, id) ??
-                   ResolveFromListMappings(abstractionType, id) ??
-                   ThrowUnresolvedType(abstractionType, id);
+            return ResolveFromTypeMappings(abstractionType, name) ??
+                   ResolveFromListMappings(abstractionType, name) ??
+                   ThrowUnresolvedType(abstractionType, name);
         }
-
-        private Type ResolveForward(Type abstractionType) =>
-            _forwards.GetValueOrDefault(abstractionType) ?? abstractionType;
 
         private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string id)
         {
@@ -160,20 +155,20 @@ namespace Silphid.Injexit
             return null;
         }
 
-        private List<Func<IResolver, object>> GetListFactories(Type abstractionType, string id) =>
+        private List<Func<IResolver, object>> GetListFactories(Type abstractionType, string name) =>
             _bindings
-                .Where(x => x.AbstractionType == abstractionType && x.IsList && x.Id == id)
-                .Select(ResolveFactoryInternal)
+                .Where(x => x.AbstractionType == abstractionType && x.InList && (x.Name == null || x.Name == name))
+                .Select(GetFactory)
                 .ToList();
 
-        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType, string id) =>
-            ResolveFactoryInternal(ResolveType(abstractionType, id));
+        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType, string name) =>
+            GetFactory(ResolveType(abstractionType, name));
 
-        private Binding ResolveType(Type abstractionType, string id)
+        private Binding ResolveType(Type abstractionType, string name)
         {
             var binding = _bindings.FirstOrDefault(x =>
                 x.AbstractionType == abstractionType &&
-                x.Id == id);
+                (x.Name == null || x.Name == name));
             
             if (binding != null)
                 Log.Debug($"Resolved {binding}");
@@ -181,28 +176,37 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Binding binding)
+        private Func<IResolver, object> GetFactory(Binding binding)
         {
             if (binding == null)
                 return NullFactory;
+
+            if (binding.Reference != null)
+            {
+                var aliasBinding = _bindings.FirstOrDefault(x => x.Alias == binding.Reference);
+                if (aliasBinding == null)
+                    throw new InvalidOperationException($"Failed to resolve reference to alias {binding.Reference}");
+                
+                return GetFactory(aliasBinding);
+            }
             
             if (binding.Lifetime == Lifetime.Transient)
-                return ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver);
+                return GetFactory(binding.ConcretionType, binding.OverrideResolver);
 
             return resolver =>
                 binding.Instance
-                ?? (binding.Instance = ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
+                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Type concretionType, IResolver overrideResolver)
+        private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver)
         {
-            var factory = ResolveFactoryInternal(concretionType);
+            var factory = GetFactory(concretionType);
             return factory != null
                 ? resolver => factory(resolver.Using(overrideResolver))
                 : NullFactory;
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Type concretionType) =>
+        private Func<IResolver, object> GetFactory(Type concretionType) =>
             resolver =>
             {
                 var typeInfo = GetTypeInfo(concretionType);
@@ -226,7 +230,7 @@ namespace Silphid.Injexit
             Log.Debug($"Resolving parameter {parameter.Name}");
             try
             {
-                return resolver.Resolve(parameter.Type, parameter.Id);
+                return resolver.Resolve(parameter.Type, parameter.CanonicalName);
             }
             catch (UnresolvedDependencyException ex)
             {
@@ -332,7 +336,7 @@ namespace Silphid.Injexit
         {
             try
             {
-                var value = resolver.Resolve(member.Type, member.Id);
+                var value = resolver.Resolve(member.Type, member.CanonicalName);
                 Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
                 member.SetValue(obj, value);
             }
@@ -383,7 +387,7 @@ namespace Silphid.Injexit
         {
             _bindings
                 .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
-                .ForEach(x => this.Resolve(x.AbstractionType, x.Id));
+                .ForEach(x => this.Resolve(x.AbstractionType, x.Name));
         }
 
         #endregion        

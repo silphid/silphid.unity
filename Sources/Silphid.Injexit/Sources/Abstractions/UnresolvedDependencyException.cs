@@ -38,7 +38,7 @@ namespace Silphid.Injexit
         {
             get
             {
-                var withId = Id != null ? $" with Id {Id}" : "";
+                var withId = Id != null ? $" with Named {Id}" : "";
                 var ancestors = AncestorTypes.Select(x => x.Name).ToDelimitedString(" -> ");
                 return $"Failed to resolve dependency '{MemberName}' of type {Type.Name}{withId} for chain: {ancestors}";
             }

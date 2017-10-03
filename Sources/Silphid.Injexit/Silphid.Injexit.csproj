@@ -53,7 +53,6 @@
     <Compile Include="Sources\Abstractions\UnresolvedDependencyException.cs" />
     <Compile Include="Sources\Abstractions\UnresolvedTypeException.cs" />
     <Compile Include="Sources\Attributes\BindAttribute.cs" />
-    <Compile Include="Sources\Attributes\IdAttribute.cs" />
     <Compile Include="Sources\Attributes\InjectAttribute.cs" />
     <Compile Include="Sources\Attributes\OptionalAttribute.cs" />
     <Compile Include="Sources\Composites\CompositeBinding.cs" />

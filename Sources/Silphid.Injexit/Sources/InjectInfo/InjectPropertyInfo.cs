@@ -7,7 +7,7 @@ namespace Silphid.Injexit
     {
         private readonly PropertyInfo _propertyInfo;
 
-        public InjectPropertyInfo(PropertyInfo propertyInfo, Type type, bool isOptional, string id) : base(propertyInfo.Name, type, isOptional, id)
+        public InjectPropertyInfo(PropertyInfo propertyInfo, Type type, bool isOptional) : base(propertyInfo.Name, type, isOptional)
         {
             _propertyInfo = propertyInfo;
         }

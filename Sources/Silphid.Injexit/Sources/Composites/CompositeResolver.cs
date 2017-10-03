@@ -24,7 +24,7 @@ namespace Silphid.Injexit
         public IContainer Create() =>
             _resolvers.First().Create();
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
             if (_resolvers.Length == 0)
                 throw new InvalidOperationException("CompositeResolver must contain at least one child resolver.");
@@ -35,7 +35,7 @@ namespace Silphid.Injexit
             {
                 try
                 {
-                    return resolver.ResolveFactory(abstractionType, id);
+                    return resolver.ResolveFactory(abstractionType, name);
                 }
                 catch (UnresolvedTypeException ex)
                 {

@@ -3,10 +3,11 @@
     internal class NullBinding : IBinding
     {
         public IContainer Container => Injexit.Container.Null;
-        public IBinding AsList() => Binding.Null;
+        public IBinding InList() => Binding.Null;
         public IBinding AsSingle() => Binding.Null;
         public IBinding AsEagerSingle() => Binding.Null;
         public IBinding Using(IResolver resolver) => Binding.Null;
-        public IBinding WithId(string id) => Binding.Null;
+        public IBinding Named(string name) => Binding.Null;
+        public IBinding Alias(string alias) => Binding.Null;
     }
 }
