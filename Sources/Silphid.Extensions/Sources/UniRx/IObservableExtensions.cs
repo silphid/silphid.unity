@@ -133,6 +133,10 @@ namespace Silphid.Extensions
             source
                 .Scan(Tuple.Create(default(TSource), default(TSource)), (acc, current) => Tuple.Create(acc.Item2, current))
                 .Skip(1);
+        
+        [Pure]
+        public static IObservable<Tuple<TSource, TSource>> PairWithPreviousOrDefault<TSource>(this IObservable<TSource> source) =>
+            source.Scan(Tuple.Create(default(TSource), default(TSource)), (acc, current) => Tuple.Create(acc.Item2, current));
 
         public static IDisposable SubscribeCompletion<T>(this IObservable<T> This, Action onCompleted) =>
             This.AutoDetach().Subscribe(Observer.Create<T>(_ => {}, ex => { throw ex; }, onCompleted));

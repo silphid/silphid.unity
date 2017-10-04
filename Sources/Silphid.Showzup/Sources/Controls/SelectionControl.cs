@@ -42,6 +42,36 @@ namespace Silphid.Showzup
                         _selectedView.Value?.Select();
                 })
                 .AddTo(this);
+            
+            SubscribeToUpdateFocusables(SelectedView);
+        }
+        
+        private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
+        {
+            observable
+                .PairWithPreviousOrDefault()
+                .Subscribe(x =>
+                {
+                    RemoveFocus(x.Item1 as IFocusable);
+                    SetFocus(x.Item2 as IFocusable);
+                })
+                .AddTo(this);
+        }
+        
+        private void SetFocus(IFocusable focusable)
+        {
+            if (focusable == null)
+                return;
+
+            focusable.IsFocused.Value = true;
+        }
+
+        private void RemoveFocus(IFocusable focusable)
+        {
+            if (focusable == null)
+                return;
+
+            focusable.IsFocused.Value = false;
         }
 
         [Pure]
