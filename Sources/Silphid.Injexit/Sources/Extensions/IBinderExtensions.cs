@@ -65,7 +65,7 @@ namespace Silphid.Injexit
 
         #region BindReference
 
-        public static IBinding BindReference<TSourceAbstraction>(this IBinder This, string id) =>
+        public static IBinding BindReference<TSourceAbstraction>(this IBinder This, BindingId id) =>
             This.BindReference(typeof(TSourceAbstraction), id);
 
         #endregion

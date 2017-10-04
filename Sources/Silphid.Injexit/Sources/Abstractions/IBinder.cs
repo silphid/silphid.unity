@@ -17,8 +17,8 @@ namespace Silphid.Injexit
         IBinding BindInstance(Type abstractionType, object instance);
         
         /// <summary>
-        /// Binds binding with given Id to an extra abstraction type.
+        /// Binds binding with given Name to an extra abstraction type.
         /// </summary>
-        IBinding BindReference(Type sourceAbstractionType, string id);
+        IBinding BindReference(Type sourceAbstractionType, BindingId id);
     }
 }

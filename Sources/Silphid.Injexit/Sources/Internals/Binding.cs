@@ -14,8 +14,8 @@ namespace Silphid.Injexit
         public object Instance { get; set; }
         public bool InList { get; private set; }
         public string Name { get; private set; }
-        public string Id { get; private set; }
-        public string Reference { get; set; }
+        public BindingId Id { get; private set; }
+        public BindingId Reference { get; set; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -24,7 +24,7 @@ namespace Silphid.Injexit
             ConcretionType = concretionType;
         }
 
-        public Binding(IContainer container, Type abstractionType, string reference)
+        public Binding(IContainer container, Type abstractionType, BindingId reference)
         {
             Container = container;
             AbstractionType = abstractionType;
@@ -58,12 +58,13 @@ namespace Silphid.Injexit
             return this;
         }
 
-        IBinding IBinding.Id(string id)
+        IBinding IBinding.Id(BindingId id)
         {
             if (Id != null)
-                throw new InvalidOperationException("Already marked binding as Id.");
+                throw new InvalidOperationException("Already specified binding Name.");
                     
             Id = id;
+            id.Binding = this;
             return this;
         }
 
@@ -88,11 +89,11 @@ namespace Silphid.Injexit
         public override string ToString()
         {
             var overrides = OverrideResolver != null ? " with overrides" : "";
-            var alias = Id != null ? $" id {Id}" : "";
+            var id = Id != null ? $" id {Id}" : "";
             var list = InList ? " in list" : "";
             var instance = Instance != null ? $" using instance {Instance}" : "";
             
-            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{alias}{list}{instance}";
+            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{id}{list}{instance}";
         }
     }
 }

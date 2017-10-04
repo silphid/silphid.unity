@@ -30,7 +30,7 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        public IBinding AddReference(string id)
+        public IBinding AddReference(BindingId id)
         {
             var binding = _binder.BindReference<TAbstraction>(id).InList();
             _bindings.Add(binding);

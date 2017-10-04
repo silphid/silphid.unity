@@ -29,10 +29,10 @@
         IBinding AsEagerSingle();
         
         /// <summary>
-        /// Marks binding with given Id, to allow reuse of binding in different contexts with BindReference()
+        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
         /// and AddReference() (in lists).
         /// </summary>
-        IBinding Id(string id);
+        IBinding Id(BindingId id);
         
         /// <summary>
         /// Attaches a child resolver to this binding, which will be used

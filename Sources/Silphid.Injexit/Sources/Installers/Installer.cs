@@ -13,7 +13,7 @@ namespace Silphid.Injexit
 
         protected void InjectScene()
         {
-            Log.Info($"Injecting dependencies into scene {gameObject.scene.name}");
+            Log.Info($"Injecting dependencies into {gameObject.scene.name} scene...");
 
             Container.InjectScene(gameObject.scene);
         }

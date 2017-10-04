@@ -38,12 +38,12 @@ namespace Silphid.Injexit
         
         #region IBinder members
 
-        public IBinding BindReference(Type abstractionType, string reference)
+        public IBinding BindReference(Type abstractionType, BindingId id)
         {
-            if (reference == null)
-                throw new ArgumentNullException(nameof(reference));
-
-            var binding = new Binding(this, abstractionType, reference);
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+            
+            var binding = new Binding(this, abstractionType, id);
             _bindings.Add(binding);
             return binding;
         }
@@ -100,18 +100,18 @@ namespace Silphid.Injexit
                    ThrowUnresolvedType(abstractionType, name);
         }
 
-        private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string id)
+        private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string name)
         {
-            throw new UnresolvedTypeException(abstractionType, id);
+            throw new UnresolvedTypeException(abstractionType, name);
         }
 
-        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType, string id)
+        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType, string name)
         {
             var elementType = GetListElementType(abstractionType);
             if (elementType == null)
                 return NullFactory;
 
-            var factories = GetListFactories(elementType, id);
+            var factories = GetListFactories(elementType, name);
             if (factories.Count == 0)
                 return NullFactory;
             
@@ -183,9 +183,12 @@ namespace Silphid.Injexit
 
             if (binding.Reference != null)
             {
-                var referenceBinding = _bindings.FirstOrDefault(x => x.Id == binding.Reference);
+                var referenceBinding = binding.Reference.Binding;
                 if (referenceBinding == null)
-                    throw new UnresolvedTypeException(binding.AbstractionType, $"Failed to resolve Reference to Id {binding.Reference}");
+                    throw new UnresolvedTypeException(binding.AbstractionType, null, $"No binding bound to {binding.Reference}");
+                
+                if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
+                    throw new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}");
                 
                 return GetFactory(referenceBinding);
             }
@@ -235,7 +238,7 @@ namespace Silphid.Injexit
             catch (UnresolvedDependencyException ex)
             {
                 if (!parameter.IsOptional)
-                    throw new UnresolvedDependencyException(dependentType, ex, ex.MemberName);
+                    throw new UnresolvedDependencyException(dependentType, ex, ex.Name);
             }
             catch (UnresolvedTypeException ex)
             {

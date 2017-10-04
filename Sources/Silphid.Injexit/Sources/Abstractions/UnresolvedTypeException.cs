@@ -4,21 +4,25 @@ namespace Silphid.Injexit
 {
     public class UnresolvedTypeException : Exception
     {
+        private readonly string _message;
+            
         public Type Type { get; }
-        public string Id { get; }
+        public string Name { get; }
 
-        public UnresolvedTypeException(Type type, string id)
+        public UnresolvedTypeException(Type type, string name, string message = null)
         {
             Type = type;
-            Id = id;
+            Name = name;
+            _message = message;
         }
 
         public override string Message
         {
             get
             {
-                var withId = Id != null ? $" with Named {Id}" : "";
-                return $"Failed to resolve type {Type.Name} {withId}.";
+                var named = Name != null ? $" for member named {Name}" : "";
+                var message = _message != null ? $" : {_message}" : "";
+                return $"Failed to resolve type {Type.Name}{named}{message}";
             }
         }
     }

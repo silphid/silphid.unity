@@ -14,30 +14,30 @@ namespace Silphid.Injexit
         public virtual void Start()
         {
             OnConfigureLogging();
-            Log.Debug($"Installing {GetType().Name}");
+            Log.Info($"Installing {GetType().Name}...");
 
             Container = new Container(new Reflector());
             
-            Log.Debug("Configuring bindings...");
+            Log.Info("Configuring bindings...");
             OnBind();
 
-            Log.Debug("Injecting scene dependencies...");
             InjectScene();
             
-            Log.Debug("Launching app...");
+            Log.Info($"Completing {GetType().Name}...");
             OnReady();
+            
+            Log.Info($"Completed {GetType().Name}.");
         }
 
         protected virtual void OnConfigureLogging()
         {
             var textAsset = Resources.Load<TextAsset>(LogResourceFile);
-            var text = textAsset.text.Replace("${DataPath}", UnityEngine.Application.dataPath);
+            var text = textAsset.text.Replace("${DataPath}", Application.dataPath);
             var xmldoc = new XmlDocument();
             xmldoc.LoadXml (text);
 
             var repository = LogManager.GetRepository(GetType().Assembly);
             XmlConfigurator.Configure(repository, xmldoc.DocumentElement);
-            Log.Info("Logging initialized");
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {
     public class CompositeResolver : IResolver
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CompositeResolver));
+        
         private readonly IResolver[] _resolvers;
 
         public CompositeResolver(params IResolver[] resolvers)
@@ -28,9 +31,11 @@ namespace Silphid.Injexit
         {
             if (_resolvers.Length == 0)
                 throw new InvalidOperationException("CompositeResolver must contain at least one child resolver.");
+         
+            Log.Debug($"Resolving dependency '{name}' of type {abstractionType.Name}");
             
             UnresolvedTypeException exception = null;
-            
+        
             foreach (var resolver in _resolvers)
             {
                 try
@@ -42,7 +47,7 @@ namespace Silphid.Injexit
                     exception = ex;
                 }
             }
-            
+        
             // ReSharper disable once PossibleNullReferenceException
             throw exception;
         }

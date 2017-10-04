@@ -46,6 +46,7 @@
     <Compile Include="Sources\Abstractions\IBinder.cs" />
     <Compile Include="Sources\Abstractions\IBinding.cs" />
     <Compile Include="Sources\Abstractions\IContainer.cs" />
+    <Compile Include="Sources\Abstractions\BindingId.cs" />
     <Compile Include="Sources\Abstractions\IInjector.cs" />
     <Compile Include="Sources\Abstractions\IInstaller.cs" />
     <Compile Include="Sources\Abstractions\IListBinder.cs" />

@@ -46,7 +46,7 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding Id(string id)
+        public IBinding Id(BindingId id)
         {
             throw new NotSupportedException();
         }

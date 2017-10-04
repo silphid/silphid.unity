@@ -8,6 +8,6 @@
         public IBinding AsEagerSingle() => Binding.Null;
         public IBinding Using(IResolver resolver) => Binding.Null;
         public IBinding Named(string name) => Binding.Null;
-        public IBinding Id(string id) => Binding.Null;
+        public IBinding Id(BindingId id) => Binding.Null;
     }
 }

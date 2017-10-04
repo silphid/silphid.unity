@@ -57,7 +57,7 @@ namespace Silphid.Injexit
                 .First()
                 .BindInstance(abstractionType, instance);
 
-        public IBinding BindReference(Type sourceAbstractionType, string id) =>
+        public IBinding BindReference(Type sourceAbstractionType, BindingId id) =>
             _containers
                 .First()
                 .BindReference(sourceAbstractionType, id);
