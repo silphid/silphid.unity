@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -9,21 +10,21 @@ namespace Silphid.Showzup
 {
     public class SelectionControl : ListControl, IMoveHandler
     {
-        private bool _isSynching;
-        private readonly ReactiveProperty<IView> _lastSelectedView = new ReactiveProperty<IView>();
-        private ReadOnlyReactiveProperty<IView> _lastSelectedViewReadOnly;
+        private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
 
-        public ReactiveProperty<IView> SelectedView { get; } = new ReactiveProperty<IView>();
+        public ReadOnlyReactiveProperty<IView> SelectedView => _selectedView.ToReadOnlyReactiveProperty();
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
-
-        public ReadOnlyReactiveProperty<IView> LastSelectedView =>
-            _lastSelectedViewReadOnly
-            ?? (_lastSelectedViewReadOnly = _lastSelectedView.ToReadOnlyReactiveProperty());
 
         public NavigationOrientation Orientation;
         public bool WrapAround;
-        public bool KeepLastSelection = true;
         public int RowsOrColumns = 1;
+
+        public bool AutoSelectFirst = true;
+
+        public override GameObject ForwardSelection()
+        {
+            return _selectedView.Value?.GameObject;
+        }
 
         protected override void Start()
         {
@@ -31,56 +32,31 @@ namespace Silphid.Showzup
                 throw new InvalidOperationException(
                     $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
-            IsSelfOrDescendantFocused
-                .Subscribe(x => { Debug.Log(x); });
-
-            SelectedView
-                //.Select(x => x.GetAtOrDefault(SelectedIndex.Value ?? -1))
-                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
-                .Where(tuple => tuple.Item2)
-                .Subscribe(tuple =>
+            Views
+                .CombineLatest(SelectedIndex, (views, selectedIndex) => new {views, selectedIndex})
+                .Subscribe(x =>
                 {
-                    if (tuple.Item1 != null)
-                    {
-                        tuple.Item1.Focus();
-                    }
-                    else
-                        this.Focus();
+                    _selectedView.Value = x.views.GetAtOrDefault(x.selectedIndex);
+
+                    if (IsSelfOrDescendantSelected.Value)
+                        _selectedView.Value?.Select();
                 })
                 .AddTo(this);
-
-            if (KeepLastSelection)
-                SelectedView
-                    .BindTo(_lastSelectedView)
-                    .AddTo(this);
-
-            SubscribeToSynchOther(SelectedView, () =>
-                SelectedIndex.Value = IndexOfView(SelectedView.Value));
-
-            SubscribeToSynchOther(SelectedIndex, () =>
-                SelectedView.Value = GetViewAtIndex(SelectedIndex.Value));
         }
+
+        [Pure]
+        public override IObservable<IView> Present(object input, Options options = null) =>
+            base.Present(input, options).DoOnCompleted(() =>
+            {
+                if (AutoSelectFirst)
+                    SelectFirst();
+            });
 
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
         {
             base.RemoveAllViews(container, except);
 
-            SelectedView.Value = null;
-        }
-
-        private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
-        {
-            observable
-                .Subscribe(x =>
-                {
-                    if (_isSynching)
-                        return;
-
-                    _isSynching = true;
-                    synchAction();
-                    _isSynching = false;
-                })
-                .AddTo(this);
+            SelectedIndex.Value = null;
         }
 
         public bool SelectIndex(int index)
@@ -113,7 +89,7 @@ namespace Silphid.Showzup
 
         public void SelectNone()
         {
-            SelectedView.Value = null;
+            SelectedIndex.Value = null;
         }
 
         public bool SelectPrevious()

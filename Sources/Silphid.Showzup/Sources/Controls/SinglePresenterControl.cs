@@ -4,6 +4,7 @@ using Silphid.Injexit;
 using Silphid.Showzup.Navigation;
 using Silphid.Showzup.Requests;
 using UniRx;
+using UnityEngine;
 
 namespace Silphid.Showzup
 {
@@ -40,9 +41,14 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject]
+        internal IViewResolver ViewResolver { get; set; }
+
+        [Inject]
+        internal IViewLoader ViewLoader { get; set; }
+
+        [Inject]
+        internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -77,17 +83,19 @@ namespace Silphid.Showzup
             View.Subscribe(x => MutableFirstView.Value = x);
         }
 
+        public override GameObject ForwardSelection()
+        {
+            return View.Value?.GameObject;
+        }
+
         protected virtual void Start()
         {
             View
-                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
-                .Where(tuple => tuple.Item2)
-                .Subscribe(tuple =>
+                .WhereNotNull()
+                .Subscribe(x =>
                 {
-                    if (tuple.Item1 != null)
-                        tuple.Item1.Focus();
-                    else
-                        this.Focus();
+                    if (IsSelfOrDescendantSelected.Value)
+                        x.Select();
                 })
                 .AddTo(this);
         }
@@ -178,7 +186,8 @@ namespace Silphid.Showzup
                 .TakeUntil(cancellations);
         }
 
-        protected virtual Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options) =>
+        protected virtual Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType,
+            Options options) =>
             new Presentation(viewModel, sourceView, targetViewType, options);
 
         protected ViewInfo ResolveView(object input, Options options) =>

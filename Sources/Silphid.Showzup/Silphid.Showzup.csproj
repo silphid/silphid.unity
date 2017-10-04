@@ -123,7 +123,7 @@
     <Compile Include="Sources\Interfaces\IViewModel.cs" />
     <Compile Include="Sources\Interfaces\IViewResolver.cs" />
     <Compile Include="Sources\Navigation\GameObjectExtensions.cs" />
-    <Compile Include="Sources\Navigation\IFocusable.cs" />
+    <Compile Include="Sources\Navigation\IForwardSelectable.cs" />
     <Compile Include="Sources\Navigation\INavigationService.cs" />
     <Compile Include="Sources\Navigation\NavigationService.cs" />
     <Compile Include="Sources\Navigation\CustomInputModule.cs" />

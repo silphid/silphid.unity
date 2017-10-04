@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public abstract class Control : MonoBehaviour, IFocusable
+    public abstract class Control : MonoBehaviour, ISelectable
     {
-        public ReactiveProperty<bool> IsFocused { get; } = new ReactiveProperty<bool>();
-        public ReactiveProperty<bool> IsSelfOrDescendantFocused { get; } = new ReactiveProperty<bool>();
-        
+        public ReactiveProperty<bool> IsSelected { get; } = new ReactiveProperty<bool>();
+        public ReactiveProperty<bool> IsSelfOrDescendantSelected { get; } = new ReactiveProperty<bool>();
+
         protected virtual void RemoveAllViews(GameObject container, GameObject except = null)
         {
             if (container)

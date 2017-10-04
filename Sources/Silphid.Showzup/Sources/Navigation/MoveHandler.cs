@@ -109,7 +109,7 @@ namespace Silphid.Showzup.Navigation
 
             if (target != null)
             {
-                target.Focus();
+                target.Select();
                 eventData.Use();
             }
         }
@@ -136,7 +136,7 @@ namespace Silphid.Showzup.Navigation
 
             if (target != null)
             {
-                target.Focus();
+                target.Select();
                 eventData.Use();
             }
         }

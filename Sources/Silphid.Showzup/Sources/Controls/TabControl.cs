@@ -2,6 +2,7 @@
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
@@ -28,11 +29,13 @@ namespace Silphid.Showzup
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
         private int _currentIndex;
 
+        public override GameObject ForwardSelection() => TabSelectionControl.gameObject;
+
         public void Start()
         {
-            IsFocused
+            /*IsFocused
                 .WhereTrue()
-                .Subscribe(_ => TabSelectionControl.Focus());
+                .Subscribe(_ => TabSelectionControl.Focus());*/
 
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
             

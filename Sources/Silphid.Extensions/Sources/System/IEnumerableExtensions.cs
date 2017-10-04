@@ -226,15 +226,15 @@ namespace Silphid.Extensions
             return -1;
         }
 
-        public static T GetAtOrDefault<T>(this IEnumerable<T> This, int index, T defaultValue = default(T))
+        public static T GetAtOrDefault<T>(this IEnumerable<T> This, int? index, T defaultValue = default(T))
         {
-            if (index < 0)
+            if (index == null || index < 0)
                 return defaultValue;
 
             var list = This as IList<T>;
             if (list != null)
                 return index < list.Count
-                    ? list[index]
+                    ? list[index.Value]
                     : defaultValue;
 
             var i = 0;

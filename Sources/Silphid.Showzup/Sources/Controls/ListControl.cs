@@ -39,12 +39,17 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject]
+        internal IViewResolver ViewResolver { get; set; }
+
+        [Inject]
+        internal IViewLoader ViewLoader { get; set; }
+
+        [Inject]
+        internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -74,10 +79,14 @@ namespace Silphid.Showzup
 
         protected List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
+
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
+
         private VariantSet _variantSet;
-        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
+
+        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>())
+            ;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -97,7 +106,7 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region IPresenter members
 
         [Pure]
@@ -106,20 +115,21 @@ namespace Silphid.Showzup
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.ContinueWith(x => Present(x, options));
-            
+
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             return Observable.Defer(() => PresentInternal(input, options));
         }
 
         #endregion
-        
+
         #region Public methods
 
         public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
             ViewComparer = Comparer<IView>.Create((x, y) => comparer((TView) x, (TView) y));
 
-        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer) where TViewModel : IViewModel =>
+        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer)
+            where TViewModel : IViewModel =>
             ViewModelComparer = Comparer<IViewModel>.Create((x, y) => comparer((TViewModel) x, (TViewModel) y));
 
         public void SetModelComparer<TModel>(Func<TModel, TModel, int> comparer) =>
@@ -169,11 +179,11 @@ namespace Silphid.Showzup
 
         public virtual IObservable<IView> PresentInternal(object input, Options options)
         {
-            var models = (input as List<object>)?.ToList() ?? 
+            var models = (input as List<object>)?.ToList() ??
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??
                          new List<object>();
-            
+
             _models.Value = models;
             _views.Clear();
             _reactiveViews.Value = new ReadOnlyCollection<IView>(Array.Empty<IView>());
@@ -194,7 +204,7 @@ namespace Silphid.Showzup
         private IObservable<Entry> LoadAllViews(List<Entry> entries, Options options)
         {
             _isLoading.Value = true;
-            
+
             return entries
                 .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
                 .ToObservable()
@@ -203,14 +213,14 @@ namespace Silphid.Showzup
                     .Select(_ => entry))
                 .DoOnCompleted(() =>
                 {
-                		_isLoading.Value = false;
-                		UpdateReactiveViews();
-				});
+                    _isLoading.Value = false;
+                    UpdateReactiveViews();
+                });
         }
 
         protected void UpdateReactiveViews() =>
             _reactiveViews.Value = _views.AsReadOnly();
-        
+
         private int? GetSortedIndex(IView view)
         {
             if (_views.Count == 0)
@@ -247,19 +257,15 @@ namespace Silphid.Showzup
         #endregion
 
         #region Protected/virtual methods
-        
+
         protected virtual void Start()
         {
             Views
                 .Select(x => x.FirstOrDefault())
-                .CombineLatest(IsSelfOrDescendantFocused, Tuple.Create)
-                .Where(tuple => tuple.Item2)
-                .Subscribe(tuple =>
+                .Subscribe(x =>
                 {
-                    if (tuple.Item1 != null)
-                        tuple.Item1.Focus();
-                    else
-                        this.Focus();
+                    if (IsSelfOrDescendantSelected.Value)
+                        x?.Select();
                 })
                 .AddTo(this);
         }

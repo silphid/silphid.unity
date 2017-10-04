@@ -10,23 +10,25 @@ namespace Silphid.Showzup.Navigation
     public class NavigationService : INavigationService, IDisposable
     {
         #region Fields
-        
+
         // TODO: To be replaced with Log4net
         private const bool IsLogEnabled = true;
+
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly EventSystem _eventSystem;
-        
+
         #endregion
-        
+
         #region Constructor
 
         public NavigationService(EventSystem eventSystem)
         {
             _eventSystem = eventSystem;
             if (Instance != null)
-                throw new InvalidOperationException("NavigationService should only be instantiated once by InputModule.");
+                throw new InvalidOperationException(
+                    "NavigationService should only be instantiated once by InputModule.");
             Instance = this;
-            
+
             // Ensure to synch Selection property with actual selected object
             // just in case the NavigationService was by-passed for changing
             // selection (should not happen if we refactor everything properly).
@@ -34,27 +36,20 @@ namespace Silphid.Showzup.Navigation
                 .EveryUpdate()
                 .Select(_ => eventSystem.currentSelectedGameObject)
                 .DistinctUntilChanged()
-                .BindTo(Selection)
+                .Subscribe(SetSelection)
                 .AddTo(_disposables);
-                
+
             Selection
                 .PairWithPrevious()
                 .Subscribe(OnSelectionChanged);
-                
-            Focus
-                .PairWithPrevious()
-                .Subscribe(OnFocusChanged);
 
             if (IsLogEnabled)
             {
                 SelectionAndAncestors.Subscribe(x =>
                     Debug.Log($"Selection: {x.ToDelimitedString(" > ")}"));
-
-                FocusAndAncestors.Subscribe(x =>
-                    Debug.Log($"Focus: {x.ToDelimitedString(" > ")}"));
             }
         }
-        
+
         #endregion
 
         #region IDisposable
@@ -62,20 +57,38 @@ namespace Silphid.Showzup.Navigation
         public void Dispose()
         {
             Selection.Dispose();
-            Focus.Dispose();
             SelectionAndAncestors.Dispose();
-            FocusAndAncestors.Dispose();
             _disposables.Dispose();
         }
-        
+
         #endregion
-        
+
         #region INavigationService
 
-        public ReactiveProperty<GameObject> Selection { get; } = new ReactiveProperty<GameObject>();
-        public ReactiveProperty<GameObject> Focus { get; } = new ReactiveProperty<GameObject>();
-        public ReactiveProperty<GameObject[]> SelectionAndAncestors { get; } = new ReactiveProperty<GameObject[]>(new GameObject[]{});
-        public ReactiveProperty<GameObject[]> FocusAndAncestors { get; } = new ReactiveProperty<GameObject[]>(new GameObject[]{});
+        public void SetSelection(GameObject gameObject)
+        {
+            _selection.Value = ForwardSelection(gameObject);
+        }
+
+        private GameObject ForwardSelection(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return null;
+            
+            var redirectFocus = gameObject.GetComponent<IForwardSelectable>()?.ForwardSelection();
+
+            if (redirectFocus == gameObject)
+                throw new InvalidOperationException($"{gameObject.name} is forwarding selection to the same gameObject");
+
+            return redirectFocus ? ForwardSelection(redirectFocus) : gameObject;
+        }
+
+        private readonly ReactiveProperty<GameObject> _selection = new ReactiveProperty<GameObject>();
+        
+        public ReadOnlyReactiveProperty<GameObject> Selection => _selection.ToReadOnlyReactiveProperty();
+
+        public ReactiveProperty<GameObject[]> SelectionAndAncestors { get; } =
+            new ReactiveProperty<GameObject[]>(new GameObject[] { });
 
         #endregion
 
@@ -83,7 +96,8 @@ namespace Silphid.Showzup.Navigation
 
         public static INavigationService Instance { get; private set; }
 
-        public void ExecuteBubbling<T>(GameObject target, BaseEventData eventData, ExecuteEvents.EventFunction<T> functor) where T : IEventSystemHandler
+        public void ExecuteBubbling<T>(GameObject target, BaseEventData eventData,
+            ExecuteEvents.EventFunction<T> functor) where T : IEventSystemHandler
         {
             var current = target;
             while (current != null)
@@ -101,73 +115,49 @@ namespace Silphid.Showzup.Navigation
 
         #region Private
 
+        private bool _isSelecting;
+
         private void OnSelectionChanged(Tuple<GameObject, GameObject> change)
         {
-            // Deselect old game object
+            if (_isSelecting)
+                throw new InvalidOperationException(
+                    $"Cannot change selection from {change.Item1.name} to {change.Item2.name} within a IsSelected subscription. Use IForwardSelection instead.");
+
+            _isSelecting = true;
+
+            // Defocus old game object
             change.Item1?
                 .GetComponents<ISelectable>()
                 .ForEach(x => x.IsSelected.Value = false);
-                
-            // Select new game object
+
+            // Focus new game object
             change.Item2?
                 .GetComponents<ISelectable>()
                 .ForEach(x => x.IsSelected.Value = true);
-            
-            // Update IsSelfOrDescendantSelected on self and ancestors
-            UpdateSelfAndAncestors(
-                SelectionAndAncestors,
-                change,
-                (obj, value) => obj?
-                    .GetComponents<ISelectable>()
-                    .ForEach(x => x.IsSelfOrDescendantSelected.Value = value));
 
-
-            // Ensure Unity's selection is synched with this selection
-            _eventSystem.SetSelectedGameObject(change.Item2);
-                
-            // Ensure focus follows selection (should typically be the other way around,
-            // but might happen if selection is set outside of focus for some reason) 
-            Focus.Value = change.Item2;
-        }
-        
-        private void OnFocusChanged(Tuple<GameObject, GameObject> change)
-        {
-            // Defocus old game object
-            change.Item1?
-                .GetComponents<IFocusable>()
-                .ForEach(x => x.IsFocused.Value = false);
-                
-            // Focus new game object
-            change.Item2?
-                .GetComponents<IFocusable>()
-                .ForEach(x => x.IsFocused.Value = true);
-            
             // Update IsSelfOrDescendantFocused on self and ancestors
-            UpdateSelfAndAncestors(
-                FocusAndAncestors,
-                change,
-                (obj, value) => obj?
-                    .GetComponents<IFocusable>()
-                    .ForEach(x => x.IsSelfOrDescendantFocused.Value = value));
+            UpdateSelfAndAncestors(change.Item2);
+
+            _eventSystem.SetSelectedGameObject(change.Item2);
+
+            _isSelecting = false;
         }
 
         /// <summary>
-        /// Used to update either ISelectable.IsSelfOrDescendantSelected or IFocusable.IsSelfOrDescendantFocused.
+        /// Used to update ISelectable.IsSelfOrDescendantSelected
         /// </summary>
-        /// <param name="selfAndAncestorsProperty">Either SelectionAndAncestors or FocusAndAncestors reactive property</param>
-        /// <param name="change">A tuple containing old and new items</param>
-        /// <param name="update">The action to call for each old and new item to update its value.</param>
-        private void UpdateSelfAndAncestors(ReactiveProperty<GameObject[]> selfAndAncestorsProperty, Tuple<GameObject, GameObject> change, Action<GameObject, bool> update)
+        /// <param name="newSelectedGameObject">Newly selected or focused item</param>
+        private void UpdateSelfAndAncestors(GameObject newSelectedGameObject)
         {
             // Determine lists of old and new items
-            var oldItems = selfAndAncestorsProperty.Value;
-            var newItems = change.Item2?.SelfAndAncestors().Reverse().ToArray() ?? new GameObject[]{};
+            var oldItems = SelectionAndAncestors.Value;
+            var newItems = newSelectedGameObject?.SelfAndAncestors().Reverse().ToArray() ?? new GameObject[] { };
 
             // Goes through old and new lists in parallel, finds where old and new items
             // diverge into two branches, and updates old items to false and new items to true
             // (but only in their respective diverging branches, to improve performance).
-            var isDiverged = false; 
-            for (int i = 0; i < oldItems.Length || i < newItems.Length; i++)
+            var isDiverged = false;
+            for (var i = 0; i < oldItems.Length || i < newItems.Length; i++)
             {
                 // Get old and new items at current position 
                 var oldItem = i < oldItems.Length ? oldItems[i] : null;
@@ -178,18 +168,22 @@ namespace Silphid.Showzup.Navigation
                     isDiverged = true;
 
                 // Only update items passed diverging point
-                if (isDiverged)
-                {
-                    if (oldItem != null)
-                        update(oldItem, false);
+                if (!isDiverged)
+                    continue;
 
-                    if (newItem != null)
-                        update(newItem, true);
-                }
+                if (oldItem != null)
+                    oldItem
+                        .GetComponents<ISelectable>()
+                        .ForEach(x => x.IsSelfOrDescendantSelected.Value = false);
+
+                if (newItem != null)
+                    newItem
+                        .GetComponents<ISelectable>()
+                        .ForEach(x => x.IsSelfOrDescendantSelected.Value = true);
             }
-            
+
             // Update reactive property with complete list of new items (not just diverging branch)
-            selfAndAncestorsProperty.Value = newItems;
+            SelectionAndAncestors.Value = newItems;
         }
 
         #endregion
