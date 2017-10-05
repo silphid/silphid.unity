@@ -9,7 +9,7 @@ namespace Silphid.Injexit
 {
     public class Container : IContainer
     {
-        public const int MaxRecursionDepth = 20;
+        public const int MaxRecursionDepth = 15;
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
         private static readonly Func<IResolver, object> NullFactory = null;

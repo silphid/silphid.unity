@@ -37,7 +37,7 @@ namespace Silphid.Injexit
                         var type2 = types[j];
                         if (type1 == type2)
                         {
-                            types = types.Take(j + 1).ToArray();
+                            types = types.Skip(i).Take(j - i + 1).ToArray();
                             break;
                         }
                     }
