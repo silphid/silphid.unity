@@ -6,6 +6,7 @@ namespace Silphid.Injexit.Test
     [TestFixture]
     public class ReferenceTest
     {
+        public interface IFoo {}
         public interface IBar {}
 
         public class Foo

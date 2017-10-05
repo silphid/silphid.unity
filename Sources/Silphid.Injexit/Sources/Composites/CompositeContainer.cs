@@ -8,6 +8,7 @@ namespace Silphid.Injexit
     public class CompositeContainer : IContainer
     {
         private readonly IContainer[] _containers;
+        private int _recursionDepth;
 
         public CompositeContainer(params IContainer[] containers)
         {
@@ -29,18 +30,37 @@ namespace Silphid.Injexit
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
-            foreach (var container in _containers)
+            _recursionDepth++;
+            
+            try
             {
+                if (_recursionDepth > Container.MaxRecursionDepth)
+                    throw new CircularDependencyException(abstractionType);
+
                 try
                 {
-                    return container.ResolveFactory(abstractionType, name);
+                    foreach (var container in _containers)
+                    {
+                        try
+                        {
+                            return container.ResolveFactory(abstractionType, name);
+                        }
+                        catch (UnresolvedTypeException)
+                        {
+                        }
+                    }
+            
+                    throw new UnresolvedTypeException(abstractionType, name);
                 }
-                catch (UnresolvedTypeException)
+                catch (CircularDependencyException ex)
                 {
+                    throw new CircularDependencyException(abstractionType, ex);
                 }
             }
-            
-            throw new UnresolvedTypeException(abstractionType, name);
+            finally
+            {
+                _recursionDepth--;
+            }
         }
 
         #endregion

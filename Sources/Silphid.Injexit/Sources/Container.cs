@@ -2,21 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using Silphid.Extensions;
+using Silphid.Extensions; 
 using UnityEngine;
 
 namespace Silphid.Injexit
 {
     public class Container : IContainer
     {
+        public const int MaxRecursionDepth = 20;
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
+        private static readonly Func<IResolver, object> NullFactory = null;
         
         #region Private fields
 
         private readonly List<Binding> _bindings = new List<Binding>();
         private readonly IReflector _reflector;
-        private static readonly Func<IResolver, object> NullFactory = null;
+        private int _recursionDepth;
 
         #endregion
 
@@ -93,11 +95,30 @@ namespace Silphid.Injexit
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
-            Log.Debug($"Resolving {abstractionType.Name}");
+            _recursionDepth++;
+            
+            try
+            {
+                Log.Debug($"Resolving {abstractionType.Name}");
+                
+                if (_recursionDepth > MaxRecursionDepth)
+                    throw new CircularDependencyException(abstractionType);
 
-            return ResolveFromTypeMappings(abstractionType, name) ??
-                   ResolveFromListMappings(abstractionType, name) ??
-                   ThrowUnresolvedType(abstractionType, name);
+                try
+                {
+                    return ResolveFromTypeMappings(abstractionType, name) ??
+                           ResolveFromListMappings(abstractionType, name) ??
+                           ThrowUnresolvedType(abstractionType, name);
+                }
+                catch (CircularDependencyException ex)
+                {
+                    throw new CircularDependencyException(abstractionType, ex);
+                }
+            }
+            finally
+            {
+                _recursionDepth--;
+            }
         }
 
         private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string name)
@@ -212,15 +233,34 @@ namespace Silphid.Injexit
         private Func<IResolver, object> GetFactory(Type concretionType) =>
             resolver =>
             {
-                var typeInfo = GetTypeInfo(concretionType);
-                if (typeInfo.Constructor.ConstructorException != null)
-                    throw typeInfo.Constructor.ConstructorException;
-                
-                var parameters = ResolveParameters(concretionType, typeInfo.Constructor.Parameters, resolver);
+                _recursionDepth++;
+            
+                try
+                {
+                    if (_recursionDepth > MaxRecursionDepth)
+                        throw new CircularDependencyException(concretionType);
 
-                var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
-                Inject(instance, resolver);
-                return instance;
+                    try
+                    {
+                        var typeInfo = GetTypeInfo(concretionType);
+                        if (typeInfo.Constructor.ConstructorException != null)
+                            throw typeInfo.Constructor.ConstructorException;
+                
+                        var parameters = ResolveParameters(concretionType, typeInfo.Constructor.Parameters, resolver);
+
+                        var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
+                        Inject(instance, resolver);
+                        return instance;
+                    }
+                    catch (CircularDependencyException ex)
+                    {
+                        throw new CircularDependencyException(concretionType, ex);
+                    }
+                }
+                finally
+                {
+                    _recursionDepth--;
+                }
             };
 
         private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>

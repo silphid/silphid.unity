@@ -66,6 +66,16 @@ namespace Silphid.Injexit.Test
             public BarWithFooDependency(IFoo foo) { }
         }
         
+        public class CircularBar : IBar
+        {
+            public CircularBar(IFoo foo) {}
+        }
+
+        public class CircularFoo : IFoo
+        {
+            public CircularFoo(IBar bar) {}
+        }
+
         private IContainer _fixture;
 
         [SetUp]
@@ -154,6 +164,17 @@ namespace Silphid.Injexit.Test
         public void ShouldResolveListDependencies_Enumerable()
         {
             AssertCanResolveListDependencyOf<BarWithFooEnumerable, IFoo[]>();
+        }
+
+        [Test]
+        public void ShouldThrowWhenDetectingCircularDependencies()
+        {
+            _fixture.Bind<IBar, CircularBar>();
+            _fixture.Bind<IFoo, CircularFoo>();
+            
+            var exception = Assert.Throws<CircularDependencyException>(() => _fixture.Resolve<IFoo>());
+
+            Assert.That(exception.Message, Is.EqualTo("Circular dependency detected: CircularFoo > CircularBar > CircularFoo"));
         }
 
         private void AssertCanResolveListDependencyOf<TBarWithFoos, TList>() where TBarWithFoos : IBarWithFoos
