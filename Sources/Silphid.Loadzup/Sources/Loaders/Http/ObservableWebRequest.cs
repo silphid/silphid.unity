@@ -43,10 +43,13 @@ namespace Silphid.Loadzup.Http
             using (webRequest)
             {
                 yield return webRequest.Send();
-                if (!webRequest.error.IsNullOrEmpty())
-                {
-                    observer.OnError(new Exception(webRequest.downloadHandler.text));
-                }
+                
+                //Error
+                if (webRequest.isNetworkError)
+                    observer.OnError(new NetworkpException(webRequest.error));
+                else if (webRequest.isHttpError)
+                    observer.OnError(new HttpException(webRequest));
+                
                 else
                 {
                     observer.OnNext(webRequest);
