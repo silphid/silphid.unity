@@ -66,6 +66,7 @@ namespace Silphid.Showzup
         #region Public properties
 
         public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
+        public override ReadOnlyReactiveProperty<bool> IsPresenting { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
         public int Count => _models.Value.Count;
@@ -79,6 +80,7 @@ namespace Silphid.Showzup
 
         protected List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
+        private readonly ReactiveProperty<bool> _isPresenting = new ReactiveProperty<bool>(false);
 
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
@@ -99,6 +101,7 @@ namespace Silphid.Showzup
         public ListControl()
         {
             IsLoading = _isLoading.ToReadOnlyReactiveProperty();
+            IsPresenting = _isPresenting.ToReadOnlyReactiveProperty();
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
@@ -112,6 +115,7 @@ namespace Silphid.Showzup
         [Pure]
         public override IObservable<IView> Present(object input, Options options = null)
         {
+            _isPresenting.Value = true;
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.ContinueWith(x => Present(x, options));
@@ -193,7 +197,8 @@ namespace Silphid.Showzup
                 .Select((x, i) => new Entry(i, x))
                 .ToList();
 
-            return LoadViews(entries, options);
+            return LoadViews(entries, options)
+                .DoOnCompleted(() => _isPresenting.Value = false);
         }
 
         protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options) =>

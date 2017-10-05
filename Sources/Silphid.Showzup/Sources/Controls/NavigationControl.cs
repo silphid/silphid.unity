@@ -77,6 +77,8 @@ namespace Silphid.Showzup
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
+            _state.Value = State.Loading;
+
             options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
 
             return Observable
@@ -88,7 +90,6 @@ namespace Silphid.Showzup
         {
             //Debug.Log($"#Nav# Present({input}, {options})");
 
-            _isLoading.Value = true;
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => StartPushAndLoadView(x, options));
@@ -100,7 +101,8 @@ namespace Silphid.Showzup
             StartChange();
 
             return LoadView(viewInfo, options)
-                .DoOnCompleted(() => _isLoading.Value = false)
+                .DoOnError(e => _state.Value = State.Ready)
+                .DoOnCompleted(() => _state.Value = State.Presenting)
                 .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);
         }
@@ -220,6 +222,7 @@ namespace Silphid.Showzup
         private void CompleteChange()
         {
             _isNavigating.Value = false;
+            _state.Value = State.Ready;
             //Debug.Log("#Nav# Navigation complete");
         }
 
