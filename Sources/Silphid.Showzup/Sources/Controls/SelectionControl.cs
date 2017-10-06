@@ -20,11 +20,9 @@ namespace Silphid.Showzup
         public int RowsOrColumns = 1;
 
         public bool AutoSelectFirst = true;
+        public bool IsLastSelectionRemembered = true;
 
-        public override GameObject ForwardSelection()
-        {
-            return _selectedView.Value?.GameObject;
-        }
+        public override GameObject ForwardSelection() => _selectedView.Value?.GameObject;
 
         protected override void Start()
         {
@@ -42,10 +40,16 @@ namespace Silphid.Showzup
                         _selectedView.Value?.Select();
                 })
                 .AddTo(this);
-            
+
             SubscribeToUpdateFocusables(SelectedView);
+
+            if (!IsLastSelectionRemembered)
+                IsSelfOrDescendantSelected
+                    .WhereFalse()
+                    .Subscribe(_ => SelectFirst())
+                    .AddTo(this);
         }
-        
+
         private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
         {
             observable
@@ -57,7 +61,7 @@ namespace Silphid.Showzup
                 })
                 .AddTo(this);
         }
-        
+
         private void SetFocus(IFocusable focusable)
         {
             if (focusable == null)
