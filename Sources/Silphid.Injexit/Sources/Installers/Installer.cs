@@ -20,7 +20,7 @@ namespace Silphid.Injexit
 
         private void OnDestroy()
         {
-            Container.Dispose();
+            Container?.Dispose();
         }
     }
 }
