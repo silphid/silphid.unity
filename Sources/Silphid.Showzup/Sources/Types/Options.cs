@@ -38,6 +38,36 @@ namespace Silphid.Showzup
         /// </summary>
         public IEnumerable<object> Parameters { get; set; }
 
+        /// <summary>
+        /// Returns a clone of this object, with an overriden Direction.
+        /// </summary>
+        public Options With(Direction direction)
+        {
+            var clone = Clone(this);
+            clone.Direction = direction;
+            return clone;
+        }
+
+        /// <summary>
+        /// Returns a clone of this object, with an overriden Transition.
+        /// </summary>
+        public Options With(ITransition transition)
+        {
+            var clone = Clone(this);
+            clone.Transition = transition;
+            return clone;
+        }
+
+        /// <summary>
+        /// Returns a clone of this object, with an overriden TransitionDuration.
+        /// </summary>
+        public Options WithDuration(float duration)
+        {
+            var clone = Clone(this);
+            clone.TransitionDuration = duration;
+            return clone;
+        }
+
         public override string ToString() =>
             $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, {nameof(Parameters)}: [{Parameters?.ToDelimitedString(", ")}]";
 

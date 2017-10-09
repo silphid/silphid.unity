@@ -10,6 +10,5 @@ namespace Silphid.Showzup
 
         protected ReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
         public ReadOnlyReactiveProperty<IView> FirstView => MutableFirstView.ToReadOnlyReactiveProperty();
-
     }
 }
