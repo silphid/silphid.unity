@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+// ReSharper disable StaticMemberInGenericType
 
 namespace Silphid.Extensions.DataTypes
 {
@@ -56,7 +57,8 @@ namespace Silphid.Extensions.DataTypes
                 s_isImplicitIds = false;
             }
 
-            item._name = name;
+            if (item._name == null)
+                item._name = name;
         }
 
         private static void ThrowBothImplicitAndExplicitIds()
@@ -136,9 +138,15 @@ namespace Silphid.Extensions.DataTypes
         {
         }
 
-        protected ObjectEnum(int id)
+        protected ObjectEnum(int id, string name = null)
         {
             _id = id;
+            _name = name;
+        }
+
+        protected ObjectEnum(string name)
+        {
+            _name = name;
         }
 
         #endregion
