@@ -8,7 +8,7 @@ namespace Silphid.Extensions
 {
     public static class ReactivePropertyExtensions
     {
-        public static IDisposable BindTo<TSource, TTarget>(this IObservable<TSource> This, ReactiveProperty<TTarget> target) where TSource : TTarget =>
+        public static IDisposable BindTo<TSource, TTarget>(this IObservable<TSource> This, IReactiveProperty<TTarget> target) where TSource : TTarget =>
             This.Subscribe(x => target.Value = x);
 
         public static IDisposable BindToInteractable(this IObservable<bool> This, Selectable selectable) =>

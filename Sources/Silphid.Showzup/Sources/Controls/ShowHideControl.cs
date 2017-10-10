@@ -7,6 +7,7 @@ namespace Silphid.Showzup
     public class ShowHideControl : TransitionControl
     {
         public bool ShowInitially = true;
+        public bool ShowInstantlyInitially;
         
         private struct InputAndOptions
         {
@@ -20,16 +21,16 @@ namespace Silphid.Showzup
             }
         }
         
-        public ReactiveProperty<bool> Show { get; private set; }
-        private readonly Subject<IView> _presentedView = new Subject<IView>();
-        private readonly Subject<InputAndOptions> _inputAndOptions = new Subject<InputAndOptions>();
+        public IReactiveProperty<bool> Show { get; } = new ReactiveProperty<bool>();
+        private readonly ISubject<IView> _presentedView = new Subject<IView>();
+        private readonly ISubject<InputAndOptions> _inputAndOptions = new ReplaySubject<InputAndOptions>(1);
         private bool _isFirstPresent = true;
 
         internal override void Start()
         {
             base.Start();
-            
-            Show = new ReactiveProperty<bool>(ShowInitially);
+
+            Show.Value = ShowInitially;
             Show.CombineLatest(_inputAndOptions, (show, inputAndOptions) => show
                     ? inputAndOptions
                     : new InputAndOptions(null, inputAndOptions.Options.With(Direction.Backward)))
@@ -45,7 +46,7 @@ namespace Silphid.Showzup
 
         private IObservable<IView> PresentInternal(InputAndOptions x)
         {
-            var options = _isFirstPresent && ShowInitially
+            var options = _isFirstPresent && ShowInstantlyInitially
                 ? x.Options.With(InstantTransition.Instance)
                 : x.Options;
 
