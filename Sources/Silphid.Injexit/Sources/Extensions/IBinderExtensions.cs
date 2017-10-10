@@ -63,10 +63,10 @@ namespace Silphid.Injexit
 
         #endregion
 
-        #region BindToAlias
+        #region BindReference
 
-        public static void BindToAlias<TSourceAbstraction>(this IBinder This, string alias) =>
-            This.BindToAlias(typeof(TSourceAbstraction), alias);
+        public static IBinding BindReference<TSourceAbstraction>(this IBinder This, BindingId id) =>
+            This.BindReference(typeof(TSourceAbstraction), id);
 
         #endregion
 

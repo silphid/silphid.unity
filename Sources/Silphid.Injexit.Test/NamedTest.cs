@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Silphid.Injexit.Test
 {
     [TestFixture]
-    public class Id
+    public class NamedTest
     {
         private class Service
         {
@@ -13,41 +13,39 @@ namespace Silphid.Injexit.Test
         private class FieldInjectionWithId
         {
             [Inject]
-            [Id("Service1")]
             [UsedImplicitly]
             internal Service Service1;
             
             [Inject]
-            [Id("Service2")]
             [UsedImplicitly]
             public Service Service2;
         }
         
         private class ConstructorInjectionWithId
         {
-            public Service Service3 { get; private set; }
+            public Service Service1 { get; private set; }
+            public Service Service2 { get; private set; }
 
             [Inject]
             [UsedImplicitly]
-            public void Inject([Id("Service3")] Service service3)
+            public void Inject(Service service1, Service service2)
             {
-                Service3 = service3;
+                Service1 = service1;
+                Service2 = service2;
             }
         }
 
         private IContainer _fixture;
         private readonly Service _service1 = new Service();
         private readonly Service _service2 = new Service();
-        private readonly Service _service3 = new Service();
 
         [SetUp]
         public void SetUp()
         {
             _fixture = new Container(new Reflector());
             
-            _fixture.BindInstance(_service1).WithId("Service1");
-            _fixture.BindInstance(_service2).WithId("Service2");
-            _fixture.BindInstance(_service3).WithId("Service3");
+            _fixture.BindInstance(_service1).Named("Service1");
+            _fixture.BindInstance(_service2).Named("Service2");
             _fixture.BindToSelf<FieldInjectionWithId>();
             _fixture.BindToSelf<ConstructorInjectionWithId>();
         }
@@ -66,7 +64,8 @@ namespace Silphid.Injexit.Test
         {
             var instance = _fixture.Resolve<ConstructorInjectionWithId>();
             
-            Assert.That(instance.Service3, Is.SameAs(_service3));
+            Assert.That(instance.Service1, Is.SameAs(_service1));
+            Assert.That(instance.Service2, Is.SameAs(_service2));
         }
     }
 }

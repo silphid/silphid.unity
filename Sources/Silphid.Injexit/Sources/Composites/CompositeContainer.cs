@@ -8,6 +8,7 @@ namespace Silphid.Injexit
     public class CompositeContainer : IContainer
     {
         private readonly IContainer[] _containers;
+        private int _recursionDepth;
 
         public CompositeContainer(params IContainer[] containers)
         {
@@ -27,20 +28,39 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
+        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
         {
-            foreach (var container in _containers)
+            _recursionDepth++;
+            
+            try
             {
+                if (_recursionDepth > Container.MaxRecursionDepth)
+                    throw new CircularDependencyException(abstractionType);
+
                 try
                 {
-                    return container.ResolveFactory(abstractionType, id);
+                    foreach (var container in _containers)
+                    {
+                        try
+                        {
+                            return container.ResolveFactory(abstractionType, name);
+                        }
+                        catch (UnresolvedTypeException)
+                        {
+                        }
+                    }
+            
+                    throw new UnresolvedTypeException(abstractionType, name);
                 }
-                catch (UnresolvedTypeException)
+                catch (CircularDependencyException ex)
                 {
+                    throw new CircularDependencyException(abstractionType, ex);
                 }
             }
-            
-            throw new UnresolvedTypeException(abstractionType, id);
+            finally
+            {
+                _recursionDepth--;
+            }
         }
 
         #endregion
@@ -57,10 +77,10 @@ namespace Silphid.Injexit
                 .First()
                 .BindInstance(abstractionType, instance);
 
-        public void BindToAlias(Type sourceAbstractionType, string alias) =>
+        public IBinding BindReference(Type sourceAbstractionType, BindingId id) =>
             _containers
                 .First()
-                .BindToAlias(sourceAbstractionType, alias);
+                .BindReference(sourceAbstractionType, id);
 
         #endregion
 

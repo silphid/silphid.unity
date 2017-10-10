@@ -7,7 +7,7 @@ namespace Silphid.Injexit
     {
         private readonly FieldInfo _fieldInfo;
 
-        public InjectFieldInfo(FieldInfo fieldInfo, Type type, bool isOptional, string id) : base(fieldInfo.Name, type, isOptional, id)
+        public InjectFieldInfo(FieldInfo fieldInfo, Type type, bool isOptional) : base(fieldInfo.Name, type, isOptional)
         {
             _fieldInfo = fieldInfo;
         }

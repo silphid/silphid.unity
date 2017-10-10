@@ -15,6 +15,16 @@ namespace Silphid.Showzup
         MonoBehaviour, IView<TViewModel>, ILoadable where TViewModel : IViewModel
     {
         [Inject] protected ILoader Loader;
+
+        #region MonoBehaviour members
+
+        protected virtual void OnDestroy()
+        {
+            var disposable = ViewModel as IDisposable;
+            disposable?.Dispose();
+        }
+
+        #endregion
         
         #region IView members
 

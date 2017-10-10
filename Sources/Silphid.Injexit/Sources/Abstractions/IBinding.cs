@@ -12,7 +12,7 @@
         /// abstraction type T, to be injected as some IEnumerable&lt;T&gt;,
         /// List&lt;T&gt; or T[].
         /// </summary>
-        IBinding AsList();
+        IBinding InList();
         
         /// <summary>
         /// Marks binding as singleton and for lazy loading. Multiple injections of the same
@@ -29,6 +29,12 @@
         IBinding AsEagerSingle();
         
         /// <summary>
+        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
+        /// and AddReference() (in lists).
+        /// </summary>
+        IBinding Id(BindingId id);
+        
+        /// <summary>
         /// Attaches a child resolver to this binding, which will be used
         /// to resolve its dependencies. Useful for compositing objects more
         /// explicitly.
@@ -36,16 +42,10 @@
         IBinding Using(IResolver resolver);
         
         /// <summary>
-        /// Marks binding with given Id, when multiple bindings have same
+        /// Marks binding with given Named, when multiple bindings have same
         /// abstraction type and you want to explicitly specify which to use
-        /// for which members using [Inject(Id="SomeId")] attributes.
+        /// for which members using [Inject(Named="SomeId")] attributes.
         /// </summary>
-        IBinding WithId(string id);
-        
-        /// <summary>
-        /// Marks binding with given Alias, to allow reuse of binding in
-        /// different contexts.
-        /// </summary>
-        IBinding AsAlias(string alias);
+        IBinding Named(string name);
     }
 }

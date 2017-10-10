@@ -13,12 +13,18 @@ namespace Silphid.Extensions
         public static Tween TweenTo(this ReactiveProperty<float> This, float endValue, float duration) =>
             DOTween.To(() => This.Value, x => This.Value = x, endValue, duration);
 
+        public static Tweener ToAlpha(DOGetter<Color> getter, DOSetter<Color> setter, float endValue, float duration)
+        {
+            var color = getter();
+            return DOTween.To(() => color.a, x => setter(new Color(color.r, color.g, color.b, x)), endValue, duration);
+        }
+
         public static Tween DOFadeOut(this Graphic This, float duration)
         {
             if (!This.enabled)
                 duration = 0;
 
-            return DOTween.ToAlpha(() => This.color, x => This.color = x, 0, duration).SetTimeScaleIndependent();
+            return ToAlpha(() => This.color, x => This.color = x, 0, duration).SetTimeScaleIndependent();
         }
 
         public static Tween DOFadeOutAndHide(this Graphic This, float duration)
@@ -27,7 +33,7 @@ namespace Silphid.Extensions
                 duration = 0;
 
             return
-                DOTween.ToAlpha(() => This.color, x => This.color = x, 0, duration)
+                ToAlpha(() => This.color, x => This.color = x, 0, duration)
                     .OnComplete(() => This.enabled = false)
                     .SetTimeScaleIndependent();
         }
@@ -38,7 +44,7 @@ namespace Silphid.Extensions
                 duration = 0;
 
             This.enabled = true;
-            return DOTween.ToAlpha(() => This.color, x => This.color = x, 1, duration).SetTimeScaleIndependent();
+            return ToAlpha(() => This.color, x => This.color = x, 1, duration).SetTimeScaleIndependent();
         }
 
         public static TweenerCore<float, float, FloatOptions> DOFadeTo(this CanvasGroup This, float target,
@@ -62,7 +68,7 @@ namespace Silphid.Extensions
         {
             var spriteRenderer = GetSpriteRenderer(This);
             return
-                DOTween.ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, endValue, duration)
+                ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, endValue, duration)
                     .SetUpdate(UpdateType.Normal, true);
         }
 
@@ -73,7 +79,7 @@ namespace Silphid.Extensions
                 duration = 0;
 
             return
-                DOTween.ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 0, duration)
+                ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 0, duration)
                     .OnComplete(() => { spriteRenderer.enabled = false; })
                     .SetTimeScaleIndependent();
         }
@@ -85,7 +91,7 @@ namespace Silphid.Extensions
                 duration = 0;
 
             return
-                DOTween.ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 0, duration)
+                ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 0, duration)
                     .OnComplete(() => { spriteRenderer.gameObject.SetActive(false); })
                     .SetTimeScaleIndependent();
         }
@@ -99,7 +105,7 @@ namespace Silphid.Extensions
             This.enabled = true;
             spriteRenderer.gameObject.SetActive(true);
             return
-                DOTween.ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 1, duration)
+                ToAlpha(() => spriteRenderer.color, x => spriteRenderer.color = x, 1, duration)
                     .SetTimeScaleIndependent();
         }
 

@@ -10,20 +10,32 @@ namespace Silphid.Requests
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CompositeTypedRequestHandler));
         
-        private readonly Dictionary<Type, ITypedRequestHandler> _typedRequestHandlers;
+        private readonly List<ITypedRequestHandler> _typedRequestHandlers;
 
         public CompositeTypedRequestHandler(
             ITypedRequestHandler[] typedRequestHandlers)
         {
-            _typedRequestHandlers = typedRequestHandlers.ToDictionary(x => x.SupportedRequestType);
+            _typedRequestHandlers = typedRequestHandlers
+                .OrderByDescending(x => GetInheritanceDepth(x.SupportedRequestType))
+                .ToList();
+        }
+
+        private int GetInheritanceDepth(Type type)
+        {
+            int depth;
+            for (depth = -1; type != null; depth++)
+                type = type.GetBaseType();
+
+            return depth;
         }
 
         public bool Handle(IRequest request)
         {
             Log.Debug($"CompositeTypedRequestHandler received {request}");
 
-            var handler = _typedRequestHandlers.GetValueOrDefault(request.GetType());
-            if (handler != null)
+            var requestType = request.GetType();
+            var handlers = _typedRequestHandlers.Where(x => x.SupportedRequestType.IsAssignableFrom(requestType));
+            foreach (var handler in handlers)
             {
                 Log.Debug($"Trying to handle {request} with {handler}");
                 if (handler.Handle(request))

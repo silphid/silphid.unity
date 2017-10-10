@@ -34,7 +34,7 @@ namespace Silphid.Showzup
 
         #region Life-time
 
-        internal void Start()
+        internal virtual void Start()
         {
             Container1.SetActive(false);
             Container2.SetActive(false);
@@ -82,23 +82,25 @@ namespace Silphid.Showzup
                 duration = 0f;
             }
 
-            return Sequence.Create(seq =>
-            {
-                seq.AddAction(() => PrepareContainers(presentation));
+            return Sequence
+                .Create(seq =>
+                {
+                    seq.AddAction(() => PrepareContainers(presentation));
 
-                PreHide(sourceView, options, seq);
-                Deconstruct(sourceView, options, seq);
-                PreShow(targetView, options, seq);
+                    PreHide(sourceView, options, seq);
+                    Deconstruct(sourceView, options, seq);
+                    PreShow(targetView, options, seq);
 
-                seq.Add(() => Observable.NextFrame());
-                seq.Add(() => transition.Perform(_sourceContainer, _targetContainer, options.GetDirection(), duration));
+                    seq.Add(() => Observable.NextFrame());
+                    seq.Add(() =>
+                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirection(), duration));
 
-                PostHide(sourceView, options, seq);
-                Construct(targetView, options, seq);
-                PostShow(targetView, options, seq);
+                    PostHide(sourceView, options, seq);
+                    Construct(targetView, options, seq);
+                    PostShow(targetView, options, seq);
 
-                seq.AddAction(() => CompleteTransition(presentation));
-            })
+                    seq.AddAction(() => CompleteTransition(presentation));
+                })
                 .DoOnError(ex =>
                 {
                     // ReSharper disable once MergeSequentialChecks

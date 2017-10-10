@@ -94,8 +94,7 @@ namespace Silphid.Injexit
         private InjectParameterInfo[] GetParameters(MethodBase method) =>
             (from parameter in method.GetParameters()
                 let isOptional = parameter.HasAttribute<OptionalAttribute>() || parameter.IsOptional
-                let id = parameter.GetAttribute<IdAttribute>()?.Id
-                select new InjectParameterInfo(parameter, isOptional, id))
+                select new InjectParameterInfo(parameter, isOptional))
             .ToArray();
 
         private InjectFieldOrPropertyInfo[] GetFieldsAndProperties(Type type) =>
@@ -110,8 +109,7 @@ namespace Silphid.Injexit
                 if (attribute != null)
                 {
                     var isOptional = field.HasAttribute<OptionalAttribute>();
-                    var id = field.GetAttribute<IdAttribute>()?.Id;
-                    yield return new InjectFieldInfo(field, field.FieldType, isOptional, id);
+                    yield return new InjectFieldInfo(field, field.FieldType, isOptional);
                 }
             }
         }
@@ -128,10 +126,12 @@ namespace Silphid.Injexit
                         throw new InvalidOperationException($"Property {type.Name}.{property.Name} is marked with [Inject] attribute, but has not setter.");
 
                     var isOptional = property.HasAttribute<OptionalAttribute>();
-                    var id = property.GetAttribute<IdAttribute>()?.Id;
-                    yield return new InjectPropertyInfo(property, property.PropertyType, isOptional, id);
+                    yield return new InjectPropertyInfo(property, property.PropertyType, isOptional);
                 }
             }
         }
+
+        public static string GetCanonicalName(string name) =>
+            name.RemovePrefix("_").ToUpperFirst();
     }
 }

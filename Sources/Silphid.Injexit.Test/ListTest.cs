@@ -43,9 +43,9 @@ namespace Silphid.Injexit.Test
         public void BindAsList_OrderIsRespected()
         {
             var container = new Container(new Reflector());
-            container.Bind<IBeing, Man>().AsList();
-            container.Bind<IBeing, Woman>().AsSingle().AsList();
-            container.BindInstance<IBeing>(_dog).AsList();
+            container.Bind<IBeing, Man>().InList();
+            container.Bind<IBeing, Woman>().AsSingle().InList();
+            container.BindInstance<IBeing>(_dog).InList();
 
             var list1 = container.Resolve<List<IBeing>>();
             var man1 = list1[0];
@@ -97,12 +97,12 @@ namespace Silphid.Injexit.Test
         public void BindManyTimeTheSameTypeAsList_OrderShouldBeRespected()
         {
             var container = new Container(new Reflector());
-            container.Bind<Being, Man>().AsList();
-            container.Bind<Being, Man>().AsList();
-            container.Bind<Being, Woman>().AsList();
-            container.Bind<Being, Man>().AsList();
-            container.Bind<Being, Woman>().AsList();
-            container.Bind<Being, Woman>().AsList();
+            container.Bind<Being, Man>().InList();
+            container.Bind<Being, Man>().InList();
+            container.Bind<Being, Woman>().InList();
+            container.Bind<Being, Man>().InList();
+            container.Bind<Being, Woman>().InList();
+            container.Bind<Being, Woman>().InList();
 
             var list = container.Resolve<List<Being>>();
             
@@ -127,7 +127,7 @@ namespace Silphid.Injexit.Test
                     x.Add<Man>();
                     x.Add<Woman>();
                 })
-                .WithId("List1");
+                .Named("List1");
 
             container
                 .BindList<Being>(x =>
@@ -135,12 +135,12 @@ namespace Silphid.Injexit.Test
                     x.Add<Woman>();
                     x.Add<Man>();
                 })
-                .WithId("List2");
+                .Named("List2");
 
             container
                 .Bind<Being, Woman>()
-                .AsList()
-                .WithId("List2");
+                .InList()
+                .Named("List2");
             
             var list1 = container.Resolve<List<Being>>("List1");
             Assert.That(list1.Count, Is.EqualTo(3));
