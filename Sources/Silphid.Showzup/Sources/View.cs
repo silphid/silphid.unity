@@ -12,16 +12,42 @@ using UnityEngine.UI;
 namespace Silphid.Showzup
 {
     public abstract class View<TViewModel> :
-        MonoBehaviour, IView<TViewModel>, ILoadable where TViewModel : IViewModel
+        MonoBehaviour, IView<TViewModel>, IDisposable,
+        ILoadable where TViewModel : IViewModel
     {
+        protected bool IsDisposed { get; private set; }
+        public bool DisposeViewModelOnDestroy = true;
+
         [Inject] protected ILoader Loader;
 
         #region MonoBehaviour members
 
         protected virtual void OnDestroy()
         {
-            var disposable = ViewModel as IDisposable;
-            disposable?.Dispose();
+            Dispose();
+        }
+        
+        #endregion
+
+        #region IDisposable members
+
+        public void Dispose()
+        {
+            if (IsDisposed)
+                return;
+
+            OnDispose();
+
+            IsDisposed = true;
+        }
+
+        protected virtual void OnDispose()
+        {
+            if (DisposeViewModelOnDestroy)
+            {
+                var disposable = ViewModel as IDisposable;
+                disposable?.Dispose();
+            }
         }
 
         #endregion
