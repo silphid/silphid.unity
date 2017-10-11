@@ -21,8 +21,11 @@ namespace Silphid.Injexit
             Log.Info("Configuring bindings...");
             OnBind();
 
+            Log.Info("Instantiating eager singles...");
+            Container.InstantiateEagerSingles();
+
             InjectScene();
-            
+
             Log.Info($"Completing {GetType().Name}...");
             OnReady();
             
