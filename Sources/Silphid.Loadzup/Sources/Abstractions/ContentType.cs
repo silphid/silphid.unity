@@ -63,5 +63,7 @@ namespace Silphid.Loadzup
             else if (key == "boundary")
                 Boundary = value;
         }
+
+        public override string ToString() => Name;
     }
 }
