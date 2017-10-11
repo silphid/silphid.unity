@@ -7,32 +7,20 @@ namespace Silphid.Injexit
 {
     public abstract class RootInstaller : Installer
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(RootInstaller));
-        
         public string LogResourceFile = "Log4net";
-        
-        public virtual void Start()
+
+        protected override IContainer CreateContainer() =>
+            new Container(new Reflector());
+
+        public override void Start()
         {
-            OnConfigureLogging();
-            Log.Info($"Installing {GetType().Name}...");
-
-            Container = new Container(new Reflector());
+            Debug.Log("Configuring logging...");
+            ConfigureLogging();
             
-            Log.Info("Configuring bindings...");
-            OnBind();
-
-            Log.Info("Instantiating eager singles...");
-            Container.InstantiateEagerSingles();
-
-            InjectScene();
-
-            Log.Info($"Completing {GetType().Name}...");
-            OnReady();
-            
-            Log.Info($"Completed {GetType().Name}.");
+            base.Start();
         }
 
-        protected virtual void OnConfigureLogging()
+        protected virtual void ConfigureLogging()
         {
             var textAsset = Resources.Load<TextAsset>(LogResourceFile);
             var text = textAsset.text.Replace("${DataPath}", Application.dataPath);
