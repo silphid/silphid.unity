@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Requests;
@@ -7,20 +8,10 @@ using UniRx;
 
 namespace Silphid.Showzup
 {
-    //TODO to rename. 
     public abstract class SinglePresenterControl : PresenterControl, IRequestHandler
     {
-        #region State enum
-
-        protected enum State
-        {
-            Ready,
-            Loading,
-            Presenting
-        }
-
-        #endregion
-
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SinglePresenterControl));
+        
         #region PendingRequest inner-class
 
         private class PendingRequest
@@ -49,7 +40,6 @@ namespace Silphid.Showzup
         #region Properties
 
         public string[] Variants;
-        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
         public ReadOnlyReactiveProperty<IView> View { get; }
         public bool ShouldHandlePresentRequests;
 
@@ -61,9 +51,7 @@ namespace Silphid.Showzup
 
         #region Private fields
 
-        protected readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly Subject<Unit> _loadCancellations = new Subject<Unit>();
-        private State _state;
         private PendingRequest _pendingRequest;
         protected readonly ReactiveProperty<IView> _view = new ReactiveProperty<IView>();
         private VariantSet _variantSet;
@@ -72,27 +60,29 @@ namespace Silphid.Showzup
 
         protected SinglePresenterControl()
         {
-            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             View = _view.ToReadOnlyReactiveProperty();
             View.Subscribe(x => MutableFirstView.Value = x);
+
+            if (Log.IsDebugEnabled)
+                MutableState.Subscribe(x => Log.Debug($"State: {x}")).AddTo(this);
         }
 
         #region IPresenter members
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+            options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
-            if (_state == State.Ready)
+            if (MutableState.Value == PresenterState.Ready)
                 return PresentNow(input, options);
 
-            if (_state == State.Loading)
+            if (MutableState.Value == PresenterState.Loading)
             {
                 CancelLoading();
                 return PresentNow(input, options);
             }
 
-            // State.Presenting
+            // PresenterState.Presenting
             return PresentLater(input, options);
         }
 
@@ -102,7 +92,9 @@ namespace Silphid.Showzup
 
         private IObservable<IView> PresentNow(object input, Options options)
         {
-            _isLoading.Value = true;
+            MutableState.Value = PresenterState.Loading;
+            
+            // If input is observable, resolve it first
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => PresentNow(x, options));
@@ -110,17 +102,16 @@ namespace Silphid.Showzup
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
 
-            _state = State.Loading;
             return Observable
-                .Defer(() => LoadView(viewInfo, options).DoOnCompleted(() => _isLoading.Value = false))
-                .DoOnError(_ => _state = State.Ready)
+                .Defer(() => LoadView(viewInfo, options))
                 .ContinueWith(view =>
                 {
-                    _state = State.Presenting;
+                    MutableState.Value = PresenterState.Presenting;
+                    Log.Debug($"Presenting: {viewInfo}");
                     presentation.TargetView = view;
-                    return Present(presentation)
-                        .ThenReturn(view);
+                    return Present(presentation).ThenReturn(view);
                 })
+                .DoOnError(_ => MutableState.Value = PresenterState.Ready)
                 .DoOnCompleted(CompleteRequest);
         }
 
@@ -136,14 +127,12 @@ namespace Silphid.Showzup
 
         private void CancelLoading()
         {
-            _state = State.Ready;
+            MutableState.Value = PresenterState.Ready;
             _loadCancellations.OnNext(Unit.Default);
         }
 
         private void CompleteRequest()
         {
-            _state = State.Ready;
-
             if (_pendingRequest != null)
             {
                 PresentNow(_pendingRequest.Input, _pendingRequest.Options)
@@ -151,10 +140,16 @@ namespace Silphid.Showzup
 
                 _pendingRequest = null;
             }
+            else
+            {
+                MutableState.Value = PresenterState.Ready;
+            }
         }
 
         protected IObservable<IView> LoadView(ViewInfo viewInfo, Options options)
         {
+            Log.Debug($"Loading: {viewInfo}");
+            
             var cancellationDisposable = new BooleanDisposable();
             var cancellationToken = new CancellationToken(cancellationDisposable);
             var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());

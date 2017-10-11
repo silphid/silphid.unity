@@ -46,6 +46,8 @@ namespace Silphid.Showzup
             _hashSet = hashSet;
         }
 
+        public int Count => _hashSet.Count;
+
         [Pure]
         public VariantSet UnionWith(IEnumerable<IVariant> other)
         {

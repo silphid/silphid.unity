@@ -76,7 +76,7 @@ namespace Silphid.Showzup
 
         private VariantSet GetRequestedVariants(Options options)
         {
-            var requestedVariants = options.GetVariants().UnionWith(_variantProvider.GlobalVariants.Value);
+            var requestedVariants = options.GetVariantsOrDefault().UnionWith(_variantProvider.GlobalVariants.Value);
             if (requestedVariants.Distinct(x => x.Group).Count() != requestedVariants.Count())
                 throw new InvalidOperationException($"Cannot request more than one variant per group: {requestedVariants}");
             

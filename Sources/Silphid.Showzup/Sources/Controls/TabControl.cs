@@ -66,7 +66,7 @@ namespace Silphid.Showzup
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
-        public override ReadOnlyReactiveProperty<bool> IsLoading => TabSelectionControl.IsLoading;
+        public override IReadOnlyReactiveProperty<PresenterState> State => TabSelectionControl.State;
 
         public override void OnSelect(BaseEventData eventData)
         {

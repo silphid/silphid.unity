@@ -30,7 +30,6 @@ namespace Silphid.Showzup
         public RectTransform ScrollingContent;
         public int ExtraMarginItems = 3;
         
-        public override ReadOnlyReactiveProperty<bool> IsLoading { get { throw new NotSupportedException(); } }
         public override int Count => _entries.Count;
 
         private void EnsureInitialized()

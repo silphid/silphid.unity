@@ -32,7 +32,7 @@ namespace Silphid.Showzup
 
         private static void AssertCanAlterHistory(this INavigationPresenter This)
         {
-            if (This.IsNavigating.Value)
+            if (!This.IsReady())
                 throw new InvalidOperationException("Cannot alter history during navigation");
         }
     }

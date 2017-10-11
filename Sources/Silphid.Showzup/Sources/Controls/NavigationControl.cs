@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -13,10 +14,11 @@ namespace Silphid.Showzup
 {
     public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NavigationControl));
+        
         #region Fields
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly ReactiveProperty<bool> _isNavigating = new ReactiveProperty<bool>(false);
         private readonly Subject<Nav> _navigating = new Subject<Nav>();
         private readonly Subject<Nav> _navigated = new Subject<Nav>();
         private ReadOnlyReactiveProperty<bool> _canPush;
@@ -33,7 +35,6 @@ namespace Silphid.Showzup
         [Inject]
         public void Inject()
         {
-            IsNavigating = _isNavigating.ToReadOnlyReactiveProperty();
             History.PairWithPrevious().Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
@@ -46,16 +47,14 @@ namespace Silphid.Showzup
 
         #region INavigationPresenter members
 
-        public ReadOnlyReactiveProperty<bool> IsNavigating { get; private set; }
-
         public ReadOnlyReactiveProperty<bool> CanPresent =>
-            _canPush ?? (_canPush = IsNavigating.Not().ToReadOnlyReactiveProperty());
+            _canPush ?? (_canPush = this.Ready().ToReadOnlyReactiveProperty());
 
         public ReadOnlyReactiveProperty<bool> CanPop =>
             _canPop ?? (_canPop = History
                 .Select(x => x.Count > (CanPopTopLevelView ? 0 : 1))
                 .DistinctUntilChanged()
-                .CombineLatest(IsNavigating.Not(), (x, y) => x && y)
+                .CombineLatest(this.Ready(), (x, y) => x && y)
                 .ToReadOnlyReactiveProperty());
 
         public ReactiveProperty<List<IView>> History { get; } =
@@ -78,7 +77,7 @@ namespace Silphid.Showzup
 
         public override IObservable<IView> Present(object input, Options options = null)
         {
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+            options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
@@ -87,9 +86,6 @@ namespace Silphid.Showzup
 
         private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
         {
-            //Debug.Log($"#Nav# Present({input}, {options})");
-
-            _isLoading.Value = true;
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => StartPushAndLoadView(x, options));
@@ -101,7 +97,7 @@ namespace Silphid.Showzup
             StartChange();
 
             return LoadView(viewInfo, options)
-                .DoOnCompleted(() => _isLoading.Value = false)
+                .DoOnCompleted(() => MutableState.Value = PresenterState.Presenting)
                 .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);
         }
@@ -116,7 +112,7 @@ namespace Silphid.Showzup
                     nav.Parallel)
                 .DoOnCompleted(() =>
                 {
-                    History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushMode());
+                    History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushModeOrDefault());
                     CompleteNavigation(nav);
                     CompleteChange();
                 })
@@ -138,7 +134,7 @@ namespace Silphid.Showzup
                 ? History.Value[History.Value.Count - 2]
                 : null;
 
-            //Debug.Log($"#Nav# Pop({view})");
+            Log.Debug($"Pop({view})");
             var history = History.Value.Take(History.Value.Count - 1).ToList();
 
             return PopInternal(view, history);
@@ -149,7 +145,7 @@ namespace Silphid.Showzup
             AssertCanPop();
 
             var view = History.Value.First();
-            //Debug.Log($"#Nav# PopToRoot({view})");
+            Log.Debug($"PopToRoot({view})");
             var history = History.Value.Take(1).ToList();
 
             return PopInternal(view, history);
@@ -157,7 +153,7 @@ namespace Silphid.Showzup
 
         public IObservable<IView> PopTo(IView view)
         {
-            //Debug.Log($"#Nav# PopTo({view})");
+            Log.Debug($"PopTo({view})");
             var viewIndex = History.Value.IndexOf(view);
             AssertCanPopTo(view, viewIndex);
             var history = History.Value.Take(viewIndex + 1).ToList();
@@ -195,7 +191,7 @@ namespace Silphid.Showzup
 
         private void StartChange()
         {
-            _isNavigating.Value = true;
+            MutableState.Value = PresenterState.Loading;
         }
 
         private Nav StartNavigation(Presentation presentation)
@@ -220,8 +216,7 @@ namespace Silphid.Showzup
 
         private void CompleteChange()
         {
-            _isNavigating.Value = false;
-            //Debug.Log("#Nav# Navigation complete");
+            MutableState.Value = PresenterState.Ready;
         }
 
         private void AssertCanPresent()
@@ -236,7 +231,6 @@ namespace Silphid.Showzup
                 throw new InvalidOperationException("Cannot pop at this moment");
         }
 
-        // ReSharper disable once UnusedParameter.Local
         private void AssertCanPopTo(IView view, int viewIndex)
         {
             AssertCanPop();

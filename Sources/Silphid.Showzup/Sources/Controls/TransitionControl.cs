@@ -64,8 +64,8 @@ namespace Silphid.Showzup
         protected ITransition ResolveTransition(Presentation presentation) =>
             TransitionResolver?.Resolve(presentation) ?? DefaultTransition ?? InstantTransition.Instance;
 
-        protected float ResolveDuration(ITransition transition, Options options)
-            => options?.TransitionDuration ?? transition.Duration;
+        protected float ResolveDuration(ITransition transition, Options options) =>
+            options?.TransitionDuration ?? transition.Duration;
 
         protected IObservable<Unit> PerformTransition(Presentation presentation)
         {
@@ -93,7 +93,7 @@ namespace Silphid.Showzup
 
                     seq.Add(() => Observable.NextFrame());
                     seq.Add(() =>
-                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirection(), duration));
+                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirectionOrDefault(), duration));
 
                     PostHide(sourceView, options, seq);
                     Construct(targetView, options, seq);
@@ -170,7 +170,7 @@ namespace Silphid.Showzup
             _targetContainer = _sourceContainer;
             _sourceContainer = temp;
 
-            var direction = presentation.Options.GetDirection();
+            var direction = presentation.Options.GetDirectionOrDefault();
             var targetView = presentation.TargetView;
             var transition = presentation.Transition;
 

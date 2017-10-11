@@ -1,4 +1,5 @@
 ﻿using System;
+using UniRx;
 
 namespace Silphid.Showzup
 {
@@ -22,7 +23,13 @@ namespace Silphid.Showzup
             return options;
         }
 
+        #region IPresenter members
+
         public IObservable<IView> Present(object input, Options options = null) =>
             _presenter.Present(input, GetOptions(options));
+
+        public IReadOnlyReactiveProperty<PresenterState> State => _presenter.State;
+
+        #endregion
     }
 }

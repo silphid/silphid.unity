@@ -51,12 +51,5 @@ namespace Silphid.Showzup
                 TransitionDuration = other?.TransitionDuration,
                 Parameters = other?.Parameters
             };
-
-        public static Options CloneWithExtraVariants(Options other, VariantSet extraVariants)
-        {
-            var clone = Clone(other);
-            clone.Variants = other?.Variants.UnionWith(extraVariants) ?? extraVariants;
-            return clone;
-        }
     }
 }

@@ -60,7 +60,6 @@ namespace Silphid.Showzup
 
         #region Public properties
 
-        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
         public virtual int Count => _views.Count;
@@ -73,7 +72,6 @@ namespace Silphid.Showzup
         #region Protected/private fields/properties
 
         protected List<IView> _views = new List<IView>();
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
         private VariantSet _variantSet;
@@ -89,7 +87,6 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
-            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
@@ -103,11 +100,12 @@ namespace Silphid.Showzup
         [Pure]
         public override IObservable<IView> Present(object input, Options options = null)
         {
+            // If input is observable, resolve it first
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.ContinueWith(x => Present(x, options));
             
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+            options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
             return Observable.Defer(() => PresentInternal(input, options));
         }
@@ -169,6 +167,8 @@ namespace Silphid.Showzup
 
         public virtual IObservable<IView> PresentInternal(object input, Options options)
         {
+            MutableState.Value = PresenterState.Loading;
+            
             var models = (input as List<object>)?.ToList() ?? 
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??
@@ -188,13 +188,15 @@ namespace Silphid.Showzup
 
         protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options) =>
             LoadAllViews(entries, options)
-                .Do(x => AddView(x.Index, x.View))
+                .Do(x =>
+                {
+                    MutableState.Value = PresenterState.Presenting;
+                    AddView(x.Index, x.View);
+                })
                 .Select(x => x.View);
 
         private IObservable<Entry> LoadAllViews(List<Entry> entries, Options options)
         {
-            _isLoading.Value = true;
-            
             return entries
                 .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
                 .ToObservable()
@@ -203,9 +205,9 @@ namespace Silphid.Showzup
                     .Select(_ => entry))
                 .DoOnCompleted(() =>
                 {
-                		_isLoading.Value = false;
-                		UpdateReactiveViews();
-				});
+                    MutableState.Value = PresenterState.Ready;
+                    UpdateReactiveViews();
+                });
         }
 
         protected void UpdateReactiveViews() =>

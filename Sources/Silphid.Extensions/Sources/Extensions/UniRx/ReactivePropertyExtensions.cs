@@ -14,7 +14,7 @@ namespace Silphid.Extensions
         public static IDisposable BindToInteractable(this IObservable<bool> This, Selectable selectable) =>
             This.Subscribe(x => selectable.interactable = x);
 
-        public static IDisposable BindToSlider(this ReactiveProperty<float> This, Slider slider)
+        public static IDisposable BindToSlider(this IReactiveProperty<float> This, Slider slider)
         {
             bool isChanging = false;
 
@@ -50,5 +50,8 @@ namespace Silphid.Extensions
                 slider.onValueChanged.RemoveListener(onSliderValueChanged);
             });
         }
+
+        public static void Toggle(this IReactiveProperty<bool> This) =>
+            This.Value = !This.Value;
     }
 }

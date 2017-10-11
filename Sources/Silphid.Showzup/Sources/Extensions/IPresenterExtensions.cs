@@ -33,5 +33,23 @@ namespace Silphid.Showzup
 
         public static IPresenter WithParameters(this IPresenter This, params object[] parameters) =>
             new ParametersPresenterDecorator(This, parameters);
+
+        public static bool IsReady(this IPresenter This) =>
+            This.State.Value == PresenterState.Ready;
+
+        public static bool IsLoading(this IPresenter This) =>
+            This.State.Value == PresenterState.Loading;
+
+        public static bool IsPresenting(this IPresenter This) =>
+            This.State.Value == PresenterState.Presenting;
+
+        public static IObservable<bool> Ready(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Ready);
+
+        public static IObservable<bool> Loading(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Loading);
+
+        public static IObservable<bool> Presenting(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Presenting);
     }
 }

@@ -6,7 +6,7 @@ namespace Silphid.Showzup
 {
     public class ShowHideControl : TransitionControl
     {
-        public bool ShowInitially = true;
+        public bool ShowInitially;
         public bool ShowInstantlyInitially;
         
         private struct InputAndOptions
