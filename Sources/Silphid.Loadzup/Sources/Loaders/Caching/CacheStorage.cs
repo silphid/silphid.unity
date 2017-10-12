@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -18,8 +17,8 @@ namespace Silphid.Loadzup.Caching
         private const string HeadersExtension = ".Headers";
         private string _cacheDir;
 
-        public IObservable<Unit> DeleteExpired(DateTime utcNow, TimeSpan defaultExpirySpan) =>
-            Observable.Start(() => DeleteExpiredInternal(utcNow, defaultExpirySpan), Scheduler.ThreadPool);
+        public IObservable<Unit> DeleteAllExpired(DateTime utcNow, TimeSpan defaultExpirySpan) =>
+            Observable.Start(() => DeleteAllExpiredInternal(utcNow, defaultExpirySpan), Scheduler.ThreadPool);
 
         public void DeleteAll()
         {
@@ -36,7 +35,7 @@ namespace Silphid.Loadzup.Caching
         public Dictionary<string, string> LoadHeaders(Uri uri) =>
             LoadHeaders(GetHeadersFile(GetFilePath(uri)));
 
-        private void DeleteExpiredInternal(DateTime utcNow, TimeSpan defaultExpirySpan)
+        private void DeleteAllExpiredInternal(DateTime utcNow, TimeSpan defaultExpirySpan)
         {
             int deletedCount = 0;
             
@@ -77,48 +76,9 @@ namespace Silphid.Loadzup.Caching
 
         private bool IsExpired(Dictionary<string, string> headers, DateTime utcNow, DateTime fileDate, TimeSpan defaultExpirySpan)
         {
-            var cacheControl = headers.GetValueOrDefault("cache-control");
-            if (cacheControl != null)
-            {
-                var maxAge = GetMaxAge(cacheControl);
-                if (maxAge != null)
-                {
-                    var requestDate = ParseDateTime(headers.GetValueOrDefault("date")) ?? fileDate;
-                    return utcNow >= requestDate + maxAge;
-                }
-            }
-            
-            var expires = ParseDateTime(headers.GetValueOrDefault("expires")) ?? fileDate + defaultExpirySpan;
-            return utcNow >= expires;
+            var cacheControl = new CacheControl(headers, fileDate, defaultExpirySpan);
+            return utcNow >= cacheControl.Expiry;
         }
-
-        private TimeSpan? GetMaxAge(string cacheControl)
-        {
-            const string maxAge = "max-age=";
-            int startIndex = cacheControl.IndexOf(maxAge, StringComparison.Ordinal);
-            if (startIndex == -1)
-                return null;
-
-            int endIndex = cacheControl.IndexOf(',', startIndex + maxAge.Length);
-            if (endIndex == -1)
-                endIndex = cacheControl.Length;
-
-            int length = endIndex - startIndex;
-            string secondsStr = cacheControl.Substring(startIndex, length);
-            int seconds;
-            if (!int.TryParse(secondsStr, out seconds))
-                return null;
-
-            return TimeSpan.FromSeconds(seconds);
-        }
-
-        private DateTime? ParseDateTime(string str) =>
-            str != null
-                ? DateTime.ParseExact(str,
-                    "ddd, dd MMM yyyy HH:mm:ss 'UTC'",
-                    CultureInfo.InvariantCulture.DateTimeFormat,
-                    DateTimeStyles.AssumeUniversal)
-                : (DateTime?) null;
 
         public void Save(Uri uri, byte[] bytes, IDictionary<string, string> headers)
         {

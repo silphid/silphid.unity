@@ -54,6 +54,7 @@
     <Compile Include="Bundles\CachedRequesterTest.cs" />
     <Compile Include="Bundles\ManifestLoaderTest.cs" />
     <Compile Include="Bundles\SceneLoaderTest.cs" />
+    <Compile Include="Caching\CacheControlTest.cs" />
     <Compile Include="ContentTypeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

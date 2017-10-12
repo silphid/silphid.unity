@@ -46,7 +46,7 @@
     <Compile Include="Sources\Abstractions\IHttpPoster.cs" />
     <Compile Include="Sources\Abstractions\IHttpPutter.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
-      <Compile Include="Sources\Abstractions\NetworkException.cs"/>
+    <Compile Include="Sources\Abstractions\NetworkException.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
     <Compile Include="Sources\Converters\CompositeConverter.cs" />
@@ -81,6 +81,7 @@
     <Compile Include="Sources\Loaders\Bundles\SceneLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\SceneManagerAdaptor.cs" />
     <Compile Include="Sources\Loaders\Bundles\SimulatedAssetLoader.cs" />
+    <Compile Include="Sources\Loaders\Caching\CacheControl.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedLoader.cs" />
     <Compile Include="Sources\Loaders\Caching\CachedHttpRequester.cs" />
     <Compile Include="Sources\Loaders\Caching\CachePolicy.cs" />

@@ -6,7 +6,7 @@ namespace Silphid.Loadzup.Caching
 {
     public interface ICacheStorage
     {
-        IObservable<Unit> DeleteExpired(DateTime now, TimeSpan defaultExpirySpan);
+        IObservable<Unit> DeleteAllExpired(DateTime now, TimeSpan defaultExpirySpan);
         void DeleteAll();
         bool Contains(Uri uri);
         byte[] Load(Uri uri);
