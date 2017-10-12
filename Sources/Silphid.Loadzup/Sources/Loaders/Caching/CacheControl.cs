@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Silphid.Extensions;
+using Silphid.Loadzup.Http;
 
 namespace Silphid.Loadzup.Caching
 {
@@ -18,7 +19,7 @@ namespace Silphid.Loadzup.Caching
         {
             var date = ParseDateTime(headers.GetValueOrDefault("date")) ?? fileDate;
             
-            var cacheControl = headers.GetValueOrDefault("cache-control");
+            var cacheControl = headers.GetValueOrDefault(KnownHttpHeaders.CacheControl);
             if (cacheControl != null)
             {
                 var maxAge = GetMaxAge(cacheControl);

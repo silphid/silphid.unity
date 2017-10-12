@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
@@ -10,13 +11,15 @@ namespace Silphid.Loadzup
         private ContentType _contentType;
         private Encoding _encoding;
 
+        public long StatusCode { get; }
         public byte[] Bytes { get; }
         public Dictionary<string, string> Headers;
 
-        public Response(byte[] bytes, Dictionary<string, string> headers)
+        public Response(long statusCode, byte[] bytes, Dictionary<string, string> headers)
         {
+            StatusCode = statusCode;
             Bytes = bytes;
-            Headers = headers;
+            Headers = new Dictionary<string, string>(headers, StringComparer.OrdinalIgnoreCase);
         }
 
         public ContentType ContentType

@@ -48,7 +48,7 @@ namespace Silphid.Loadzup.StreamingAsset
             }
 
             return Observable.Return(System.IO.File.ReadAllBytes(filePath))
-                .Select(x => new Response(x, new Dictionary<string, string>()));
+                .Select(x => new Response(KnownStatusCode.Ok, x, new Dictionary<string, string>()));
         }
     }
 }

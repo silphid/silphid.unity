@@ -137,7 +137,7 @@ namespace Silphid.Loadzup.Caching
         private IObservable<Response> LoadFromCache(CachePolicy policy, Uri uri, Dictionary<string, string> responseHeaders)
         {
             Log.Debug($"{policy} - Loading resource from cache: {uri}");
-            return Observable.Return(new Response(_cacheStorage.Load(uri), responseHeaders));
+            return Observable.Return(new Response(KnownStatusCode.Ok, _cacheStorage.Load(uri), responseHeaders));
         }
 
         private IObservable<Response> LoadFromOrigin(CachePolicy policy, Uri uri, Options options)
@@ -147,13 +147,8 @@ namespace Silphid.Loadzup.Caching
                 .Request(uri, options)
                 .Do(x =>
                 {
-                    string statusCode;
-                    if (x.Headers.TryGetValue(KnownHttpHeaders.Status, out statusCode))
-                    {
-                        var code = statusCode.Split(' ');
-                        if (code.Length >= 2 && code[1] == ((int) HttpStatusCode.NotModified).ToString())
-                            throw new HttpException(HttpStatusCode.NotModified);
-                    }
+                    if (x.StatusCode == KnownStatusCode.NotModified)
+                        throw new HttpException(HttpStatusCode.NotModified);
 
                     if (policy != CachePolicy.OriginOnly)
                         _cacheStorage.Save(uri, x.Bytes, x.Headers);

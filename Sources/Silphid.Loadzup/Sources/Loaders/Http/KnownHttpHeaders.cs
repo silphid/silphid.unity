@@ -2,11 +2,12 @@
 {
     public class KnownHttpHeaders
     {
-        public const string ContentType = "content-type";
-        public const string LastModified = "last-modified";
-        public const string ETag = "etag";
-        public const string IfNoneMatch = "if-none-match";
-        public const string IfModifiedSince = "if-modified-since";
-        public const string Status = "status";
+        public const string ContentType = "Content-Type";
+        public const string LastModified = "Last-Modified";
+        public const string ETag = "ETag";
+        public const string IfNoneMatch = "If-None-Match";
+        public const string IfModifiedSince = "If-Modified-Since";
+        public const string CacheControl = "Cache-Control";
+        public const string Date = "Date";
     }
 }

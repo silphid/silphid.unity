@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using log4net;
 using Silphid.Extensions;
+using Silphid.Loadzup.Http;
 using UnityEngine;
 
 namespace Silphid.Loadzup.Caching
@@ -73,7 +74,7 @@ namespace Silphid.Loadzup.Caching
                         Key = line.Left(separatorIndex).Trim(),
                         Value = line.Substring(separatorIndex + 2).Trim()
                     })
-                .ToDictionary(x => x.Key, x => x.Value);
+                .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
         }
 
         private bool IsExpired(Dictionary<string, string> headers, DateTime utcNow, DateTime fileDate)
@@ -86,8 +87,12 @@ namespace Silphid.Loadzup.Caching
         {
             var filePath = GetFilePath(uri);
             Log.Debug($"Save cache to: {filePath}");
+            
+            if (!headers.ContainsKey(KnownHttpHeaders.ContentType))
+                Log.Warn($"Missing Content-Type in headers of {uri}");
+            
             File.WriteAllBytes(filePath, bytes);
-            File.WriteAllLines(GetHeadersFile(filePath), headers.Select(x => $"{x.Key.ToLower()}: {x.Value}").ToArray());
+            File.WriteAllLines(GetHeadersFile(filePath), headers.Select(x => $"{x.Key}: {x.Value}").ToArray());
         }
 
         private string GetFilePath(Uri uri) =>
