@@ -10,8 +10,10 @@ namespace Silphid.Loadzup.Http
 {
     public class HttpRequester : IHttpRequester
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));\
+            
         private static readonly string NewLine = Environment.NewLine;
-        
+
         private static readonly string[] MeaningfulHeaders =
         {
             KnownHttpHeaders.ContentType,
@@ -19,8 +21,6 @@ namespace Silphid.Loadzup.Http
             KnownHttpHeaders.ETag,
             KnownHttpHeaders.Status
         };
-
-        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWebRequest
