@@ -7,9 +7,9 @@ namespace Silphid.Loadzup.Http
 {
     public class HttpRequester : IHttpRequester
     {
-        private static readonly string NewLine = Environment.NewLine;
-        
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
+            
+        private static readonly string NewLine = Environment.NewLine;
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWebRequest
