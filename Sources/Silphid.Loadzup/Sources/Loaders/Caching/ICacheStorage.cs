@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using UniRx;
 
 namespace Silphid.Loadzup.Caching
 {
     public interface ICacheStorage
     {
-        IObservable<Unit> DeleteAllExpired(DateTime now, TimeSpan defaultExpirySpan);
+        void DeleteAllExpired();
         void DeleteAll();
         bool Contains(Uri uri);
         byte[] Load(Uri uri);

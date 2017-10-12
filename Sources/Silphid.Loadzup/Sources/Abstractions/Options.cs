@@ -7,15 +7,15 @@ namespace Silphid.Loadzup
     {
         public ContentType ContentType;
         public CachePolicy? CachePolicy;
-        public Dictionary<string, string> RequestHeaders;
-        public bool IsSceneLoadAdditive = true;
+        public Dictionary<string, string> Headers;
+        public bool IsAdditiveSceneLoading = true;
 
-        public void SetRequestHeader(string key, string value)
+        public void SetHeader(string key, string value)
         {
-            if (RequestHeaders == null)
-                RequestHeaders = new Dictionary<string, string>();
+            if (Headers == null)
+                Headers = new Dictionary<string, string>();
 
-            RequestHeaders[key] = value;
+            Headers[key] = value;
         }
 
         public static implicit operator Options(CachePolicy cachePolicy) =>
@@ -24,7 +24,7 @@ namespace Silphid.Loadzup
         public static implicit operator Options(ContentType contentType) =>
             new Options { ContentType = contentType };
 
-        public static implicit operator Options(Dictionary<string, string> requestHeaders) =>
-            new Options { RequestHeaders = requestHeaders };
+        public static implicit operator Options(Dictionary<string, string> headers) =>
+            new Options { Headers = headers };
     }
 }

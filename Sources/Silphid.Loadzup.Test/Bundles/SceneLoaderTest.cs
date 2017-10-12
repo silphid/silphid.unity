@@ -125,7 +125,7 @@ public class SceneLoaderTest
     {
         SetUpIsValid();
         SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
-        var options = new Options {IsSceneLoadAdditive = isSceneLoadAdditive};
+        var options = new Options {IsAdditiveSceneLoading = isSceneLoadAdditive};
 
         var result = _fixture.Load<Scene>(uri, options).Wait();
 

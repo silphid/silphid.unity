@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using log4net;
 using Silphid.Extensions;
-using UniRx;
 using UnityEngine;
 
 namespace Silphid.Loadzup.Caching
@@ -13,12 +12,39 @@ namespace Silphid.Loadzup.Caching
     public class CacheStorage : ICacheStorage
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CacheStorage));
-
         private const string HeadersExtension = ".Headers";
+        private readonly TimeSpan _defaultExpirySpan;
         private string _cacheDir;
 
-        public IObservable<Unit> DeleteAllExpired(DateTime utcNow, TimeSpan defaultExpirySpan) =>
-            Observable.Start(() => DeleteAllExpiredInternal(utcNow, defaultExpirySpan), Scheduler.ThreadPool);
+        public CacheStorage(TimeSpan defaultExpirySpan)
+        {
+            _defaultExpirySpan = defaultExpirySpan;
+        }
+
+        public void DeleteAllExpired()
+        {
+            int deletedCount = 0;
+            var utcNow = DateTime.UtcNow;
+            
+            Directory
+                .GetFiles(GetCacheDir())
+                .Where(file => file.EndsWith(HeadersExtension))
+                .ForEach(headersFile =>
+                {
+                    var mainFile = headersFile.RemoveSuffix(HeadersExtension);
+                    var fileDate = File.GetLastWriteTimeUtc(mainFile);
+                    var headers = LoadHeaders(headersFile);
+
+                    if (IsExpired(headers, utcNow, fileDate))
+                    {
+                        File.Delete(mainFile);
+                        File.Delete(headersFile);
+                        deletedCount++;
+                    }
+                });
+            
+            Log.Debug($"Deleted {deletedCount} expired files.");
+        }
 
         public void DeleteAll()
         {
@@ -35,30 +61,6 @@ namespace Silphid.Loadzup.Caching
         public Dictionary<string, string> LoadHeaders(Uri uri) =>
             LoadHeaders(GetHeadersFile(GetFilePath(uri)));
 
-        private void DeleteAllExpiredInternal(DateTime utcNow, TimeSpan defaultExpirySpan)
-        {
-            int deletedCount = 0;
-            
-            Directory
-                .GetFiles(GetCacheDir())
-                .Where(file => file.EndsWith(HeadersExtension))
-                .ForEach(headersFile =>
-                {
-                    var mainFile = headersFile.RemoveSuffix(HeadersExtension);
-                    var fileDate = File.GetLastWriteTimeUtc(mainFile);
-                    var headers = LoadHeaders(headersFile);
-
-                    if (IsExpired(headers, utcNow, fileDate, defaultExpirySpan))
-                    {
-                        File.Delete(mainFile);
-                        File.Delete(headersFile);
-                        deletedCount++;
-                    }
-                });
-            
-            Log.Debug($"Deleted {deletedCount} expired files.");
-        }
-
         private Dictionary<string, string> LoadHeaders(string headersFile)
         {
             if (!File.Exists(headersFile))
@@ -74,9 +76,9 @@ namespace Silphid.Loadzup.Caching
                 .ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private bool IsExpired(Dictionary<string, string> headers, DateTime utcNow, DateTime fileDate, TimeSpan defaultExpirySpan)
+        private bool IsExpired(Dictionary<string, string> headers, DateTime utcNow, DateTime fileDate)
         {
-            var cacheControl = new CacheControl(headers, fileDate, defaultExpirySpan);
+            var cacheControl = new CacheControl(headers, fileDate, _defaultExpirySpan);
             return utcNow >= cacheControl.Expiry;
         }
 

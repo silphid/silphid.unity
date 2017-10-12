@@ -99,6 +99,11 @@
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
     <Compile Include="Sources\Loaders\UriExtensions.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\CachePolicyLoaderDecorator.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\ContentTypeLoaderDecorator.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\HeaderLoaderDecorator.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\HeadersLoaderDecorator.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\OptionsLoaderDecoratorBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
