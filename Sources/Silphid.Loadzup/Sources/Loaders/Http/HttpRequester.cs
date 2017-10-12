@@ -10,7 +10,7 @@ namespace Silphid.Loadzup.Http
 {
     public class HttpRequester : IHttpRequester
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));\
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
             
         private static readonly string NewLine = Environment.NewLine;
 
