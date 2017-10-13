@@ -62,7 +62,10 @@ namespace Silphid.Showzup
         {
             View = _view.ToReadOnlyReactiveProperty();
             View.Subscribe(x => MutableFirstView.Value = x);
+        }
 
+        private void Awake()
+        {
             if (Log.IsDebugEnabled)
                 MutableState.Subscribe(x => Log.Debug($"State: {x}")).AddTo(this);
         }

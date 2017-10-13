@@ -37,6 +37,7 @@ namespace Silphid.Loadzup
 
             Type = typeAndSubType[0];
             SubType = typeAndSubType[1];
+            Name = Type;
 
             // Parse parameters
             tokens.Skip(1).ForEach(ParseParameter);

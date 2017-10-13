@@ -29,7 +29,7 @@ namespace Silphid.Loadzup.Http
                 .Request(uri, options)
                 .ContinueWith(x => _converter
                     .Convert<T>(x.Bytes, options?.ContentType ?? x.ContentType, x.Encoding)
-                    .DoOnError(ex => Log.Error($"Failed to convert response from Uri {uri} to type {typeof(T)} : {x.Encoding.GetString(x.Bytes)}", ex)));
+                    .DoOnError(ex => Log.Error($"Failed to convert response from Uri {uri} and type {options?.ContentType ?? x.ContentType} to type {typeof(T)} : {x.Encoding.GetString(x.Bytes)}", ex)));
         }
     }
 }
