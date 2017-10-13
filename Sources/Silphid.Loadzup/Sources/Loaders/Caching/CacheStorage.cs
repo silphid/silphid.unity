@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using log4net;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
+using UniRx;
 using UnityEngine;
 
 namespace Silphid.Loadzup.Caching
@@ -56,8 +57,10 @@ namespace Silphid.Loadzup.Caching
 
         public bool Contains(Uri uri) => File.Exists(GetFilePath(uri));
 
-        public byte[] Load(Uri uri) =>
-            File.ReadAllBytes(GetFilePath(uri));
+        public IObservable<byte[]> Load(Uri uri) =>
+            Observable
+                .Start(() => File.ReadAllBytes(GetFilePath(uri)))
+                .ObserveOnMainThread();
 
         public Dictionary<string, string> LoadHeaders(Uri uri) =>
             LoadHeaders(GetHeadersFile(GetFilePath(uri)));

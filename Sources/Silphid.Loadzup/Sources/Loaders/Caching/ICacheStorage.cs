@@ -8,7 +8,7 @@ namespace Silphid.Loadzup.Caching
         void DeleteAllExpired();
         void DeleteAll();
         bool Contains(Uri uri);
-        byte[] Load(Uri uri);
+        IObservable<byte[]> Load(Uri uri);
         Dictionary<string, string> LoadHeaders(Uri uri);
         void Save(Uri uri, byte[] bytes, IDictionary<string, string> headers);
     }
