@@ -61,7 +61,7 @@ namespace Silphid.Loadzup.Test.Caching
 
         private CacheControl Create(string cacheControl, DateTime? expires = null, DateTime? dateInHeaders = null)
         {
-            var headers = new Dictionary<string, string>();
+            var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (cacheControl != null)
                 headers["cache-control"] = cacheControl;

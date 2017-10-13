@@ -64,6 +64,6 @@ namespace Silphid.Loadzup
                 Boundary = value;
         }
 
-        public override string ToString() => Name;
+        public override string ToString() => MediaType;
     }
 }
