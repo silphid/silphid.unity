@@ -99,6 +99,7 @@
     <Compile Include="Sources\Loaders\IHttpPosterExtensions.cs" />
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
+    <Compile Include="Sources\Loaders\StreamingFile\StreamingFileLoader.cs" />
     <Compile Include="Sources\Loaders\UriExtensions.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\CachePolicyLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\ContentTypeLoaderDecorator.cs" />
