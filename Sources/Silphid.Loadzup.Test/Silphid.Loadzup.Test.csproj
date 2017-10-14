@@ -50,11 +50,11 @@
     <Compile Include="Bundles\AssetLoaderTest.cs" />
     <Compile Include="Bundles\BundleCachedLoaderTest.cs" />
     <Compile Include="Bundles\BundleLoaderTest.cs" />
-    <Compile Include="Bundles\CachedLoaderTest.cs" />
-    <Compile Include="Bundles\CachedRequesterTest.cs" />
     <Compile Include="Bundles\ManifestLoaderTest.cs" />
     <Compile Include="Bundles\SceneLoaderTest.cs" />
     <Compile Include="Caching\CacheControlTest.cs" />
+    <Compile Include="Caching\CachedLoaderTest.cs" />
+    <Compile Include="Caching\CachedRequesterTest.cs" />
     <Compile Include="ContentTypeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
