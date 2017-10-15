@@ -10,19 +10,14 @@ namespace Silphid.Loadzup
         public static string GetPathAndContentType(this Uri This, ref ContentType contentType,
             string pathSeparator, bool keepExtension)
         {
-            Debug.Log($"GetPathAndContentType....");
             // Rebuild path while removing scheme component
             var host = This.Host.RemovePrefix(pathSeparator);
-            Debug.Log($"Host: {host}");
             var isRoot = string.IsNullOrEmpty(This.AbsolutePath) || This.AbsolutePath == pathSeparator;
             var path = isRoot ? host : host + This.AbsolutePath;
             
-            Debug.Log($"Path: {path}");
-
             // Any extension detected?
             var extension = Path.GetExtension(path);
             
-            Debug.Log($"Extension: {extension}");
             if (extension.IsNullOrWhiteSpace())
                 return path;
 
@@ -35,7 +30,6 @@ namespace Silphid.Loadzup
                 // Try to determine content type from extension
                 var mediaType = KnownMediaType.FromExtension(extension);
                 
-                Debug.Log($"MediaType: {mediaType}");
                 if (mediaType != null)
                     contentType = new ContentType(mediaType);
             }
