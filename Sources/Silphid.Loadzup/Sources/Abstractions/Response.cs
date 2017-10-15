@@ -13,9 +13,9 @@ namespace Silphid.Loadzup
 
         public long StatusCode { get; }
         public byte[] Bytes { get; }
-        public Dictionary<string, string> Headers;
+        public readonly Dictionary<string, string> Headers;
 
-        public Response(long statusCode, byte[] bytes, Dictionary<string, string> headers)
+        public Response(long statusCode, byte[] bytes, IDictionary<string, string> headers)
         {
             StatusCode = statusCode;
             Bytes = bytes;

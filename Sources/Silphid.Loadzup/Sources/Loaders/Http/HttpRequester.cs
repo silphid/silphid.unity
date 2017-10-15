@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using log4net;
 using UniRx;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Silphid.Loadzup.Http
                 .Get(uri.AbsoluteUri, options?.Headers)
                 .DoOnSubscribe(() => Log.Info($"GET {uri}"))
                 .DoOnError(ex => Log.Error($"Failed GET {uri}", ex))
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders()));
+                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders() ?? new Dictionary<string, string>()));
 
         public IObservable<Response> Get(Uri uri, Options options = null) =>
             Request(uri, options);
@@ -28,7 +29,7 @@ namespace Silphid.Loadzup.Http
                     Log.Info($"POST {uri}{NewLine}Form: {form}{NewLine}Headers: {options?.Headers}"))
                 .DoOnError(ex =>
                     Log.Error($"Failed POST {uri}{NewLine}Form: {form}{NewLine}Headers: {options?.Headers}", ex))
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders()));
+                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders() ?? new Dictionary<string, string>()));
 
         public IObservable<Response> Put(Uri uri, string body, Options options = null) =>
             ObservableWebRequest
@@ -37,6 +38,6 @@ namespace Silphid.Loadzup.Http
                     Log.Info($"PUT {uri}{NewLine}Body: {body}{NewLine}Headers: {options?.Headers}"))
                 .DoOnError(ex =>
                     Log.Error($"Failed PUT {uri}{NewLine}Body: {body}{NewLine}Headers: {options?.Headers}", ex))
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders()));
+                .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders() ?? new Dictionary<string, string>()));
     }
 }
