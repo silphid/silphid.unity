@@ -15,14 +15,16 @@ namespace Silphid.Loadzup.Http
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             ObservableWebRequest
                 .Get(uri.AbsoluteUri, options?.Headers)
-                .DoOnSubscribe(() => Log.Info($"GET {uri}"))
-                .DoOnError(ex => Log.Error($"Failed GET {uri}", ex))
+                .DoOnSubscribe(() =>
+                    Log.Info($"GET {uri}{NewLine}Headers: {options?.Headers}"))
+                .DoOnError(ex =>
+                    Log.Error($"Failed GET {uri}{NewLine} Headers: {options?.Headers}", ex))
                 .Select(www => new Response(www.responseCode, www.downloadHandler.data, www.GetResponseHeaders(), options))
                 .Do(response =>
                 {
                     if (response.Headers != null) return;
                     response.Headers = new Dictionary<string, string>();
-                    Log.Warn($"There are no Header in the response {uri}");
+                    Log.Warn($"There is no header in the response {uri}");
                 });
 
         public IObservable<Response> Get(Uri uri, Options options = null) =>
@@ -40,7 +42,7 @@ namespace Silphid.Loadzup.Http
                 {
                     if (response.Headers != null) return;
                     response.Headers = new Dictionary<string, string>();
-                    Log.Warn($"There are no Header in the respnse {uri}");
+                    Log.Warn($"There is no header in the response {uri}");
                 });
 
         public IObservable<Response> Put(Uri uri, string body, Options options = null) =>
@@ -55,7 +57,7 @@ namespace Silphid.Loadzup.Http
                 {
                     if (response.Headers != null) return;
                     response.Headers = new Dictionary<string, string>();
-                    Log.Warn($"There are no Header in the respnse {uri}");
+                    Log.Warn($"There is no header in the response {uri}");
                 });
     }
 }
