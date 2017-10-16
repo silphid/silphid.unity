@@ -32,16 +32,6 @@ namespace Silphid.Showzup
 
         #endregion
 
-        #region Life-time
-
-        internal virtual void Start()
-        {
-            Container1.SetActive(false);
-            Container2.SetActive(false);
-        }
-
-        #endregion
-
         #region Virtual and abstract overrides
 
         protected override IObservable<Unit> Present(Presentation presentation)
@@ -75,7 +65,8 @@ namespace Silphid.Showzup
             var transition = presentation.Transition;
             var duration = presentation.Duration;
 
-            if (sourceView == null && TransitionInstantlyFromNull ||
+            if (!gameObject.activeInHierarchy ||
+                sourceView == null && TransitionInstantlyFromNull ||
                 targetView == null && TransitionInstantlyToNull)
             {
                 transition = InstantTransition.Instance;

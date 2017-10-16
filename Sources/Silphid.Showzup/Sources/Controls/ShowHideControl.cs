@@ -26,10 +26,8 @@ namespace Silphid.Showzup
         private readonly ISubject<InputAndOptions> _inputAndOptions = new ReplaySubject<InputAndOptions>(1);
         private bool _isFirstPresent = true;
 
-        internal override void Start()
+        internal void Start()
         {
-            base.Start();
-
             Show.Value = ShowInitially;
             Show.CombineLatest(_inputAndOptions, (show, inputAndOptions) => show
                     ? inputAndOptions
