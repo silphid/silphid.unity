@@ -25,9 +25,7 @@ namespace Silphid.Loadzup.StreamingFile
                 throw new NotSupportedException($"Uri not supported: {uri}");
 
             var contentType = options?.ContentType;
-            uri.GetPathAndContentType(ref contentType, _pathSeparator, true);
-            
-            Debug.Log($"ContentType: {contentType?.Name}");
+            uri.GetPathAndContentType(ref contentType, _pathSeparator, true);           
 
             return LoadFile(uri, options, contentType)
                 .ContinueWith(

@@ -38,17 +38,17 @@ namespace Silphid.Loadzup.StreamingAsset
         {
             var filePath = System.IO.Path.Combine(Application.streamingAssetsPath, path);
 
-            if (filePath.Contains("://"))
-            {
+         //   if (filePath.Contains("://"))
+          //  {
                 if (options == null)
                     options = new Options();
 
                 options.ContentType = contentType;
                 return _requester.Request(new Uri(filePath), options);
-            }
+          //  }
 
-            return Observable.Return(System.IO.File.ReadAllBytes(filePath))
-                .Select(x => new Response(KnownStatusCode.Ok, x, new Dictionary<string, string>()));
+         //   return Observable.Return(System.IO.File.ReadAllBytes(filePath))
+         //       .Select(x => new Response(KnownStatusCode.Ok, x, new Dictionary<string, string>()));
         }
     }
 }
