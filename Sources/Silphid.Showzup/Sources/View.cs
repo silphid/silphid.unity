@@ -173,7 +173,8 @@ namespace Silphid.Showzup
                         Observable.NextFrame().SubscribeAndForget(_ =>
                             image.DOColor(Color.white, fadeDuration.Value));
 
-                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset)
+                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset
+                        || uri.Scheme == Scheme.StreamingFile)
                         x.AddTo(this);
                 })
                 .AutoDetach()
