@@ -59,6 +59,6 @@ namespace Silphid.Loadzup.Http
                         Log.Warn($"There is no header in the response {uri}");
                 })
                 .Select(www => new Response(www.responseCode, www.downloadHandler.data,
-                    www.GetResponseHeaders() ?? new Dictionary<string, string>(), options))
+                    www.GetResponseHeaders() ?? new Dictionary<string, string>(), options));
     }
 }
