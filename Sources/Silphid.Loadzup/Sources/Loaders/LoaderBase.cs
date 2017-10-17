@@ -39,8 +39,7 @@ namespace Silphid.Loadzup
         protected string GetPath(Uri uri)
         {
             var host = uri.Host.RemovePrefix(PathSeparator);
-            var isRoot = string.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath == PathSeparator;
-            return isRoot ? host : host + uri.PathAndQuery;
+            return host + uri.AbsolutePath.RemoveSuffix(PathSeparator) + uri.Query;
         }
     }
 }
