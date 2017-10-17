@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Silphid.Loadzup.Caching
+namespace Silphid.Loadzup.Http.Caching
 {
-    public interface ICacheStorage
+    public interface IHttpCache
     {
-        void DeleteAllExpired();
-        void DeleteAll();
+        void Clear();
+        void ClearExpired();
         bool Contains(Uri uri);
         IObservable<byte[]> Load(Uri uri);
         Dictionary<string, string> LoadHeaders(Uri uri);

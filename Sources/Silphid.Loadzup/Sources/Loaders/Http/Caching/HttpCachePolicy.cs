@@ -1,6 +1,6 @@
-﻿namespace Silphid.Loadzup.Caching
+﻿namespace Silphid.Loadzup.Http.Caching
 {
-    public enum CachePolicy
+    public enum HttpCachePolicy
     {
         /// <summary>
         /// Specifies that resource should be loaded only from cache.  Failure to retrieve resource from origin results

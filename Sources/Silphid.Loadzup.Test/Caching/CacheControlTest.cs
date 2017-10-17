@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
-using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http.Caching;
 
 namespace Silphid.Loadzup.Test.Caching
 {

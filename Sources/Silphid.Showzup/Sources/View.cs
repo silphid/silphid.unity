@@ -4,7 +4,7 @@ using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
-using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
 using UniRx;
 using UnityEngine;
@@ -14,7 +14,7 @@ namespace Silphid.Showzup
 {
     public abstract class View : MonoBehaviour
     {
-        protected virtual CachePolicy? DefaultImageCachePolicy => null;
+        protected virtual HttpCachePolicy? DefaultImageHttpCachePolicy => null;
     }
     
     public abstract class View<TViewModel> :
@@ -159,7 +159,7 @@ namespace Silphid.Showzup
                 image.enabled = keepVisible;
             
             return Loader
-                .With(DefaultImageCachePolicy)
+                .With(DefaultImageHttpCachePolicy)
                 .Load<DisposableSprite>(uri, options)
                 .Catch<DisposableSprite, Exception>(ex =>
                     Observable.Throw<DisposableSprite>(

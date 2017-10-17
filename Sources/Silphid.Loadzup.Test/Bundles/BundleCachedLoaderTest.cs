@@ -27,7 +27,7 @@ public class BundleCachedLoaderTest
     private const string DependencyName = "DependencyBundle";
     private MockBundle _mockBundle;
     private ILoader _innerLoader;
-    private BundleCachedLoader _fixture;
+    private BundleCacheLoader _fixture;
 
     private Uri GetBundleUri(string bundleName) => new Uri($"{BaseUri}/{PlatformName}/{bundleName}");
 
@@ -40,7 +40,7 @@ public class BundleCachedLoaderTest
         platformProvider.GetPlatformName()
             .Returns(PlatformName);
 
-        _fixture = new BundleCachedLoader(_innerLoader, platformProvider, BaseUri);
+        _fixture = new BundleCacheLoader(_innerLoader, platformProvider, BaseUri);
 
         _mockBundle = new MockBundle(Substitute.For<IBundle>(), BundleName);
     }

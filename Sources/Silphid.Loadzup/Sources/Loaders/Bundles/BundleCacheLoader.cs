@@ -7,11 +7,11 @@ using UniRx;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class BundleCachedLoader : CachedLoader, IBundleCachedLoader
+    public class BundleCacheLoader : MemoryCacheLoader, IBundleCachedLoader
     {
         private readonly string _baseUri;
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(BundleCachedLoader));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BundleCacheLoader));
         
         private static readonly Action<BundleRefCount, string> AddRootRefAction = (refCount, x) => refCount.AddRootRef();
         private static readonly Action<BundleRefCount, string> AddDependencyRefAction = (refCount, dependencyWithBundleNamed) => refCount.AddDependencyRef(dependencyWithBundleNamed);
@@ -103,7 +103,7 @@ namespace Silphid.Loadzup.Bundles
         private Uri GetBundleUri(string bundleName) =>
             new Uri($"{_baseUri}{bundleName}");
 
-        public BundleCachedLoader(ILoader innerLoader, IPlatformProvider platformProvider, string baseUri)
+        public BundleCacheLoader(ILoader innerLoader, IPlatformProvider platformProvider, string baseUri)
             : base(innerLoader)
         {
             _baseUri = $"{baseUri}/{platformProvider.GetPlatformName()}/";

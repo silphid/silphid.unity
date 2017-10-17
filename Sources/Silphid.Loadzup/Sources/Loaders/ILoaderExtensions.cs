@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Silphid.Loadzup.Caching;
 using Silphid.Loadzup.Http;
+using Silphid.Loadzup.Http.Caching;
 using UnityEngine;
 
 namespace Silphid.Loadzup
@@ -11,8 +12,14 @@ namespace Silphid.Loadzup
         public static IObservable<T> Load<T>(this ILoader This, string uri, Options options = null) =>
             This.Load<T>(new Uri(uri), options);
         
-        public static ILoader With(this ILoader This, CachePolicy? cachePolicy) =>
-            new CachePolicyLoaderDecorator(This, cachePolicy);
+        public static ILoader With(this ILoader This, HttpCachePolicy? policy) =>
+            new HttpCachePolicyLoaderDecorator(This, policy);
+        
+        public static ILoader With(this ILoader This, MemoryCachePolicy? policy) =>
+            new MemoryCachePolicyLoaderDecorator(This, policy);
+        
+        public static ILoader WithMemoryCache(this ILoader This) =>
+            new MemoryCachePolicyLoaderDecorator(This, MemoryCachePolicy.CacheOtherwiseOrigin);
         
         public static ILoader With(this ILoader This, ContentType contentType) =>
             new ContentTypeLoaderDecorator(This, contentType);

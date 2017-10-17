@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Silphid.Extensions;
-using Silphid.Loadzup.Http;
 
-namespace Silphid.Loadzup.Caching
+namespace Silphid.Loadzup.Http.Caching
 {
+    /// <summary>
+    /// Facilitates parsing value of "Cache-Control" HTTP header.
+    /// </summary>
     public class CacheControl
     {
         public DateTime Expiry { get; }

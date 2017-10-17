@@ -3,44 +3,43 @@ using System.Collections.Generic;
 using System.Net;
 using log4net;
 using Silphid.Extensions;
-using Silphid.Loadzup.Http;
 using UniRx;
 
-namespace Silphid.Loadzup.Caching
+namespace Silphid.Loadzup.Http.Caching
 {
-    public class CachedHttpRequester : IHttpRequester
+    public class HttpCacheRequester : IHttpRequester
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CachedHttpRequester));
-
-        public CachePolicy DefaultPolicy { get; set; } = CachePolicy.OriginOnly;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpCacheRequester));
 
         private readonly IHttpRequester _requester;
-        private readonly ICacheStorage _cacheStorage;
+        private readonly IHttpCache _httpCache;
+        private readonly HttpCachePolicy _defaultPolicy;
 
-        public CachedHttpRequester(IHttpRequester requester, ICacheStorage cacheStorage)
+        public HttpCacheRequester(IHttpRequester requester, IHttpCache httpCache, HttpCachePolicy? defaultPolicy = null)
         {
             _requester = requester;
-            _cacheStorage = cacheStorage;
+            _httpCache = httpCache;
+            _defaultPolicy = defaultPolicy ?? HttpCachePolicy.OriginOnly;
         }
 
         public IObservable<Response> Request(Uri uri, Options options = null)
         {
-            var policy = options?.CachePolicy ?? DefaultPolicy;
+            var policy = options?.HttpCachePolicy ?? _defaultPolicy;
             Log.Debug($"{policy} - {uri}");
 
-            if (policy == CachePolicy.OriginOnly)
+            if (policy == HttpCachePolicy.OriginOnly)
                 return LoadFromOrigin(policy, uri, options);
 
-            var responseHeaders = _cacheStorage.LoadHeaders(uri);
+            var responseHeaders = _httpCache.LoadHeaders(uri);
             if (responseHeaders != null)
             {
                 // Cached
                 Log.Debug($"{policy} - Resource found in cache: {uri}");
 
-                if (policy == CachePolicy.CacheOnly || policy == CachePolicy.CacheOtherwiseOrigin)
+                if (policy == HttpCachePolicy.CacheOnly || policy == HttpCachePolicy.CacheOtherwiseOrigin)
                     return LoadFromCache(policy, uri, responseHeaders);
 
-                if (policy == CachePolicy.OriginOtherwiseCache)
+                if (policy == HttpCachePolicy.OriginOtherwiseCache)
                     return LoadFromOrigin(policy, uri, options)
                         .Catch<Response, HttpException>(ex =>
                         {
@@ -49,14 +48,14 @@ namespace Silphid.Loadzup.Caching
                             return LoadFromCache(policy, uri, responseHeaders);
                         });
 
-                if (policy == CachePolicy.CacheThenOrigin)
+                if (policy == HttpCachePolicy.CacheThenOrigin)
                     return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
 
-                if (policy == CachePolicy.OriginIfETagOtherwiseCache || policy == CachePolicy.CacheThenOriginIfETag)
+                if (policy == HttpCachePolicy.OriginIfETagOtherwiseCache || policy == HttpCachePolicy.CacheThenOriginIfETag)
                     return LoadWithETag(policy, uri, options, responseHeaders);
 
-                if (policy == CachePolicy.OriginIfLastModifiedOtherwiseCache ||
-                    policy == CachePolicy.CacheThenOriginIfLastModified)
+                if (policy == HttpCachePolicy.OriginIfLastModifiedOtherwiseCache ||
+                    policy == HttpCachePolicy.CacheThenOriginIfLastModified)
                     return LoadWithLastModified(policy, uri, options, responseHeaders);
             }
             else
@@ -64,7 +63,7 @@ namespace Silphid.Loadzup.Caching
                 // Not cached
                 Log.Debug($"{policy} - Resource not found in cache: {uri}");
 
-                if (policy == CachePolicy.CacheOnly)
+                if (policy == HttpCachePolicy.CacheOnly)
                     return Observable.Throw<Response>(
                         new InvalidOperationException($"Policy is {policy} but resource not found in cache"));
             }
@@ -72,7 +71,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromOrigin(policy, uri, options);
         }
 
-        private IObservable<Response> LoadWithETag(CachePolicy policy, Uri uri, Options options,
+        private IObservable<Response> LoadWithETag(HttpCachePolicy policy, Uri uri, Options options,
             Dictionary<string, string> responseHeaders)
         {
             Log.Debug($"{policy} - LoadWithETag: {uri}");
@@ -82,7 +81,7 @@ namespace Silphid.Loadzup.Caching
 
             options.SetHeader(KnownHttpHeaders.IfNoneMatch, eTag);
 
-            if (policy == CachePolicy.OriginIfETagOtherwiseCache)
+            if (policy == HttpCachePolicy.OriginIfETagOtherwiseCache)
                 return LoadFromOrigin(policy, uri, options)
                     .Catch<Response, HttpException>(ex =>
                     {
@@ -95,7 +94,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
         }
 
-        private IObservable<Response> LoadWithLastModified(CachePolicy policy, Uri uri, Options options,
+        private IObservable<Response> LoadWithLastModified(HttpCachePolicy policy, Uri uri, Options options,
             Dictionary<string, string> responseHeaders)
         {
             Log.Debug($"{policy} - LoadWithLastModified: {uri}");
@@ -105,7 +104,7 @@ namespace Silphid.Loadzup.Caching
 
             options.SetHeader(KnownHttpHeaders.IfModifiedSince, lastModified);
 
-            if (policy == CachePolicy.OriginIfETagOtherwiseCache)
+            if (policy == HttpCachePolicy.OriginIfETagOtherwiseCache)
                 return LoadFromOrigin(policy, uri, options)
                     .Catch<Response, HttpException>(ex =>
                     {
@@ -118,7 +117,7 @@ namespace Silphid.Loadzup.Caching
             return LoadFromCacheThenOrigin(policy, uri, options, responseHeaders);
         }
 
-        private IObservable<Response> LoadFromCacheThenOrigin(CachePolicy policy, Uri uri, Options options,
+        private IObservable<Response> LoadFromCacheThenOrigin(HttpCachePolicy policy, Uri uri, Options options,
             Dictionary<string, string> responseHeaders)
         {
             Log.Debug($"{policy} - LoadFromCacheThenOrigin: {uri}");
@@ -129,16 +128,16 @@ namespace Silphid.Loadzup.Caching
                         : Observable.Throw<Response>(ex))));
         }
 
-        private IObservable<Response> LoadFromCache(CachePolicy policy, Uri uri,
+        private IObservable<Response> LoadFromCache(HttpCachePolicy policy, Uri uri,
             Dictionary<string, string> responseHeaders)
         {
             Log.Debug($"{policy} - Loading resource from cache: {uri}");
-            return _cacheStorage
+            return _httpCache
                 .Load(uri)
                 .Select(bytes => new Response(KnownStatusCode.Ok, bytes, responseHeaders));
         }
 
-        private IObservable<Response> LoadFromOrigin(CachePolicy policy, Uri uri, Options options)
+        private IObservable<Response> LoadFromOrigin(HttpCachePolicy policy, Uri uri, Options options)
         {
             Log.Debug($"{policy} - Loading resource from origin: {uri}");
             return _requester
@@ -148,8 +147,8 @@ namespace Silphid.Loadzup.Caching
                     if (x.StatusCode == KnownStatusCode.NotModified)
                         throw new HttpException(HttpStatusCode.NotModified);
 
-                    if (policy != CachePolicy.OriginOnly)
-                        _cacheStorage.Save(uri, x.Bytes, x.Headers);
+                    if (policy != HttpCachePolicy.OriginOnly)
+                        _httpCache.Save(uri, x.Bytes, x.Headers);
                 });
         }
     }

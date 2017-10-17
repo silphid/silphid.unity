@@ -10,7 +10,7 @@ namespace Silphid.Loadzup.Test.Caching
     public class CachedLoaderTest
     {
         private ILoader _innerLoader;
-        private CachedLoader _fixture;
+        private MemoryCacheLoader _fixture;
 
         private static readonly Uri MockURI = new Uri("http://test.json");
         private static readonly string ExpectedString = "Object to return";
@@ -19,7 +19,7 @@ namespace Silphid.Loadzup.Test.Caching
         public void SetUp()
         {
             _innerLoader = Substitute.For<ILoader>();
-            _fixture = new CachedLoader(_innerLoader);
+            _fixture = new MemoryCacheLoader(_innerLoader);
         }
 
         private void SetupReturn<T>(IObservable<T> returnObservable, Uri uri = null)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http.Caching;
 using UnityEngine;
 
 namespace Silphid.Loadzup
@@ -7,7 +8,8 @@ namespace Silphid.Loadzup
     public class Options
     {
         public ContentType ContentType;
-        public CachePolicy? CachePolicy;
+        public HttpCachePolicy? HttpCachePolicy;
+        public MemoryCachePolicy? MemoryCachePolicy;
         public Dictionary<string, string> Headers;
         public bool IsAdditiveSceneLoading = true;
         public HttpMethod Method = HttpMethod.Get;
@@ -22,8 +24,8 @@ namespace Silphid.Loadzup
             Headers[key] = value;
         }
 
-        public static implicit operator Options(CachePolicy cachePolicy) =>
-            new Options { CachePolicy = cachePolicy };
+        public static implicit operator Options(HttpCachePolicy httpCachePolicy) =>
+            new Options { HttpCachePolicy = httpCachePolicy };
 
         public static implicit operator Options(ContentType contentType) =>
             new Options { ContentType = contentType };

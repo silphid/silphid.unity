@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using NSubstitute;
 using NUnit.Framework;
-using Silphid.Loadzup.Caching;
 using Silphid.Loadzup.Http;
+using Silphid.Loadzup.Http.Caching;
 using UniRx;
 
 namespace Silphid.Loadzup.Test.Caching
@@ -12,8 +12,8 @@ namespace Silphid.Loadzup.Test.Caching
 	public class CachedRequesterTest
 	{
 		private IHttpRequester _innerRequester;
-		private ICacheStorage _cacheStorage;
-		private CachedHttpRequester _fixture;
+		private IHttpCache _httpCache;
+		private HttpCacheRequester _fixture;
 
 		private static readonly Uri AvailableUri = new Uri("http://test.com/data.json");
 		private static readonly Uri NotFoundUri = new Uri("http://test.com/not_found");
@@ -35,10 +35,10 @@ namespace Silphid.Loadzup.Test.Caching
 			_innerRequester.Request(NotModifiedUri, Arg.Any<Options>())
 				.Returns(Observable.Throw<Response>(new HttpException(HttpStatusCode.NotModified)));
 
-			_cacheStorage = Substitute.For<ICacheStorage>();
-			_cacheStorage.LoadHeaders(Arg.Any<Uri>()).Returns((Dictionary<string, string>) null);
+			_httpCache = Substitute.For<IHttpCache>();
+			_httpCache.LoadHeaders(Arg.Any<Uri>()).Returns((Dictionary<string, string>) null);
 
-			_fixture = new CachedHttpRequester(_innerRequester, _cacheStorage);
+			_fixture = new HttpCacheRequester(_innerRequester, _httpCache);
 		}
 
 		private void SetupRequest(Uri uri, byte[] bytes, ContentType contentType, string eTag)
@@ -55,7 +55,7 @@ namespace Silphid.Loadzup.Test.Caching
 
 		private void SetupCacheStorage(Uri uri, byte[] bytes, ContentType contentType, string eTag)
 		{
-			_cacheStorage
+			_httpCache
 				.LoadHeaders(uri)
 				.Returns(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 				{
@@ -63,7 +63,7 @@ namespace Silphid.Loadzup.Test.Caching
 					[KnownHttpHeaders.ETag] = eTag
 				});
 
-			_cacheStorage
+			_httpCache
 				.Load(uri)
 				.Returns(Observable.Return(bytes));
 		}
@@ -74,31 +74,31 @@ namespace Silphid.Loadzup.Test.Caching
 			Assert.That(response.ContentType.MediaType, Is.EqualTo(contentType.MediaType));
 		}
 
-		private IObservable<Response> Request(Uri uri, CachePolicy policy) =>
-			_fixture.Request(uri, new Options {CachePolicy = policy});
+		private IObservable<Response> Request(Uri uri, HttpCachePolicy policy) =>
+			_fixture.Request(uri, new Options {HttpCachePolicy = policy});
 
 		[Test]
 		public void OriginOnly_OriginAvailable_ReturnsOrigin()
 		{
 			SetupRequest(AvailableUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(AvailableUri, CachePolicy.OriginOnly).Wait();
+			var response = Request(AvailableUri, HttpCachePolicy.OriginOnly).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(AvailableUri, Arg.Any<Options>());
-			_cacheStorage.DidNotReceive().Load(Arg.Any<Uri>());
+			_httpCache.DidNotReceive().Load(Arg.Any<Uri>());
 		}
 
 		[Test]
 		public void OriginOnly_OriginNotAvailable_ThrowsException()
 		{
 			Assert.Throws<HttpException>(() =>
-				Request(NotFoundUri, CachePolicy.OriginOnly).Wait());
+				Request(NotFoundUri, HttpCachePolicy.OriginOnly).Wait());
 
 			_innerRequester.Received(1).Request(NotFoundUri, Arg.Any<Options>());
-			_cacheStorage.DidNotReceive().LoadHeaders(Arg.Any<Uri>());
-			_cacheStorage.DidNotReceive().Load(Arg.Any<Uri>());
-			_cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+			_httpCache.DidNotReceive().LoadHeaders(Arg.Any<Uri>());
+			_httpCache.DidNotReceive().Load(Arg.Any<Uri>());
+			_httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 		}
 
 		[Test]
@@ -106,20 +106,20 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			SetupCacheStorage(AvailableUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(AvailableUri, CachePolicy.CacheOnly).Wait();
+			var response = Request(AvailableUri, HttpCachePolicy.CacheOnly).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.DidNotReceive().Request(Arg.Any<Uri>(), Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.Received(1).Load(AvailableUri);
-			_cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.Received(1).Load(AvailableUri);
+			_httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 		}
 
 		[Test]
 		public void CacheOnly_CacheNotAvailable_ThrowsException()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
-				Request(AvailableUri, CachePolicy.CacheOnly).Wait());
+				Request(AvailableUri, HttpCachePolicy.CacheOnly).Wait());
 		}
 
 		[Test]
@@ -127,13 +127,13 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			SetupRequest(AvailableUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(AvailableUri, CachePolicy.CacheOtherwiseOrigin).Wait();
+			var response = Request(AvailableUri, HttpCachePolicy.CacheOtherwiseOrigin).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(AvailableUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.DidNotReceive().Load(Arg.Any<Uri>());
-			_cacheStorage.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.DidNotReceive().Load(Arg.Any<Uri>());
+			_httpCache.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
 		}
 
 		[Test]
@@ -141,12 +141,12 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			SetupCacheStorage(AvailableUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(AvailableUri, CachePolicy.CacheOtherwiseOrigin).Wait();
+			var response = Request(AvailableUri, HttpCachePolicy.CacheOtherwiseOrigin).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.DidNotReceive().Request(Arg.Any<Uri>(), Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.Received(1).Load(AvailableUri);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.Received(1).Load(AvailableUri);
 		}
 
 		[Test]
@@ -154,13 +154,13 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			SetupCacheStorage(NotFoundUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(NotFoundUri, CachePolicy.OriginOtherwiseCache).Wait();
+			var response = Request(NotFoundUri, HttpCachePolicy.OriginOtherwiseCache).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(NotFoundUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(NotFoundUri);
-			_cacheStorage.Received(1).Load(NotFoundUri);
-			_cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+			_httpCache.Received(1).LoadHeaders(NotFoundUri);
+			_httpCache.Received(1).Load(NotFoundUri);
+			_httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 		}
 
 		[Test]
@@ -168,13 +168,13 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			SetupRequest(AvailableUri, Bytes1, TestContentType, TestETag1);
 
-			var response = Request(AvailableUri, CachePolicy.OriginOtherwiseCache).Wait();
+			var response = Request(AvailableUri, HttpCachePolicy.OriginOtherwiseCache).Wait();
 
 			AssertResponse(response, Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(AvailableUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.DidNotReceive().Load(Arg.Any<Uri>());
-			_cacheStorage.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.DidNotReceive().Load(Arg.Any<Uri>());
+			_httpCache.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
 		}
 
 		[Test]
@@ -183,15 +183,15 @@ namespace Silphid.Loadzup.Test.Caching
 			SetupRequest(AvailableUri, Bytes1, TestContentType, TestETag1);
 			SetupCacheStorage(AvailableUri, Bytes2, TestContentType, TestETag1);
 
-			var responses = Request(AvailableUri, CachePolicy.CacheThenOrigin).ToList().Wait();
+			var responses = Request(AvailableUri, HttpCachePolicy.CacheThenOrigin).ToList().Wait();
 
 			Assert.That(responses.Count, Is.EqualTo(2));
 			AssertResponse(responses[0], Bytes2, TestContentType);
 			AssertResponse(responses[1], Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(AvailableUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.Received(1).Load(AvailableUri);
-			_cacheStorage.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.Received(1).Load(AvailableUri);
+			_httpCache.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
 		}
 
 		[Test]
@@ -201,15 +201,15 @@ namespace Silphid.Loadzup.Test.Caching
 
 			var responses = new List<Response>();
 			Assert.Throws<HttpException>(() =>
-				Request(NotFoundUri, CachePolicy.CacheThenOrigin)
+				Request(NotFoundUri, HttpCachePolicy.CacheThenOrigin)
 					.Do(x => responses.Add(x)).Wait());
 
 			Assert.That(responses.Count, Is.EqualTo(1));
 			AssertResponse(responses[0], Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(NotFoundUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(NotFoundUri);
-			_cacheStorage.Received(1).Load(NotFoundUri);
-			_cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+			_httpCache.Received(1).LoadHeaders(NotFoundUri);
+			_httpCache.Received(1).Load(NotFoundUri);
+			_httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 		}
 
 		[Test]
@@ -218,22 +218,22 @@ namespace Silphid.Loadzup.Test.Caching
 			SetupCacheStorage(NotModifiedUri, Bytes1, TestContentType, TestETag1);
 
 			var responses = new List<Response>();
-			Request(NotModifiedUri, CachePolicy.CacheThenOrigin)
+			Request(NotModifiedUri, HttpCachePolicy.CacheThenOrigin)
 				.Do(x => responses.Add(x)).Wait();
 
 			Assert.That(responses.Count, Is.EqualTo(1));
 			AssertResponse(responses[0], Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(NotModifiedUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(NotModifiedUri);
-			_cacheStorage.Received(1).Load(NotModifiedUri);
-			_cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+			_httpCache.Received(1).LoadHeaders(NotModifiedUri);
+			_httpCache.Received(1).Load(NotModifiedUri);
+			_httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 		}
 
 		[Test]
 		public void CacheThenOrigin_NeitherCacheNorOriginAvailable_ThrowsException()
 		{
 			Assert.Throws<HttpException>(() =>
-				Request(NotModifiedUri, CachePolicy.CacheThenOrigin).Wait());
+				Request(NotModifiedUri, HttpCachePolicy.CacheThenOrigin).Wait());
 		}
 
 		[Test]
@@ -242,15 +242,15 @@ namespace Silphid.Loadzup.Test.Caching
 			SetupRequest(AvailableUri, Bytes1, TestContentType, TestETag1);
 			SetupCacheStorage(AvailableUri, Bytes2, TestContentType, TestETag1);
 
-			var responses = Request(AvailableUri, CachePolicy.CacheThenOriginIfETag).ToList().Wait();
+			var responses = Request(AvailableUri, HttpCachePolicy.CacheThenOriginIfETag).ToList().Wait();
 
 			Assert.That(responses.Count, Is.EqualTo(2));
 			AssertResponse(responses[0], Bytes2, TestContentType);
 			AssertResponse(responses[1], Bytes1, TestContentType);
 			_innerRequester.Received(1).Request(AvailableUri, Arg.Any<Options>());
-			_cacheStorage.Received(1).LoadHeaders(AvailableUri);
-			_cacheStorage.Received(1).Load(AvailableUri);
-			_cacheStorage.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
+			_httpCache.Received(1).LoadHeaders(AvailableUri);
+			_httpCache.Received(1).Load(AvailableUri);
+			_httpCache.Received(1).Save(AvailableUri, Bytes1, AnyNonNullDictionary);
 		}
 
 //    [Test]
@@ -260,15 +260,15 @@ namespace Silphid.Loadzup.Test.Caching
 //
 //        var responses = new List<Response>();
 //        Assert.Throws<HttpException>(() =>
-//            Request(NotFoundUri, CachePolicy.CacheThenOriginIfETag)
+//            Request(NotFoundUri, HttpCachePolicy.CacheThenOriginIfETag)
 //                .Do(x => responses.Add(x)).Wait());
 //
 //        Assert.That(responses.Count, Is.EqualTo(1));
 //        AssertResponse(responses[0], Bytes1, TestContentType);
 //        _innerRequester.Received(1).Request(NotFoundUri, Arg.Any<Options>());
-//        _cacheStorage.Received(1).LoadHeaders(NotFoundUri);
-//        _cacheStorage.Received(1).Load(NotFoundUri);
-//        _cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+//        _httpCache.Received(1).LoadHeaders(NotFoundUri);
+//        _httpCache.Received(1).Load(NotFoundUri);
+//        _httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 //    }
 //
 //    [Test]
@@ -277,22 +277,22 @@ namespace Silphid.Loadzup.Test.Caching
 //        SetupCacheStorage(NotModifiedUri, Bytes1, TestContentType, TestETag1);
 //
 //        var responses = new List<Response>();
-//        Request(NotModifiedUri, CachePolicy.CacheThenOriginIfETag)
+//        Request(NotModifiedUri, HttpCachePolicy.CacheThenOriginIfETag)
 //            .Do(x => responses.Add(x)).Wait();
 //
 //        Assert.That(responses.Count, Is.EqualTo(1));
 //        AssertResponse(responses[0], Bytes1, TestContentType);
 //        _innerRequester.Received(1).Request(NotModifiedUri, Arg.Any<Options>());
-//        _cacheStorage.Received(1).LoadHeaders(NotModifiedUri);
-//        _cacheStorage.Received(1).Load(NotModifiedUri);
-//        _cacheStorage.DidNotReceiveWithAnyArgs().Save(null, null, null);
+//        _httpCache.Received(1).LoadHeaders(NotModifiedUri);
+//        _httpCache.Received(1).Load(NotModifiedUri);
+//        _httpCache.DidNotReceiveWithAnyArgs().Save(null, null, null);
 //    }
 
 		[Test]
 		public void CacheThenOriginIfETag_NeitherCacheNorOriginAvailable_ThrowsException()
 		{
 			Assert.Throws<HttpException>(() =>
-				Request(NotModifiedUri, CachePolicy.CacheThenOriginIfETag).Wait());
+				Request(NotModifiedUri, HttpCachePolicy.CacheThenOriginIfETag).Wait());
 		}
 	}
 }

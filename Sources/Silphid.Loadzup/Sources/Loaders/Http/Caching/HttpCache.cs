@@ -5,25 +5,34 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using log4net;
 using Silphid.Extensions;
-using Silphid.Loadzup.Http;
 using UniRx;
 using UnityEngine;
 
-namespace Silphid.Loadzup.Caching
+namespace Silphid.Loadzup.Http.Caching
 {
-    public class CacheStorage : ICacheStorage
+    /// <summary>
+    /// Manages local persistence for HTTP files.
+    /// </summary>
+    public class HttpCache : IHttpCache
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CacheStorage));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpCache));
         private const string HeadersExtension = ".Headers";
         private readonly TimeSpan _defaultExpirySpan;
         private string _cacheDir;
 
-        public CacheStorage(TimeSpan defaultExpirySpan)
+        public HttpCache(TimeSpan defaultExpirySpan)
         {
             _defaultExpirySpan = defaultExpirySpan;
         }
 
-        public void DeleteAllExpired()
+        public void Clear()
+        {
+            Directory
+                .GetFiles(GetCacheDir())
+                .ForEach(File.Delete);
+        }
+
+        public void ClearExpired()
         {
             int deletedCount = 0;
             var utcNow = DateTime.UtcNow;
@@ -46,13 +55,6 @@ namespace Silphid.Loadzup.Caching
                 });
             
             Log.Debug($"Deleted {deletedCount} expired files.");
-        }
-
-        public void DeleteAll()
-        {
-            Directory
-                .GetFiles(GetCacheDir())
-                .ForEach(File.Delete);
         }
 
         public bool Contains(Uri uri) => File.Exists(GetFilePath(uri));
