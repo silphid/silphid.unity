@@ -8,10 +8,8 @@ using Object = UnityEngine.Object;
 
 namespace Silphid.Loadzup.Resource
 {
-    public class ResourceLoader : ILoader
+    public class ResourceLoader : LoaderBase
     {
-        private const string _pathSeparator = "/";
-
         private readonly IConverter _converter;
         private static readonly ILog Log = LogManager.GetLogger(typeof(ResourceLoader));
 
@@ -20,16 +18,16 @@ namespace Silphid.Loadzup.Resource
             _converter = converter;
         }
 
-        public bool Supports<T>(Uri uri) =>
+        public override bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.Resource;
 
-        public IObservable<T> Load<T>(Uri uri, Options options)
+        public override IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             if (!Supports<T>(uri))
                 throw new NotSupportedException($"Uri not supported: {uri}");
 
             var contentType = options?.ContentType;
-            var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, false);
+            var path = GetPathAndContentType(uri, ref contentType, false);
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))

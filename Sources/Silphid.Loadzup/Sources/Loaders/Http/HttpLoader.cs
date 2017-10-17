@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpLoader : ILoader
+    public class HttpLoader : LoaderBase
     {    
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpLoader));
         
@@ -17,10 +17,10 @@ namespace Silphid.Loadzup.Http
             _converter = converter;
         }
 
-        public bool Supports<T>(Uri uri) =>
+        public override bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https;
 
-        public IObservable<T> Load<T>(Uri uri, Options options = null)
+        public override IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             if (!Supports<T>(uri))
                 throw new NotSupportedException($"Uri not supported: {uri}");
