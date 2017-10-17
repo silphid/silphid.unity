@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using log4net;
 using UniRx;
-using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
@@ -13,52 +13,53 @@ namespace Silphid.Loadzup.Http
         private static readonly string NewLine = Environment.NewLine;
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
-            ObservableWebRequest
-                .Get(uri.AbsoluteUri, options?.Headers)
+            RequestInternal(uri.AbsoluteUri, options)
                 .DoOnSubscribe(() =>
-                    Log.Info($"GET {uri}{NewLine}Headers: {options?.Headers}"))
+                    Log.Info(GetLogMessage(uri, options)))
                 .DoOnError(ex =>
-                    Log.Error($"Failed GET {uri}{NewLine} Headers: {options?.Headers}", ex))
-                .Do(www =>
+                    Log.Error($"Failed {GetLogMessage(uri, options)}", ex))
+                .Select(www => new
                 {
-                    if (www.GetResponseHeaders() == null)
-                        Log.Warn($"There is no header in the response {uri}");
+                    WWW = www,
+                    Headers = www.GetResponseHeaders()
                 })
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data,
-                    www.GetResponseHeaders() ?? new Dictionary<string, string>(), options));
-
-        public IObservable<Response> Get(Uri uri, Options options = null) =>
-            Request(uri, options);
-
-        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null) =>
-            ObservableWebRequest
-                .Post(uri.AbsoluteUri, form, options?.Headers)
-                .DoOnSubscribe(() =>
-                    Log.Info($"POST {uri}{NewLine}Form: {form}{NewLine}Headers: {options?.Headers}"))
-                .DoOnError(ex =>
-                    Log.Error($"Failed POST {uri}{NewLine}Form: {form}{NewLine}Headers: {options?.Headers}", ex))
-                .Do(www =>
+                .Do(x =>
                 {
-                    if (www.GetResponseHeaders() == null)
-                        Log.Warn($"There is no header in the response {uri}");
+                    if (uri.Scheme != Scheme.StreamingFile && x.Headers == null)
+                        Log.Warn($"No headers in response from {uri}");
                 })
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data,
-                    www.GetResponseHeaders() ?? new Dictionary<string, string>(), options));
+                .Select(x => new Response(x.WWW.responseCode, x.WWW.downloadHandler.data,
+                    x.Headers ?? new Dictionary<string, string>(), options));
 
+        private IObservable<UnityWebRequest> RequestInternal(string url, Options options = null)
+        {
+            if (options == null || options.Method == HttpMethod.Get)
+                return ObservableWebRequest.Get(url, options?.Headers);
 
-        public IObservable<Response> Put(Uri uri, string body, Options options = null) =>
-            ObservableWebRequest
-                .Put(uri.AbsoluteUri, body, options?.Headers)
-                .DoOnSubscribe(() =>
-                    Log.Info($"PUT {uri}{NewLine}Body: {body}{NewLine}Headers: {options?.Headers}"))
-                .DoOnError(ex =>
-                    Log.Error($"Failed PUT {uri}{NewLine}Body: {body}{NewLine}Headers: {options?.Headers}", ex))
-                .Do(www =>
-                {
-                    if (www.GetResponseHeaders() == null)
-                        Log.Warn($"There is no header in the response {uri}");
-                })
-                .Select(www => new Response(www.responseCode, www.downloadHandler.data,
-                    www.GetResponseHeaders() ?? new Dictionary<string, string>(), options));
+            if (options.Method == HttpMethod.Post)
+                return ObservableWebRequest.Post(url, options.PostForm, options.Headers);
+
+            if (options.Method == HttpMethod.Put)
+                return ObservableWebRequest.Put(url, options.PutBody, options.Headers);
+
+            throw new NotImplementedException($"HTTP method {options.Method} not implemented for: {url}");
+        }
+
+        private string GetLogMessage(Uri uri, Options options)
+        {
+            var method = options?.Method ?? HttpMethod.Get;
+            var headers = options?.Headers?.ToString() ?? "{}";
+            
+            if (method == HttpMethod.Get)
+                return $"GET {uri}{NewLine}Headers:{NewLine}{headers}";
+
+            if (method == HttpMethod.Post)
+                return $"POST {uri}{NewLine}Form:{NewLine}{options?.PostForm}{NewLine}Headers:{NewLine}{headers}";
+
+            if (method == HttpMethod.Put)
+                return $"PUT {uri}{NewLine}Body:{NewLine}{options?.PutBody}{NewLine}Headers:{NewLine}{headers}";
+
+            throw new NotImplementedException($"HTTP method {options?.Method} not implemented for: {uri}");
+        }
     }
 }

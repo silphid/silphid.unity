@@ -1,12 +1,10 @@
 ﻿using System;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Loadzup.StreamingFile
 {
-    public class StreamingFileLoader : ILoader
+    public class StreamingFileLoader : LoaderBase
     {
-        private const string _pathSeparator = "/";
         private readonly IHttpRequester _requester;
         private readonly IConverter _converter;
 
@@ -16,16 +14,16 @@ namespace Silphid.Loadzup.StreamingFile
             _converter = converter;
         }
 
-        public bool Supports<T>(Uri uri) =>
+        public override bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.StreamingFile;
 
-        public IObservable<T> Load<T>(Uri uri, Options options = null)
+        public override IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             if (!Supports<T>(uri))
                 throw new NotSupportedException($"Uri not supported: {uri}");
 
             var contentType = options?.ContentType;
-            uri.GetPathAndContentType(ref contentType, _pathSeparator, true);           
+            GetPathAndContentType(uri, ref contentType, true);           
 
             return LoadFile(uri, options, contentType)
                 .ContinueWith(

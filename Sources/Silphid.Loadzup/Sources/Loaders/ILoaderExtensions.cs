@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http;
+using UnityEngine;
 
 namespace Silphid.Loadzup
 {
@@ -20,5 +22,25 @@ namespace Silphid.Loadzup
         
         public static ILoader WithHeaders(this ILoader This, Dictionary<string, string> headers) =>
             new HeadersLoaderDecorator(This, headers);
+        
+        public static ILoader With(this ILoader This, WWWForm form) =>
+            new PostLoaderDecorator(This, form);
+        
+        public static ILoader WithEmptyForm(this ILoader This) =>
+            new PostLoaderDecorator(This, new WWWForm());
+        
+        public static ILoader WithField(this ILoader This, string key, string value) =>
+            new PostFieldLoaderDecorator(This, key, value);
+        
+        public static ILoader WithField(this ILoader This, string key, int value) =>
+            new PostFieldLoaderDecorator(This, key, value.ToString());
+        
+        public static ILoader WithBody(this ILoader This, string body) =>
+            new PutLoaderDecorator(This, body);
+
+        public static ILoader WithUrlEncodedBody(this ILoader This, string body) =>
+            This
+                .WithBody(body)
+                .WithHeader(KnownHttpHeaders.ContentType, KnownMediaType.ApplicationWWWFormUrlEncoded);
     }
 }

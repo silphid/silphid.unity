@@ -1,23 +1,22 @@
 ﻿using System;
 using System.IO;
 using Silphid.Extensions;
-using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    internal static class UriExtensions
+    public abstract class LoaderBase : ILoader
     {
-        public static string GetPathAndContentType(this Uri This, ref ContentType contentType,
-            string pathSeparator, bool keepExtension)
+        protected const string PathSeparator = "/";
+        
+        public abstract bool Supports<T>(Uri uri);
+        public abstract IObservable<T> Load<T>(Uri uri, Options options = null);
+        
+        protected string GetPathAndContentType(Uri uri, ref ContentType contentType, bool keepExtension)
         {
-            // Rebuild path while removing scheme component
-            var host = This.Host.RemovePrefix(pathSeparator);
-            var isRoot = string.IsNullOrEmpty(This.AbsolutePath) || This.AbsolutePath == pathSeparator;
-            var path = isRoot ? host : host + This.AbsolutePath;
-            
+            var path = GetPath(uri);
+
             // Any extension detected?
             var extension = Path.GetExtension(path);
-            
             if (extension.IsNullOrWhiteSpace())
                 return path;
 
@@ -35,6 +34,12 @@ namespace Silphid.Loadzup
             }
 
             return path;
+        }
+
+        protected string GetPath(Uri uri)
+        {
+            var host = uri.Host.RemovePrefix(PathSeparator);
+            return host + uri.AbsolutePath.RemoveSuffix(PathSeparator) + uri.Query;
         }
     }
 }

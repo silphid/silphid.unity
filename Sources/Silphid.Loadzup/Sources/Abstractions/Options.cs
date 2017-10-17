@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Silphid.Loadzup.Caching;
+using UnityEngine;
 
 namespace Silphid.Loadzup
 {
@@ -9,6 +10,9 @@ namespace Silphid.Loadzup
         public CachePolicy? CachePolicy;
         public Dictionary<string, string> Headers;
         public bool IsAdditiveSceneLoading = true;
+        public HttpMethod Method = HttpMethod.Get;
+        public WWWForm PostForm;
+        public string PutBody;
 
         public void SetHeader(string key, string value)
         {

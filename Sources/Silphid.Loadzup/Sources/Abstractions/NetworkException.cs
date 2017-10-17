@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using UniRx;
-using UnityEngine.Networking;
 
 namespace Silphid.Loadzup
 {
-    public class NetworkpException : Exception
+    public class NetworkException : Exception
     {
 
-        public NetworkpException()
+        public NetworkException()
         {
         }
 
-        public NetworkpException(string message) : base(message)
+        public NetworkException(string message) : base(message)
         {
         }
 
-        public NetworkpException(string message, Exception innerException) : base(message, innerException)
+        public NetworkException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

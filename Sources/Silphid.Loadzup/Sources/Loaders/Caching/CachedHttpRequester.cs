@@ -5,7 +5,6 @@ using log4net;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
 using UniRx;
-using UnityEngine;
 
 namespace Silphid.Loadzup.Caching
 {
@@ -23,15 +22,6 @@ namespace Silphid.Loadzup.Caching
             _requester = requester;
             _cacheStorage = cacheStorage;
         }
-
-        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null) =>
-            _requester.Post(uri, form, options);
-
-        public IObservable<Response> Get(Uri uri, Options options = null) =>
-            Request(uri, options);
-
-        public IObservable<Response> Put(Uri uri, string body, Options options = null) =>
-            _requester.Put(uri, body, options);
 
         public IObservable<Response> Request(Uri uri, Options options = null)
         {
