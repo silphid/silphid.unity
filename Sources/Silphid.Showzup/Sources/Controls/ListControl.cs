@@ -285,7 +285,7 @@ namespace Silphid.Showzup
             ViewResolver.Resolve(input, options);
 
         protected virtual IObservable<IView> LoadView(ViewInfo viewInfo) =>
-            ViewLoader.Load(viewInfo, CancellationToken.None);
+            ViewLoader.Load(transform, viewInfo, CancellationToken.None);
 
         #endregion
     }

@@ -157,7 +157,7 @@ namespace Silphid.Showzup
             var cancellationToken = new CancellationToken(cancellationDisposable);
             var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());
             return ViewLoader
-                .Load(viewInfo, cancellationToken)
+                .Load(transform, viewInfo, cancellationToken)
                 .TakeUntil(cancellations);
         }
 
