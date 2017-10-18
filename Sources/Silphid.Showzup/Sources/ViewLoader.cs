@@ -85,7 +85,6 @@ namespace Silphid.Showzup
                 return LoadPrefabView(parent, viewType, uri, parameters, cancellationToken)
                     .Do(view => InjectView(view, viewModel, parameters))
                     .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
-
             }
             catch (Exception ex)
             {
@@ -143,15 +142,8 @@ namespace Silphid.Showzup
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            if (Application.isEditor)
-                original = Object.Instantiate(original);
-
-            DisableAllViews(original);
-
             var instance = Object.Instantiate(original, parent);
-
-            if (Application.isEditor)
-                Object.Destroy(original);
+            DisableAllViews(instance);
 
             if (cancellationToken.IsCancellationRequested)
             {

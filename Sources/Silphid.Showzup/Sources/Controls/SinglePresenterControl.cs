@@ -152,12 +152,12 @@ namespace Silphid.Showzup
         protected IObservable<IView> LoadView(ViewInfo viewInfo, Options options)
         {
             Log.Debug($"Loading: {viewInfo}");
-            
+
             var cancellationDisposable = new BooleanDisposable();
             var cancellationToken = new CancellationToken(cancellationDisposable);
             var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());
             return ViewLoader
-                .Load(transform, viewInfo, cancellationToken)
+                .Load(GetInstantiationContainer(), viewInfo, cancellationToken)
                 .TakeUntil(cancellations);
         }
 
