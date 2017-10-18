@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using log4net;
 using Silphid.Extensions;
 using UniRx;
-using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Silphid.Loadzup.Caching
 {
@@ -26,10 +24,7 @@ namespace Silphid.Loadzup.Caching
         public bool Supports<T>(Uri uri) =>
             _innerLoader.Supports<T>(uri);
 
-        public IObservable<T> Load<T>(Uri uri, Options options = null) =>
-            LoadInternal<T>(uri, options).Select(GetInstance);
-
-        private IObservable<T> LoadInternal<T>(Uri uri, Options options)
+        public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             // Is caching requested in options?
             var policy = options?.MemoryCachePolicy ?? _defaultPolicy;
@@ -57,39 +52,38 @@ namespace Silphid.Loadzup.Caching
 
             return _innerLoader
                 .Load<T>(uri, options)
-                .Do(x =>
-                {
-                    Subject<object> subject;
-
-                    lock (this)
-                    {
-                        Log.Debug($"{policy} - Loaded from origin to cache - {uri}");
-                        subject = _loadingSubjects[uri];
-                        _cache[uri] = x;
-                        _loadingSubjects.Remove(uri);
-                    }
-
-                    subject.OnNext(x);
-                    subject.OnCompleted();
-                })
-                .DoOnError(x =>
-                {
-                    Subject<object> subject;
-
-                    lock (this)
-                    {
-                        subject = _loadingSubjects[uri];
-                        _loadingSubjects.Remove(uri);
-                    }
-
-                    subject.OnError(x);
-                });
+                .Do(x => OnLoaded(uri, policy, x))
+                .DoOnError(x => OnError(uri, x));
         }
 
-        private T GetInstance<T>(T obj) =>
-            obj is GameObject
-                ? (T) (object) Object.Instantiate((GameObject) (object) obj)
-                : obj;
+        private void OnLoaded<T>(Uri uri, MemoryCachePolicy policy, T obj)
+        {
+            Subject<object> subject;
+
+            lock (this)
+            {
+                Log.Debug($"{policy} - Loaded from origin to cache - {uri}");
+                subject = _loadingSubjects[uri];
+                _cache[uri] = obj;
+                _loadingSubjects.Remove(uri);
+            }
+
+            subject.OnNext(obj);
+            subject.OnCompleted();
+        }
+
+        private void OnError(Uri uri, Exception ex)
+        {
+            Subject<object> subject;
+
+            lock (this)
+            {
+                subject = _loadingSubjects[uri];
+                _loadingSubjects.Remove(uri);
+            }
+
+            subject.OnError(ex);
+        }
 
         public void Clear()
         {
