@@ -12,6 +12,15 @@ namespace Silphid.Loadzup
         public static IObservable<T> Load<T>(this ILoader This, string uri, Options options = null) =>
             This.Load<T>(new Uri(uri), options);
         
+        public static ILoader WithCustomValue(this ILoader This, object key, object value) =>
+            new CustomValueLoaderDecorator(This, key, value);
+        
+        public static ILoader WithCustomValue<T>(this ILoader This, T value) =>
+            new CustomValueLoaderDecorator(This, typeof(T), value);
+        
+        public static ILoader WithCustomFlag(this ILoader This, object key, bool value = true) =>
+            new CustomValueLoaderDecorator(This, key, value);
+        
         public static ILoader With(this ILoader This, HttpCachePolicy? policy) =>
             new HttpCachePolicyLoaderDecorator(This, policy);
         

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Silphid.Extensions;
 using Silphid.Loadzup.Caching;
 using Silphid.Loadzup.Http.Caching;
 using UnityEngine;
@@ -10,7 +11,8 @@ namespace Silphid.Loadzup
         public ContentType ContentType;
         public HttpCachePolicy? HttpCachePolicy;
         public MemoryCachePolicy? MemoryCachePolicy;
-        public Dictionary<string, string> Headers;
+        public IDictionary<string, string> Headers;
+        public IDictionary<object, object> CustomValues;
         public bool IsAdditiveSceneLoading = true;
         public HttpMethod Method = HttpMethod.Get;
         public WWWForm PostForm;
@@ -24,13 +26,26 @@ namespace Silphid.Loadzup
             Headers[key] = value;
         }
 
-        public static implicit operator Options(HttpCachePolicy httpCachePolicy) =>
-            new Options { HttpCachePolicy = httpCachePolicy };
+        public void SetCustomValue(object key, object value)
+        {
+            if (CustomValues == null)
+                CustomValues = new Dictionary<object, object>();
 
-        public static implicit operator Options(ContentType contentType) =>
-            new Options { ContentType = contentType };
+            CustomValues[key] = value;
+        }
 
-        public static implicit operator Options(Dictionary<string, string> headers) =>
-            new Options { Headers = headers };
+        public static Options Clone(Options other) =>
+            new Options
+            {
+                ContentType = other?.ContentType,
+                HttpCachePolicy = other?.HttpCachePolicy,
+                MemoryCachePolicy = other?.MemoryCachePolicy,
+                Headers = other?.Headers?.Clone(),
+                CustomValues = other?.CustomValues?.Clone(),
+                IsAdditiveSceneLoading = other?.IsAdditiveSceneLoading ?? false,
+                Method = other?.Method ?? HttpMethod.Get,
+                PostForm = other?.PostForm,
+                PutBody = other?.PutBody
+            };
     }
 }

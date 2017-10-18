@@ -48,6 +48,7 @@
     <Compile Include="Sources\Abstractions\KnownStatusCode.cs" />
     <Compile Include="Sources\Abstractions\NetworkException.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
+    <Compile Include="Sources\Abstractions\OptionsExtensions.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
     <Compile Include="Sources\Converters\CompositeConverter.cs" />
     <Compile Include="Sources\Converters\JsonConverter.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Sources\Loaders\ResourceLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingAsset\StreamingAssetLoader.cs" />
     <Compile Include="Sources\Loaders\StreamingFile\StreamingFileLoader.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\CustomValueLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\HttpCachePolicyLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\ContentTypeLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\HeaderLoaderDecorator.cs" />

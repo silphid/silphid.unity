@@ -29,5 +29,8 @@ namespace Silphid.Extensions
             
             return value;
         }
+
+        public static IDictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> This) =>
+            This != null ? new Dictionary<TKey, TValue>(This) : null;
     }
 }

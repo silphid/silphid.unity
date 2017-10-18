@@ -10,7 +10,7 @@ namespace Silphid.Loadzup.Http
 {
     public static class ObservableWebRequest
     {
-        public static IObservable<UnityWebRequest> Get(string url, Dictionary<string, string> headers = null)
+        public static IObservable<UnityWebRequest> Get(string url, IDictionary<string, string> headers = null)
         {
             return Observable.Defer(() =>
             {
@@ -20,7 +20,7 @@ namespace Silphid.Loadzup.Http
             });
         }
         
-        public static IObservable<UnityWebRequest> Post(string url, WWWForm form, Dictionary<string, string> headers = null)
+        public static IObservable<UnityWebRequest> Post(string url, WWWForm form, IDictionary<string, string> headers = null)
         {
             return Observable.Defer(() =>
             {
@@ -30,7 +30,7 @@ namespace Silphid.Loadzup.Http
             });
         }
         
-        public static IObservable<UnityWebRequest> Put(string url, string body, Dictionary<string, string> headers = null)
+        public static IObservable<UnityWebRequest> Put(string url, string body, IDictionary<string, string> headers = null)
         {
             return Observable.Defer(() =>
             {
