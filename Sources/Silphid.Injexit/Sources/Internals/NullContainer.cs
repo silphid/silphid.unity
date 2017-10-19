@@ -12,7 +12,8 @@ namespace Silphid.Injexit
         public IBinding BindReference(Type sourceAbstractionType, BindingId id) => Binding.Null;
 
         public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null) => _ => null;
-        
+        public IResolver BaseResolver => Container.Null;
+
         public void Inject(object obj, IResolver overrideResolver = null) {}
         public void Inject(IEnumerable<object> objects, IResolver overrideResolver = null) {}
 

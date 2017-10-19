@@ -8,12 +8,12 @@ namespace Silphid.Injexit
         {
             var overrideContainer = This.Create();
             bind(overrideContainer);
-            return new CompositeResolver(overrideContainer, This);
+            return new OverrideResolver(This, overrideContainer);
         }
 
         public static IResolver Using(this IResolver This, IResolver overrideResolver) =>
             overrideResolver != null
-                ? new CompositeResolver(overrideResolver, This)
+                ? new OverrideResolver(This, overrideResolver)
                 : This;
         
         public static IResolver UsingInstance<T>(this IResolver This, T instance) =>
