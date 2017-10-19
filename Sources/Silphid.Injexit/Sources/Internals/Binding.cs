@@ -1,4 +1,5 @@
 ﻿using System;
+using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {
@@ -88,12 +89,16 @@ namespace Silphid.Injexit
 
         public override string ToString()
         {
+            if (Reference != null)
+                return $"{AbstractionType} => &{Reference}";
+            
             var overrides = OverrideResolver != null ? " with overrides" : "";
             var id = Id != null ? $" id {Id}" : "";
             var list = InList ? " in list" : "";
             var instance = Instance != null ? $" using instance {Instance}" : "";
+            var concretionType = ConcretionType?.ToString() ?? "Null";
             
-            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{id}{list}{instance}";
+            return $"{AbstractionType} => {concretionType} {Lifetime}{overrides}{id}{list}{instance}";
         }
     }
 }

@@ -192,8 +192,15 @@ namespace Silphid.Injexit
                 (x.Name == null || x.Name == name));
             
             if (binding != null)
+            {
+                if (binding.AbstractionType.Name == "ILoader" && binding.ConcretionType == null &&
+                    binding.Lifetime == Lifetime.Transient)
+                {
+                    int a = 0;
+                }
                 Log.Debug($"Resolved {binding}");
-
+            }
+            
             return binding;
         }
 
@@ -210,7 +217,8 @@ namespace Silphid.Injexit
                 
                 if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
                     throw new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}");
-                
+
+                Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
                 return GetFactory(referenceBinding);
             }
             

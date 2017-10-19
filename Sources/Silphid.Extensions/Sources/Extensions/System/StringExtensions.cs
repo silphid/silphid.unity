@@ -99,15 +99,17 @@ namespace Silphid.Extensions
             return value;
         }
 
-        public static string AddPrefixIfAbsent(this string value, string prefix)
-        {
-            return value.StartsWith(prefix) ? value : prefix + value;
-        }
+        public static string Prepend(this string value, string prefix) =>
+            prefix + value;
 
-        public static string AddSuffixIfAbsent(this string value, string suffix)
-        {
-            return value.EndsWith(suffix) ? value : value + suffix;
-        }
+        public static string Append(this string value, string suffix) =>
+            value + suffix;
+
+        public static string AddPrefixIfAbsent(this string value, string prefix) =>
+            value.StartsWith(prefix) ? value : prefix + value;
+
+        public static string AddSuffixIfAbsent(this string value, string suffix) =>
+            value.EndsWith(suffix) ? value : value + suffix;
 
         public static string RemoveLeft(this string value, int count)
         {
