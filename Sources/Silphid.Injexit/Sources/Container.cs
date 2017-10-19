@@ -121,8 +121,6 @@ namespace Silphid.Injexit
             }
         }
 
-        public IResolver BaseResolver => this;
-
         private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string name)
         {
             throw new UnresolvedTypeException(abstractionType, name);
@@ -194,7 +192,14 @@ namespace Silphid.Injexit
                 (x.Name == null || x.Name == name));
             
             if (binding != null)
+            {
+                if (binding.AbstractionType.Name == "ILoader" && binding.ConcretionType == null &&
+                    binding.Lifetime == Lifetime.Transient)
+                {
+                    int a = 0;
+                }
                 Log.Debug($"Resolved {binding}");
+            }
             
             return binding;
         }
@@ -222,7 +227,7 @@ namespace Silphid.Injexit
 
             return resolver =>
                 binding.Instance
-                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver.BaseResolver));
+                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
         }
 
         private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver)

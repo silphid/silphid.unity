@@ -63,9 +63,6 @@ namespace Silphid.Injexit
             }
         }
 
-        public IResolver BaseResolver =>
-            _containers.First().BaseResolver;
-
         #endregion
 
         #region IBinder members

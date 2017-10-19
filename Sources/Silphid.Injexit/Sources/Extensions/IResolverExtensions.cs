@@ -8,12 +8,12 @@ namespace Silphid.Injexit
         {
             var overrideContainer = This.Create();
             bind(overrideContainer);
-            return new OverrideResolver(This, overrideContainer);
+            return new CompositeResolver(overrideContainer, This);
         }
 
         public static IResolver Using(this IResolver This, IResolver overrideResolver) =>
             overrideResolver != null
-                ? new OverrideResolver(This, overrideResolver)
+                ? new CompositeResolver(overrideResolver, This)
                 : This;
         
         public static IResolver UsingInstance<T>(this IResolver This, T instance) =>
@@ -38,7 +38,7 @@ namespace Silphid.Injexit
             This.Using(x => x.BindInstances(instances));
 
         public static object Resolve(this IResolver This, Type abstractionType, string name = null) =>
-            This.ResolveFactory(abstractionType, name).Invoke(This.BaseResolver);
+            This.ResolveFactory(abstractionType, name).Invoke(This);
 
         public static T Resolve<T>(this IResolver This, string id = null) =>
             (T) This.Resolve(typeof(T), id);
