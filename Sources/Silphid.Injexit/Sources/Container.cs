@@ -222,7 +222,7 @@ namespace Silphid.Injexit
 
             return resolver =>
                 binding.Instance
-                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
+                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver.BaseResolver));
         }
 
         private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver)

@@ -7,6 +7,7 @@ namespace Silphid.Injexit
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(OverrideResolver));
 
+        private readonly IResolver _baseResolver;
         private readonly IResolver _overrideResolver;
 
         public OverrideResolver(IResolver baseResolver, IResolver overrideResolver)
@@ -16,9 +17,9 @@ namespace Silphid.Injexit
             
             if (baseResolver == null)
                 throw new ArgumentNullException(nameof(baseResolver));
-            
+
+            _baseResolver = baseResolver;
             _overrideResolver = overrideResolver;
-            BaseResolver = baseResolver;
         }
 
         public IContainer Create() =>
@@ -34,10 +35,10 @@ namespace Silphid.Injexit
             }
             catch (UnresolvedTypeException)
             {
-                return _overrideResolver.ResolveFactory(abstractionType, name);
+                return _baseResolver.ResolveFactory(abstractionType, name);
             }
         }
 
-        public IResolver BaseResolver { get; }
+        public IResolver BaseResolver => _baseResolver;
     }
 }
