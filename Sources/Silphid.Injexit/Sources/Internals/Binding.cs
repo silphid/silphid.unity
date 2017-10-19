@@ -1,5 +1,4 @@
 ﻿using System;
-using Silphid.Extensions;
 
 namespace Silphid.Injexit
 {

@@ -20,7 +20,7 @@ namespace Silphid.Injexit
         /// </summary>
         public static IContainer Using(this IContainer This, IContainer overrideContainer) =>
             overrideContainer != null
-                ? new CompositeContainer(overrideContainer, This)
+                ? new OverrideContainer(This, overrideContainer, true)
                 : This;
         
         /// <summary>
@@ -34,7 +34,7 @@ namespace Silphid.Injexit
         /// to which extra/override bindings can be added.
         /// </summary>
         public static IContainer Child(this IContainer This) =>
-            new CompositeContainer(This.Create(), This);
+            new OverrideContainer(This, This.Create(), true);
 
         #region Typed factories
 
