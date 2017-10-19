@@ -11,6 +11,13 @@ namespace Silphid.Injexit
             return This.Using(child);
         }
         
+        public static IBinding UsingRecursively(this IBinding This, Action<IBinder> bind)
+        {
+            var child = This.Container.Create();
+            bind(child);
+            return This.UsingRecursively(child);
+        }
+        
         public static IBinding UsingInstance<T>(this IBinding This, T instance) =>
             This.Using(x => x.BindInstance(instance));
         

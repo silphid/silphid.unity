@@ -36,11 +36,18 @@
         
         /// <summary>
         /// Attaches a child resolver to this binding, which will be used
-        /// to resolve its dependencies. Useful for compositing objects more
+        /// to resolve its direct dependencies. Useful for compositing objects more
         /// explicitly.
         /// </summary>
         IBinding Using(IResolver resolver);
-        
+
+        /// <summary>
+        /// Attaches a child resolver to this binding, which will be used
+        /// to resolve its direct and indirect dependencies. Useful for compositing objects more
+        /// explicitly.
+        /// </summary>
+        IBinding UsingRecursively(IResolver resolver);
+
         /// <summary>
         /// Marks binding with given Named, when multiple bindings have same
         /// abstraction type and you want to explicitly specify which to use

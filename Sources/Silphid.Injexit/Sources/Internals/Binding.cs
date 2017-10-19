@@ -11,6 +11,7 @@ namespace Silphid.Injexit
         public Type ConcretionType { get; }
         public Lifetime Lifetime { get; set; }
         public IResolver OverrideResolver { get; private set; }
+        public bool IsOverrideResolverRecursive { get; private set; }
         public object Instance { get; set; }
         public bool InList { get; private set; }
         public string Name { get; private set; }
@@ -74,6 +75,16 @@ namespace Silphid.Injexit
                 throw new InvalidOperationException("Already specified binding overrides.");
                     
             OverrideResolver = resolver;
+            return this;
+        }
+
+        public IBinding UsingRecursively(IResolver resolver)
+        {
+            if (OverrideResolver != null)
+                throw new InvalidOperationException("Already specified binding overrides.");
+                    
+            OverrideResolver = resolver;
+            IsOverrideResolverRecursive = true;
             return this;
         }
 

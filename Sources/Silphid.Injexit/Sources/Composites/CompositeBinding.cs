@@ -40,6 +40,11 @@ namespace Silphid.Injexit
             throw new NotSupportedException();
         }
 
+        public IBinding UsingRecursively(IResolver resolver)
+        {
+            throw new NotSupportedException();
+        }
+
         public IBinding Named(string name)
         {
             _bindings.ForEach(x => x.Named(name));

@@ -7,6 +7,7 @@
         public IBinding AsSingle() => Binding.Null;
         public IBinding AsEagerSingle() => Binding.Null;
         public IBinding Using(IResolver resolver) => Binding.Null;
+        public IBinding UsingRecursively(IResolver resolver) => Binding.Null;
         public IBinding Named(string name) => Binding.Null;
         public IBinding Id(BindingId id) => Binding.Null;
     }

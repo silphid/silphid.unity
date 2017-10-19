@@ -218,18 +218,21 @@ namespace Silphid.Injexit
             }
             
             if (binding.Lifetime == Lifetime.Transient)
-                return GetFactory(binding.ConcretionType, binding.OverrideResolver);
+                return GetFactory(binding.ConcretionType, binding.OverrideResolver, binding.IsOverrideResolverRecursive);
 
-            return resolver =>
-                binding.Instance
-                ?? (binding.Instance = GetFactory(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver.BaseResolver));
+            return resolver => binding.Instance
+                               ?? (binding.Instance = GetFactory(
+                                       binding.ConcretionType,
+                                       binding.OverrideResolver,
+                                       binding.IsOverrideResolverRecursive)
+                                   .Invoke(resolver.BaseResolver));
         }
 
-        private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver)
+        private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver, bool isRecursive)
         {
             var factory = GetFactory(concretionType);
             return factory != null
-                ? resolver => factory(resolver.Using(overrideResolver))
+                ? resolver => factory(resolver.Using(overrideResolver, isRecursive))
                 : NullFactory;
         }
 
