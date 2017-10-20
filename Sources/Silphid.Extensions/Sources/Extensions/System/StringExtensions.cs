@@ -7,6 +7,13 @@ namespace Silphid.Extensions
 {
     public static class StringExtensions
     {
+        private const string Ellipsis = "...";
+        
+        public static string WithEllipsis(this string This, int maxLength) =>
+            This.Length <= maxLength
+                ? This
+                : This.Left(maxLength - Ellipsis.Length) + Ellipsis;
+
         public static string ToStringInvariant(this float obj)
         {
             return obj.ToString(CultureInfo.InvariantCulture);

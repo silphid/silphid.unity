@@ -145,7 +145,7 @@ namespace Silphid.Loadzup.Http.Caching
                 .Do(x =>
                 {
                     if (x.StatusCode == KnownStatusCode.NotModified)
-                        throw new HttpException(HttpStatusCode.NotModified);
+                        throw new HttpException(uri, HttpStatusCode.NotModified);
 
                     if (policy != HttpCachePolicy.OriginOnly)
                         _httpCache.Save(uri, x.Bytes, x.Headers);

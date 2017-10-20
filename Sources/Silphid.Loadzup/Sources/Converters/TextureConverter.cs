@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using UniRx;
 using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class TextureConverter : IConverter
+    public class TextureConverter : ConverterBase<byte[]>
     {
-        private readonly string[] _imageMediaTypes =
+        public TextureConverter() : base("image/png", "image/jpeg", "application/octet-stream")
         {
-            "image/png",
-            "image/jpeg",
-            "application/octet-stream"
-        };
+        }
 
-        public bool Supports<T>(object input, ContentType contentType) =>
-            input is byte[] && _imageMediaTypes.Contains(contentType.MediaType);
-
-        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding)
+        protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding)
         {
             var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
-            texture.LoadImage((byte[]) input);
+            texture.LoadImage(input);
             return Observable.Return((T)(object)texture);
         }
     }

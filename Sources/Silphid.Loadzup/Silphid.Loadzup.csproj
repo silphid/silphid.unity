@@ -43,21 +43,25 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Abstractions\ContentType.cs" />
+    <Compile Include="Sources\Abstractions\Exceptions\ConversionException.cs" />
+    <Compile Include="Sources\Abstractions\Exceptions\HttpException.cs" />
+    <Compile Include="Sources\Abstractions\Exceptions\LoadException.cs" />
+    <Compile Include="Sources\Abstractions\Exceptions\LoadzupException.cs" />
+    <Compile Include="Sources\Abstractions\Exceptions\NetworkException.cs" />
     <Compile Include="Sources\Abstractions\HttpMethod.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
     <Compile Include="Sources\Abstractions\KnownStatusCode.cs" />
-    <Compile Include="Sources\Abstractions\NetworkException.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Abstractions\OptionsExtensions.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
     <Compile Include="Sources\Converters\CompositeConverter.cs" />
+    <Compile Include="Sources\Converters\ConverterBase.cs" />
     <Compile Include="Sources\Converters\JsonConverter.cs" />
     <Compile Include="Sources\Converters\SpriteConverter.cs" />
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
     <Compile Include="Sources\Abstractions\ILoader.cs" />
     <Compile Include="Sources\Abstractions\IHttpRequester.cs" />
-    <Compile Include="Sources\Abstractions\HttpException.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
     <Compile Include="Sources\DisposableSprite.cs" />

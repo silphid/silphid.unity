@@ -5,14 +5,15 @@ using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class JsonConverter : IConverter
+    public class JsonConverter : ConverterBase<byte[]>
     {
-        public bool Supports<T>(object input, ContentType contentType) =>
-            input is byte[] && contentType.MediaType == KnownMediaType.ApplicationJson;
-
-        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding)
+        public JsonConverter() : base(KnownMediaType.ApplicationJson)
         {
-            return Observable.Return(JsonUtility.FromJson<T>(encoding.GetString((byte[]) input)));
+        }
+
+        protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding)
+        {
+            return Observable.Return(JsonUtility.FromJson<T>(encoding.GetString(input)));
         }
     }
 }

@@ -2,9 +2,8 @@
 
 namespace Silphid.Loadzup
 {
-    public class NetworkException : Exception
+    public class NetworkException : LoadzupException
     {
-
         public NetworkException()
         {
         }

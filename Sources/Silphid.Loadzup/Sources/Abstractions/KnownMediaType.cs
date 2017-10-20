@@ -6,6 +6,7 @@ namespace Silphid.Loadzup
     {
         public const string ApplicationJson = "application/json";
         public const string ApplicationXml = "application/xml";
+        public const string TextXml = "text/xml";
         public const string ApplicationWWWFormUrlEncoded = "application/x-www-form-urlencoded";
 
         public static string FromExtension(string extension)

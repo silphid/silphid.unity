@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class BundleConverter : IConverter
+    public class BundleConverter : ConverterBase<byte[]>
     {
-        public bool Supports<T>(object input, ContentType contentType) =>
-            input is byte[] && typeof(T) == typeof(IBundle);
+        protected override bool SupportsInternal<T>(byte[] input, ContentType contentType) =>
+            typeof(T) == typeof(IBundle);
 
-        public IObservable<T> Convert<T>(object input, ContentType contentType, Encoding encoding) =>
+        protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding) =>
             AssetBundle
-                .LoadFromMemoryAsync((byte[]) input)
+                .LoadFromMemoryAsync(input)
                 .AsAsyncOperationObservable()
                 .Select(x =>
                 {

@@ -31,9 +31,9 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			_innerRequester = Substitute.For<IHttpRequester>();
 			_innerRequester.Request(NotFoundUri, Arg.Any<Options>())
-				.Returns(Observable.Throw<Response>(new HttpException(HttpStatusCode.NotFound)));
+				.Returns(Observable.Throw<Response>(new HttpException(new Uri(""), HttpStatusCode.NotFound)));
 			_innerRequester.Request(NotModifiedUri, Arg.Any<Options>())
-				.Returns(Observable.Throw<Response>(new HttpException(HttpStatusCode.NotModified)));
+				.Returns(Observable.Throw<Response>(new HttpException(new Uri(""), HttpStatusCode.NotModified)));
 
 			_httpCache = Substitute.For<IHttpCache>();
 			_httpCache.LoadHeaders(Arg.Any<Uri>()).Returns((Dictionary<string, string>) null);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using log4net;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
 
@@ -16,7 +15,6 @@ namespace Silphid.Loadzup
         public long StatusCode { get; }
         public byte[] Bytes { get; }
         public readonly Dictionary<string, string> Headers;
-
 
         public Response(long statusCode, byte[] bytes, IDictionary<string, string> headers, Options options = null)
         {
