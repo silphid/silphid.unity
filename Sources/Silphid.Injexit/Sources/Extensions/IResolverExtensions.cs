@@ -4,14 +4,14 @@ namespace Silphid.Injexit
 {
     public static class IResolverExtensions
     {
-        public static IResolver Using(this IResolver This, Action<IBinder> bind, bool isRecursive = false)
+        public static IResolver Using(this IResolver This, Action<IBinder> bind, bool isRecursive = true)
         {
             var overrideContainer = This.Create();
             bind(overrideContainer);
             return new OverrideResolver(This, overrideContainer, isRecursive);
         }
 
-        public static IResolver Using(this IResolver This, IResolver overrideResolver, bool isRecursive = false) =>
+        public static IResolver Using(this IResolver This, IResolver overrideResolver, bool isRecursive = true) =>
             overrideResolver != null
                 ? new OverrideResolver(This, overrideResolver, isRecursive)
                 : This;
