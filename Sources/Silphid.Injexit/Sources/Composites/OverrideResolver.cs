@@ -33,11 +33,11 @@ namespace Silphid.Injexit
             
             try
             {
-                return _overrideResolver.ResolveFactory(abstractionType, name);
+                return _overrideResolver.ResolveResult(abstractionType, name);
             }
             catch (UnresolvedTypeException)
             {
-                return _baseResolver.ResolveFactory(abstractionType, name);
+                return _baseResolver.ResolveResult(abstractionType, name);
             }
         }
 

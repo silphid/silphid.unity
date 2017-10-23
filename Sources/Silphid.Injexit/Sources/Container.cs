@@ -12,7 +12,6 @@ namespace Silphid.Injexit
         public const int MaxRecursionDepth = 15;
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
-        private static readonly Func<IResolver, object> NullFactory = null;
         
         #region Private fields
 
@@ -93,7 +92,7 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
+        public Result ResolveResult(Type abstractionType, string name = null)
         {
             _recursionDepth++;
             
@@ -124,27 +123,27 @@ namespace Silphid.Injexit
 
         public IResolver BaseResolver => this;
 
-        private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string name)
-        {
-            throw new UnresolvedTypeException(abstractionType, name);
-        }
+        private Result ThrowUnresolvedType(Type abstractionType, string name) =>
+            new Result(new UnresolvedTypeException(abstractionType, name));
 
-        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType, string name)
+        private Result? ResolveFromListMappings(Type abstractionType, string name)
         {
             var elementType = GetListElementType(abstractionType);
             if (elementType == null)
-                return NullFactory;
+                return null;
 
             var factories = GetListFactories(elementType, name);
             if (factories.Count == 0)
-                return NullFactory;
+                return null;
             
             // Array or Enumerable<T>
             if (IsArrayOrGenericEnumerable(abstractionType))
-                return resolver => ToTypedArray(factories.Select(x => x(resolver)), elementType);
+                return new Result(resolver =>
+                    ToTypedArray(factories.Select(x => x(resolver)), elementType));
 
             // List<T>
-            return resolver => ToTypedList(factories.Select(x => x(resolver)), elementType);
+            return new Result(resolver =>
+                ToTypedList(factories.Select(x => x(resolver)), elementType));
         }
 
         private bool IsArrayOrGenericEnumerable(Type type) =>
@@ -179,14 +178,14 @@ namespace Silphid.Injexit
             return null;
         }
 
-        private List<Func<IResolver, object>> GetListFactories(Type abstractionType, string name) =>
+        private List<Result> GetListFactories(Type abstractionType, string name) =>
             _bindings
                 .Where(x => x.AbstractionType == abstractionType && x.InList && (x.Name == null || x.Name == name))
-                .Select(GetFactory)
+                .Select(GetFactoryForBinding)
                 .ToList();
 
-        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType, string name) =>
-            GetFactory(ResolveType(abstractionType, name));
+        private Result? ResolveFromTypeMappings(Type abstractionType, string name) =>
+            GetFactoryForBinding(ResolveType(abstractionType, name));
 
         private Binding ResolveType(Type abstractionType, string name)
         {
@@ -200,46 +199,46 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        private Func<IResolver, object> GetFactory(Binding binding)
+        private Result? GetFactoryForBinding(Binding binding)
         {
             if (binding == null)
-                return NullFactory;
+                return null;
 
             if (binding.Reference != null)
             {
                 var referenceBinding = binding.Reference.Binding;
                 if (referenceBinding == null)
-                    throw new UnresolvedTypeException(binding.AbstractionType, null, $"No binding bound to {binding.Reference}");
+                    return new Result(
+                        new UnresolvedTypeException(binding.AbstractionType, null, $"No binding bound to {binding.Reference}"));
                 
                 if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
-                    throw new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}");
+                    return new Result(
+                        new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}"));
 
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
                 
-                return GetFactory(referenceBinding);
+                return GetFactoryForBinding(referenceBinding);
             }
             
             if (binding.Lifetime == Lifetime.Transient)
-                return GetFactory(binding.ConcretionType, binding.OverrideResolver, binding.IsOverrideResolverRecursive);
+                return GetFactoryForConcreteType(binding.ConcretionType, binding.OverrideResolver, binding.IsOverrideResolverRecursive);
 
-            return resolver => binding.Instance
-                               ?? (binding.Instance = GetFactory(
-                                       binding.ConcretionType,
-                                       binding.OverrideResolver,
-                                       binding.IsOverrideResolverRecursive)
-                                   .Invoke(resolver.BaseResolver));
+            return new Result(resolver => binding.Instance
+                                               ?? (binding.Instance = GetFactoryForConcreteType(
+                                                       binding.ConcretionType,
+                                                       binding.OverrideResolver,
+                                                       binding.IsOverrideResolverRecursive)
+                                                   .ResolveInstance(resolver.BaseResolver)));
         }
 
-        private Func<IResolver, object> GetFactory(Type concretionType, IResolver overrideResolver, bool isRecursive)
+        private Result? GetFactoryForConcreteType(Type concretionType, IResolver overrideResolver, bool isRecursive)
         {
-            var factory = GetFactory(concretionType);
-            return factory != null
-                ? resolver => factory(resolver.Using(overrideResolver, isRecursive))
-                : NullFactory;
+            var factory = GetFactoryForConcreteType(concretionType);
+            return new Result(resolver => factory(resolver.Using(overrideResolver, isRecursive)));
         }
 
-        private Func<IResolver, object> GetFactory(Type concretionType) =>
+        private Func<IResolver, object> GetFactoryForConcreteType(Type concretionType) =>
             resolver =>
             {
                 _recursionDepth++;
@@ -284,7 +283,7 @@ namespace Silphid.Injexit
             
             try
             {
-                return resolver.Resolve(parameter.Type, parameter.CanonicalName);
+                return IResolverExtensions.Resolve(resolver, parameter.Type, parameter.CanonicalName);
             }
             catch (UnresolvedDependencyException ex)
             {
@@ -394,7 +393,7 @@ namespace Silphid.Injexit
         {
             try
             {
-                var value = resolver.Resolve(member.Type, member.CanonicalName);
+                var value = IResolverExtensions.Resolve(resolver, member.Type, member.CanonicalName);
                 
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
@@ -451,7 +450,7 @@ namespace Silphid.Injexit
         {
             _bindings
                 .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
-                .ForEach(x => this.Resolve(x.AbstractionType, x.Name));
+                .ForEach(x => IResolverExtensions.Resolve(this, x.AbstractionType, x.Name));
         }
 
         #endregion        

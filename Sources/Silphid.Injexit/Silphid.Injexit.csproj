@@ -52,6 +52,7 @@
     <Compile Include="Sources\Abstractions\IInstaller.cs" />
     <Compile Include="Sources\Abstractions\IListBinder.cs" />
     <Compile Include="Sources\Abstractions\IResolver.cs" />
+    <Compile Include="Sources\Abstractions\Result.cs" />
     <Compile Include="Sources\Abstractions\UnresolvedDependencyException.cs" />
     <Compile Include="Sources\Abstractions\UnresolvedTypeException.cs" />
     <Compile Include="Sources\Attributes\BindAttribute.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Sources\Composites\OverrideContainer.cs" />
     <Compile Include="Sources\Composites\OverrideResolver.cs" />
     <Compile Include="Sources\Container.cs" />
+    <Compile Include="Sources\Extensions\ResultExtensions.cs" />
     <Compile Include="Sources\Extensions\IBinderExtensions.cs" />
     <Compile Include="Sources\Extensions\IBindingExtensions.cs" />
     <Compile Include="Sources\Extensions\IContainerExtensions.cs" />

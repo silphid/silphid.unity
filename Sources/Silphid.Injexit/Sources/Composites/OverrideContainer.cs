@@ -39,11 +39,11 @@ namespace Silphid.Injexit
                 {
                     try
                     {
-                        return _overrideContainer.ResolveFactory(abstractionType, name);
+                        return _overrideContainer.ResolveResult(abstractionType, name);
                     }
                     catch (UnresolvedTypeException)
                     {
-                        return _baseContainer.ResolveFactory(abstractionType, name);
+                        return _baseContainer.ResolveResult(abstractionType, name);
                     }
                 }
                 catch (CircularDependencyException ex)
