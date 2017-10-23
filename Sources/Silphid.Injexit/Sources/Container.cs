@@ -99,7 +99,8 @@ namespace Silphid.Injexit
             
             try
             {
-                Log.Debug($"Resolving {abstractionType.Name}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolving {abstractionType.Name}");
                 
                 if (_recursionDepth > MaxRecursionDepth)
                     throw new CircularDependencyException(abstractionType);
@@ -193,7 +194,7 @@ namespace Silphid.Injexit
                 x.AbstractionType == abstractionType &&
                 (x.Name == null || x.Name == name));
             
-            if (binding != null)
+            if (binding != null && Log.IsDebugEnabled)
                 Log.Debug($"Resolved {binding}");
             
             return binding;
@@ -213,7 +214,9 @@ namespace Silphid.Injexit
                 if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
                     throw new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}");
 
-                Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
+                
                 return GetFactory(referenceBinding);
             }
             
@@ -276,7 +279,9 @@ namespace Silphid.Injexit
 
         private object ResolveParameter(Type dependentType, InjectParameterInfo parameter, IResolver resolver)
         {
-            Log.Debug($"Resolving parameter {parameter.Name}");
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Resolving parameter {parameter.Name}");
+            
             try
             {
                 return resolver.Resolve(parameter.Type, parameter.CanonicalName);
@@ -292,7 +297,9 @@ namespace Silphid.Injexit
                     throw new UnresolvedDependencyException(dependentType, ex, parameter.Name);
             }
 
-            Log.Debug($"Falling back to default value: {parameter.DefaultValue}");
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Falling back to default value: {parameter.DefaultValue}");
+            
             return parameter.DefaultValue;
         }
 
@@ -357,7 +364,9 @@ namespace Silphid.Injexit
             if (behaviour != null)
                 return true;
             
-            Log.Warn("Skipping null MonoBehaviour.");
+            if (Log.IsWarnEnabled)
+                Log.Warn("Skipping null MonoBehaviour.");
+            
             return false;
         }
         
@@ -386,7 +395,10 @@ namespace Silphid.Injexit
             try
             {
                 var value = resolver.Resolve(member.Type, member.CanonicalName);
-                Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                
                 member.SetValue(obj, value);
             }
             catch (UnresolvedTypeException ex)
@@ -399,7 +411,10 @@ namespace Silphid.Injexit
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
             var parameters = ResolveParameters(obj.GetType(), method.Parameters, resolver);
-            Log.Debug($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
+            
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
+            
             method.Method.Invoke(obj, parameters);
         }
 
