@@ -99,7 +99,8 @@ namespace Silphid.Injexit
             
             try
             {
-                Log.Debug($"Resolving {abstractionType.Name}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolving {abstractionType.Name}");
                 
                 if (_recursionDepth > MaxRecursionDepth)
                     throw new CircularDependencyException(abstractionType);
