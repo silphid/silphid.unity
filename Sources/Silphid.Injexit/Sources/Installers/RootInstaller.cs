@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.IO;
+using System.Xml;
 using log4net;
 using UnityEngine;
 using log4net.Config;
@@ -8,6 +9,11 @@ namespace Silphid.Injexit
     public abstract class RootInstaller : Installer
     {
         public string LogResourceFile = "Log4net";
+
+        private static string DataPath =>
+            Application.isEditor
+                ? Path.Combine(Application.dataPath, "..")
+                : Application.dataPath;
 
         protected override IContainer CreateContainer() =>
             new Container(new Reflector());
@@ -23,7 +29,7 @@ namespace Silphid.Injexit
         protected virtual void ConfigureLogging()
         {
             var textAsset = Resources.Load<TextAsset>(LogResourceFile);
-            var text = textAsset.text.Replace("${DataPath}", Application.dataPath);
+            var text = textAsset.text.Replace("${DataPath}", DataPath);
             var xmldoc = new XmlDocument();
             xmldoc.LoadXml (text);
 
