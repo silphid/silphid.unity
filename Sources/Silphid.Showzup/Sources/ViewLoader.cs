@@ -51,7 +51,9 @@ namespace Silphid.Showzup
         {
             try
             {
-                Log.Debug($"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
+                
                 var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
@@ -66,7 +68,9 @@ namespace Silphid.Showzup
         {
             try
             {
-                Log.Debug($"Resolving {viewModelType.Name} (without Model) for View {viewType.Name}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolving {viewModelType.Name} (without Model) for View {viewType.Name}");
+                
                 var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
@@ -81,7 +85,9 @@ namespace Silphid.Showzup
         {
             try
             {
-                Log.Debug($"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}");
+                
                 return LoadPrefabView(parent, viewType, uri, parameters, cancellationToken)
                     .Do(view => InjectView(view, viewModel, parameters))
                     .ContinueWith(view => LoadLoadable(view).ThenReturn(view));
@@ -96,7 +102,9 @@ namespace Silphid.Showzup
         {
             try
             {
-                Log.Debug($"Initializing {view} with {viewModel}");
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Initializing {view} with {viewModel}");
+                
                 view.ViewModel = viewModel;
                 _injectionAdaptor.Inject(view.GameObject, parameters);
 
@@ -116,7 +124,8 @@ namespace Silphid.Showzup
 
         private IObservable<IView> LoadPrefabView(Transform parent, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
         {
-            Log.Debug($"LoadPrefabView({viewType}, {uri})");
+            if (Log.IsDebugEnabled)
+                Log.Debug($"LoadPrefabView({viewType}, {uri})");
 
             return _loader.Load<GameObject>(uri)
                 .Last()
