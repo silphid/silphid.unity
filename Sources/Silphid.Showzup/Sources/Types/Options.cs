@@ -39,7 +39,7 @@ namespace Silphid.Showzup
         public IEnumerable<object> Parameters { get; set; }
 
         public override string ToString() =>
-            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, {nameof(Parameters)}: [{Parameters?.ToDelimitedString(", ")}]";
+            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, {nameof(Parameters)}: [{Parameters?.ConcatToString(", ")}]";
 
         public static Options Clone(Options other) =>
             new Options

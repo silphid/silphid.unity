@@ -102,15 +102,14 @@ namespace Silphid.Extensions
             return maxElement;
         }
 
-        public static string ToDelimitedString<T>(this IEnumerable<T> source, string delimiter)
+        public static string ConcatToString<T>(this IEnumerable<T> source, string delimiter = null)
         {
             var builder = new StringBuilder();
             foreach (var t in source)
             {
-                if (builder.Length > 0)
-                {
+                if (delimiter != null && builder.Length > 0)
                     builder.Append(delimiter);
-                }
+                
                 builder.Append(t);
             }
             return builder.ToString();

@@ -9,7 +9,7 @@ namespace Silphid.Requests
         
         public static void Handle(this IRequestHandler requestHandler, Exception exception)
         {
-            requestHandler.Handle(exception as IRequest ?? new RequestException(null, exception));
+            requestHandler.Handle(exception as IRequest ?? new RequestException(exception));
         }
     }
 }

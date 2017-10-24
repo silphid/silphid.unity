@@ -96,5 +96,9 @@ namespace Silphid.Injexit
         }
 
         #endregion
+
+        public override string ToString() =>
+            $"Overrides:\r\n{_overrideContainer}\r\n" +
+            $"Base:\r\n{_baseContainer}";
     }
 }

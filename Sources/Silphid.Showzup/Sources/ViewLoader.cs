@@ -111,7 +111,7 @@ namespace Silphid.Showzup
             }
             catch (UnresolvedDependencyException ex)
             {
-                throw new LoadException($"Failed injecting {view} with parameters: {parameters.ToDelimitedString(", ")}", ex);
+                throw new LoadException($"Failed injecting {view} with parameters: {parameters.ConcatToString(", ")}", ex);
             }
         }
 

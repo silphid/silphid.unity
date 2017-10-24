@@ -41,7 +41,11 @@ namespace Silphid.Injexit
 
         public IResolver BaseResolver =>
             _isRecursive
-            ? this
-            : _baseResolver.BaseResolver;
+                ? this
+                : _baseResolver.BaseResolver;
+ 
+        public override string ToString() =>
+            $"Overrides:\r\n{_overrideResolver}\r\n" +
+            $"Base:\r\n{_baseResolver}";
     }
 }

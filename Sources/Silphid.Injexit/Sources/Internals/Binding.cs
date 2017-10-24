@@ -100,15 +100,16 @@ namespace Silphid.Injexit
         public override string ToString()
         {
             if (Reference != null)
-                return $"{AbstractionType} => &{Reference}";
+                return $"BindReference<{AbstractionType.Name}>({Reference})";
             
-            var overrides = OverrideResolver != null ? " with overrides" : "";
-            var id = Id != null ? $" id {Id}" : "";
-            var list = InList ? " in list" : "";
-            var instance = Instance != null ? $" using instance {Instance}" : "";
-            var concretionType = ConcretionType?.ToString() ?? "Null";
+            var concretionType = ConcretionType?.Name ?? "???";
+            var lifetime = Lifetime != Lifetime.Transient ? $".As{Lifetime}()" : "";
+            var id = Id != null ? $".Id({Id})" : "";
+            var list = InList ? ".InList()" : "";
+            var instance = Instance != null ? "Instance" : "";
+            var overrides = OverrideResolver != null ? ".Using(...)" : "";
             
-            return $"{AbstractionType} => {concretionType} {Lifetime}{overrides}{id}{list}{instance}";
+            return $"Bind{instance}<{AbstractionType.Name}, {concretionType}>(){lifetime}{id}{list}{overrides}";
         }
     }
 }

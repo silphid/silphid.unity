@@ -215,7 +215,7 @@ namespace Silphid.Showzup
 
             if (candidates.Count > 1 && Log.IsDebugEnabled)
                 Log.Debug($"Other candidates were:{Environment.NewLine}" +
-                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+                          $"{candidates.Except(resolved).ConcatToString(Environment.NewLine)}");
             
             return resolved.Target;
         }
@@ -241,7 +241,7 @@ namespace Silphid.Showzup
 
             if (candidates.Count > 1 && Log.IsDebugEnabled)
                 Log.Debug($"Other candidates were:{Environment.NewLine}" +
-                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+                          $"{candidates.Except(resolved).ConcatToString(Environment.NewLine)}");
             
             return resolved.Target;
         }

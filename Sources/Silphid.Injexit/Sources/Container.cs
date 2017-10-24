@@ -124,7 +124,7 @@ namespace Silphid.Injexit
         public IResolver BaseResolver => this;
 
         private Result ThrowUnresolvedType(Type abstractionType, string name) =>
-            new Result(new UnresolvedTypeException(abstractionType, name));
+            new Result(new UnresolvedTypeException(abstractionType, name, this, "Binding not found"));
 
         private Result? ResolveFromListMappings(Type abstractionType, string name)
         {
@@ -212,11 +212,11 @@ namespace Silphid.Injexit
                 var referenceBinding = binding.Reference.Binding;
                 if (referenceBinding == null)
                     return new Result(
-                        new UnresolvedTypeException(binding.AbstractionType, null, $"No binding bound to {binding.Reference}"));
+                        new UnresolvedTypeException(binding.AbstractionType, null, this, $"No binding bound to {binding.Reference}"));
                 
                 if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
                     return new Result(
-                        new UnresolvedTypeException(binding.AbstractionType, null, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}"));
+                        new UnresolvedTypeException(binding.AbstractionType, null, this, $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not assignable to Reference abstraction type {binding.AbstractionType.Name}"));
 
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
@@ -452,7 +452,7 @@ namespace Silphid.Injexit
             _reflector.GetTypeInfo(obj.GetType());
         
         private static string FormatParameters(object[] parameters) =>
-            parameters.Select(FormatValue).ToDelimitedString(", ");
+            parameters.Select(FormatValue).ConcatToString(", ");
 
         private static string FormatValue(object value) =>
             value?.ToString() ?? "null";
@@ -477,6 +477,11 @@ namespace Silphid.Injexit
                 .ForEach(x => this.Resolve(x.AbstractionType, x.Name));
         }
 
-        #endregion        
+        #endregion
+
+        public override string ToString() =>
+            "{\r\n  " +
+            _bindings.ConcatToString("\r\n  ") +
+            "\r\n}";
     }
 }
