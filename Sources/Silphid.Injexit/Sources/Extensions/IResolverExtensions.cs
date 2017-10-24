@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Silphid.Injexit
 {
@@ -33,13 +34,17 @@ namespace Silphid.Injexit
                 x.BindInstance(instance2);
                 x.BindInstance(instance3);
             });
-        
-        public static IResolver UsingInstances(this IResolver This, object[] instances) =>
-            This.Using(x => x.BindInstances(instances));
 
-        public static object Resolve(this IResolver This, Type abstractionType, string name = null) =>
-            This.ResolveResult(abstractionType, name)
-                .ResolveInstance(This.BaseResolver);
+        public static IResolver UsingInstances(this IResolver This, [CanBeNull] object[] instances) =>
+            instances != null
+                ? This.Using(x => x.BindInstances(instances))
+                : This;
+
+        public static object Resolve(this IResolver This, Type abstractionType, string name = null)
+        {
+            var result = This.ResolveResult(abstractionType, name);
+            return result.ResolveInstance(This.BaseResolver);
+        }
 
         public static T Resolve<T>(this IResolver This, string id = null) =>
             (T) Resolve(This, typeof(T), id);

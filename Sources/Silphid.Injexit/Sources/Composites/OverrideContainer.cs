@@ -26,25 +26,22 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
+        public Result ResolveResult(Type abstractionType, string name = null)
         {
-            _recursionDepth++;
-            
             try
             {
+                _recursionDepth++;
                 if (_recursionDepth > Container.MaxRecursionDepth)
                     throw new CircularDependencyException(abstractionType);
 
                 try
                 {
-                    try
-                    {
-                        return _overrideContainer.ResolveResult(abstractionType, name);
-                    }
-                    catch (UnresolvedTypeException)
-                    {
-                        return _baseContainer.ResolveResult(abstractionType, name);
-                    }
+                    var result = _overrideContainer.ResolveResult(abstractionType, name);
+                    
+                    if (result.Exception is UnresolvedTypeException)
+                        result = _baseContainer.ResolveResult(abstractionType, name);
+                    
+                    return result;
                 }
                 catch (CircularDependencyException ex)
                 {

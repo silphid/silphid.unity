@@ -27,18 +27,16 @@ namespace Silphid.Injexit
         public IContainer Create() =>
             _overrideResolver.Create();
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string name = null)
+        public Result ResolveResult(Type abstractionType, string name = null)
         {
             Log.Debug($"Resolving dependency '{name}' of type {abstractionType.Name}");
             
-            try
-            {
-                return _overrideResolver.ResolveResult(abstractionType, name);
-            }
-            catch (UnresolvedTypeException)
-            {
-                return _baseResolver.ResolveResult(abstractionType, name);
-            }
+            var result = _overrideResolver.ResolveResult(abstractionType, name);
+            
+            if (result.Exception is UnresolvedTypeException)
+                result = _baseResolver.ResolveResult(abstractionType, name);
+            
+            return result;
         }
 
         public IResolver BaseResolver =>

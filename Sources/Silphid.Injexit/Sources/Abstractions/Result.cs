@@ -15,6 +15,7 @@ namespace Silphid.Injexit
             Instance = instance;
         }
 
+
         public Result(Func<IResolver, object> factory) : this()
         {
             Factory = factory;
