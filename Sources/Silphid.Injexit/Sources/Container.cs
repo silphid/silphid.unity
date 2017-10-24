@@ -114,14 +114,6 @@ namespace Silphid.Injexit
                 {
                     throw new CircularDependencyException(abstractionType, ex);
                 }
-                catch (UnresolvedTypeException ex)
-                {
-                    throw new UnresolvedDependencyException(abstractionType, ex, name);
-                }
-                catch (UnresolvedDependencyException ex)
-                {
-                    throw new UnresolvedDependencyException(abstractionType, ex, name);
-                }
             }
             finally
             {
@@ -189,7 +181,7 @@ namespace Silphid.Injexit
         private List<Result> GetListFactories(Type abstractionType, string name) =>
             _bindings
                 .Where(x => x.AbstractionType == abstractionType && x.InList && (x.Name == null || x.Name == name))
-                .Select(GetFactoryForBinding)
+                .Select(x => GetFactoryForBinding(x, name))
                 .ToList();
 
         private Result? ResolveFromTypeMappings(Type abstractionType, string name)
@@ -198,7 +190,7 @@ namespace Silphid.Injexit
             if (binding == null)
                 return null;
             
-            return GetFactoryForBinding(binding);
+            return GetFactoryForBinding(binding, name);
         }
 
         private Binding ResolveBindingForType(Type abstractionType, string name)
@@ -213,7 +205,7 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        private Result GetFactoryForBinding(Binding binding)
+        private Result GetFactoryForBinding(Binding binding, string name)
         {
             if (binding.Reference != null)
             {
@@ -229,25 +221,40 @@ namespace Silphid.Injexit
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
                 
-                return GetFactoryForBinding(referenceBinding);
+                return GetFactoryForBinding(referenceBinding, name);
             }
             
             if (binding.Lifetime == Lifetime.Transient)
-                return GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver, binding.IsOverrideResolverRecursive);
+                return GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver, binding.IsOverrideResolverRecursive, name);
 
             return new Result(resolver =>
                 binding.Instance
                 ?? (binding.Instance = GetFactoryForConcretion(
                         binding.ConcretionType,
                         binding.OverrideResolver,
-                        binding.IsOverrideResolverRecursive)
+                        binding.IsOverrideResolverRecursive,
+                        name)
                     .ResolveInstance(resolver.BaseResolver)));
         }
 
-        private Result GetFactoryForConcretion(Type concretionType, IResolver overrideResolver, bool isRecursive)
+        private Result GetFactoryForConcretion(Type concretionType, IResolver overrideResolver, bool isRecursive, string name)
         {
             var factory = GetFactoryForConcretion(concretionType);
-            return new Result(resolver => factory(resolver.Using(overrideResolver, isRecursive)));
+            return new Result(resolver =>
+            {
+                try
+                {
+                    return factory(resolver.Using(overrideResolver, isRecursive));
+                }
+                catch (UnresolvedDependencyException ex)
+                {
+                    // TODO: Temporary work-around to prevent an extra level of exception wrapping
+                    if (ex.AncestorTypes.LastOrDefault() == concretionType)
+                        throw;
+                    
+                    throw new UnresolvedDependencyException(concretionType, ex, name);
+                }
+            });
         }
 
         private Func<IResolver, object> GetFactoryForConcretion(Type concretionType) =>
