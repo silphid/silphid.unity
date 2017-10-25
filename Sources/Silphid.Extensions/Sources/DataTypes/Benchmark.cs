@@ -9,23 +9,23 @@ namespace Silphid.Benchmarking
     
         private readonly string _message;
         private readonly DateTime _startTime;
+        private static TimeSpan _totalTime = TimeSpan.Zero;
     
         public Benchmark(string message)
         {
             _message = message;
             _startTime = DateTime.UtcNow;
             
-            if (Log.IsDebugEnabled)
-                Log.Debug($"Start - {_message}");
+            Log.Debug($"Start - {_message}");
         }
 
         public void Dispose()
         {
-            if (Log.IsDebugEnabled)
-            {
-                var elapse = DateTime.UtcNow - _startTime;
-                Log.Debug($"Completed in {(int) elapse.TotalMilliseconds} ms - {_message}");
-            }
+            var elapsed = DateTime.UtcNow - _startTime;
+            _totalTime += elapsed;
+            Log.Debug($"End - {_message} - " +
+                      $"Elapsed: {(int) elapsed.TotalMilliseconds} ms - " +
+                      $"Total: {(int) _totalTime.TotalMilliseconds} ms");
         }
     }
 }
