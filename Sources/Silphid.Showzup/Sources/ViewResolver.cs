@@ -74,7 +74,7 @@ namespace Silphid.Showzup
             }
             
             var viewInfo = ResolveFromInstance(input, requestedVariants);
-            viewInfo.Parameters = options?.Parameters?.ToArray() ?? new object[]{};
+            viewInfo.Parameters = options?.Parameters;
             return viewInfo;
         }
 

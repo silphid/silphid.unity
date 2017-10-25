@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace Silphid.Injexit
@@ -36,6 +37,11 @@ namespace Silphid.Injexit
             });
 
         public static IResolver UsingInstances(this IResolver This, [CanBeNull] object[] instances) =>
+            instances != null
+                ? This.Using(x => x.BindInstances(instances))
+                : This;
+
+        public static IResolver UsingInstances(this IResolver This, [CanBeNull] IDictionary<Type, object> instances) =>
             instances != null
                 ? This.Using(x => x.BindInstances(instances))
                 : This;

@@ -98,11 +98,6 @@ namespace Silphid.Injexit
             
             try
             {
-                if (abstractionType.Name == "Series[]")
-                {
-                    int a = 0;
-                }
-                
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolving {abstractionType.Name}");
                 

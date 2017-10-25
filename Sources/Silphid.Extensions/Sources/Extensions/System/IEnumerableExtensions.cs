@@ -108,12 +108,14 @@ namespace Silphid.Extensions
                 return string.Empty;
             
             var builder = new StringBuilder();
+            bool needsDelimiter = false;
             foreach (var t in source.WhereNotNull())
             {
-                if (delimiter != null && builder.Length > 0)
+                if (delimiter != null && needsDelimiter)
                     builder.Append(delimiter);
                 
                 builder.Append(t);
+                needsDelimiter = true;
             }
             return builder.ToString();
         }
