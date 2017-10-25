@@ -10,8 +10,6 @@ namespace Silphid.Loadzup.Http
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
 
-        private static readonly string NewLine = Environment.NewLine;
-
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             RequestInternal(uri.AbsoluteUri, options)
                 .DoOnSubscribe(() =>
@@ -44,22 +42,14 @@ namespace Silphid.Loadzup.Http
 
             throw new NotImplementedException($"HTTP method {options.Method} not implemented for: {url}");
         }
-
+        
         private string GetLogMessage(Uri uri, Options options)
         {
-            var method = options?.Method ?? HttpMethod.Get;
-            var headers = options?.Headers?.ToString() ?? "{}";
+            var method = (options?.Method ?? HttpMethod.Get)
+                .ToString()
+                .ToUpper();
             
-            if (method == HttpMethod.Get)
-                return $"GET {uri}{NewLine}Headers:{NewLine}{headers}";
-
-            if (method == HttpMethod.Post)
-                return $"POST {uri}{NewLine}Form:{NewLine}{options?.PostForm}{NewLine}Headers:{NewLine}{headers}";
-
-            if (method == HttpMethod.Put)
-                return $"PUT {uri}{NewLine}Body:{NewLine}{options?.PutBody}{NewLine}Headers:{NewLine}{headers}";
-
-            throw new NotImplementedException($"HTTP method {options?.Method} not implemented for: {uri}");
+            return $"{method} {uri}";
         }
     }
 }

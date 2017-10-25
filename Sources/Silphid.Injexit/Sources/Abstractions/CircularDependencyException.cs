@@ -43,7 +43,7 @@ namespace Silphid.Injexit
                     }
                 }
                 
-                var formattedTypes = types.Select(x => x.Name).ToDelimitedString(" > ");
+                var formattedTypes = types.Select(x => x.Name).JoinAsString(" > ");
                 return $"Circular dependency detected: {formattedTypes}";
             }
         }

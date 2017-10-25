@@ -1,19 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Silphid.Extensions;
 
 namespace Silphid.Showzup
 {
     internal class ParametersPresenterDecorator : OptionsPresenterDecoratorBase
     {
-        private readonly IEnumerable<object> _parameters;
+        private readonly object[] _instances;
 
-        public ParametersPresenterDecorator(IPresenter presenter, IEnumerable<object> parameters) : base(presenter)
+        public ParametersPresenterDecorator(IPresenter presenter, object[] instances) : base(presenter)
         {
-            _parameters = parameters;
+            _instances = instances;
         }
 
         protected override void UpdateOptions(Options options)
         {
-            options.Parameters = _parameters;
+            if (_instances.Length == 0)
+                return;
+            
+            if (options.Parameters == null)
+                options.Parameters = new Dictionary<Type, object>();
+            
+            _instances.ForEach(x => options.Parameters[x.GetType()] = x);
         }
     }
 }

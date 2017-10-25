@@ -27,8 +27,11 @@ namespace Silphid.Showzup
         public static IPresenter WithDuration(this IPresenter This, float duration) =>
             new TransitionDurationPresenterDecorator(This, duration);
 
-        public static IPresenter WithParameters(this IPresenter This, params object[] parameters) =>
-            new ParametersPresenterDecorator(This, parameters);
+        public static IPresenter WithParameters(this IPresenter This, params object[] instances) =>
+            new ParametersPresenterDecorator(This, instances);
+
+        public static IPresenter WithParameter<T>(this IPresenter This, T instance) =>
+            new TypedParameterPresenterDecorator(This, typeof(T), instance);
 
         public static bool IsReady(this IPresenter This) =>
             This.State.Value == PresenterState.Ready;

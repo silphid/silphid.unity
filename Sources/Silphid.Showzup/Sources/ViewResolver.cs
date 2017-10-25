@@ -74,7 +74,7 @@ namespace Silphid.Showzup
             }
             
             var viewInfo = ResolveFromInstance(input, requestedVariants);
-            viewInfo.Parameters = options?.Parameters?.ToArray() ?? new object[]{};
+            viewInfo.Parameters = options?.Parameters;
             return viewInfo;
         }
 
@@ -215,7 +215,7 @@ namespace Silphid.Showzup
 
             if (candidates.Count > 1 && Log.IsDebugEnabled)
                 Log.Debug($"Other candidates were:{Environment.NewLine}" +
-                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+                          $"{candidates.Except(resolved).JoinAsString(Environment.NewLine)}");
             
             return resolved.Target;
         }
@@ -241,7 +241,7 @@ namespace Silphid.Showzup
 
             if (candidates.Count > 1 && Log.IsDebugEnabled)
                 Log.Debug($"Other candidates were:{Environment.NewLine}" +
-                          $"{candidates.Except(resolved).ToDelimitedString(Environment.NewLine)}");
+                          $"{candidates.Except(resolved).JoinAsString(Environment.NewLine)}");
             
             return resolved.Target;
         }

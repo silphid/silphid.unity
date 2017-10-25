@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Silphid.Extensions;
 using UnityEngine.Networking;
 
 namespace Silphid.Loadzup
@@ -25,7 +26,7 @@ namespace Silphid.Loadzup
         public HttpException(Uri uri, HttpStatusCode statusCode)
         {
             Uri = uri;
-            ErrorMessage = statusCode.ToString();
+            ErrorMessage = $"StatusCode: {statusCode}";
             ResponseBody = ((int) statusCode).ToString();
             StatusCode = statusCode;
         }
@@ -33,14 +34,13 @@ namespace Silphid.Loadzup
         public HttpException(Uri uri, string message)
         {
             Uri = uri;
-            ResponseBody = message;
+            ErrorMessage = message;
         }
 
         public override string Message =>
-            $"{base.Message}\r\n" +
+            $"{ErrorMessage}\r\n" +
             $"Uri: {Uri}\r\n" +
-            $"ErrorMessage: {ErrorMessage}\r\n" +
-            $"ResponseBody: {ResponseBody}\r\n" +
-            $"ResponseHeaders: {ResponseHeaders}\r\n";
+            $"ResponseBody:\r\n{ResponseBody}\r\n" +
+            $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders.JoinAsString("  ")}}}";
     }
 }

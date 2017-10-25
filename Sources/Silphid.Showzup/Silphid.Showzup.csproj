@@ -136,6 +136,7 @@
     <Compile Include="Sources\OptionsPresenterDecorators\TransitionDurationPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\ParametersPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\PushModePresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TypedParameterPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\VariantsPresenterDecorator.cs" />
     <Compile Include="Sources\Phases\CoordinationBase.cs" />
     <Compile Include="Sources\Phases\CoordinatorBase.cs" />

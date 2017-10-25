@@ -21,6 +21,11 @@ namespace Silphid.Injexit
                 ? new CompositeBinding(instances.Select(This.BindInstance))
                 : Binding.Null;
 
+        public static IBinding BindInstances(this IBinder This, IDictionary<Type, object> instances) =>
+            instances != null
+                ? new CompositeBinding(instances.Select(x => This.BindInstance(x.Key, x.Value)))
+                : Binding.Null;
+
         #endregion
 
         #region BindOptionalInstance(s)

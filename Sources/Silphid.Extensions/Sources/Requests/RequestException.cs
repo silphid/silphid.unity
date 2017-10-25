@@ -4,11 +4,15 @@ namespace Silphid.Requests
 {
     public class RequestException : Exception, IRequest
     {
-        public RequestException()
+        protected RequestException()
         {
         }
 
-        public RequestException(string message) : base(message)
+        public RequestException(string message) : this(message, null)
+        {
+        }
+
+        public RequestException(Exception innerException) : this("Wrapping exception into request", innerException)
         {
         }
 

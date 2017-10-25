@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Silphid.Extensions
 {
@@ -29,6 +30,11 @@ namespace Silphid.Extensions
             
             return value;
         }
+
+        public static string JoinAsString<TKey, TValue>(this IDictionary<TKey, TValue> This, string prefix = "", string separator = ": ", string suffix = "\r\n") =>
+            This
+                .Select(x => $"{prefix}{x.Key}{separator}{x.Value}{suffix}")
+                .JoinAsString();
 
         public static IDictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> This) =>
             This != null ? new Dictionary<TKey, TValue>(This) : null;

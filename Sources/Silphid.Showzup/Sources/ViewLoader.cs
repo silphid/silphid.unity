@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -40,31 +41,37 @@ namespace Silphid.Showzup
             return Observable.Return<IView>(null);
         }
 
-        private IObservable<IView> Load(Transform parent, IViewModel viewModel, IView view, object[] parameters)
+        private IObservable<IView> Load(Transform parent, IViewModel viewModel, IView view, IDictionary<Type, object> parameters)
         {
             return Observable.Return(view)
                 .Do(x => InjectView(x, viewModel, parameters))
                 .ContinueWith(x => LoadLoadable(x).ThenReturn(view));
         }
 
-        private IObservable<IView> LoadFromModel(Transform parent, object model, Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        private IObservable<IView> LoadFromModel(Transform parent, object model, Type viewModelType, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
         {
             try
             {
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolving {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}");
-                
-                var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters.Prepend(model));
+
+                // Clone or create dictionary with extra parameter
+                parameters = parameters != null
+                    ? new Dictionary<Type, object>(parameters)
+                    : new Dictionary<Type, object>();
+                parameters[model.GetType()] = model;
+
+                var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
                 throw new LoadException($"Failed to resolve {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}", ex);
             }
         }
 
-        private IObservable<IView> LoadFromViewModelType(Transform parent, Type viewModelType, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        private IObservable<IView> LoadFromViewModelType(Transform parent, Type viewModelType, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
         {
             try
             {
@@ -75,13 +82,13 @@ namespace Silphid.Showzup
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
                 throw new LoadException($"Failed to resolve {viewModelType.Name} (without Model) for View {viewType.Name}", ex);
             }
         }
 
-        private IObservable<IView> LoadFromViewModel(Transform parent, IViewModel viewModel, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        private IObservable<IView> LoadFromViewModel(Transform parent, IViewModel viewModel, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
         {
             try
             {
@@ -98,7 +105,7 @@ namespace Silphid.Showzup
             }
         }
 
-        private void InjectView(IView view, IViewModel viewModel, object[] parameters)
+        private void InjectView(IView view, IViewModel viewModel, IDictionary<Type, object> parameters)
         {
             try
             {
@@ -109,9 +116,9 @@ namespace Silphid.Showzup
                 _injectionAdaptor.Inject(view.GameObject, parameters);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
-                throw new LoadException($"Failed injecting {view} with parameters: {parameters.ToDelimitedString(", ")}", ex);
+                throw new LoadException($"Failed injecting {view} with parameters: {parameters.JoinAsString(", ")}", ex);
             }
         }
 
@@ -122,7 +129,7 @@ namespace Silphid.Showzup
 
         #region Prefab view loading
 
-        private IObservable<IView> LoadPrefabView(Transform parent, Type viewType, Uri uri, object[] parameters, CancellationToken cancellationToken)
+        private IObservable<IView> LoadPrefabView(Transform parent, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
         {
             if (Log.IsDebugEnabled)
                 Log.Debug($"LoadPrefabView({viewType}, {uri})");

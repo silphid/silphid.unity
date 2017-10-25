@@ -142,13 +142,13 @@ namespace Silphid.Injexit.Test
                 .InList()
                 .Named("List2");
             
-            var list1 = container.Resolve<List<Being>>("List1");
+            var list1 = container.Resolve<List<Being>>(null, "List1");
             Assert.That(list1.Count, Is.EqualTo(3));
             Assert.That(list1[0], Is.TypeOf<Man>());
             Assert.That(list1[1], Is.TypeOf<Man>());
             Assert.That(list1[2], Is.TypeOf<Woman>());
 
-            var list2 = container.Resolve<List<Being>>("List2");
+            var list2 = container.Resolve<List<Being>>(null, "List2");
             Assert.That(list2.Count, Is.EqualTo(3));
             Assert.That(list2[0], Is.TypeOf<Woman>());
             Assert.That(list2[1], Is.TypeOf<Man>());
