@@ -435,7 +435,7 @@ namespace Silphid.Showzup.Navigation
         private void OnSelectionChanged(Tuple<GameObject, GameObject> selection)
         {
             if (LogSelection)
-                Debug.Log($"Selection: {selection.Item2?.SelfAndAncestors().Reverse().ConcatToString(" > ") ?? "(null)"}");
+                Debug.Log($"Selection: {selection.Item2?.SelfAndAncestors().Reverse().JoinAsString(" > ") ?? "(null)"}");
 
             if (NestedSelection)
                 UpdateNestedSelection(selection);

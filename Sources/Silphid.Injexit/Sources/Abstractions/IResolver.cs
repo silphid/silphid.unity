@@ -14,9 +14,11 @@ namespace Silphid.Injexit
         /// concrete objects of that type.
         /// </summary>
         /// <param name="abstractionType">Abstraction type that object must derive from or implement (if it's an interface)</param>
-        /// <param name="name">Optional Named to match on binding (if not specified/null, binding must not have any Named associated with it in order to match)</param>
+        /// <param name="dependentType">Type that depends on the abstraction to be resolved</param>
+        /// <param name="name">Name of dependency member that will be assigned the resolved</param>
         Result ResolveResult(
             Type abstractionType,
+            Type dependentType = null,
             string name = null);
         
         IResolver BaseResolver { get; }

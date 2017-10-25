@@ -51,9 +51,9 @@ namespace Silphid.Injexit.Test
             _fixture.BindToSelf<Foo>().Id(FooId);
             _fixture.BindReference<IBar>(FooId);
 
-            var exception = Assert.Throws<UnresolvedTypeException>(() => _fixture.Resolve<IBar>());
+            var exception = Assert.Throws<DependencyException>(() => _fixture.Resolve<IBar>());
 
-            Assert.That(exception.Message, Is.EqualTo("Failed to resolve type IBar : Binding FooId concrete type Foo is not assignable to Reference abstraction type IBar"));
+            Assert.That(exception.Message, Does.StartWith("Binding FooId concrete type Foo is not assignable to Reference abstraction type IBar"));
         }
 
         [Test]
@@ -62,9 +62,9 @@ namespace Silphid.Injexit.Test
             var FooId = new BindingId("FooId");
             _fixture.BindReference<IBar>(FooId);
             
-            var exception = Assert.Throws<UnresolvedTypeException>(() => _fixture.Resolve<IBar>());
+            var exception = Assert.Throws<DependencyException>(() => _fixture.Resolve<IBar>());
 
-            Assert.That(exception.Message, Is.EqualTo("Failed to resolve type IBar : No binding bound to FooId"));
+            Assert.That(exception.Message, Does.StartWith("No binding bound to FooId"));
         }
     }
 }

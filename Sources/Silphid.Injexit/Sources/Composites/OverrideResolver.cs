@@ -27,14 +27,14 @@ namespace Silphid.Injexit
         public IContainer Create() =>
             _overrideResolver.Create();
 
-        public Result ResolveResult(Type abstractionType, string name = null)
+        public Result ResolveResult(Type abstractionType, Type dependentType = null, string name = null)
         {
             Log.Debug($"Resolving dependency '{name}' of type {abstractionType.Name}");
             
-            var result = _overrideResolver.ResolveResult(abstractionType, name);
+            var result = _overrideResolver.ResolveResult(abstractionType, dependentType, name);
             
-            if (result.Exception is UnresolvedTypeException)
-                result = _baseResolver.ResolveResult(abstractionType, name);
+            if (result.Exception != null)
+                result = _baseResolver.ResolveResult(abstractionType, dependentType, name);
             
             return result;
         }
@@ -45,7 +45,6 @@ namespace Silphid.Injexit
                 : _baseResolver.BaseResolver;
  
         public override string ToString() =>
-            $"Overrides:\r\n{_overrideResolver}\r\n" +
-            $"Base:\r\n{_baseResolver}";
+            $"{_overrideResolver}\r\n----------\r\n{_baseResolver}";
     }
 }

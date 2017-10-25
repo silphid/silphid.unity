@@ -58,7 +58,7 @@ namespace Silphid.Showzup
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
                 throw new LoadException($"Failed to resolve {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}", ex);
             }
@@ -75,7 +75,7 @@ namespace Silphid.Showzup
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
                 throw new LoadException($"Failed to resolve {viewModelType.Name} (without Model) for View {viewType.Name}", ex);
             }
@@ -109,9 +109,9 @@ namespace Silphid.Showzup
                 _injectionAdaptor.Inject(view.GameObject, parameters);
 
             }
-            catch (UnresolvedDependencyException ex)
+            catch (DependencyException ex)
             {
-                throw new LoadException($"Failed injecting {view} with parameters: {parameters.ConcatToString(", ")}", ex);
+                throw new LoadException($"Failed injecting {view} with parameters: {parameters.JoinAsString(", ")}", ex);
             }
         }
 

@@ -102,15 +102,33 @@ namespace Silphid.Extensions
             return maxElement;
         }
 
-        public static string ConcatToString<T>(this IEnumerable<T> source, string delimiter = null)
+        public static string JoinAsString<T>(this IEnumerable<T> source, string delimiter = null)
         {
+            if (source == null)
+                return string.Empty;
+            
             var builder = new StringBuilder();
-            foreach (var t in source)
+            foreach (var t in source.WhereNotNull())
             {
                 if (delimiter != null && builder.Length > 0)
                     builder.Append(delimiter);
                 
                 builder.Append(t);
+            }
+            return builder.ToString();
+        }
+
+        public static string JoinAsString<T>(this IEnumerable<T> source, string prefix, string suffix)
+        {
+            if (source == null)
+                return string.Empty;
+            
+            var builder = new StringBuilder();
+            foreach (var t in source.WhereNotNull())
+            {
+                builder.Append(prefix);
+                builder.Append(t);
+                builder.Append(suffix);
             }
             return builder.ToString();
         }

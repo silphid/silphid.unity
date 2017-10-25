@@ -41,6 +41,6 @@ namespace Silphid.Loadzup
             $"{ErrorMessage}\r\n" +
             $"Uri: {Uri}\r\n" +
             $"ResponseBody:\r\n{ResponseBody}\r\n" +
-            $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders.ConcatToString("  ")}}}";
+            $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders.JoinAsString("  ")}}}";
     }
 }

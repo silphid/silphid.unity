@@ -39,29 +39,29 @@ namespace Silphid.Injexit
         #region Typed factories
 
         public static IBinding BindTypedFactory<TAbstraction>(this IContainer This) =>
-            This.BindInstance<Func<Type, TAbstraction>>(type => (TAbstraction) IResolverExtensions.Resolve(This, type));
+            This.BindInstance<Func<Type, TAbstraction>>(type => (TAbstraction) This.Resolve(type));
 
         public static IBinding BindTypedFactory<T1, TAbstraction>(this IContainer This) =>
-            This.BindInstance<Func<Type, T1, TAbstraction>>((type, t1) => (TAbstraction) IResolverExtensions.Resolve(This
-                    .UsingInstance(t1), type));
+            This.BindInstance<Func<Type, T1, TAbstraction>>((type, t1) => (TAbstraction) This
+                .UsingInstance(t1).Resolve(type));
 
         public static IBinding BindTypedFactory<T1, T2, TAbstraction>(this IContainer This) =>
-            This.BindInstance<Func<Type, T1, T2, TAbstraction>>((type, t1, t2) => (TAbstraction) IResolverExtensions.Resolve(This
-                    .UsingInstances(t1, t2), type));
+            This.BindInstance<Func<Type, T1, T2, TAbstraction>>((type, t1, t2) => (TAbstraction) This
+                .UsingInstances(t1, t2).Resolve(type));
 
         public static IBinding BindTypedFactory<T1, T2, T3, TAbstraction>(this IContainer This) =>
-            This.BindInstance<Func<Type, T1, T2, T3, TAbstraction>>((type, t1, t2, t3) => (TAbstraction) IResolverExtensions.Resolve(This
-                    .UsingInstances(t1, t2, t3), type));
+            This.BindInstance<Func<Type, T1, T2, T3, TAbstraction>>((type, t1, t2, t3) => (TAbstraction) This
+                .UsingInstances(t1, t2, t3).Resolve(type));
 
         public static IBinding BindTypedFactoryWithParameters<TAbstraction>(this IContainer This) =>
-            This.BindInstance<Func<Type, object[], TAbstraction>>((type, instances) => (TAbstraction) IResolverExtensions.Resolve(This
-                    .UsingInstances(instances), type));
+            This.BindInstance<Func<Type, object[], TAbstraction>>((type, instances) => (TAbstraction) This
+                .UsingInstances(instances).Resolve(type));
 
         public static IBinding BindTypedFactoryWithParameters<TFactoryAbstraction, TFactory, TAbstraction>(this IContainer This)
             where TFactory : TFactoryAbstraction =>
             This.Bind<TFactoryAbstraction, TFactory>()
-                .Using(x => x.BindInstance<Func<Type, object[], TAbstraction>>((type, instances) => (TAbstraction) IResolverExtensions.Resolve(This
-                        .UsingInstances(instances), type)));
+                .Using(x => x.BindInstance<Func<Type, object[], TAbstraction>>((type, instances) => (TAbstraction) This
+                    .UsingInstances(instances).Resolve(type)));
 
         #endregion
 

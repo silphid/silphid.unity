@@ -102,14 +102,16 @@ namespace Silphid.Injexit
             if (Reference != null)
                 return $"BindReference<{AbstractionType.Name}>({Reference})";
             
-            var concretionType = ConcretionType?.Name ?? "???";
             var lifetime = Lifetime != Lifetime.Transient ? $".As{Lifetime}()" : "";
             var id = Id != null ? $".Id({Id})" : "";
             var list = InList ? ".InList()" : "";
-            var instance = Instance != null ? "Instance" : "";
             var overrides = OverrideResolver != null ? ".Using(...)" : "";
+            var typeNames = AbstractionType != ConcretionType
+                ? $"{AbstractionType.Name}, {ConcretionType?.Name ?? "???"}"
+                : AbstractionType.Name;
+            var kind = AbstractionType != ConcretionType ? "" : "ToSelf";
             
-            return $"Bind{instance}<{AbstractionType.Name}, {concretionType}>(){lifetime}{id}{list}{overrides}";
+            return $"Bind{kind}<{typeNames}>(){lifetime}{id}{list}{overrides}";
         }
     }
 }

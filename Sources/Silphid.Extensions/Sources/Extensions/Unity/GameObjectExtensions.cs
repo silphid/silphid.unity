@@ -90,7 +90,7 @@ namespace Silphid.Extensions
             This.SelfAndAncestors()
                 .Reverse()
                 .Select(x => x.name)
-                .ConcatToString(" > ");
+                .JoinAsString(" > ");
 
         #endregion
 

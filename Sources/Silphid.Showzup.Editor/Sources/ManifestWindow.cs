@@ -104,7 +104,7 @@ namespace Silphid.Showzup
 
                 var formattedVariants = group
                     .Select(x => $"[{x.Name}]")
-                    .ConcatToString(" ");
+                    .JoinAsString(" ");
                 
                 GUILayout.Label(formattedVariants, _explicitVariantStyle);
 

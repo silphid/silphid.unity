@@ -40,13 +40,20 @@ namespace Silphid.Injexit
                 ? This.Using(x => x.BindInstances(instances))
                 : This;
 
-        public static object Resolve(this IResolver This, Type abstractionType, string name = null)
+        public static object Resolve(this IResolver This, Type abstractionType, Type dependentType = null, string name = null)
         {
-            var result = This.ResolveResult(abstractionType, name);
-            return result.ResolveInstance(This.BaseResolver);
+            try
+            {
+                var result = This.ResolveResult(abstractionType, dependentType, name);
+                return result.ResolveInstance(This);
+            }
+            catch (DependencyException ex)
+            {
+                throw ex.With(This);
+            }
         }
 
-        public static T Resolve<T>(this IResolver This, string id = null) =>
-            (T) Resolve(This, typeof(T), id);
+        public static T Resolve<T>(this IResolver This, Type dependentType = null, string name = null) =>
+            (T) Resolve(This, typeof(T), dependentType, name);
     }
 }

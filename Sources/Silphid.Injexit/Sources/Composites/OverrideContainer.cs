@@ -26,7 +26,7 @@ namespace Silphid.Injexit
         
         #region IResolver members
 
-        public Result ResolveResult(Type abstractionType, string name = null)
+        public Result ResolveResult(Type abstractionType, Type dependentType = null, string name = null)
         {
             try
             {
@@ -36,10 +36,10 @@ namespace Silphid.Injexit
 
                 try
                 {
-                    var result = _overrideContainer.ResolveResult(abstractionType, name);
+                    var result = _overrideContainer.ResolveResult(abstractionType, dependentType, name);
                     
-                    if (result.Exception is UnresolvedTypeException)
-                        result = _baseContainer.ResolveResult(abstractionType, name);
+                    if (result.Exception != null)
+                        result = _baseContainer.ResolveResult(abstractionType, dependentType, name);
                     
                     return result;
                 }
@@ -98,7 +98,8 @@ namespace Silphid.Injexit
         #endregion
 
         public override string ToString() =>
-            $"Overrides:\r\n{_overrideContainer}\r\n" +
-            $"Base:\r\n{_baseContainer}";
+            $"{_overrideContainer}\r\n" +
+            "----------\r\n" +
+            $"{_baseContainer}";
     }
 }

@@ -105,7 +105,7 @@ namespace Silphid.Showzup
             _hashSet.SetEquals(other);
 
         public override string ToString() =>
-            this.ConcatToString(", ");
+            this.JoinAsString(", ");
 
         #region ISerializationCallbackReceiver members
 
