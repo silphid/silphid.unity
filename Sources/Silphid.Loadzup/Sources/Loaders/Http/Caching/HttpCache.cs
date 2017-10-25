@@ -39,13 +39,22 @@ namespace Silphid.Loadzup.Http.Caching
             
             Directory
                 .GetFiles(GetCacheDir())
-                .Where(file => file.EndsWith(HeadersExtension))
-                .ForEach(headersFile =>
+                .Where(file => !file.EndsWith(HeadersExtension))
+                .ForEach(mainFile =>
                 {
-                    var mainFile = headersFile.RemoveSuffix(HeadersExtension);
+                    // Find corresponding header
+                    var headersFile = mainFile + HeadersExtension;
+                    if (!File.Exists(headersFile))
+                    {
+                        // Main file without headers file is useless: delete it
+                        File.Delete(mainFile);
+                        deletedCount++;
+                        return;
+                    }
+
+                    // Load headers and check if expired
                     var fileDate = File.GetLastWriteTimeUtc(mainFile);
                     var headers = LoadHeaders(headersFile);
-
                     if (IsExpired(headers, utcNow, fileDate))
                     {
                         File.Delete(mainFile);
