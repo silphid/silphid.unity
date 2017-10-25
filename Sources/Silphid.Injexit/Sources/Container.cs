@@ -15,17 +15,19 @@ namespace Silphid.Injexit
         
         #region Private fields
 
-        private readonly List<Binding> _bindings = new List<Binding>();
         private readonly IReflector _reflector;
+        private readonly Func<object, bool> _injectionPredicate;
+        private readonly List<Binding> _bindings = new List<Binding>();
         private int _recursionDepth;
 
         #endregion
 
         #region Constructors
 
-        public Container(IReflector reflector)
+        public Container(IReflector reflector, Func<object, bool> injectionPredicate = null)
         {
             _reflector = reflector;
+            _injectionPredicate = injectionPredicate;
         }
 
         #endregion
@@ -33,7 +35,7 @@ namespace Silphid.Injexit
         #region IContainer members
 
         public IContainer Create() =>
-            new Container(_reflector);
+            new Container(_reflector, _injectionPredicate);
 
         #endregion
         
@@ -386,15 +388,17 @@ namespace Silphid.Injexit
 
         private bool IsValidComponent(MonoBehaviour behaviour)
         {
-            if (behaviour != null)
-                return true;
-            
-            if (Log.IsWarnEnabled)
-                Log.Warn("Skipping null MonoBehaviour.");
-            
-            return false;
+            if (behaviour == null)
+            {
+                if (Log.IsWarnEnabled)
+                    Log.Warn("Skipping null MonoBehaviour.");
+
+                return false;
+            }
+
+            return _injectionPredicate?.Invoke(behaviour) ?? true;
         }
-        
+
         private void InjectGameObjectFieldsAndProperties(GameObject go, IResolver resolver)
         {
             go.GetComponents<MonoBehaviour>()
