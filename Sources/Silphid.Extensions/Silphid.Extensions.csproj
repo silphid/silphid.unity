@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Sources\DataTypes\Benchmark.cs" />
     <Compile Include="Sources\DataTypes\HSVColor.cs" />
     <Compile Include="Sources\DataTypes\ObjectEnum.cs" />
     <Compile Include="Sources\Extensions\System\ArrayExtensions.cs" />

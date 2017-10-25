@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Silphid.Benchmarking;
 using Silphid.Extensions; 
 using UnityEngine;
 
@@ -449,9 +450,10 @@ namespace Silphid.Injexit
         /// <inheritdoc/>
         public void InstantiateEagerSingles()
         {
-            _bindings
-                .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
-                .ForEach(x => this.Resolve(x.AbstractionType, x.Name));
+            using (new Benchmark("InstantiateEagerSingles"))
+                _bindings
+                    .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
+                    .ForEach(x => this.Resolve(x.AbstractionType, x.Name));
         }
 
         #endregion        
