@@ -13,7 +13,7 @@ namespace Silphid.Injexit
         private static string DataPath =>
             Application.isEditor
                 ? Path.Combine(Application.dataPath, "../AppData")
-                : Application.dataPath;
+                : Application.persistentDataPath;
 
         protected override IContainer CreateContainer() =>
             new Container(new Reflector(), ShouldInject);
