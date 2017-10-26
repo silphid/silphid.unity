@@ -180,6 +180,53 @@ namespace Silphid.Showzup
                 .AutoDetach()
                 .AsSingleUnitObservable();
         }
+        
+        protected IObservable<Unit> BindAsync(RawImage image, Uri uri, bool isOptional = false, Loadzup.Options options = null,
+            bool keepVisible = false, float? fadeDuration = null)
+        {
+            if (image == null)
+                return Observable.ReturnUnit();
+            
+            if (uri == null)
+            {
+                if (isOptional)
+                    return Observable.ReturnUnit();
+                    
+                return Observable.Throw<Unit>(
+                    new BindException($"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
+            }
+
+            if (fadeDuration != null)
+                image.color = Color.clear;
+            else
+                image.enabled = keepVisible;
+
+            return Loader
+                .With(DefaultImageHttpCachePolicy)
+                .Load<Texture2D>(uri, options)
+                .Catch<Texture2D, Exception>(ex => Observable
+                    .Throw<Texture2D>(new BindException(
+                        $"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
+                .Do(x =>
+                {
+                    image.texture = x;
+                    image.enabled = true;
+
+                    if (fadeDuration != null)
+                        Observable.NextFrame().SubscribeAndForget(_ =>
+                            image.DOColor(Color.white, fadeDuration.Value));
+
+                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset
+                        || uri.Scheme == Scheme.StreamingFile)
+                    {
+                        Disposable
+                            .Create(() => Destroy(x))
+                            .AddTo(this);
+                    }
+                })
+                .AutoDetach()
+                .AsSingleUnitObservable();
+        }
 
         #endregion
 
