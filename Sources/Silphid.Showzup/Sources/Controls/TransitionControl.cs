@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -28,7 +29,8 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] [Optional] internal ITransitionResolver TransitionResolver { get; set; }
+        [Inject, Optional, UsedImplicitly]
+        private ITransitionResolver TransitionResolver { get; set; }
 
         #endregion
 
@@ -46,16 +48,20 @@ namespace Silphid.Showzup
         protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options)
         {
             var presentation = base.CreatePresentation(viewModel, sourceView, targetViewType, options);
-            presentation.Transition = ResolveTransition(presentation);
+            presentation.Transition = ResolveTransition(presentation, options);
             presentation.Duration = ResolveDuration(presentation.Transition, options);
             return presentation;
         }
 
-        protected ITransition ResolveTransition(Presentation presentation) =>
-            TransitionResolver?.Resolve(presentation) ?? DefaultTransition ?? InstantTransition.Instance;
+        protected ITransition ResolveTransition(Presentation presentation, Options options) =>
+            options?.Transition ??
+            TransitionResolver?.Resolve(presentation) ??
+            DefaultTransition ??
+            InstantTransition.Instance;
 
         protected float ResolveDuration(ITransition transition, Options options) =>
-            options?.TransitionDuration ?? transition.Duration;
+            options?.TransitionDuration ??
+            transition.Duration;
 
         protected IObservable<Unit> PerformTransition(Presentation presentation)
         {
@@ -174,7 +180,7 @@ namespace Silphid.Showzup
                 targetView.IsActive = true;
         }
 
-        protected virtual void CompleteTransition(Presentation presentation)
+        protected void CompleteTransition(Presentation presentation)
         {
             var sourceView = presentation.SourceView;
             var targetView = presentation.TargetView;

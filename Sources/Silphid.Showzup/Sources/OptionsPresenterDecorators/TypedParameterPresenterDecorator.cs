@@ -14,7 +14,7 @@ namespace Silphid.Showzup
             _instance = instance;
         }
 
-        protected override void UpdateOptions(Options options)
+        protected override void UpdateOptions(object input, Options options)
         {
             if (options.Parameters == null)
                 options.Parameters = new Dictionary<Type, object>();

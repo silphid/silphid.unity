@@ -24,6 +24,18 @@ namespace Silphid.Showzup
         public static IPresenter With(this IPresenter This, params IVariant[] variants) =>
             new VariantsPresenterDecorator(This, variants.ToVariantSet());
 
+        public static IPresenter With(this IPresenter This, ITransition transition) =>
+            new TransitionPresenterDecorator(This, transition);
+
+        public static IPresenter With(this IPresenter This, Func<object, Options, ITransition> transition) =>
+            new TransitionSelectorPresenterDecorator(This, transition);
+
+        public static IPresenter With(this IPresenter This, Func<object, ITransition> transition) =>
+            new TransitionSelectorPresenterDecorator(This, (obj, options) => transition(obj));
+
+        public static IPresenter WithTransitionForInputOfType<T>(this IPresenter This, ITransition transition) =>
+            new TransitionSelectorPresenterDecorator(This, (obj, options) => obj is T ? transition : null);
+
         public static IPresenter WithDuration(this IPresenter This, float duration) =>
             new TransitionDurationPresenterDecorator(This, duration);
 

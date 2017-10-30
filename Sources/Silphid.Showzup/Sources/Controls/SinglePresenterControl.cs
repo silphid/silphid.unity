@@ -64,12 +64,6 @@ namespace Silphid.Showzup
             View.Subscribe(x => MutableFirstView.Value = x);
         }
 
-        private void Awake()
-        {
-            if (Log.IsDebugEnabled)
-                MutableState.Subscribe(x => Log.Debug($"State: {x}")).AddTo(this);
-        }
-
         #region IPresenter members
 
         public override IObservable<IView> Present(object input, Options options = null)

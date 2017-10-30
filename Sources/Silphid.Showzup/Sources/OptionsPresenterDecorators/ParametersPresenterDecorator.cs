@@ -13,7 +13,7 @@ namespace Silphid.Showzup
             _instances = instances;
         }
 
-        protected override void UpdateOptions(Options options)
+        protected override void UpdateOptions(object input, Options options)
         {
             if (_instances.Length == 0)
                 return;

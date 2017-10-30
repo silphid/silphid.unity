@@ -54,6 +54,7 @@
     <Compile Include="Sources\Extensions\System\DateTimeExtensions.cs" />
     <Compile Include="Sources\Extensions\System\DecimalExtensions.cs" />
     <Compile Include="Sources\Extensions\System\DictionaryExtensions.cs" />
+    <Compile Include="Sources\Extensions\System\ExceptionExtensions.cs" />
     <Compile Include="Sources\Extensions\System\FloatExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ICustomAttributeProviderExtensions.cs" />
     <Compile Include="Sources\Extensions\System\IEnumerableExtensions.cs" />

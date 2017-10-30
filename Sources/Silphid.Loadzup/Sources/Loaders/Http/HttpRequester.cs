@@ -15,7 +15,7 @@ namespace Silphid.Loadzup.Http
                 .DoOnSubscribe(() =>
                     Log.Info(GetLogMessage(uri, options)))
                 .DoOnError(ex =>
-                    Log.Error($"Failed {GetLogMessage(uri, options)}", ex))
+                    Log.Info($"Failed {GetLogMessage(uri, options)}", ex))
                 .Select(www => new
                 {
                     WWW = www,

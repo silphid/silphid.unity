@@ -99,6 +99,8 @@
     <Compile Include="Sources\DesignTime\SelfDestroy.cs" />
     <Compile Include="Sources\Exceptions\BindException.cs" />
     <Compile Include="Sources\Exceptions\LoadException.cs" />
+    <Compile Include="Sources\Exceptions\PopException.cs" />
+    <Compile Include="Sources\Exceptions\PresentException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\IPresenterExtensions.cs" />
@@ -136,6 +138,8 @@
     <Compile Include="Sources\OptionsPresenterDecorators\TransitionDurationPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\ParametersPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\PushModePresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TransitionPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TransitionSelectorPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\TypedParameterPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\VariantsPresenterDecorator.cs" />
     <Compile Include="Sources\Phases\CoordinationBase.cs" />

@@ -81,7 +81,8 @@ namespace Silphid.Showzup
 
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
-                .ContinueWith(NavigateAndCompletePush);
+                .ContinueWith(NavigateAndCompletePush)
+                .DoOnTerminate(CompleteChange);
         }
 
         private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
@@ -89,7 +90,7 @@ namespace Silphid.Showzup
             var observable = input as IObservable<object>;
             if (observable != null)
                 return observable.SelectMany(x => StartPushAndLoadView(x, options));
-            AssertCanPresent();
+            AssertCanPresent(input, options);
 
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
@@ -114,7 +115,6 @@ namespace Silphid.Showzup
                 {
                     History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushModeOrDefault());
                     CompleteNavigation(nav);
-                    CompleteChange();
                 })
                 .ThenReturn(presentation.TargetView);
         }
@@ -163,7 +163,7 @@ namespace Silphid.Showzup
 
         private IObservable<IView> PopInternal(IView view, List<IView> history)
         {
-            AssertCanPresent();
+            AssertCanPresent(null, null);
 
             StartChange();
 
@@ -219,26 +219,27 @@ namespace Silphid.Showzup
             MutableState.Value = PresenterState.Ready;
         }
 
-        private void AssertCanPresent()
+        private void AssertCanPresent(object input, Options options)
         {
             if (!CanPresent.Value)
-                throw new InvalidOperationException("Cannot present at this moment");
+                throw new PresentException(gameObject, input, options, "Cannot present at this moment");
         }
 
         private void AssertCanPop()
         {
             if (!CanPop.Value)
-                throw new InvalidOperationException("Cannot pop at this moment");
+                throw new PopException(gameObject, "Cannot pop at this moment");
         }
 
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void AssertCanPopTo(IView view, int viewIndex)
         {
             AssertCanPop();
 
             if (viewIndex == -1)
-                throw new InvalidOperationException($"History does not contain view {view}");
+                throw new PopException(gameObject, $"History does not contain view {view}");
             if (viewIndex == History.Value.Count - 1)
-                throw new InvalidOperationException($"Cannot pop to view {view} because it is already current view");
+                throw new PopException(gameObject, $"Cannot pop to view {view} because it is already current view");
         }
 
         private void DisposeDroppedViews(Tuple<List<IView>, List<IView>> tuple)
