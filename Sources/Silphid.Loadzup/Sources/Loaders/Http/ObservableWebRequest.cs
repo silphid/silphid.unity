@@ -66,7 +66,7 @@ namespace Silphid.Loadzup.Http
                 
                 // Error?
                 if (webRequest.isNetworkError)
-                    observer.OnError(new NetworkException(webRequest.error));
+                    observer.OnError(new NetworkException(webRequest));
                 else if (webRequest.isHttpError)
                     observer.OnError(new HttpException(webRequest));
                 else

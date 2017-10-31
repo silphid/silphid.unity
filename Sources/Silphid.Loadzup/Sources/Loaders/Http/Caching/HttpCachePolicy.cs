@@ -21,14 +21,11 @@
         CacheOtherwiseOrigin,
 
         /// <summary>
-        /// Specifies that resource should be loaded from cache, and only if not found there should it be loaded from
-        /// origin.  This is the fastest approach, but does not allow updates on the server to be retrieved.
-        /// </summary>
-        /// <summary>
-        /// Specifies that cache should be checked only after resource failed to download from its original location.
-        /// This is typically used for offline scenarios, where latest version of resource should ideally be downloaded,
-        /// but application wants to fallback to version in cache if connectivity is not available.  This approach
-        /// provides no speed gain, only offline support, and allows updates on the server to be retrieved.
+        /// Specifies that resource should be loaded from origin first, and only if a NetworkException occurs should it
+        /// then be loaded from cache.  This is useful for offline scenarios, where latest version of resource should
+        /// ideally be downloaded, but application wants to fallback to version in cache if connectivity is not
+        /// available.  This approach provides no speed gain, only offline support, and allows updates on the server to
+        /// be retrieved.
         /// </summary>
         OriginOtherwiseCache,
 

@@ -41,7 +41,7 @@ namespace Silphid.Loadzup.Http.Caching
 
                 if (policy == HttpCachePolicy.OriginOtherwiseCache)
                     return LoadFromOrigin(policy, uri, options)
-                        .Catch<Response, HttpException>(ex =>
+                        .Catch<Response, NetworkException>(ex =>
                         {
                             Log.Debug(
                                 $"{policy} - Failed to retrieve {uri} from origin (error: {ex}), falling back to cached version.");

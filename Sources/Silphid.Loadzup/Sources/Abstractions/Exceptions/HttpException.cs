@@ -10,35 +10,30 @@ namespace Silphid.Loadzup
     {
         public Uri Uri { get; }
         public HttpStatusCode StatusCode { get; }
-        public string ErrorMessage { get; }
         public string ResponseBody { get; }
         public Dictionary<string, string> ResponseHeaders { get; }
 
-        public HttpException(UnityWebRequest request)
+        public HttpException(UnityWebRequest request) : this(new Uri(request.url), request.error)
         {
-            Uri = new Uri(request.url);
             StatusCode = (HttpStatusCode) request.responseCode;
-            ErrorMessage = request.error;
             ResponseBody = request.downloadHandler.text;
             ResponseHeaders = request.GetResponseHeaders();
         }
 
-        public HttpException(Uri uri, HttpStatusCode statusCode)
+        public HttpException(Uri uri, HttpStatusCode statusCode) : this(uri, $"StatusCode: {statusCode}")
         {
-            Uri = uri;
-            ErrorMessage = $"StatusCode: {statusCode}";
             ResponseBody = ((int) statusCode).ToString();
             StatusCode = statusCode;
         }
 
-        public HttpException(Uri uri, string message)
+        public HttpException(Uri uri, string message = null, Exception innerException = null)
+            : base(message, innerException)
         {
             Uri = uri;
-            ErrorMessage = message;
         }
 
         public override string Message =>
-            $"{ErrorMessage}\r\n" +
+            $"{base.Message}\r\n" +
             $"Uri: {Uri}\r\n" +
             $"ResponseBody:\r\n{ResponseBody}\r\n" +
             $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders.JoinAsString("  ")}}}";
