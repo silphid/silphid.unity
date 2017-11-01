@@ -1,4 +1,6 @@
-﻿namespace Silphid.Loadzup
+﻿using Silphid.Loadzup.Http;
+
+namespace Silphid.Loadzup
 {
     public class PutLoaderDecorator : OptionsLoaderDecoratorBase
     {

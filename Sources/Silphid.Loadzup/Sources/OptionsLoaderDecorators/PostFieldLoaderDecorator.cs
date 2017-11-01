@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Silphid.Loadzup.Http;
+using UnityEngine;
 
 namespace Silphid.Loadzup
 {

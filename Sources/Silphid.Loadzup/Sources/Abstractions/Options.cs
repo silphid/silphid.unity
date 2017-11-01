@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Silphid.Extensions;
 using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http;
 using Silphid.Loadzup.Http.Caching;
 using UnityEngine;
 

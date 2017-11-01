@@ -48,9 +48,7 @@
     <Compile Include="Sources\Abstractions\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Abstractions\Exceptions\LoadzupException.cs" />
     <Compile Include="Sources\Abstractions\Exceptions\NetworkException.cs" />
-    <Compile Include="Sources\Abstractions\HttpMethod.cs" />
     <Compile Include="Sources\Abstractions\KnownMediaType.cs" />
-    <Compile Include="Sources\Abstractions\KnownStatusCode.cs" />
     <Compile Include="Sources\Abstractions\Options.cs" />
     <Compile Include="Sources\Abstractions\OptionsExtensions.cs" />
     <Compile Include="Sources\Abstractions\Scheme.cs" />
@@ -61,7 +59,6 @@
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
     <Compile Include="Sources\Abstractions\ILoader.cs" />
-    <Compile Include="Sources\Abstractions\IHttpRequester.cs" />
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
     <Compile Include="Sources\DisposableSprite.cs" />
@@ -90,6 +87,12 @@
     <Compile Include="Sources\Loaders\Caching\IMemoryCache.cs" />
     <Compile Include="Sources\Loaders\Caching\MemoryCachePolicy.cs" />
     <Compile Include="Sources\Loaders\CompositeLoader.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\HttpMethod.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\IHttpRequester.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\INetworkConnectivity.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\INetworkConnectivityExtensions.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\KnownStatusCode.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\NetworkStatus.cs" />
     <Compile Include="Sources\Loaders\Http\Caching\CacheControl.cs" />
     <Compile Include="Sources\Loaders\Http\Caching\HttpCacheRequester.cs" />
     <Compile Include="Sources\Loaders\Http\Caching\HttpCache.cs" />

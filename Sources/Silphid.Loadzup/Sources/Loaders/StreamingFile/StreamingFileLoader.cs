@@ -1,4 +1,5 @@
 ﻿using System;
+using Silphid.Loadzup.Http;
 using UniRx;
 
 namespace Silphid.Loadzup.StreamingFile

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Silphid.Loadzup
+namespace Silphid.Loadzup.Http
 {
     public interface IHttpRequester
     {

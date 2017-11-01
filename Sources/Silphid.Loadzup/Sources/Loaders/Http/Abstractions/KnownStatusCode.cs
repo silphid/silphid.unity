@@ -1,4 +1,4 @@
-﻿namespace Silphid.Loadzup
+﻿namespace Silphid.Loadzup.Http
 {
     public class KnownStatusCode
     {

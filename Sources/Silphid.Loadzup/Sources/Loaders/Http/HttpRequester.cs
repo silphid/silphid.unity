@@ -6,16 +6,26 @@ using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpRequester : IHttpRequester
+    public class HttpRequester : IHttpRequester, INetworkConnectivity
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
+
+        private readonly ReactiveProperty<NetworkStatus> _status =
+            new ReactiveProperty<NetworkStatus>(NetworkStatus.Undetermined);
+
+        public IReadOnlyReactiveProperty<NetworkStatus> Status => _status;
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
             RequestInternal(uri.AbsoluteUri, options)
                 .DoOnSubscribe(() =>
                     Log.Info(GetLogMessage(uri, options)))
                 .DoOnError(ex =>
-                    Log.Info($"Failed {GetLogMessage(uri, options)}", ex))
+                {
+                    if (ex is NetworkException)
+                        _status.Value = NetworkStatus.Offline;
+                    
+                    Log.Info($"Failed {GetLogMessage(uri, options)}", ex);
+                })
                 .Select(www => new
                 {
                     WWW = www,
@@ -23,8 +33,13 @@ namespace Silphid.Loadzup.Http
                 })
                 .Do(x =>
                 {
-                    if (uri.Scheme != Scheme.StreamingFile && x.Headers == null)
+                    if (uri.Scheme != Scheme.Http && uri.Scheme != Scheme.Https)
+                        return;
+
+                    if (x.Headers == null)
                         Log.Warn($"No headers in response from {uri}");
+                        
+                    _status.Value = NetworkStatus.Online;
                 })
                 .Select(x => new Response(x.WWW.responseCode, x.WWW.downloadHandler.data,
                     x.Headers ?? new Dictionary<string, string>(), options));
