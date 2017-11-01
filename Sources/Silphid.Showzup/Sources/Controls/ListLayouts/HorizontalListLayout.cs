@@ -9,7 +9,6 @@ namespace Silphid.Showzup.ListLayouts
         public float ItemWidth;
 
         protected float ItemOffsetX => ItemWidth + HorizontalSpacing;
-        private Rect VisibleRect = new Rect();
 
         public override Rect GetItemRect(int index, Vector2 viewportSize) =>
             new Rect(
@@ -21,12 +20,9 @@ namespace Silphid.Showzup.ListLayouts
                 Padding.left + ItemWidth * count + HorizontalSpacing * (count - 1).AtLeast(0) + Padding.right,
                 viewportSize.y);
 
-        public override IndexRange GetVisibleIndexRange(Rect visibleRect)
-        {
-            VisibleRect.Set(visibleRect.x*-1, visibleRect.y, visibleRect.width, visibleRect.height);
-            return new IndexRange(
-                ((VisibleRect.xMin - FirstItemPosition.x) / ItemOffsetX).FloorInt(),
-                ((VisibleRect.xMax - FirstItemPosition.x) / ItemOffsetX).FloorInt() + 1);
-        }
+        public override IndexRange GetVisibleIndexRange(Rect rect) =>
+            new IndexRange(
+                ((rect.xMin - FirstItemPosition.x + HorizontalSpacing) / ItemOffsetX).FloorInt(),
+                ((rect.xMax - FirstItemPosition.x) / ItemOffsetX).FloorInt() + 1);
     }
 }

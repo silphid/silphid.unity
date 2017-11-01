@@ -26,7 +26,7 @@ namespace Silphid.Showzup.ListLayouts
 
         public override IndexRange GetVisibleIndexRange(Rect rect) =>
             new IndexRange( 
-                ((rect.xMin - FirstItemPosition.x) / ItemOffset.x).FloorInt() * Rows,
-                ((rect.xMax - FirstItemPosition.x) / ItemOffset.x).FloorInt() * Rows + 1);
+                ((rect.xMin - FirstItemPosition.x + Spacing.x) / ItemOffset.x).FloorInt() * Rows,
+                (((rect.xMax - FirstItemPosition.x) / ItemOffset.x).FloorInt() + 1) * Rows);
     }
 }

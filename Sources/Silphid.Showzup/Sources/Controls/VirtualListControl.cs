@@ -47,11 +47,18 @@ namespace Silphid.Showzup
             
             if (_containerRectTransform == null)
                 throw new ArgumentException("Container must have a RectTransform component.");
-            
+                
             _containerRectTransform
                 .ObserveEveryValueChanged(x => x.anchoredPosition)
                 .Subscribe(_ => UpdateVisibleRange())
                 .AddTo(this);
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            EnsureInitialized();
+            UpdateVisibleRange();
         }
 
         public override IObservable<IView> PresentInternal(object input, Options options)
@@ -157,6 +164,9 @@ namespace Silphid.Showzup
         {
             var rect = Layout.GetItemRect(index, Viewport.GetSize());
 
+            // Convert to Y+ upwards coordinate system
+            rect = new Rect(rect.x, -rect.y, rect.width, rect.height);
+
             var rectTransform = view.GameObject.RectTransform();
             rectTransform.pivot = Vector2.up;
             rectTransform.anchorMin = Vector2.up;
@@ -221,7 +231,7 @@ namespace Silphid.Showzup
 
         private Rect VisibleRect =>
             new Rect(
-                _containerRectTransform.anchoredPosition,
+                _containerRectTransform.anchoredPosition.NegateX(),
                 Viewport.GetSize());
     }
 }
