@@ -62,5 +62,8 @@ namespace Silphid.Injexit
 
         public static IBinding Id(this IBinding This, string id) =>
             This.Named(id);
+
+        public static IBinding Alias<TAbstraction>(this IBinding This) =>
+            This.Alias(typeof(TAbstraction));
     }
 }

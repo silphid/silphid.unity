@@ -16,7 +16,7 @@ namespace Silphid.Injexit
         public bool InList { get; private set; }
         public string Name { get; private set; }
         public BindingId Id { get; private set; }
-        public BindingId Reference { get; set; }
+        public BindingId Reference { get; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -62,10 +62,19 @@ namespace Silphid.Injexit
         IBinding IBinding.Id(BindingId id)
         {
             if (Id != null)
-                throw new InvalidOperationException("Already specified binding Name.");
+                throw new InvalidOperationException("Already specified Id or Alias.");
                     
             Id = id;
             id.Binding = this;
+            return this;
+        }
+
+        public IBinding Alias(Type aliasAbstractionType)
+        {
+            if (Id == null)
+                ((IBinding) this).Id(new BindingId($"{ConcretionType.Name}Alias"));
+
+            Container.BindReference(aliasAbstractionType, Id);
             return this;
         }
 

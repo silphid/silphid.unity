@@ -1,4 +1,6 @@
-﻿namespace Silphid.Injexit
+﻿using System;
+
+namespace Silphid.Injexit
 {
     public interface IBinding
     {
@@ -33,6 +35,12 @@
         /// and AddReference() (in lists).
         /// </summary>
         IBinding Id(BindingId id);
+
+        /// <summary>
+        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
+        /// and AddReference() (in lists).
+        /// </summary>
+        IBinding Alias(Type aliasAbstractionType);
         
         /// <summary>
         /// Attaches a child resolver to this binding, which will be used
