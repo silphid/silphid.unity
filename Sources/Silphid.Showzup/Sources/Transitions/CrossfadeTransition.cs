@@ -31,7 +31,7 @@ namespace Silphid.Showzup
 
         public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
         {
-            var sequencer = IsSequential ? (ISequencer) Sequence.Create() : Parallel.Create();
+            var sequencer = IsSequential ? (ISequencer) new Sequence() : new Parallel();
             PerformTransition(sourceContainer, targetContainer, IsSequential ? duration *  0.5f : duration, sequencer);
             return sequencer;
         }

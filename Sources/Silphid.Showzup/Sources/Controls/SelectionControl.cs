@@ -123,6 +123,41 @@ namespace Silphid.Showzup
             SelectedView.Value = view;
         }
 
+        public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
+        {
+            SelectedView.Value = _views
+                .OfType<TView>()
+                .FirstOrDefault(predicate);
+        }
+
+        public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        {
+            SelectedView.Value = _views
+                .Where(x => x.ViewModel is TViewModel)
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel, viewModel));
+        }
+
+        public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        {
+            SelectedView.Value = _views
+                .Where(x => x.ViewModel is TViewModel)
+                .FirstOrDefault(x => predicate((TViewModel) x.ViewModel));
+        }
+
+        public void SelectModel<TModel>(TModel model)
+        {
+            SelectedView.Value = _views
+                .Where(x => x.ViewModel?.Model is TModel)
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel.Model, model));
+        }
+
+        public void SelectModel<TModel>(Func<TModel, bool> predicate)
+        {
+            SelectedView.Value = _views
+                .Where(x => x.ViewModel?.Model is TModel)
+                .FirstOrDefault(x => predicate((TModel) x.ViewModel.Model));
+        }
+
         public bool SelectIndex(int index)
         {
             var viewAtIndex = GetViewAtIndex(index);
