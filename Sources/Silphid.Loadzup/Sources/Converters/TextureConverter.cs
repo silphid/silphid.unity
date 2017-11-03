@@ -13,7 +13,7 @@ namespace Silphid.Loadzup
 
         protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding)
         {
-            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
+            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false, false) {wrapMode = TextureWrapMode.Clamp};
             texture.LoadImage(input);
             return Observable.Return((T)(object)texture);
         }
