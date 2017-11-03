@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpRequester : IHttpRequester, INetworkConnectivity
+    public class HttpRequester : IHttpRequester, INetworkStatusProvider
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
 

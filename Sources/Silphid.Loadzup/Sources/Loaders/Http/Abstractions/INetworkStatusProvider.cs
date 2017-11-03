@@ -2,7 +2,7 @@
 
 namespace Silphid.Loadzup.Http
 {
-    public interface INetworkConnectivity
+    public interface INetworkStatusProvider
     {
         IReadOnlyReactiveProperty<NetworkStatus> Status { get; }
     }

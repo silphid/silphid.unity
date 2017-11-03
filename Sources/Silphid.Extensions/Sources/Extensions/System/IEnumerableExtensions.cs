@@ -207,9 +207,7 @@ namespace Silphid.Extensions
             foreach (var item in source)
             {
                 if (predicate(item))
-                {
                     return index;
-                }
                 index++;
             }
             return -1;
