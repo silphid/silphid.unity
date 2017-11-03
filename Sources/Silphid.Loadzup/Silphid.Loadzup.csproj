@@ -90,7 +90,7 @@
     <Compile Include="Sources\Loaders\Http\Abstractions\HttpMethod.cs" />
     <Compile Include="Sources\Loaders\Http\Abstractions\IHttpRequester.cs" />
     <Compile Include="Sources\Loaders\Http\Abstractions\INetworkStatusProvider.cs" />
-    <Compile Include="Sources\Loaders\Http\Abstractions\INetworkConnectivityExtensions.cs" />
+    <Compile Include="Sources\Loaders\Http\Abstractions\INetworkStatusProviderExtensions.cs" />
     <Compile Include="Sources\Loaders\Http\Abstractions\KnownStatusCode.cs" />
     <Compile Include="Sources\Loaders\Http\Abstractions\NetworkStatus.cs" />
     <Compile Include="Sources\Loaders\Http\Caching\CacheControl.cs" />

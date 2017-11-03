@@ -3,7 +3,7 @@ using UniRx;
 
 namespace Silphid.Loadzup.Http
 {
-    public static class INetworkConnectivityExtensions
+    public static class INetworkStatusProviderExtensions
     {
         public static IObservable<bool> IsOnlineObservable(this INetworkStatusProvider This) =>
             This.Status
