@@ -16,17 +16,20 @@ namespace Silphid.Sequencit
             return sequence;
         }
 
-        public static Sequence Create(params Func<IObservable<Unit>>[] selectors) =>
-            Create(seq => selectors.ForEach(selector => seq.Add(Observable.Defer(selector))));
+        public static Sequence Create<T>(params Func<IObservable<T>>[] selectors) =>
+            Create(p => selectors.ForEach(selector => p.Add(selector())));
 
-        public static Sequence Create(IEnumerable<IObservable<Unit>> observables) =>
+        public static Sequence Create<T>(IEnumerable<IObservable<T>> observables) =>
+            Create(seq => observables.ForEach(x => seq.Add(x)));
+
+        public static Sequence Create<T>(params IObservable<T>[] observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<Sequence> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start(params Func<IObservable<Unit>>[] selectors) =>
-            Start(seq => selectors.ForEach(selector => seq.Add(selector())));
+        public static IDisposable Start<T>(params IObservable<T>[] observables) =>
+            Start(p => observables.ForEach(x => x.In(p)));
 
         #endregion
 

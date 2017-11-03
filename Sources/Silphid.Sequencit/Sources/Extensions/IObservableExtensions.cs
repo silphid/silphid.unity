@@ -25,7 +25,7 @@ namespace Silphid.Sequencit
                 .ObserveOn(Scheduler.MainThreadEndOfFrame);
         }
 
-        public static void In(this IObservable<Unit> This, ISequencer sequencer)
+        public static void In<T>(this IObservable<T> This, ISequencer sequencer)
         {
             sequencer.Add(This);
         }

@@ -16,16 +16,19 @@ namespace Silphid.Sequencit
             return parallel;
         }
 
-        public static Parallel Create(params Func<IObservable<Unit>>[] selectors) =>
+        public static Parallel Create<T>(params Func<IObservable<T>>[] selectors) =>
             Create(p => selectors.ForEach(selector => p.Add(selector())));
 
-        public static Parallel Create(IEnumerable<IObservable<Unit>> observables) =>
+        public static Parallel Create<T>(IEnumerable<IObservable<T>> observables) =>
+            Create(seq => observables.ForEach(x => seq.Add(x)));
+
+        public static Parallel Create<T>(params IObservable<T>[] observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<Parallel> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start(params IObservable<Unit>[] observables) =>
+        public static IDisposable Start<T>(params IObservable<T>[] observables) =>
             Start(p => observables.ForEach(x => x.In(p)));
 
         #endregion
