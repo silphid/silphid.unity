@@ -76,7 +76,6 @@ namespace Silphid.Showzup
                 return;
             }
 
-            viewObject.SetActive(false);
             viewObject.transform.SetParent(HistoryContainer.transform, false);
         }
 
