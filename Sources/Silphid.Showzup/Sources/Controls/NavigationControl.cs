@@ -38,6 +38,11 @@ namespace Silphid.Showzup
             History.PairWithPrevious().Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
+        private void Awake()
+        {
+            HistoryContainer.SetActive(false);
+        }
+
         public void Dispose()
         {
             _disposables.Dispose();

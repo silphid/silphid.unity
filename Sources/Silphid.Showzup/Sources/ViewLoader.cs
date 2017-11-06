@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -141,7 +142,8 @@ namespace Silphid.Showzup
                 .WhereNotNull()
                 .DoOnError(ex => Log.Error(
                     $"Failed to load {viewType} from {uri} with error:{Environment.NewLine}{ex}"))
-                .Select(x => GetViewFromPrefab(x, viewType));
+                .Select(x => GetViewFromPrefab(x, viewType))
+                .Do(DisableOtherViews);
         }
 
         private bool CheckCancellation(CancellationToken cancellationToken, Action cancellationAction = null)
@@ -159,7 +161,6 @@ namespace Silphid.Showzup
                 return null;
 
             var instance = Object.Instantiate(original, parent);
-            DisableAllViews(instance);
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -170,9 +171,13 @@ namespace Silphid.Showzup
             return instance;
         }
 
-        private void DisableAllViews(GameObject obj)
+        private void DisableOtherViews(IView view)
         {
-            obj.GetComponents<IView>().ForEach(x => x.IsActive = false);
+            view.GameObject
+                .GetComponents<IView>()
+                .Except(view)
+                .OfType<MonoBehaviour>()
+                .ForEach(x => x.enabled = false);
         }
 
         private IView GetViewFromPrefab(GameObject gameObject, Type viewType)

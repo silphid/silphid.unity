@@ -46,7 +46,6 @@ namespace Silphid.Showzup
                 return;
 
             SetViewParent(container, view.GameObject);
-            view.IsActive = true;
         }
 
         protected virtual void InsertView(GameObject container, int index, IView view)
@@ -56,7 +55,6 @@ namespace Silphid.Showzup
 
             SetViewParent(container, view.GameObject);
             view.GameObject.transform.SetSiblingIndex(index);
-            view.IsActive = true;
         }
 
         public virtual void OnSelect(BaseEventData eventData)

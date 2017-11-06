@@ -62,16 +62,6 @@ namespace Silphid.Showzup
 
         private IViewModel _viewModel;
 
-        public bool IsActive
-        {
-            get { return enabled && gameObject.activeSelf; }
-            set
-            {
-                gameObject.SetActive(value);
-                enabled = value;
-            }
-        }
-
         IViewModel IView.ViewModel
         {
             get { return _viewModel; }
