@@ -56,6 +56,7 @@
     <Compile Include="Sources\Converters\ConverterBase.cs" />
     <Compile Include="Sources\Converters\JsonConverter.cs" />
     <Compile Include="Sources\Converters\SpriteConverter.cs" />
+    <Compile Include="Sources\Converters\StringConverter.cs" />
     <Compile Include="Sources\Converters\TextureConverter.cs" />
     <Compile Include="Sources\Abstractions\IConverter.cs" />
     <Compile Include="Sources\Abstractions\ILoader.cs" />
