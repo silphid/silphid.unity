@@ -4,13 +4,9 @@ using UniRx;
 
 namespace Silphid.Loadzup
 {
-    public class StringConverter : ConverterBase<string>
+    public class StringConverter : ConverterBase<byte[]>
     {
-        public StringConverter() : base("text/html")
-        {
-        }
-
-        protected override IObservable<T> ConvertInternal<T>(string input, ContentType contentType, Encoding encoding) =>
-            Observable.Return((T) (object) input);
+        protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding) =>
+            Observable.Return((T) (object) encoding.GetString(input));
     }
 }
