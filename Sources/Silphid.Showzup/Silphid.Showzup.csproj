@@ -82,7 +82,6 @@
     <Compile Include="Sources\Controls\ListLayouts\HorizontalGridListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\HorizontalListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\IListLayout.cs" />
-    <Compile Include="Sources\Controls\ListLayouts\IndexRange.cs" />
     <Compile Include="Sources\Controls\ListLayouts\ListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\VerticalGridListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\VerticalListLayout.cs" />

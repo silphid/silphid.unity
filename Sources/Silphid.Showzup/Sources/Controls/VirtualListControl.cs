@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Silphid.DataTypes;
 using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
 using UniRx;
@@ -21,7 +22,7 @@ namespace Silphid.Showzup
         
         private Options _options;
         private List<Entry> _entries = new List<Entry>();
-        private IndexRange _currentRange = IndexRange.Empty;
+        private IntRange _currentRange = IntRange.Empty;
         private RectTransform _containerRectTransform;
         private bool _isInitialized;
         
@@ -64,7 +65,7 @@ namespace Silphid.Showzup
         public override IObservable<IView> PresentInternal(object input, Options options)
         {
             EnsureInitialized();
-            _currentRange = IndexRange.Empty;
+            _currentRange = IntRange.Empty;
             return base.PresentInternal(input, options);
         }
 
@@ -90,7 +91,7 @@ namespace Silphid.Showzup
             var newRange = Layout
                 .GetVisibleIndexRange(VisibleRect)
                 .ExpandStartAndEndBy(ExtraMarginItems)
-                .IntersectionWith(new IndexRange(0, _entries.Count));
+                .IntersectionWith(new IntRange(0, _entries.Count));
             
             // Changed?
             if (newRange.Equals(_currentRange))

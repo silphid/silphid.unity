@@ -1,14 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Object = UnityEngine.Object;
 
 namespace Silphid.Extensions
 {
     public static class GameObjectExtensions
     {
         #region Traversal
+
+        public static TComponent GetRequiredComponent<TComponent>(this GameObject This) where TComponent : Component
+        {
+            var component = This.GetComponent<TComponent>();
+            if (component == null)
+                throw new InvalidOperationException($"GameObject is required to have a {typeof(TComponent).Name} component: {This.gameObject.ToHierarchyPath()}");
+
+            return component;
+        }
 
         public static GameObject Parent(this GameObject This) =>
             This.transform.Parent();

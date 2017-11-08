@@ -1,4 +1,5 @@
-﻿using Silphid.Extensions;
+﻿using Silphid.DataTypes;
+using Silphid.Extensions;
 using UnityEngine;
 
 namespace Silphid.Showzup.ListLayouts
@@ -20,8 +21,8 @@ namespace Silphid.Showzup.ListLayouts
                 Padding.left + ItemWidth * count + HorizontalSpacing * (count - 1).AtLeast(0) + Padding.right,
                 viewportSize.y);
 
-        public override IndexRange GetVisibleIndexRange(Rect rect) =>
-            new IndexRange(
+        public override IntRange GetVisibleIndexRange(Rect rect) =>
+            new IntRange(
                 ((rect.xMin - FirstItemPosition.x + HorizontalSpacing) / ItemOffsetX).FloorInt(),
                 ((rect.xMax - FirstItemPosition.x) / ItemOffsetX).FloorInt() + 1);
     }

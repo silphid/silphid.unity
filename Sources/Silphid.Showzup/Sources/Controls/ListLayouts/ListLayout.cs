@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Silphid.DataTypes;
+using UnityEngine;
 
 namespace Silphid.Showzup.ListLayouts
 {
@@ -11,6 +12,6 @@ namespace Silphid.Showzup.ListLayouts
         
         public abstract Rect GetItemRect(int index, Vector2 viewportSize);
         public abstract Vector2 GetContainerSize(int count, Vector2 viewportSize);
-        public abstract IndexRange GetVisibleIndexRange(Rect rect);
+        public abstract IntRange GetVisibleIndexRange(Rect rect);
     }
 }
