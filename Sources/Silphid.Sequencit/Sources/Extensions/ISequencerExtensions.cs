@@ -79,17 +79,17 @@ namespace Silphid.Sequencit
         public static IObservable<Unit> AddGate(this ISequencer This, IObservable<bool> gate) =>
             This.Add(() => gate.WhereTrue().Take(1));
 
-        public static IObservable<Unit> AddInterval(this ISequencer This, float seconds) =>
-            This.AddInterval(TimeSpan.FromSeconds(seconds));
+        public static IObservable<Unit> AddDelay(this ISequencer This, float seconds) =>
+            This.AddDelay(TimeSpan.FromSeconds(seconds));
 
-        public static IObservable<Unit> AddInterval(this ISequencer This, float seconds, IScheduler scheduler) =>
-            This.AddInterval(TimeSpan.FromSeconds(seconds), scheduler);
+        public static IObservable<Unit> AddDelay(this ISequencer This, float seconds, IScheduler scheduler) =>
+            This.AddDelay(TimeSpan.FromSeconds(seconds), scheduler);
 
-        public static IObservable<Unit> AddInterval(this ISequencer This, TimeSpan interval) =>
-            This.AddInterval(interval, Scheduler.DefaultSchedulers.TimeBasedOperations);
+        public static IObservable<Unit> AddDelay(this ISequencer This, TimeSpan interval) =>
+            This.AddDelay(interval, Scheduler.DefaultSchedulers.TimeBasedOperations);
 
-        public static IObservable<Unit> AddInterval(this ISequencer This, TimeSpan interval, IScheduler scheduler) =>
-            This.Add(Observable.ReturnUnit().Delay(interval, scheduler));
+        public static IObservable<Unit> AddDelay(this ISequencer This, TimeSpan interval, IScheduler scheduler) =>
+            This.Add(Observable.Timer(interval, scheduler));
 
         public static IObservable<Unit> AddInstant(this ISequencer This)
         {

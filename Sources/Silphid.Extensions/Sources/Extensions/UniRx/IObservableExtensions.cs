@@ -129,6 +129,14 @@ namespace Silphid.Extensions
         #region Misc
 
         [Pure]
+        public static IObservable<T> First<T>(this IObservable<T> This, T value) =>
+            This.First(x => Equals(x, value));
+
+        [Pure]
+        public static IObservable<T> FirstOrDefault<T>(this IObservable<T> This, T value) =>
+            This.FirstOrDefault(x => Equals(x, value));
+
+        [Pure]
         public static IObservable<T> Where<T>(this IObservable<T> This, T value) =>
             This.Where(x => Equals(x, value));
 

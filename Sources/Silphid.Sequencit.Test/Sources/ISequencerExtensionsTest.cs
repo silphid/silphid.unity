@@ -116,7 +116,7 @@ public class ISequencerExtensionsTest : SequencingTestBase
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            s.AddInterval(5f, _scheduler);
+            s.AddDelay(5f, _scheduler);
             s.AddAction(() => _value = 456);
         });
 
@@ -132,7 +132,7 @@ public class ISequencerExtensionsTest : SequencingTestBase
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            s.AddInterval(TimeSpan.FromTicks(100), _scheduler);
+            s.AddDelay(TimeSpan.FromTicks(100), _scheduler);
             s.AddAction(() => _value = 456);
         });
 
