@@ -58,5 +58,8 @@ namespace Silphid.Loadzup
             This
                 .WithBody(body)
                 .WithHeader(KnownHttpHeaders.ContentType, KnownMediaType.ApplicationWWWFormUrlEncoded);
+        
+        public static ILoader WithTimeout(this ILoader This, TimeSpan timeout) =>
+            new TimeoutLoaderDecorator(This, timeout);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Silphid.Extensions;
 using Silphid.Loadzup.Caching;
 using Silphid.Loadzup.Http;
@@ -18,6 +19,7 @@ namespace Silphid.Loadzup
         public HttpMethod Method = HttpMethod.Get;
         public WWWForm PostForm;
         public string PutBody;
+        public TimeSpan? Timeout;
 
         public void SetHeader(string key, string value)
         {

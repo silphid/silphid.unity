@@ -129,6 +129,10 @@ namespace Silphid.Extensions
         #region Misc
 
         [Pure]
+        public static IObservable<T> Where<T>(this IObservable<T> This, T value) =>
+            This.Where(x => Equals(x, value));
+
+        [Pure]
         public static IObservable<Tuple<TSource, TSource>> PairWithPrevious<TSource>(this IObservable<TSource> source) =>
             source
                 .Scan(Tuple.Create(default(TSource), default(TSource)), (acc, current) => Tuple.Create(acc.Item2, current))

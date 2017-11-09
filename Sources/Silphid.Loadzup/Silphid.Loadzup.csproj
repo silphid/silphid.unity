@@ -253,6 +253,7 @@
     <Compile Include="Sources\OptionsLoaderDecorators\PostFieldLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\PostLoaderDecorator.cs" />
     <Compile Include="Sources\OptionsLoaderDecorators\PutLoaderDecorator.cs" />
+    <Compile Include="Sources\OptionsLoaderDecorators\TimeoutLoaderDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">

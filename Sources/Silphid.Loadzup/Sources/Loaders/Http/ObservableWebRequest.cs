@@ -10,43 +10,51 @@ namespace Silphid.Loadzup.Http
 {
     public static class ObservableWebRequest
     {
-        public static IObservable<UnityWebRequest> Get(string url, IDictionary<string, string> headers = null)
+        public static IObservable<UnityWebRequest> Get(string url, IDictionary<string, string> headers = null, TimeSpan? timeout = null)
         {
             return Observable.Defer(() =>
             {
                 var request = UnityWebRequest.Get(url);
+                SetTimeout(request, timeout);
                 headers?.ForEach(x => request.SetRequestHeader(x.Key, x.Value));
-                return Request(request);
+                return Send(request);
             });
         }
-        
-        public static IObservable<UnityWebRequest> Post(string url, WWWForm form, IDictionary<string, string> headers = null)
+
+        public static IObservable<UnityWebRequest> Post(string url, WWWForm form, IDictionary<string, string> headers = null, TimeSpan? timeout = null)
         {
             return Observable.Defer(() =>
             {
                 var request = UnityWebRequest.Post(url, form);
+                SetTimeout(request, timeout);
                 headers?.ForEach(x => request.SetRequestHeader(x.Key, x.Value));
-                return Request(request);
+                return Send(request);
             });
         }
-        
-        public static IObservable<UnityWebRequest> Put(string url, string body, IDictionary<string, string> headers = null)
+
+        public static IObservable<UnityWebRequest> Put(string url, string body, IDictionary<string, string> headers = null, TimeSpan? timeout = null)
         {
             return Observable.Defer(() =>
             {
                 var request = UnityWebRequest.Put(url, body);
+                SetTimeout(request, timeout);
                 headers?.ForEach(x => request.SetRequestHeader(x.Key, x.Value));
-                return Request(request);
+                return Send(request);
             });
         }
-        
-        private static IObservable<UnityWebRequest> Request(UnityWebRequest request)
+
+        private static void SetTimeout(UnityWebRequest request, TimeSpan? timeout)
         {
-            return Observable.FromCoroutine<UnityWebRequest>((observer, cancellation) =>
-                Fetch(request, observer));
+            request.timeout = timeout?.TotalSeconds.RoundToInt() ?? 0;
         }
 
-        private static IEnumerator Fetch(UnityWebRequest webRequest, IObserver<UnityWebRequest> observer)
+        private static IObservable<UnityWebRequest> Send(UnityWebRequest request)
+        {
+            return Observable.FromCoroutine<UnityWebRequest>((observer, cancellation) =>
+                Send(request, observer));
+        }
+
+        private static IEnumerator Send(UnityWebRequest webRequest, IObserver<UnityWebRequest> observer)
         {
             using (webRequest)
             {

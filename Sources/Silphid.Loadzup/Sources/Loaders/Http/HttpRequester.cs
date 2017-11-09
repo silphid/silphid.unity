@@ -47,13 +47,13 @@ namespace Silphid.Loadzup.Http
         private IObservable<UnityWebRequest> RequestInternal(string url, Options options = null)
         {
             if (options == null || options.Method == HttpMethod.Get)
-                return ObservableWebRequest.Get(url, options?.Headers);
+                return ObservableWebRequest.Get(url, options?.Headers, options?.Timeout);
 
             if (options.Method == HttpMethod.Post)
-                return ObservableWebRequest.Post(url, options.PostForm, options.Headers);
+                return ObservableWebRequest.Post(url, options.PostForm, options.Headers, options.Timeout);
 
             if (options.Method == HttpMethod.Put)
-                return ObservableWebRequest.Put(url, options.PutBody, options.Headers);
+                return ObservableWebRequest.Put(url, options.PutBody, options.Headers, options.Timeout);
 
             throw new NotImplementedException($"HTTP method {options.Method} not implemented for: {url}");
         }
