@@ -15,7 +15,7 @@ namespace Silphid.Showzup
     public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(NavigationControl));
-        
+
         #region Fields
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
@@ -61,6 +61,10 @@ namespace Silphid.Showzup
                 .DistinctUntilChanged()
                 .CombineLatest(this.Ready(), (x, y) => x && y)
                 .ToReadOnlyReactiveProperty());
+
+        public IReadOnlyReactiveProperty<IView> RootView => History
+                .Select(x => x.FirstOrDefault())
+                .ToReadOnlyReactiveProperty();
 
         public ReactiveProperty<List<IView>> History { get; } =
             new ReactiveProperty<List<IView>>(new List<IView>());
