@@ -61,7 +61,7 @@ namespace Silphid.Showzup
         private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
         {
             observable
-                .PairWithPrevious()
+                .PairWithPreviousOrDefault()
                 .Subscribe(x =>
                 {
                     RemoveFocus(x.Item1 as IFocusable);
