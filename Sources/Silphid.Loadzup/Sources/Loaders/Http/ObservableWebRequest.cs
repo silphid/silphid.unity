@@ -54,7 +54,7 @@ namespace Silphid.Loadzup.Http
                 
                 try
                 {
-                    operation = webRequest.Send();
+                    operation = webRequest.SendWebRequest();
                 }
                 catch (Exception exception)
                 {
@@ -77,65 +77,5 @@ namespace Silphid.Loadzup.Http
                 }
             }
         }
-
-// Original implementation :
-//
-//        private static IEnumerator Fetch(UnityWebRequest www, IObserver<byte[]> observer, IProgress<float> reportProgress, CancellationToken cancel)
-//        {
-//            using (www)
-//            {
-//                if (reportProgress != null)
-//                {
-//                    while (!www.isDone && !cancel.IsCancellationRequested)
-//                    {
-//                        try
-//                        {
-//                            reportProgress.Report(www.downloadProgress);
-//                        }
-//                        catch (Exception ex)
-//                        {
-//                            observer.OnError(ex);
-//                            yield break;
-//                        }
-//                        yield return null;
-//                    }
-//                }
-//                else
-//                {
-//                    if (!www.isDone)
-//                    {
-//                        yield return www;
-//                    }
-//                }
-//
-//                if (cancel.IsCancellationRequested)
-//                {
-//                    yield break;
-//                }
-//
-//                if (reportProgress != null)
-//                {
-//                    try
-//                    {
-//                        reportProgress.Report(www.downloadProgress);
-//                    }
-//                    catch (Exception ex)
-//                    {
-//                        observer.OnError(ex);
-//                        yield break;
-//                    }
-//                }
-//
-//                if (!string.IsNullOrEmpty(www.error))
-//                {
-//                    observer.OnError(new HttpException(www));
-//                }
-//                else
-//                {
-//                    observer.OnNext(www.downloadHandler.data);
-//                    observer.OnCompleted();
-//                }
-//            }
-//        }
     }
 }
