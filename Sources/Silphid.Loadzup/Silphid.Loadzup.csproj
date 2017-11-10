@@ -198,8 +198,8 @@
     <Compile Include="Sources\Abstractions\Response.cs" />
     <Compile Include="Sources\Converters\XmlConverter.cs" />
     <Compile Include="Sources\DisposableSprite.cs" />
-    <Compile Include="Sources\Loaders\Bundles\AssetBundleAdaptor.cs" />
-    <Compile Include="Sources\Loaders\Bundles\AssetBundleManifestAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleAdaptor.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleManifestAdaptor.cs" />
     <Compile Include="Sources\Loaders\Bundles\AssetLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\BundleCacheLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\BundleConverter.cs" />
@@ -208,13 +208,13 @@
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundle.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleCachedLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleUnloader.cs" />
-    <Compile Include="Sources\Loaders\Bundles\Interfaces\IManifest.cs" />
-    <Compile Include="Sources\Loaders\Bundles\Interfaces\IManifestLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleManifest.cs" />
+    <Compile Include="Sources\Loaders\Bundles\Interfaces\IBundleManifestLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IPlatformProvider.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\IScene.cs" />
     <Compile Include="Sources\Loaders\Bundles\Interfaces\ISceneManager.cs" />
     <Compile Include="Sources\Loaders\Bundles\ISceneAdaptor.cs" />
-    <Compile Include="Sources\Loaders\Bundles\ManifestLoader.cs" />
+    <Compile Include="Sources\Loaders\Bundles\BundleManifestLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\PlatformProvider.cs" />
     <Compile Include="Sources\Loaders\Bundles\SceneLoader.cs" />
     <Compile Include="Sources\Loaders\Bundles\SceneManagerAdaptor.cs" />

@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class ManifestLoader : IManifestLoader
+    public class BundleManifestLoader : IBundleManifestLoader
     {
         private readonly ILoader _innerLoader;
         private const string ManifestAssetName = "AssetBundleManifest";
-        private IManifest _manifest;
+        private IBundleManifest _bundleManifest;
         private readonly Uri _manifestUri;
 
-        public ManifestLoader(ILoader innerLoader, IPlatformProvider platformProvider, string baseUri)
+        public BundleManifestLoader(ILoader innerLoader, IPlatformProvider platformProvider, string baseUri)
         {
             _innerLoader = innerLoader;
 
@@ -19,8 +19,8 @@ namespace Silphid.Loadzup.Bundles
             _manifestUri = new Uri($"{baseUri}/{platformName}/{platformName}");
         }
 
-        public IObservable<IManifest> Load() =>
-            _manifest == null
+        public IObservable<IBundleManifest> Load() =>
+            _bundleManifest == null
                 ? _innerLoader
                     .Load<IBundle>(_manifestUri)
                     .ContinueWith(bundle => bundle.LoadAsset<AssetBundleManifest>(ManifestAssetName))
@@ -28,10 +28,10 @@ namespace Silphid.Loadzup.Bundles
                     {
                         if (x == null)
                             throw new InvalidOperationException(
-                                $"No AssetBundleManifest found from manifest uri {_manifestUri}");
+                                $"No AssetBundleManifest found from bundleManifest uri {_manifestUri}");
 
-                        return _manifest = new AssetBundleManifestAdaptor(x);
+                        return _bundleManifest = new BundleManifestAdaptor(x);
                     })
-                : Observable.Return(_manifest);
+                : Observable.Return(_bundleManifest);
     }
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {
-    internal class AssetBundleAdaptor : IBundle
+    internal class BundleAdaptor : IBundle
     {
         private readonly AssetBundle _bundle;
 
-        public AssetBundleAdaptor(AssetBundle bundle)
+        public BundleAdaptor(AssetBundle bundle)
         {
             _bundle = bundle;
         }

@@ -13,8 +13,8 @@ public class BundleLoaderTest
     private readonly IBundle _mockBundle = Substitute.For<IBundle>();
     private IBundleCachedLoader _cachedLoader;
     private BundleLoader _fixture;
-    private IManifest _manifest;
-    private IManifestLoader _manifestLoader;
+    private IBundleManifest _bundleManifest;
+    private IBundleManifestLoader _bundleManifestLoader;
 
     private Uri GetBundleUri() => new Uri($"bundle://{AssetBundleName}");
     private IObservable<IBundle> GetBundleObservable() => Observable.Return(_mockBundle);
@@ -24,12 +24,12 @@ public class BundleLoaderTest
     {
         _cachedLoader = Substitute.For<IBundleCachedLoader>();
 
-        // Mock manifest
-        _manifestLoader = Substitute.For<IManifestLoader>();
-        _manifest = Substitute.For<IManifest>();
-        _manifestLoader.Load().Returns(Observable.Return(_manifest));
+        // Mock bundleManifest
+        _bundleManifestLoader = Substitute.For<IBundleManifestLoader>();
+        _bundleManifest = Substitute.For<IBundleManifest>();
+        _bundleManifestLoader.Load().Returns(Observable.Return(_bundleManifest));
 
-        _fixture = new BundleLoader(_cachedLoader, _manifestLoader);
+        _fixture = new BundleLoader(_cachedLoader, _bundleManifestLoader);
     }
 
     private void SetupLoadReturns(IObservable<IBundle> observable)
@@ -46,7 +46,7 @@ public class BundleLoaderTest
 
     private void SetupManifestDependencyBundlesReturn(string[] dependentBundles = null, string bundleName = null)
     {
-        _manifest.GetAllDependencies(bundleName ?? Arg.Any<string>())
+        _bundleManifest.GetAllDependencies(bundleName ?? Arg.Any<string>())
             .Returns(dependentBundles ?? new string[0]);
     }
 
@@ -125,8 +125,8 @@ public class BundleLoaderTest
         _fixture.Unload(AssetBundleName);
 
         Assert.IsFalse(_cachedLoader.Received(1).Unload(Arg.Any<string>()));
-        _manifestLoader.DidNotReceive().Load();
-        _manifest.DidNotReceive().GetAllDependencies(Arg.Any<string>());
+        _bundleManifestLoader.DidNotReceive().Load();
+        _bundleManifest.DidNotReceive().GetAllDependencies(Arg.Any<string>());
         _cachedLoader.DidNotReceive().UnloadDependency(Arg.Any<string>(), Arg.Any<string>());
     }
 
@@ -139,8 +139,8 @@ public class BundleLoaderTest
         _fixture.Unload(AssetBundleName);
         
         _cachedLoader.Received(1).Unload(Arg.Any<string>());
-        _manifestLoader.Received(1).Load();
-        _manifest.Received(1).GetAllDependencies(Arg.Any<string>());
+        _bundleManifestLoader.Received(1).Load();
+        _bundleManifest.Received(1).GetAllDependencies(Arg.Any<string>());
 
         foreach (var t in _mockedDependencies)
             _cachedLoader.Received(1).UnloadDependency(t, Arg.Any<string>());

@@ -1,6 +1,6 @@
 ﻿namespace Silphid.Loadzup.Bundles
 {
-    public interface IManifest
+    public interface IBundleManifest
     {
         string[] GetAllDependencies(string bundleName);
     }

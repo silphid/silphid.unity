@@ -2,11 +2,11 @@
 
 namespace Silphid.Loadzup.Bundles
 {
-    internal class AssetBundleManifestAdaptor : IManifest
+    internal class BundleManifestAdaptor : IBundleManifest
     {
         private readonly AssetBundleManifest _manifest;
 
-        public AssetBundleManifestAdaptor(AssetBundleManifest manifest)
+        public BundleManifestAdaptor(AssetBundleManifest manifest)
         {
             _manifest = manifest;
         }

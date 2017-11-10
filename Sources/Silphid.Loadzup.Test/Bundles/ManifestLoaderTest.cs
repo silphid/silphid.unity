@@ -10,7 +10,7 @@ public class ManifestLoaderTest
 {
     private const string BaseUri = "http://localhost:8080";
     private ILoader _innerLoader;
-    private ManifestLoader _fixture;
+    private BundleManifestLoader _fixture;
     private IPlatformProvider _platformProvider;
     private IBundle _bundle;
 
@@ -42,7 +42,7 @@ public class ManifestLoaderTest
 
     private void CreateFixture()
     {
-        _fixture = new ManifestLoader(_innerLoader, _platformProvider, BaseUri);
+        _fixture = new BundleManifestLoader(_innerLoader, _platformProvider, BaseUri);
     }
 
     [Test]

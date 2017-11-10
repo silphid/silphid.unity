@@ -24,7 +24,7 @@ namespace Silphid.Loadzup.Bundles
                     if(x.assetBundle == null)
                         throw new InvalidOperationException("Failed to convert bytes to AssetBundle");
 
-                    return new AssetBundleAdaptor(x.assetBundle);
+                    return new BundleAdaptor(x.assetBundle);
                 });
     }
 }
