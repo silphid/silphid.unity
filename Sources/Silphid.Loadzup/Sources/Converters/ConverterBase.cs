@@ -8,30 +8,81 @@ namespace Silphid.Loadzup
 {
     public abstract class ConverterBase : IConverter
     {
-        protected readonly Type[] _inputTypes;
-        protected readonly string[] _mediaTypes;
+        #region Private fields
 
-        protected ConverterBase(Type inputType1, params string[] mediaTypes)
+        private Type[] _inputTypes;
+        private Type[] _outputTypes;
+        private string[] _mediaTypes;
+        
+        #endregion
+        
+        #region Input/Output/MediaType setters
+
+        protected void SetInput<T>()
         {
-            _inputTypes = new[] {inputType1};
+            SetInputs(typeof(T));
+        }
+
+        protected void SetInputs<T1, T2>()
+        {
+            SetInputs(typeof(T1), typeof(T2));
+        }
+
+        protected void SetInputs(params Type[] inputTypes)
+        {
+            if (_inputTypes != null)
+                throw new InvalidOperationException($"Input types already set for converter {GetType().Name}");
+            
+            _inputTypes = inputTypes;
+        }
+
+        protected void SetOutput<T>()
+        {
+            SetOutputs(typeof(T));
+        }
+
+        protected void SetOutputs<T1, T2>()
+        {
+            SetOutputs(typeof(T1), typeof(T2));
+        }
+
+        protected void SetOutputs(params Type[] outputTypes)
+        {
+            if (_outputTypes != null)
+                throw new InvalidOperationException($"Output types already set for converter {GetType().Name}");
+            
+            _outputTypes = outputTypes;
+        }
+
+        protected void SetMediaTypes(params string[] mediaTypes)
+        {
+            if (_mediaTypes != null)
+                throw new InvalidOperationException($"Media types already set for converter {GetType().Name}");
+            
             _mediaTypes = mediaTypes;
         }
 
-        protected ConverterBase(Type inputType1, Type inputType2, params string[] mediaTypes)
-        {
-            _inputTypes = new[] {inputType1, inputType2};
-            _mediaTypes = mediaTypes;
-        }
+        #endregion
 
-        private bool SupportsContentType(ContentType contentType) =>
-            contentType == null ||
-            _mediaTypes.Length == 0 ||
-            _mediaTypes.Any(x => x.Equals(contentType.MediaType, StringComparison.OrdinalIgnoreCase));
+        #region IConverter members
 
         public bool Supports<T>(object input, ContentType contentType) =>
-            _inputTypes.Any(x => input.GetType().IsAssignableTo(x)) &&
-            SupportsContentType(contentType) &&
+            input != null &&
+            SupportsInputType(input.GetType()) &&
+            SupportsOutputType(typeof(T)) &&
+            SupportsMediaType(contentType?.MediaType) &&
             SupportsInternal<T>(input, contentType);
+
+        private bool SupportsInputType(Type inputType) =>
+            _inputTypes?.Any(inputType.IsAssignableTo) ?? true;
+
+        private bool SupportsOutputType(Type outputType) =>
+            _outputTypes?.Any(outputType.IsAssignableFrom) ?? true;
+
+        private bool SupportsMediaType(string mediaType) =>
+            mediaType == null ||
+            _mediaTypes == null ||
+            _mediaTypes.Any(x => x.Equals(mediaType, StringComparison.OrdinalIgnoreCase));
 
         IObservable<T> IConverter.Convert<T>(object input, ContentType contentType, Encoding encoding)
         {
@@ -40,7 +91,8 @@ namespace Silphid.Loadzup
 
             try
             {
-                return ConvertInternal<T>(input, contentType, encoding)
+                return ConvertAsync<T>(input, contentType, encoding)
+                    .Cast<object, T>()
                     .Catch<T, Exception>(ex => ThrowFailedConversionException<T>(ex, input, contentType, encoding));
             }
             catch (Exception ex)
@@ -48,10 +100,24 @@ namespace Silphid.Loadzup
                 return ThrowFailedConversionException<T>(ex, input, contentType, encoding);
             }
         }
+        
+        #endregion
+
+        #region Virtuals
 
         protected virtual bool SupportsInternal<T>(object input, ContentType contentType) => true;
 
-        protected abstract IObservable<T> ConvertInternal<T>(object input, ContentType contentType, Encoding encoding);
+        protected virtual IObservable<object> ConvertAsync<T>(object input, ContentType contentType, Encoding encoding) =>
+            Observable.Return(ConvertSync<T>(input, contentType, encoding));
+
+        protected virtual object ConvertSync<T>(object input, ContentType contentType, Encoding encoding)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+        
+        #region Throw helpers
 
         protected IObservable<T> ThrowNotSupportedConversionException<T>(object input, ContentType contentType, Encoding encoding) =>
             Observable.Throw<T>(
@@ -60,40 +126,74 @@ namespace Silphid.Loadzup
         protected IObservable<T> ThrowFailedConversionException<T>(Exception exception, object input, ContentType contentType, Encoding encoding) =>
             Observable.Throw<T>(
                 new ConversionException("Conversion failed", exception, GetType(), input, typeof(T), contentType, encoding));
+        
+        #endregion
     }
 
     public abstract class ConverterBase<TInput> : ConverterBase
     {
-        protected ConverterBase(params string[] mediaTypes) : base(typeof(TInput), mediaTypes)
+        protected ConverterBase()
         {
+            SetInput<TInput>();
         }
 
         protected sealed override bool SupportsInternal<T>(object input, ContentType contentType) =>
             SupportsInternal<T>((TInput) input, contentType);
 
-        protected sealed override IObservable<T> ConvertInternal<T>(object input, ContentType contentType, Encoding encoding) =>
-            ConvertInternal<T>((TInput) input, contentType, encoding);
+        protected sealed override IObservable<object> ConvertAsync<T>(object input, ContentType contentType, Encoding encoding) =>
+            ConvertAsync<T>((TInput) input, contentType, encoding);
+
+        protected sealed override object ConvertSync<T>(object input, ContentType contentType, Encoding encoding) =>
+            ConvertSync<T>((TInput) input, contentType, encoding);
 
         protected virtual bool SupportsInternal<T>(TInput input, ContentType contentType) => true;
 
-        protected abstract IObservable<T> ConvertInternal<T>(TInput input, ContentType contentType, Encoding encoding);
+        protected virtual IObservable<object> ConvertAsync<T>(TInput input, ContentType contentType, Encoding encoding) =>
+            Observable.Return(ConvertSync<T>(input, contentType, encoding));
+
+        protected virtual object ConvertSync<T>(TInput input, ContentType contentType, Encoding encoding)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public abstract class ConverterBase<TInput1, TInput2> : ConverterBase
     {
-        protected ConverterBase(params string[] mediaTypes) : base(typeof(TInput1), typeof(TInput2), mediaTypes)
+        protected ConverterBase()
         {
+            SetInputs<TInput1, TInput2>();
         }
 
-        protected sealed override IObservable<T> ConvertInternal<T>(object input, ContentType contentType, Encoding encoding)
+        protected sealed override IObservable<object> ConvertAsync<T>(object input, ContentType contentType, Encoding encoding)
         {
             if (input is TInput1)
-                return ConvertInternal<T>((TInput1) input, contentType, encoding);
+                return ConvertAsync<T>((TInput1) input, contentType, encoding);
             
-            return ConvertInternal<T>((TInput2) input, contentType, encoding);
+            return ConvertAsync<T>((TInput2) input, contentType, encoding);
         }
 
-        protected abstract IObservable<T> ConvertInternal<T>(TInput1 input, ContentType contentType, Encoding encoding);
-        protected abstract IObservable<T> ConvertInternal<T>(TInput2 input, ContentType contentType, Encoding encoding);
+        protected sealed override object ConvertSync<T>(object input, ContentType contentType, Encoding encoding)
+        {
+            if (input is TInput1)
+                return ConvertSync<T>((TInput1) input, contentType, encoding);
+            
+            return ConvertSync<T>((TInput2) input, contentType, encoding);
+        }
+
+        protected virtual IObservable<object> ConvertAsync<T>(TInput1 input, ContentType contentType, Encoding encoding) =>
+            Observable.Return(ConvertSync<T>(input, contentType, encoding));
+
+        protected virtual IObservable<object> ConvertAsync<T>(TInput2 input, ContentType contentType, Encoding encoding) =>
+            Observable.Return(ConvertSync<T>(input, contentType, encoding));
+
+        protected virtual object ConvertSync<T>(TInput1 input, ContentType contentType, Encoding encoding)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual object ConvertSync<T>(TInput2 input, ContentType contentType, Encoding encoding)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

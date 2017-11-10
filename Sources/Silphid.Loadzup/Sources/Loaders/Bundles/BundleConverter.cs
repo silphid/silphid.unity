@@ -7,10 +7,15 @@ namespace Silphid.Loadzup.Bundles
 {
     public class BundleConverter : ConverterBase<byte[]>
     {
+        public BundleConverter()
+        {
+            SetOutput<IBundle>();
+        }
+
         protected override bool SupportsInternal<T>(byte[] input, ContentType contentType) =>
             typeof(T) == typeof(IBundle);
 
-        protected override IObservable<T> ConvertInternal<T>(byte[] input, ContentType contentType, Encoding encoding) =>
+        protected override IObservable<object> ConvertAsync<T>(byte[] input, ContentType contentType, Encoding encoding) =>
             AssetBundle
                 .LoadFromMemoryAsync(input)
                 .AsAsyncOperationObservable()
@@ -19,7 +24,7 @@ namespace Silphid.Loadzup.Bundles
                     if(x.assetBundle == null)
                         throw new InvalidOperationException("Failed to convert bytes to AssetBundle");
 
-                    return (T) (object) new AssetBundleAdaptor(x.assetBundle);
+                    return new AssetBundleAdaptor(x.assetBundle);
                 });
     }
 }
