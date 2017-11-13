@@ -36,6 +36,6 @@ namespace Silphid.Loadzup
             $"{base.Message}\r\n" +
             $"Uri: {Uri}\r\n" +
             $"ResponseBody:\r\n{ResponseBody}\r\n" +
-            $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders.JoinAsString("  ")}}}";
+            $"ResponseHeaders:\r\n{{\r\n{ResponseHeaders?.JoinAsString("  ")}}}";
     }
 }
