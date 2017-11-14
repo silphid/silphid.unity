@@ -23,7 +23,8 @@ namespace Silphid.DataTypes
 
         public bool IntersectsWith(FloatRange other) =>
             !IsEmpty && !other.IsEmpty &&
-            (Start >= other.Start && Start < other.End ||
+            (Start <= other.Start && End >= other.End ||
+             Start >= other.Start && Start < other.End ||
              End > other.Start && End <= other.End);
 
         public FloatRange IntersectionWith(FloatRange other) =>
