@@ -4,14 +4,16 @@ using System.Xml;
 using log4net;
 using UnityEngine;
 using log4net.Config;
+using Silphid.Loadzup.Http;
+using Silphid.Sequencit;
 using UniRx;
 
 namespace Silphid.Injexit
 {
     public abstract class RootInstaller : Installer
     {
-        public string LogResourceFile = "Log4net";
-        public string LogPathToWatchForChanges = "Assets/Resources/Log4net.xml";
+        public string LogConfigPath = "Log4net.xml";
+        public string LogConfigPathToWatchForChanges = "Assets/StreamingAssets/Log4net.xml";
 
         private static string DataPath =>
             Application.isEditor
@@ -29,50 +31,64 @@ namespace Silphid.Injexit
                    !ns.StartsWith("TMPro");
         }
 
-        public override void Start()
-        {
-            Debug.Log("Configuring logging");
-            ConfigureLogging();
-            
-            base.Start();
-        }
-
-        protected virtual void ConfigureLogging()
-        {
-            LoadLogConfig();
-
-            if (Application.isEditor)
+        protected override IObservable<Unit> Init() =>
+            Sequence.Create(seq =>
             {
-                var fullPath = Path.Combine(Environment.CurrentDirectory, LogPathToWatchForChanges);
-                if (File.Exists(fullPath))
-                {
-                    Debug.Log($"Watching log config file for changes: {fullPath}");
+                seq.Add(InitLog);
+                seq.Add(base.Init);
+            });
 
-                    Observable
-                        .Interval(TimeSpan.FromSeconds(1))
-                        .Select(_ => File.GetLastWriteTime(fullPath))
-                        .DistinctUntilChanged()
-                        .Skip(1)
-                        .Subscribe(_ =>
-                        {
-                            Debug.Log("Reloading changes made to log config file");
-                            LoadLogConfig();
-                        });
-                }
-                else
-                    Debug.LogWarning($"Log config file not found for watching for changes: {fullPath}");
-            }
+        protected virtual IObservable<Unit> InitLog()
+        {
+            Debug.Log("Initializing logging");
+            return LoadLogConfig()
+                .Do(x =>
+                {
+                    ConfigureLog(x);
+
+                    if (Application.isEditor)
+                        WatchLogConfig();
+                })
+                .AsSingleUnitObservable();
         }
 
-        private void LoadLogConfig()
-        {
-            var textAsset = Resources.Load<TextAsset>(LogResourceFile);
-            var text = textAsset.text.Replace("${DataPath}", DataPath);
-            var xmldoc = new XmlDocument();
-            xmldoc.LoadXml(text);
+        protected IObservable<XmlDocument> LoadLogConfig() =>
+            ObservableWebRequest
+                .Get(Path.Combine(Application.streamingAssetsPath, LogConfigPath))
+                .Select(x =>
+                {
+                    var doc = new XmlDocument();
+                    doc.LoadXml(x.downloadHandler.text.Replace("${DataPath}", DataPath));
+                    return doc;
+                });
 
+        protected void ConfigureLog(XmlDocument doc)
+        {
             var repository = LogManager.GetRepository(GetType().Assembly);
-            XmlConfigurator.Configure(repository, xmldoc.DocumentElement);
+            XmlConfigurator.Configure(repository, doc.DocumentElement);
+        }
+
+        protected void WatchLogConfig()
+        {
+            var fullPath = Path.Combine(Environment.CurrentDirectory, LogConfigPathToWatchForChanges);
+            if (!File.Exists(fullPath))
+            {
+                Debug.LogWarning($"Log config file not found for watching for changes: {fullPath}");
+                return;
+            }
+
+            Debug.Log($"Watching log config file for changes: {fullPath}");
+
+            Observable
+                .Interval(TimeSpan.FromSeconds(1))
+                .Select(_ => File.GetLastWriteTime(fullPath))
+                .DistinctUntilChanged()
+                .Skip(1)
+                .Subscribe(_ =>
+                {
+                    Debug.Log("Reloading changes made to log config file");
+                    LoadLogConfig();
+                });
         }
     }
 }

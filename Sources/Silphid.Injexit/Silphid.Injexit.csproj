@@ -226,6 +226,14 @@
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Silphid.Loadzup\Silphid.Loadzup.csproj">
+      <Project>{DAD5DF27-9FA3-4F02-96BE-E28EA2530F0F}</Project>
+      <Name>Silphid.Loadzup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Sequencit\Silphid.Sequencit.csproj">
+      <Project>{C0716045-F08A-489F-9B7A-25863BC13118}</Project>
+      <Name>Silphid.Sequencit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}</Project>
       <Name>UniRx</Name>

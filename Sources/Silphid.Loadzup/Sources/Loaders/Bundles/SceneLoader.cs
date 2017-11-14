@@ -22,41 +22,45 @@ namespace Silphid.Loadzup.Bundles
             LoadInternal(uri, options?.IsAdditiveSceneLoading == false ? LoadSceneMode.Single : LoadSceneMode.Additive)
                 .Cast<Scene, T>();
 
-        private IObservable<Scene> LoadInternal(Uri uri, LoadSceneMode mode)
-        {
-            // Check if sceneName is a sceneBuildIndex
-            if (!string.IsNullOrEmpty(uri.Fragment))
-            {
-                int sceneBuildIndex;
-                if (int.TryParse(uri.Fragment.RemovePrefix(SceneBuildIndexPrefix), out sceneBuildIndex))
-                    return _sceneManager
-                        .LoadSceneAsync(sceneBuildIndex, mode)
-                        .Select(_ =>
-                        {
-                            var scene = _sceneManager.GetSceneAt(sceneBuildIndex);
+        private IObservable<Scene> LoadInternal(Uri uri, LoadSceneMode mode) =>
+            string.IsNullOrEmpty(uri.Fragment)
+                ? LoadSceneByName(uri.Host, mode)
+                : LoadSceneByIndex(GetSceneBuildIndex(uri), mode);
 
-                            if (!scene.IsValid())
-                                throw new InvalidOperationException(
-                                    $"#SceneLoader# The scene with index \"{sceneBuildIndex}\" is invalid");
-
-                            return scene.Scene;
-                        });
-
-                throw new InvalidOperationException("#SceneLoader# Cannot parse sceneBuildIndex");
-            }
-
-            var sceneName = uri.Host;
-            return _sceneManager
+        private IObservable<Scene> LoadSceneByName(string sceneName, LoadSceneMode mode) =>
+            _sceneManager
                 .LoadSceneAsync(sceneName, mode)
                 .Select(_ =>
                 {
                     var scene = _sceneManager.GetSceneByName(sceneName);
 
                     if (!scene.IsValid())
-                        throw new InvalidOperationException($"#SceneLoader# The scene named \"{sceneName}\" is invalid");
+                        throw new InvalidOperationException(
+                            $"#SceneLoader# The scene named \"{sceneName}\" is invalid");
 
                     return scene.Scene;
                 });
+
+        private int GetSceneBuildIndex(Uri uri)
+        {
+            int sceneBuildIndex;
+            if (!int.TryParse(uri.Fragment.RemovePrefix(SceneBuildIndexPrefix), out sceneBuildIndex))
+                throw new InvalidOperationException($"Failed to parse scene build index from: {uri}");
+
+            return sceneBuildIndex;
         }
+
+        private IObservable<Scene> LoadSceneByIndex(int sceneBuildIndex, LoadSceneMode mode) =>
+            _sceneManager
+                .LoadSceneAsync(sceneBuildIndex, mode)
+                .Select(_ =>
+                {
+                    var scene = _sceneManager.GetSceneAt(sceneBuildIndex);
+
+                    if (!scene.IsValid())
+                        throw new InvalidOperationException($"Invalid scene at index {sceneBuildIndex}");
+
+                    return scene.Scene;
+                });
     }
 }

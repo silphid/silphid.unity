@@ -1,4 +1,8 @@
-﻿using log4net;
+﻿using System;
+using log4net;
+using Silphid.Extensions;
+using Silphid.Sequencit;
+using UniRx;
 using UnityEngine;
 
 namespace Silphid.Injexit
@@ -11,27 +15,39 @@ namespace Silphid.Injexit
 
         protected abstract IContainer CreateContainer();
         protected abstract void Configure();
-        protected virtual void Complete() {}
+        protected virtual IObservable<Unit> Complete() => Observable.ReturnUnit();
 
         public virtual void Start()
         {
-            Log.Info($"Creating container for {GetType().Name}...");
-            Container = CreateContainer();
-            
-            Log.Info("Configuring bindings...");
-            Configure();
-
-            Log.Info("Instantiating eager singles...");
-            Container.InstantiateEagerSingles();
-
-            Log.Info($"Injecting dependencies into {gameObject.scene.name} scene...");
-            InjectScene();
-
-            Log.Info($"Completing {GetType().Name}...");
-            Complete();
-            
-            Log.Info($"Completed {GetType().Name}.");
+            Init().SubscribeAndForget();
         }
+
+        protected virtual IObservable<Unit> Init() =>
+            Sequence.Create(seq =>
+            {
+                seq.AddAction(() =>
+                {
+                    Log.Info($"Creating container for {GetType().Name}...");
+                    Container = CreateContainer();
+
+                    Log.Info("Configuring bindings...");
+                    Configure();
+
+                    Log.Info("Instantiating eager singles...");
+                    Container.InstantiateEagerSingles();
+
+                    Log.Info($"Injecting dependencies into {gameObject.scene.name} scene...");
+                    InjectScene();
+                });
+
+                seq.Add(() =>
+                {
+                    Log.Info($"Completing {GetType().Name}...");
+                    return Complete();
+                });
+
+                seq.AddAction(() => Log.Info($"Completed {GetType().Name}."));
+            });
 
         protected virtual void InjectScene()
         {
