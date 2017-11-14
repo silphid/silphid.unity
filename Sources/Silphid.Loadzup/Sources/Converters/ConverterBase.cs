@@ -80,7 +80,6 @@ namespace Silphid.Loadzup
             _outputTypes?.Any(outputType.IsAssignableFrom) ?? true;
 
         private bool SupportsMediaType(string mediaType) =>
-            mediaType == null ||
             _mediaTypes == null ||
             _mediaTypes.Any(x => x.Equals(mediaType, StringComparison.OrdinalIgnoreCase));
 

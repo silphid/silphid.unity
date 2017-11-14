@@ -33,6 +33,9 @@ namespace Silphid.Loadzup
         public static ILoader With(this ILoader This, ContentType contentType) =>
             new ContentTypeLoaderDecorator(This, contentType);
         
+        public static ILoader WithMediaType(this ILoader This, string mediaType) =>
+            new ContentTypeLoaderDecorator(This, new ContentType(mediaType));
+        
         public static ILoader WithHeader(this ILoader This, string key, string value) =>
             new HeaderLoaderDecorator(This, key, value);
         
