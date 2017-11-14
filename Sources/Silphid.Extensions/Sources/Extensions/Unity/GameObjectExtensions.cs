@@ -12,7 +12,7 @@ namespace Silphid.Extensions
     {
         #region Traversal
 
-        public static TComponent GetRequiredComponent<TComponent>(this GameObject This) where TComponent : Component
+        public static TComponent GetRequiredComponent<TComponent>(this GameObject This)
         {
             var component = This.GetComponent<TComponent>();
             if (component == null)
