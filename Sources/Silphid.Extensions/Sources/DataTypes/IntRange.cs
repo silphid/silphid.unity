@@ -21,6 +21,12 @@ namespace Silphid.DataTypes
         public bool Contains(int index) =>
             index >= Start && index < End;
 
+        public bool IntersectsWith(IntRange other) =>
+            !IsEmpty && !other.IsEmpty &&
+            (Start <= other.Start && End >= other.End ||
+             Start >= other.Start && Start < other.End ||
+             End > other.Start && End <= other.End);
+
         public IntRange IntersectionWith(IntRange range) =>
             new IntRange(Start.Max(range.Start), End.Min(range.End));
 

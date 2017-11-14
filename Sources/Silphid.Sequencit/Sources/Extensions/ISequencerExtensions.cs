@@ -97,5 +97,8 @@ namespace Silphid.Sequencit
             This.Add(instant);
             return instant;
         }
+        
+        public static IObservable<Unit> AddDispose(this ISequencer This, IDisposable disposable) =>
+            This.AddAction(disposable.Dispose);
     }
 }
