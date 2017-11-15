@@ -7,3 +7,4 @@
 /.idea/
 *.csproj
 *.sln
+/AppData/

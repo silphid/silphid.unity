@@ -85,7 +85,7 @@ public class Sequencing1 : MonoBehaviour
                     p.AddSequence(s =>
                     {
                         s.Add(ResetCubeRotation);
-                        s.AddInterval(0.25f);
+                        s.AddDelay(0.25f);
                         s.Add(MoveCubeToNormalPosition);
                     });
 

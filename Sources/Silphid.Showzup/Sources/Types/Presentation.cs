@@ -1,5 +1,5 @@
 ﻿using System;
-using UniRx;
+using System.Threading;
 
 namespace Silphid.Showzup
 {
@@ -15,7 +15,7 @@ namespace Silphid.Showzup
         public ITransition Transition { get; set; }
         public Direction Direction => Options?.Direction ?? Direction.Forward;
         public float Duration { get; set; }
-        public CancellationToken CancellationToken { get; set; } = CancellationToken.None;
+        public CancellationToken CancellationToken { get; } = CancellationToken.None;
 
         public Presentation(object viewModel, IView sourceView, Type targetViewType, Options options)
         {

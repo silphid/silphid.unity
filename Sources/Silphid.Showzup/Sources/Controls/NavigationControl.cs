@@ -105,7 +105,7 @@ namespace Silphid.Showzup
 
             StartChange();
 
-            return LoadView(viewInfo, options)
+            return LoadView(viewInfo)
                 .DoOnCompleted(() => MutableState.Value = PresenterState.Presenting)
                 .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);

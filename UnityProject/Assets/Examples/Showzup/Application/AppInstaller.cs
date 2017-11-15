@@ -25,7 +25,7 @@ namespace App
         public Manifest Manifest;
         public NavigationControl NavigationControl;
 
-        protected override void OnBind()
+        protected override void Configure()
         {
             // These are Injexit bindings that configure Dependency Injection.
             // They are like mappings that specify which class to actually
@@ -82,8 +82,11 @@ namespace App
             
             Container.Bind<IConverter, CompositeConverter>().AsSingle().Using(x =>
             {
-                x.Bind<IConverter, SpriteConverter>().AsList();
-                x.Bind<IConverter, TextureConverter>().AsList();
+                x.BindList<IConverter>(y =>
+                {
+                    y.Add<SpriteConverter>();
+                    y.Add<TextureConverter>();
+                });
             });
 
             // Main "composite" loader (used to load any resource or prefab) that dispatches to appropriate
@@ -91,13 +94,15 @@ namespace App
             
             Container.Bind<ILoader, CompositeLoader>().AsSingle().Using(x =>
             {
-                x.Bind<ILoader, HttpLoader>().AsList()
-                    .Using<IHttpRequester, HttpRequester>();
-                x.Bind<ILoader, ResourceLoader>().AsList();
+                x.BindList<ILoader>(y =>
+                {
+                    y.Add<HttpLoader>().Using<IHttpRequester, HttpRequester>();
+                    y.Add<ResourceLoader>();
+                });
             });
         }
 
-        protected override void OnReady()
+        protected override void Complete()
         {
             // This method is automatically called (after all bindings have been configured) to
             // launch the app. Here we simply ask the main NavigationControl (responsible for
@@ -117,6 +122,10 @@ namespace App
             
             // If you wonder about the .AutoDetach().Subscribe() part, that's because
             // the .Present() method returns an Rx observable that needs to be subscribed to.
+            // If you do not subscribe to the returned observable, nothing will happen. As for
+            // AutoDetach(), it automatically disposes the subscription as soon as the observable
+            // completes; but should only be used with observables that complete at some point,
+            // otherwise, the subscription will never be disposed and you will end-up with a leak.
             //
             // For more information about Rx (Reactive Extensions or ReactiveX) in general see:
             // http://reactivex.io/

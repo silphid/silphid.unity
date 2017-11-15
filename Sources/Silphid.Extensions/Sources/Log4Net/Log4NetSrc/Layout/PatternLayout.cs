@@ -861,7 +861,7 @@ namespace log4net.Layout
 
 // .NET Compact Framework 1.0 has no support for ASP.NET
 // SSCLI 1.0 has no support for ASP.NET
-#if !NETCF && !SSCLI && !CLIENT_PROFILE && !UNITY_4_3 && !UNITY_5
+#if !NETCF && !SSCLI && !CLIENT_PROFILE && !UNITY_5_3_OR_NEWER
 			s_globalRulesRegistry.Add("aspnet-cache", typeof(AspNetCachePatternConverter));
 			s_globalRulesRegistry.Add("aspnet-context", typeof(AspNetContextPatternConverter));
 			s_globalRulesRegistry.Add("aspnet-request", typeof(AspNetRequestPatternConverter));

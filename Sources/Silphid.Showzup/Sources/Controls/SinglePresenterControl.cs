@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using JetBrains.Annotations;
 using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -31,9 +33,9 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject, UsedImplicitly] internal IViewResolver ViewResolver { get; set; }
+        [Inject, UsedImplicitly] internal IViewLoader ViewLoader { get; set; }
+        [Inject, UsedImplicitly] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -100,7 +102,7 @@ namespace Silphid.Showzup
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
 
             return Observable
-                .Defer(() => LoadView(viewInfo, options))
+                .Defer(() => LoadView(viewInfo))
                 .ContinueWith(view =>
                 {
                     MutableState.Value = PresenterState.Presenting;
@@ -143,15 +145,14 @@ namespace Silphid.Showzup
             }
         }
 
-        protected IObservable<IView> LoadView(ViewInfo viewInfo, Options options)
+        protected IObservable<IView> LoadView(ViewInfo viewInfo)
         {
             Log.Debug($"Loading: {viewInfo}");
 
-            var cancellationDisposable = new BooleanDisposable();
-            var cancellationToken = new CancellationToken(cancellationDisposable);
-            var cancellations = _loadCancellations.Do(_ => cancellationDisposable.Dispose());
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellations = _loadCancellations.Do(_ => cancellationTokenSource.Cancel());
             return ViewLoader
-                .Load(GetInstantiationContainer(), viewInfo, cancellationToken)
+                .Load(GetInstantiationContainer(), viewInfo, cancellationTokenSource.Token)
                 .TakeUntil(cancellations);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Threading;
 using JetBrains.Annotations;
-using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup

@@ -18,7 +18,7 @@
 #endregion
 
 // SSCLI 1.0 has no support for ADO.NET
-#if !SSCLI && !UNITY_4_3 && !UNITY_5 
+#if !SSCLI && !UNITY_5_3_OR_NEWER 
 
 using System;
 using System.Collections;

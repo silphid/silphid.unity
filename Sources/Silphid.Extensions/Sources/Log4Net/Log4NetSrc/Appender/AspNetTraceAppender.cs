@@ -19,7 +19,7 @@
 
 // .NET Compact Framework 1.0 has no support for ASP.NET
 // SSCLI 1.0 has no support for ASP.NET
-#if !NETCF && !SSCLI && !CLIENT_PROFILE && !UNITY_4_3 && !UNITY_5
+#if !NETCF && !SSCLI && !CLIENT_PROFILE && !UNITY_5_3_OR_NEWER
 
 using System.Web;
 

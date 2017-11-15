@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Loadzup;
 using UniRx;
 using UnityEngine;
-using CancellationToken = UniRx.CancellationToken;
 using Object = UnityEngine.Object;
 
 namespace Silphid.Showzup

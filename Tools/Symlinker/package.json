@@ -1,0 +1,17 @@
+{
+  "name": "symlinker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "bin": {
+    "symlinker": "index.js"
+  },
+  "author": "Emmanuel Jacquier",
+  "license": "ISC",
+  "dependencies": {
+    "globule": "^1.1.0",
+    "js-yaml": "^3.7.0",
+    "shelljs": "^0.7.6"
+  }
+}

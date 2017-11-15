@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1041059062, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
+  m_Script: {fileID: 11500000, guid: a3b6cfa35877942ac841625cd69917f0, type: 3}
   m_Name: ShowzupManifest
   m_EditorClassIdentifier: 
   PrefabsPath: Assets/Examples/Showzup/Prefabs/Resources

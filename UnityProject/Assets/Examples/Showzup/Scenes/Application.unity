@@ -77,15 +77,17 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
-    m_PVRFiltering: 0
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousColorSigma: 1
-    m_PVRFilteringAtrousNormalSigma: 1
-    m_PVRFilteringAtrousPositionSigma: 1
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -107,6 +109,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    debug:
+      m_Flags: 0
   m_NavMeshData: {fileID: 0}
 --- !u!1 &411554991
 GameObject:
@@ -181,7 +185,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LogResourceFile: Log4net
-  Manifest: {fileID: 11400000, guid: 50d5beb9ef3184e04ae78dc919307c1f, type: 2}
+  LogPathToWatchForChanges: Assets/Examples/Showzup/Resources/Log4net.xml
+  Manifest: {fileID: 11400000, guid: e53cb081ef91f481da7ce6d43ea08267, type: 2}
   NavigationControl: {fileID: 870891447}
 --- !u!4 &554429614
 Transform:
@@ -307,7 +312,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!4 &867253849
 Transform:
   m_ObjectHideFlags: 0
@@ -367,7 +371,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 870891443}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: -455708996, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
+  m_Script: {fileID: 11500000, guid: f71a4f63c76004e38a3aed77beab4092, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Duration: 1
@@ -376,8 +380,7 @@ MonoBehaviour:
   FadeInTarget: 1
   SourceAboveTarget: 1
   IsSequential: 0
-  StartScale: 0.8
-  EndScale: 1.2
+  Offset: {x: 1, y: 0}
 --- !u!114 &870891447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,11 +389,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 870891443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1029033404, guid: 2e9cd533cddb84844a9142e8e171c32c, type: 3}
+  m_Script: {fileID: 11500000, guid: e2ef2de780bab47ccac91dc6f504da05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Variants:
-  - Page
+  Variants: []
   ShouldHandlePresentRequests: 0
   Container1: {fileID: 2008876462}
   Container2: {fileID: 411554991}
@@ -549,9 +551,9 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1387079288}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1049.1292, y: 490.7239, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 917441283}
   - {fileID: 870891444}
