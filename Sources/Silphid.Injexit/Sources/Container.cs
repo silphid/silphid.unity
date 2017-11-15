@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using Silphid.Extensions; 
+using Silphid.Extensions;
 using UnityEngine;
 
 namespace Silphid.Injexit
@@ -12,7 +12,7 @@ namespace Silphid.Injexit
         public const int MaxRecursionDepth = 15;
         public static readonly IContainer Null = new NullContainer();
         private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
-        
+
         #region Private fields
 
         private readonly IReflector _reflector;
@@ -38,14 +38,14 @@ namespace Silphid.Injexit
             new Container(_reflector, _injectionPredicate);
 
         #endregion
-        
+
         #region IBinder members
 
         public IBinding BindReference(Type abstractionType, BindingId id)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            
+
             var binding = new Binding(this, abstractionType, id);
             _bindings.Add(binding);
             return binding;
@@ -55,12 +55,13 @@ namespace Silphid.Injexit
         {
             if (abstractionType == null)
                 throw new ArgumentNullException(nameof(abstractionType));
-            
+
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            
+
             if (!instance.GetType().IsAssignableTo(abstractionType))
-                throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
+                throw new InvalidOperationException(
+                    $"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
 
             var binding = new Binding(this, abstractionType, instance.GetType())
             {
@@ -68,7 +69,7 @@ namespace Silphid.Injexit
                 Lifetime = Lifetime.Single
             };
             _bindings.Add(binding);
-            
+
             abstractionType.GetAttributes<BindAttribute>()
                 .Select(x => x.Type)
                 .ForEach(x => BindInstance(x, instance));
@@ -79,7 +80,8 @@ namespace Silphid.Injexit
         public IBinding Bind(Type abstractionType, Type concretionType)
         {
             if (!concretionType.IsAssignableTo(abstractionType))
-                throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
+                throw new InvalidOperationException(
+                    $"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
             if (concretionType.IsAbstract)
                 throw new InvalidOperationException($"Concretion type {concretionType.Name} cannot be abstract.");
@@ -91,18 +93,18 @@ namespace Silphid.Injexit
         }
 
         #endregion
-        
+
         #region IResolver members
 
         public Result ResolveResult(Type abstractionType, Type dependentType, string name = null)
         {
             _recursionDepth++;
-            
+
             try
             {
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolving {abstractionType.Name}");
-                
+
                 if (_recursionDepth > MaxRecursionDepth)
                     throw new CircularDependencyException(abstractionType);
 
@@ -137,7 +139,7 @@ namespace Silphid.Injexit
             var factories = GetListFactories(elementType, dependentType, name);
             if (factories.Count == 0)
                 return null;
-            
+
             // Array or Enumerable<T>
             if (IsArrayOrGenericEnumerable(abstractionType))
                 return new Result(resolver =>
@@ -172,7 +174,7 @@ namespace Silphid.Injexit
 
             if (!abstractionType.IsGenericType)
                 return null;
-            
+
             var typeDef = abstractionType.GetGenericTypeDefinition();
             if (typeDef == typeof(IEnumerable<>) || typeDef == typeof(IList<>) || typeDef == typeof(List<>))
                 return abstractionType.GetGenericArguments().First();
@@ -191,7 +193,7 @@ namespace Silphid.Injexit
             var binding = ResolveBindingForType(abstractionType, dependentType, name);
             if (binding == null)
                 return null;
-            
+
             return GetFactoryForBinding(binding, dependentType, name);
         }
 
@@ -200,10 +202,10 @@ namespace Silphid.Injexit
             var binding = _bindings.FirstOrDefault(x =>
                 x.AbstractionType == abstractionType &&
                 (x.Name == null || x.Name == name));
-            
+
             if (binding != null && Log.IsDebugEnabled)
                 Log.Debug($"Resolved {binding}");
-            
+
             return binding;
         }
 
@@ -220,7 +222,7 @@ namespace Silphid.Injexit
                             name,
                             $"No binding bound to {binding.Reference}",
                             this));
-                
+
                 if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
                     return new Result(
                         new DependencyException(binding.AbstractionType, dependentType, name,
@@ -229,10 +231,10 @@ namespace Silphid.Injexit
 
                 if (Log.IsDebugEnabled)
                     Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
-                
+
                 return GetFactoryForBinding(referenceBinding, dependentType, name);
             }
-            
+
             if (binding.Lifetime == Lifetime.Transient)
                 return GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver,
                     binding.IsOverrideResolverRecursive, dependentType, name);
@@ -259,7 +261,7 @@ namespace Silphid.Injexit
                     // TODO: Temporary work-around to prevent an extra level of exception wrapping
                     if (ex.DependentTypes.LastOrDefault() == concretionType)
                         throw;
-                    
+
                     throw ex.WithDependent(concretionType);
                 }
             });
@@ -269,7 +271,7 @@ namespace Silphid.Injexit
             resolver =>
             {
                 _recursionDepth++;
-            
+
                 try
                 {
                     if (_recursionDepth > MaxRecursionDepth)
@@ -298,7 +300,8 @@ namespace Silphid.Injexit
                 }
             };
 
-        private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>
+        private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters,
+            IResolver resolver) =>
             parameters
                 .Select(x => ResolveParameter(dependentType, x, resolver))
                 .ToArray();
@@ -307,7 +310,7 @@ namespace Silphid.Injexit
         {
             if (Log.IsDebugEnabled)
                 Log.Debug($"Resolving parameter {parameter.Name}");
-            
+
             var result = resolver.ResolveResult(parameter.Type, dependentType, parameter.CanonicalName);
 
             if (result.Exception != null)
@@ -316,7 +319,7 @@ namespace Silphid.Injexit
                 {
                     if (Log.IsDebugEnabled)
                         Log.Debug($"Falling back to default value: {parameter.DefaultValue}");
-            
+
                     return parameter.DefaultValue;
                 }
 
@@ -338,11 +341,11 @@ namespace Silphid.Injexit
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
-            
+
             resolver = resolver ?? this;
-            
+
             var typeInfo = GetObjectTypeInfo(obj);
-            
+
             InjectFieldsAndProperties(obj, typeInfo, resolver);
             InjectMethods(obj, typeInfo, resolver);
         }
@@ -353,10 +356,10 @@ namespace Silphid.Injexit
                 throw new ArgumentNullException(nameof(objects));
 
             resolver = resolver ?? this;
-            
+
             var list = objects.ToArray();
             var typeInfos = list.Select(GetObjectTypeInfo).ToArray();
-            
+
             list.ForEach((i, x) => InjectFieldsAndProperties(x, typeInfos[i], resolver));
             list.ForEach((i, x) => InjectMethods(x, typeInfos[i], resolver));
         }
@@ -365,7 +368,7 @@ namespace Silphid.Injexit
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
-            
+
             if (obj is GameObject)
             {
                 InjectGameObjectFieldsAndProperties((GameObject) obj, resolver);
@@ -382,8 +385,8 @@ namespace Silphid.Injexit
                 InjectGameObjectMethods((GameObject) obj, resolver);
                 return;
             }
-            
-            typeInfo.Methods.ForEach(method => InjectMethod(obj, method, resolver));            
+
+            typeInfo.Methods.ForEach(method => InjectMethod(obj, method, resolver));
         }
 
         private bool IsValidComponent(MonoBehaviour behaviour)
@@ -404,7 +407,7 @@ namespace Silphid.Injexit
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
                 .ForEach(component => InjectFieldsAndProperties(component, GetObjectTypeInfo(component), resolver));
-            
+
             go.Children()
                 .ForEach(child => InjectGameObjectFieldsAndProperties(child, resolver));
         }
@@ -414,7 +417,7 @@ namespace Silphid.Injexit
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
                 .ForEach(component => InjectMethods(component, GetObjectTypeInfo(component), resolver));
-            
+
             go.Children()
                 .ForEach(child => InjectGameObjectMethods(child, resolver));
         }
@@ -429,22 +432,22 @@ namespace Silphid.Injexit
 
                 return;
             }
-                
+
             var value = result.ResolveInstance(resolver);
-            
+
             if (Log.IsDebugEnabled)
                 Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
-            
+
             member.SetValue(obj, value);
         }
 
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
             var parameters = ResolveParameters(obj.GetType(), method.Parameters, resolver);
-            
+
             if (Log.IsDebugEnabled)
                 Log.Debug($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
-            
+
             method.Method.Invoke(obj, parameters);
         }
 
@@ -454,10 +457,10 @@ namespace Silphid.Injexit
 
         private InjectTypeInfo GetTypeInfo(Type type) =>
             _reflector.GetTypeInfo(type);
-        
+
         private InjectTypeInfo GetObjectTypeInfo(object obj) =>
             _reflector.GetTypeInfo(obj.GetType());
-        
+
         private static string FormatParameters(object[] parameters) =>
             parameters.Select(FormatValue).JoinAsString(", ");
 
@@ -473,6 +476,7 @@ namespace Silphid.Injexit
             _bindings
                 .Select(x => x.Instance)
                 .OfType<IDisposable>()
+                .Where(x => x != this)
                 .ForEach(x => x.Dispose());
         }
 
