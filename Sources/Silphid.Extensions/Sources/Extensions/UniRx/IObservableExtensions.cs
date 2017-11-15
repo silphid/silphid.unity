@@ -81,6 +81,14 @@ namespace Silphid.Extensions
                 })
                 .WhereNotNull();
         }
+        
+        [Pure]
+        public static IObservable<bool> FirstTrue(this IObservable<bool> This) =>
+            This.First(x => x);
+
+        [Pure]
+        public static IObservable<bool> FirstFalse(this IObservable<bool> This) =>
+            This.First(x => !x);
 
         [Pure]
         public static IObservable<Unit> WhereTrue(this IObservable<bool> This) =>
