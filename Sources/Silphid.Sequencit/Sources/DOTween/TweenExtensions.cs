@@ -1,6 +1,4 @@
-﻿#if DOTWEEN
-
-using System;
+﻿using System;
 using DG.Tweening;
 using UniRx;
 
@@ -40,5 +38,3 @@ namespace Silphid.Sequencit
         }
     }
 }
-
-#endif

@@ -2,10 +2,6 @@
   location: UnityProject/Assets/Plugins/Silphid/Extensions
   target: Sources/Silphid.Extensions/Sources
 
-- name: Silphid.Extensions.DOTween
-  location: UnityProject/Assets/Plugins/Silphid/Extensions.DOTween
-  target: Sources/Silphid.Extensions.DOTween/Sources
-
 - name: Silphid.Injexit
   location: UnityProject/Assets/Plugins/Silphid/Injexit
   target: Sources/Silphid.Injexit/Sources
@@ -21,10 +17,6 @@
 - name: Silphid.Sequencit
   location: UnityProject/Assets/Plugins/Silphid/Sequencit
   target: Sources/Silphid.Sequencit/Sources
-
-- name: Silphid.Sequencit.DOTween
-  location: UnityProject/Assets/Plugins/Silphid/Sequencit.DOTween
-  target: Sources/Silphid.Sequencit.DOTween/Sources
 
 - name: Silphid.Showzup
   location: UnityProject/Assets/Plugins/Silphid/Showzup
