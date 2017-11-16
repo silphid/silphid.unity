@@ -241,6 +241,9 @@
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
+    <Compile Include="Sources\InputLayers\IInputLayer.cs" />
+    <Compile Include="Sources\InputLayers\IInputLayerExtensions.cs" />
+    <Compile Include="Sources\InputLayers\InputLayer.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IContentProvider.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />

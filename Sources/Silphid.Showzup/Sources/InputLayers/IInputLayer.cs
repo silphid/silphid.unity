@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UniRx;
 
-namespace Silphid.Sequencit.Input
+namespace Silphid.Showzup.InputLayers
 {
     /// <summary>
     /// Object responsible for the gate-keeping of all user inputs. All input related functions should handle input only
@@ -24,12 +24,6 @@ namespace Silphid.Sequencit.Input
         /// Whether this input layer (and all its children recursively) is
         /// </summary>
         IReadOnlyReactiveProperty<bool> IsEnabled { get; }
-
-        /// <summary>
-        /// Creates a subordinated child input layer, which will automatically be disabled when the present layer gets
-        /// disabled.
-        /// </summary>
-        IInputLayer CreateChild(string name);
 
         /// <summary>
         /// Temporarily disables this input layer and all of its children recursively.  The returned disposable must be

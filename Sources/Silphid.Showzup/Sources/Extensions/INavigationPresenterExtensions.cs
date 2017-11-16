@@ -2,6 +2,7 @@
 using System.Linq;
 using log4net;
 using Silphid.Extensions;
+using UniRx;
 
 namespace Silphid.Showzup
 {
@@ -9,6 +10,16 @@ namespace Silphid.Showzup
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(INavigationPresenter));
         
+        public static IObservable<IView> TryPop(this INavigationPresenter This) =>
+            This.CanPop.Value
+                ? This.Pop()
+                : Observable.Empty<IView>();
+        
+        public static IObservable<IView> TryPopTo(this INavigationPresenter This, IView view) =>
+            This.CanPop.Value
+                ? This.PopTo(view)
+                : Observable.Empty<IView>();
+
         public static void DropFromHistory(this INavigationPresenter This, int count)
         {
             Log.Debug($"DropFromHistory({count})");
