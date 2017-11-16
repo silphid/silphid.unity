@@ -34,7 +34,7 @@ namespace log4net.Util
 	/// </remarks>
 	/// <author>Nicko Cadell</author>
 	/// <author>Gert Driesen</author>
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 	public sealed class Transform
 #else
 	public sealed class TransformLog4Net
@@ -50,7 +50,7 @@ namespace log4net.Util
 		/// Uses a private access modifier to prevent instantiation of this class.
 		/// </para>
 		/// </remarks>
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 		private Transform()
 #else
 		private TransformLog4Net()
@@ -143,7 +143,7 @@ namespace log4net.Util
 		/// </remarks>
 		public static string MaskXmlInvalidCharacters(string textData, string mask)
 		{
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 			return INVALIDCHARS.Replace(textData, mask);
 #else
 			return textData;
@@ -203,7 +203,7 @@ namespace log4net.Util
 		private const string CDATA_END	= "]]>";
 		private const string CDATA_UNESCAPABLE_TOKEN	= "]]";
 
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
         /// <summary>
         /// Characters illegal in XML 1.0
         /// </summary>

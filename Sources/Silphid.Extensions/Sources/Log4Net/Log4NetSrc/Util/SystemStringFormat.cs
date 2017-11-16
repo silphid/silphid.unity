@@ -104,7 +104,7 @@ namespace log4net.Util
 				// Try to format the string
 				return String.Format(provider, format, args);
 			}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 			catch(Exception ex)
 			{
 				log4net.Util.LogLog.Warn(declaringType, "Exception while rendering format ["+format+"]", ex);
@@ -145,7 +145,7 @@ namespace log4net.Util
 
 				return buf.ToString();
 			}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 			catch(Exception ex)
 			{
 				log4net.Util.LogLog.Error(declaringType, "INTERNAL ERROR during StringFormat error handling", ex);
@@ -210,7 +210,7 @@ namespace log4net.Util
 				{
 					buffer.Append(obj);
 				}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 				catch(Exception ex)
 				{
 					buffer.Append("<Exception: ").Append(ex.Message).Append(">");

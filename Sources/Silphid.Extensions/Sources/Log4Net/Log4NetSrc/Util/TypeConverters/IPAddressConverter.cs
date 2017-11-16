@@ -77,7 +77,7 @@ namespace log4net.Util.TypeConverters
 			{
 				try
 				{
-#if NET_2_0 || NETCF_2_0 || UNITY_4_3 || UNITY_5
+#if NET_2_0 || NETCF_2_0 || UNITY_5_3_OR_NEWER
 
 #if !NETCF_2_0
                     // Try an explicit parse of string representation of an IPAddress (v4 or v6)
@@ -139,7 +139,7 @@ namespace log4net.Util.TypeConverters
 		/// <summary>
 		/// Valid characters in an IPv4 or IPv6 address string. (Does not support subnets)
 		/// </summary>
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 		private static readonly char[] validIpAddressChars = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','A','B','C','D','E','F','x','X','.',':','%'};
 #endif
 	}

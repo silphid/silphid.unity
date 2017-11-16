@@ -268,7 +268,7 @@ namespace log4net.Appender
 #if NET_4_0
         [System.Security.SecuritySafeCritical]
 #endif
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
         [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
 #endif
 		override protected void Append(log4net.Core.LoggingEvent loggingEvent) 
@@ -439,7 +439,7 @@ namespace log4net.Appender
 #if NET_4_0
         [System.Security.SecuritySafeCritical]
 #endif
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
         [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode=true)]
 #endif
 		public override void ActivateOptions()

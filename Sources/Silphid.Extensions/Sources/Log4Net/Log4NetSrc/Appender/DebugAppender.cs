@@ -18,7 +18,7 @@
 #endregion
 
 #define DEBUG
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 using log4net.Layout;
 using log4net.Core;
 

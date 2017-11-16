@@ -278,7 +278,7 @@ namespace log4net.Util
 #if NET_4_0
         [System.Security.SecuritySafeCritical]
 #endif
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
         [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand, UnmanagedCode = true)]
 #endif
 		private static WindowsIdentity LogonUser(string userName, string domainName, string password)

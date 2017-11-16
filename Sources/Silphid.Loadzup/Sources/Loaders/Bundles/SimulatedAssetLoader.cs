@@ -1,11 +1,11 @@
 ﻿using System;
 using UniRx;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 using Silphid.Extensions;
 #endif
-using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {

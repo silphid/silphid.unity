@@ -220,7 +220,7 @@ namespace log4net.Layout
 			writer.WriteStartElement(m_elmEvent);
 			writer.WriteAttributeString(ATTR_LOGGER, loggingEvent.LoggerName);
 
-#if NET_2_0 || NETCF_2_0 || MONO_2_0 || UNITY_4_3 || UNITY_5
+#if NET_2_0 || NETCF_2_0 || MONO_2_0 || UNITY_5_3_OR_NEWER
             writer.WriteAttributeString(ATTR_TIMESTAMP, XmlConvert.ToString(loggingEvent.TimeStamp, XmlDateTimeSerializationMode.Local));
 #else
 			writer.WriteAttributeString(ATTR_TIMESTAMP, XmlConvert.ToString(loggingEvent.TimeStamp));
@@ -246,7 +246,7 @@ namespace log4net.Layout
 			writer.WriteStartElement(m_elmMessage);
 			if (!this.Base64EncodeMessage)
 			{
-#if UNITY_4_3 || UNITY_5
+#if UNITY_5_3_OR_NEWER
                 TransformLog4Net.WriteEscapedXmlString(writer, loggingEvent.RenderedMessage, this.InvalidCharReplacement);
 #else
 				Transform.WriteEscapedXmlString(writer, loggingEvent.RenderedMessage, this.InvalidCharReplacement);
@@ -256,7 +256,7 @@ namespace log4net.Layout
 			{
 				byte[] messageBytes = Encoding.UTF8.GetBytes(loggingEvent.RenderedMessage);
 				string base64Message = Convert.ToBase64String(messageBytes, 0, messageBytes.Length);
-#if UNITY_4_3 || UNITY_5
+#if UNITY_5_3_OR_NEWER
                 TransformLog4Net.WriteEscapedXmlString(writer, base64Message,this.InvalidCharReplacement);
 #else
 				Transform.WriteEscapedXmlString(writer, base64Message,this.InvalidCharReplacement);
@@ -273,7 +273,7 @@ namespace log4net.Layout
 				foreach(System.Collections.DictionaryEntry entry in properties)
 				{
 					writer.WriteStartElement(m_elmData);
-#if UNITY_4_3 || UNITY_5
+#if UNITY_5_3_OR_NEWER
                     writer.WriteAttributeString(ATTR_NAME, TransformLog4Net.MaskXmlInvalidCharacters((string)entry.Key,this.InvalidCharReplacement));
 #else
 					writer.WriteAttributeString(ATTR_NAME, Transform.MaskXmlInvalidCharacters((string)entry.Key,this.InvalidCharReplacement));
@@ -283,7 +283,7 @@ namespace log4net.Layout
 					string valueStr =null;
 					if (!this.Base64EncodeProperties)
 					{
-#if UNITY_4_3 || UNITY_5
+#if UNITY_5_3_OR_NEWER
                         valueStr = TransformLog4Net.MaskXmlInvalidCharacters(loggingEvent.Repository.RendererMap.FindAndRender(entry.Value),this.InvalidCharReplacement);
 #else
 						valueStr = Transform.MaskXmlInvalidCharacters(loggingEvent.Repository.RendererMap.FindAndRender(entry.Value),this.InvalidCharReplacement);
@@ -306,7 +306,7 @@ namespace log4net.Layout
 			{
 				// Append the stack trace line
 				writer.WriteStartElement(m_elmException);
-#if UNITY_4_3 || UNITY_5
+#if UNITY_5_3_OR_NEWER
                 TransformLog4Net.WriteEscapedXmlString(writer, exceptionStr,this.InvalidCharReplacement);
 #else
 				Transform.WriteEscapedXmlString(writer, exceptionStr,this.InvalidCharReplacement);

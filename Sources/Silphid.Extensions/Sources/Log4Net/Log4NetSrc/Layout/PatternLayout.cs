@@ -859,15 +859,6 @@ namespace log4net.Layout
 			s_globalRulesRegistry.Add("newline", typeof(NewLinePatternConverter));
 			s_globalRulesRegistry.Add("n", typeof(NewLinePatternConverter));
 
-// .NET Compact Framework 1.0 has no support for ASP.NET
-// SSCLI 1.0 has no support for ASP.NET
-#if !NETCF && !SSCLI && !CLIENT_PROFILE && !UNITY_5_3_OR_NEWER
-			s_globalRulesRegistry.Add("aspnet-cache", typeof(AspNetCachePatternConverter));
-			s_globalRulesRegistry.Add("aspnet-context", typeof(AspNetContextPatternConverter));
-			s_globalRulesRegistry.Add("aspnet-request", typeof(AspNetRequestPatternConverter));
-			s_globalRulesRegistry.Add("aspnet-session", typeof(AspNetSessionPatternConverter));
-#endif
-
 			s_globalRulesRegistry.Add("c", typeof(LoggerPatternConverter));
 			s_globalRulesRegistry.Add("logger", typeof(LoggerPatternConverter));
 

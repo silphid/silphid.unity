@@ -225,7 +225,7 @@ namespace log4net.Util
 			{
 #if NETCF_1_0
 				return System.Threading.Thread.CurrentThread.GetHashCode();
-#elif NET_2_0 || NETCF_2_0 || MONO_2_0 || UNITY_4_3 || UNITY_5
+#elif NET_2_0 || NETCF_2_0 || MONO_2_0 || UNITY_5_3_OR_NEWER
                 return System.Threading.Thread.CurrentThread.ManagedThreadId;
 #else
 				return AppDomain.GetCurrentThreadId();
@@ -263,7 +263,7 @@ namespace log4net.Util
 						// Lookup the host name
 						s_hostName = System.Net.Dns.GetHostName();
 					}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 					catch (System.Net.Sockets.SocketException)
 					{
 						LogLog.Debug(declaringType, "Socket exception occurred while getting the dns hostname. Error Ignored.");
@@ -938,7 +938,7 @@ namespace log4net.Util
 		{
 			try
 			{
-#if NETCF || UNITY_4_3 || UNITY_5
+#if NETCF || UNITY_5_3_OR_NEWER
                 // Configuration APIs are not suported under the Compact Framework
 #elif NET_2_0
 				return ConfigurationManager.AppSettings[key];
@@ -1017,7 +1017,7 @@ namespace log4net.Util
 		{
 #if NETCF_1_0
 			return new Hashtable(CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
-#elif NETCF_2_0 || NET_2_0 || MONO_2_0 || UNITY_4_3 || UNITY_5
+#elif NETCF_2_0 || NET_2_0 || MONO_2_0 || UNITY_5_3_OR_NEWER
             return new Hashtable(StringComparer.OrdinalIgnoreCase);
 #else
 			return System.Collections.Specialized.CollectionsUtil.CreateCaseInsensitiveHashtable();

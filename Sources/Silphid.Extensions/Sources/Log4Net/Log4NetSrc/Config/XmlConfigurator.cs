@@ -165,7 +165,7 @@ namespace log4net.Config
 				LogLog.Debug(declaringType, "Application config file location unknown");
 			}
 
-#if NETCF || UNITY_4_3 || UNITY_5
+#if NETCF || UNITY_5_3_OR_NEWER
             // No config file reading stuff. Just go straight for the file
             Configure(repository, new FileInfo(SystemInfo.ConfigurationFileLocation));
 #else
@@ -728,7 +728,7 @@ namespace log4net.Config
 #if (NETCF)
 					// Create a text reader for the file stream
 					XmlTextReader xmlReader = new XmlTextReader(configStream);
-#elif NET_2_0 || UNITY_4_3 || UNITY_5
+#elif NET_2_0 || UNITY_5_3_OR_NEWER
                     // Allow the DTD to specify entity includes
                     XmlReaderSettings settings = new XmlReaderSettings();
                                         // .NET 4.0 warning CS0618: 'System.Xml.XmlReaderSettings.ProhibitDtd'

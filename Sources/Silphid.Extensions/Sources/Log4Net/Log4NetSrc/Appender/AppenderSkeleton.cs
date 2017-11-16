@@ -317,7 +317,7 @@ namespace log4net.Appender
 						this.Append(loggingEvent);
 					}
 				}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 				catch(Exception ex)
 				{
 					ErrorHandler.Error("Failed in DoAppend", ex);
@@ -426,7 +426,7 @@ namespace log4net.Appender
 						this.Append((LoggingEvent[])filteredEvents.ToArray(typeof(LoggingEvent)));
 					}
 				}
-#if !UNITY_4_3 && !UNITY_5
+#if !UNITY_5_3_OR_NEWER
 				catch(Exception ex)
 				{
 					ErrorHandler.Error("Failed in Bulk DoAppend", ex);
