@@ -12,6 +12,11 @@ namespace Silphid.Showzup
         public static IObservable<IView> PresentViewModel<TViewModel>(this IPresenter This) where TViewModel : IViewModel =>
             This.Present(typeof(TViewModel));
         
+        public static IObservable<IView> TryPresent(this IPresenter This, object input, Options options = null) =>
+            This.IsReady()
+                ? This.Present(input, options)
+                : Observable.Empty<IView>();
+
         public static IPresenter With(this IPresenter This, PushMode pushMode) =>
             new PushModePresenterDecorator(This, pushMode);
 

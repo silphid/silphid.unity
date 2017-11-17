@@ -19,6 +19,7 @@ namespace Silphid.Injexit
         private readonly Func<object, bool> _injectionPredicate;
         private readonly List<Binding> _bindings = new List<Binding>();
         private int _recursionDepth;
+        private bool _isDisposed;
 
         #endregion
 
@@ -473,10 +474,13 @@ namespace Silphid.Injexit
 
         public void Dispose()
         {
+            if (_isDisposed) 
+                return;
+            
+            _isDisposed = true;
             _bindings
                 .Select(x => x.Instance)
                 .OfType<IDisposable>()
-                .Where(x => x != this)
                 .ForEach(x => x.Dispose());
         }
 

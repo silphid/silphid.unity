@@ -186,8 +186,6 @@
     <Compile Include="Sources\Lapse.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\ISequencerExtensions.cs" />
-    <Compile Include="Sources\Input\IInputLayer.cs" />
-    <Compile Include="Sources\Input\InputLayer.cs" />
     <Compile Include="Sources\Interfaces\ISequencer.cs" />
     <Compile Include="Sources\Parallel.cs" />
     <Compile Include="Sources\Sequence.cs" />
