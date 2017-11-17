@@ -296,6 +296,7 @@
     <Compile Include="Sources\OptionsPresenterDecorators\OptionsPresenterDecoratorBase.cs" />
     <Compile Include="Sources\Requests\BackRequest.cs" />
     <Compile Include="Sources\Requests\PresentRequest.cs" />
+    <Compile Include="Sources\Requests\SelectRequest.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
     <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />
