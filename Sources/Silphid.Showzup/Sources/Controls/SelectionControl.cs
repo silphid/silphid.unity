@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
 using Silphid.Extensions;
+using Silphid.Requests;
 using Silphid.Showzup.Navigation;
+using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class SelectionControl : ListControl, IMoveHandler
+    public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
     {
         private bool _isSynching;
         private readonly SerialDisposable _focusDisposable = new SerialDisposable();
@@ -27,17 +29,20 @@ namespace Silphid.Showzup
         public float FocusDelay;
         public bool WrapAround;
 
+        public bool HandlesSelectRequest;
+
         protected override void Start()
         {
             if (Orientation == NavigationOrientation.None)
-                throw new InvalidOperationException($"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
+                throw new InvalidOperationException(
+                    $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
 
             if (AutoSelect)
                 Views
                     .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
                     .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
                     .AddTo(this);
-            
+
             SubscribeToUpdateFocusables(SelectedView);
 
             SelectedView
@@ -66,7 +71,7 @@ namespace Silphid.Showzup
                 {
                     RemoveFocus(x.Item1 as IFocusable);
                     SetFocus(x.Item2 as IFocusable);
-                    AutoSelectView(x.Item2 as IView);                        
+                    AutoSelectView(x.Item2 as IView);
                 })
                 .AddTo(this);
         }
@@ -119,7 +124,7 @@ namespace Silphid.Showzup
         {
             if (SelectedView.Value == view)
                 SelectedView.Value = null;
-            
+
             SelectedView.Value = view;
         }
 
@@ -247,6 +252,36 @@ namespace Silphid.Showzup
                     eventData.moveDir == MoveDirection.Down && SelectNext())
                     eventData.Use();
             }
+        }
+
+        public bool Handle(IRequest request)
+        {
+            if (!HandlesSelectRequest)
+                return false;
+
+            var req = request as SelectRequest;
+
+            if (req == null)
+                return false;
+
+            var view = req.Input as IView;
+
+            if (view != null)
+            {
+                SelectView(view);
+                return true;
+            }
+
+            var viewModel = req.Input as IViewModel;
+
+            if (viewModel != null)
+            {
+                SelectViewModel(viewModel);
+                return true;
+            }
+
+            SelectModel(req.Input);
+            return true;
         }
     }
 }

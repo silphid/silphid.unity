@@ -7,6 +7,7 @@ using Silphid.Injexit;
 using Silphid.Requests;
 using Silphid.Showzup.Requests;
 using UniRx;
+using UnityEngine.Serialization;
 
 namespace Silphid.Showzup
 {
@@ -43,7 +44,9 @@ namespace Silphid.Showzup
 
         public string[] Variants;
         public ReadOnlyReactiveProperty<IView> View { get; }
-        public bool ShouldHandlePresentRequests;
+        
+        [FormerlySerializedAs("ShouldHandlePresentRequests")]
+        public bool HandlesPresentRequest;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -175,7 +178,7 @@ namespace Silphid.Showzup
         public virtual bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
-            if (presentRequest != null && ShouldHandlePresentRequests)
+            if (presentRequest != null && HandlesPresentRequest)
             {
                 Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
                 return true;

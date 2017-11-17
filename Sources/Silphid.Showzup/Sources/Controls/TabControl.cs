@@ -17,19 +17,19 @@ namespace Silphid.Showzup
 
     public class TabControl : PresenterControl, IMoveHandler, ICancelHandler
     {
+        private readonly MoveHandler _moveHandler = new MoveHandler();
+        private readonly Subject<object> _presentingContent = new Subject<object>();
+        private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
+        private Options _lastOptions;
+        private int _currentIndex;
+        private ReadOnlyReactiveProperty<PresenterState> _state;
+
         public float SelectionDelay;
         public SelectionControl TabSelectionControl;
         public PresenterControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
-
-        private readonly MoveHandler _moveHandler = new MoveHandler();
-        private Options _lastOptions;
-        private readonly Subject<object> _presentingContent = new Subject<object>();
-
-        private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
         public IObservable<object> PresentingContent => _presentingContent;
-        private int _currentIndex;
 
         public void Start()
         {
@@ -62,11 +62,23 @@ namespace Silphid.Showzup
                 .AddTo(this);
         }
 
-
         public override IObservable<IView> Present(object input, Options options = null) =>
             TabSelectionControl.Present(input, _lastOptions = options);
 
-        public override IReadOnlyReactiveProperty<PresenterState> State => TabSelectionControl.State;
+        public override IReadOnlyReactiveProperty<PresenterState> State =>
+            _state
+            ?? (_state = TabSelectionControl.State
+                .CombineLatest(ContentTransitionControl.State, (x, y) =>
+                {
+                    if (x == PresenterState.Loading || y == PresenterState.Loading)
+                        return PresenterState.Loading;
+
+                    if (x == PresenterState.Presenting || y == PresenterState.Presenting)
+                        return PresenterState.Presenting;
+
+                    return PresenterState.Ready;
+                })
+                .ToReadOnlyReactiveProperty());
 
         public override void OnSelect(BaseEventData eventData)
         {

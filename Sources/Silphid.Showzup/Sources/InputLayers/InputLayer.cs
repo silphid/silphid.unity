@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UniRx;
-using UnityEngine;
 
-namespace Silphid.Sequencit.Input
+namespace Silphid.Showzup.InputLayers
 {
     public class InputLayer : IInputLayer, IDisposable
     {
-        public static bool IsLogEnabled = false;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InputLayer));
 
         private readonly ReactiveProperty<int> _refCount = new ReactiveProperty<int>(0);
         private readonly ReactiveProperty<bool> _isEnabled;
@@ -23,15 +23,19 @@ namespace Silphid.Sequencit.Input
 
             // Also take parent's state into account, if any
             if (parent != null)
+            {
+                ((InputLayer) parent)._children.Add(this);
+                
                 isEnabledObservable = isEnabledObservable
                     .CombineLatest(parent.IsEnabled, (x, y) => x && y);
-
+            }
+            
             _isEnabled = isEnabledObservable.ToReactiveProperty();
 
-            if (IsLogEnabled)
+            if (Log.IsDebugEnabled)
                 _isEnabled
                     .DistinctUntilChanged()
-                    .Subscribe(x => Debug.Log($"#InputLayer# {Name} IsEnabled: {x}"));
+                    .Subscribe(x => Log.Debug($"{Name} IsEnabled: {x}"));
         }
 
         public string Name { get; }
@@ -44,13 +48,6 @@ namespace Silphid.Sequencit.Input
                 .Prepend(this);
 
         public IReadOnlyReactiveProperty<bool> IsEnabled => _isEnabled;
-
-        public IInputLayer CreateChild(string name)
-        {
-            var child = new InputLayer(name, this);
-            _children.Add(child);
-            return child;
-        }
 
         public IDisposable Disable(string reason)
         {
@@ -67,18 +64,14 @@ namespace Silphid.Sequencit.Input
 
         private void RequestDisable(string reason)
         {
-            if (IsLogEnabled)
-                Debug.Log($"#InputLayer# {Name} request disable: {reason} (ref count: {_refCount.Value + 1})");
-
             _refCount.Value++;
+            Log.Debug($"{Name} requested disable: {reason} (ref count: {_refCount.Value})");
         }
 
         private void DisposeDisable(string reason)
         {
-            if (IsLogEnabled)
-                Debug.Log($"#InputLayer# {Name} dispose disable: {reason} (ref count: {_refCount.Value - 1})");
-
             _refCount.Value--;
+            Log.Debug($"{Name} disposed disable: {reason} (ref count: {_refCount.Value})");
         }
     }
 }

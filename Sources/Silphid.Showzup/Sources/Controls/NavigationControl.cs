@@ -9,6 +9,7 @@ using Silphid.Requests;
 using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Silphid.Showzup
 {
@@ -28,7 +29,9 @@ namespace Silphid.Showzup
 
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
-        public bool ShouldHandleBackRequests;
+        
+        [FormerlySerializedAs("ShouldHandleBackRequests")]
+        public bool HandlesBackRequest;
 
         #region Life-time
 
@@ -276,7 +279,7 @@ namespace Silphid.Showzup
                 return true;
 
             var backRequest = request as BackRequest;
-            if (backRequest == null || !ShouldHandleBackRequests || !CanPop.Value)
+            if (backRequest == null || !HandlesBackRequest || !CanPop.Value)
                 return false;
 
             Pop().SubscribeAndForget();
