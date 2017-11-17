@@ -17,5 +17,10 @@ namespace Silphid.Showzup.InputLayers
                         ? null
                         : inputLayer.Disable(reason)));
         }
+        
+        public static IDisposable BindStateTo(this IPresenter This, IInputLayer inputLayer) =>
+            This.State
+                .Select(x => x == PresenterState.Ready)
+                .BindTo(inputLayer, "Navigating");
     }
 }
