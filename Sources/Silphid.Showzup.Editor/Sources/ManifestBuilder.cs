@@ -246,7 +246,18 @@ public class ManifestBuilder
     {
         return AppDomain.CurrentDomain
             .GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes());
+            .SelectMany(assembly =>
+            {
+                try
+                {
+                    return assembly.GetTypes();
+                }
+                catch
+                {
+                    Debug.LogWarning($"Failed to load types from assembly: {assembly.GetName().Name}");
+                    return new Type[]{};
+                }
+            });
     }
 
     private static VariantSet GetVariantsFromType(Type type, VariantSet allVariants)
