@@ -110,6 +110,7 @@
     <Compile Include="Sources\Interfaces\IManifest.cs" />
     <Compile Include="Sources\Interfaces\INavigationPresenter.cs" />
     <Compile Include="Sources\Interfaces\IPostHide.cs" />
+    <Compile Include="Sources\Interfaces\IPostNavigate.cs" />
     <Compile Include="Sources\Interfaces\IPostShow.cs" />
     <Compile Include="Sources\Interfaces\IPreHide.cs" />
     <Compile Include="Sources\Interfaces\IPresenter.cs" />

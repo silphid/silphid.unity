@@ -119,7 +119,7 @@ namespace Silphid.Showzup
                 {
                     History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushMode());
                     CompleteNavigation(nav);
-                    CompleteChange();
+                    CompleteChange(nav);
                 })
                 .ThenReturn(presentation.TargetView);
         }
@@ -185,7 +185,7 @@ namespace Silphid.Showzup
                 {
                     History.Value = history;
                     CompleteNavigation(nav);
-                    CompleteChange();
+                    CompleteChange(nav);
                 })
                 .ThenReturn(view);
         }
@@ -219,10 +219,12 @@ namespace Silphid.Showzup
             _navigated.OnNext(nav);
         }
 
-        private void CompleteChange()
+        private void CompleteChange(Nav nav)
         {
             _isNavigating.Value = false;
             _state.Value = State.Ready;
+
+            (nav.Target as IPostNavigate)?.OnPostNavigate();
             //Debug.Log("#Nav# Navigation complete");
         }
 
