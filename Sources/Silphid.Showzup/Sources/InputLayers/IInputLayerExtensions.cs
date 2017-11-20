@@ -11,8 +11,7 @@ namespace Silphid.Showzup.InputLayers
 
             return new CompositeDisposable(
                 disableDisposable,
-                This
-                    .DistinctUntilChanged()
+                This.DistinctUntilChanged()
                     .Subscribe(x => disableDisposable.Disposable = x
                         ? null
                         : inputLayer.Disable(reason)));
@@ -22,5 +21,12 @@ namespace Silphid.Showzup.InputLayers
             This.State
                 .Select(x => x == PresenterState.Ready)
                 .BindTo(inputLayer, "Navigating");
+
+        public static IObservable<T> DisableLayerUntilCompleted<T>(this IObservable<T> This, IInputLayer layer, string reason) =>
+            Observable.Defer(() =>
+            {
+                var disposable = layer.Disable(reason);
+                return This.DoOnTerminate(() => disposable.Dispose());
+            });
     }
 }
