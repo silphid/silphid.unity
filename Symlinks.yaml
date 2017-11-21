@@ -1,35 +1,23 @@
-- name: Silphid.Extensions
-  location: UnityProject/Assets/Plugins/Silphid/Extensions
+- source: UnityProject/Assets/Plugins/Silphid/Extensions
   target: Sources/Silphid.Extensions/Sources
 
-- name: Silphid.Injexit
-  location: UnityProject/Assets/Plugins/Silphid/Injexit
+- source: UnityProject/Assets/Plugins/Silphid/Injexit
   target: Sources/Silphid.Injexit/Sources
 
-- name: Silphid.Loadzup
-  location: UnityProject/Assets/Plugins/Silphid/Loadzup
+- source: UnityProject/Assets/Plugins/Silphid/Loadzup
   target: Sources/Silphid.Loadzup/Sources
 
-- name: Silphid.Machina
-  location: UnityProject/Assets/Plugins/Silphid/Machina
+- source: UnityProject/Assets/Plugins/Silphid/Machina
   target: Sources/Silphid.Machina/Sources
 
-- name: Silphid.Sequencit
-  location: UnityProject/Assets/Plugins/Silphid/Sequencit
+- source: UnityProject/Assets/Plugins/Silphid/Sequencit
   target: Sources/Silphid.Sequencit/Sources
 
-- name: Silphid.Showzup
-  location: UnityProject/Assets/Plugins/Silphid/Showzup
+- source: UnityProject/Assets/Plugins/Silphid/Showzup
   target: Sources/Silphid.Showzup/Sources
 
-- name: Silphid.Showzup.Editor
-  location: UnityProject/Assets/Plugins/Silphid/Editor/Showzup
-  target: Sources/Silphid.Showzup.Editor/Sources
-
-- name: UniRx
-  location: UnityProject/Assets/Plugins/UniRx
+- source: UnityProject/Assets/Plugins/UniRx
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
 
-- name: UniRx2
-  location: Sources/UniRx/Sources
+- source: Sources/UniRx/Sources
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts

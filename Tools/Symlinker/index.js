@@ -20,14 +20,17 @@ function make() {
         content.forEach(function(item) {
             console.log("Parsing dependency: " + item.name);
 
-            //get config file path root without filename
-            var configFileRoot = configFile.substring(0, configFile.lastIndexOf("/"));
+            // Get config file's directory
+            var configDir = configFile.substring(0, configFile.lastIndexOf("/"));
 
-            //Resolve the target depending on config file root
-            //Ex: Resolve "target:Submodules/Lib2"" to "UnityProject\Submodules\Lib1\Submodules\Lib2"
-            var newAbsoluteTarget = path.resolve(configFileRoot, item.target);
+            // Resolve target relative to config file's directory
+            item.source = path.resolve(configDir, item.source);
+            item.target = path.resolve(configDir, item.target);
+            console.log("configFile: " + configFile);
+            console.log("configDir: " + configDir);
+            console.log("item.target: " + item.target);
+            console.log("--");
 
-            item.target = newAbsoluteTarget;
             createLink(item);
             addToGitIgnore(item);
 
@@ -45,32 +48,26 @@ function make() {
                 console.log('generated-links.yaml saved');
             });
     }
-    
 }
 
 function createLink(item) {
-    var absTarget = path.resolve(item.target);
-    var relSourcePath = item.location;
-    var linkName = item.name;
+    // Create parent directories recursively if needed
+    var parentDir = path.resolve(item.source, "..");
+    if (!fs.existsSync(parentDir))
+        mkdir('-p', parentDir);
 
-    //create parent directory recursively if needed
-    var parentPath = path.resolve(relSourcePath, "..");
-    if (!fs.existsSync(parentPath))
-        mkdir('-p', parentPath);
-
-    //using node fs, source and target are inversed (source is the folder where the link points to)
-    fs.symlink(absTarget, relSourcePath, "dir", (exception) => {
+    // Using node fs, source and target are inversed (source is the folder where the link points to)
+    fs.symlink(item.target, item.source, "dir", (exception) => {
         if (exception) {
             if (exception.code == "EPERM")
-                console.error("ERROR EPERM - Be sure to run command in Administrator mode");
+                console.error("EPERM ERROR: Be sure to run command in Administrator mode");
             else if (exception.code == "EEXIST")
-                console.warn("WARN EEXIST - '" + linkName + "' Link already created");
+                console.warn("Symlink already exists: " + item.source);
             else
                 console.error(exception);
         }
-        else {
-            console.log("Symlink created: " + linkName);
-        }
+        else
+            console.log("Symlink created: " + item.source + " -> " + item.target);
     });
 }
 
