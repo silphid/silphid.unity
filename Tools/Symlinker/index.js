@@ -26,10 +26,6 @@ function make() {
             // Resolve target relative to config file's directory
             item.source = path.resolve(configDir, item.source);
             item.target = path.resolve(configDir, item.target);
-            console.log("configFile: " + configFile);
-            console.log("configDir: " + configDir);
-            console.log("item.target: " + item.target);
-            console.log("--");
 
             createLink(item);
             addToGitIgnore(item);
