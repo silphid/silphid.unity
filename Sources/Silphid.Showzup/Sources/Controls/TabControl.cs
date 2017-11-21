@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -33,11 +32,6 @@ namespace Silphid.Showzup
 
         public void Start()
         {
-            TabSelectionControl.Views
-                .Select(x => x.FirstOrDefault())
-                .BindTo(TabSelectionControl.SelectedView)
-                .AddTo(this);
-
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
             
             TabSelectionControl.SelectedIndex

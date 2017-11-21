@@ -242,6 +242,25 @@ namespace Silphid.Extensions
 
             return -1;
         }
+        
+        public static T GetAtOrDefault<T>(this IEnumerable<T> This, int? index, T defaultValue = default(T))
+        {
+            if (index == null || index < 0)
+                return defaultValue;
+
+            var list = This as IList<T>;
+            if (list != null)
+                return index < list.Count
+                    ? list[index.Value]
+                    : defaultValue;
+
+            var i = 0;
+            foreach (var item in This)
+                if (i++ == index)
+                    return item;
+            
+            return defaultValue;
+        }
 
         /// <summary>
         /// Compares objects based on their value modulated through custom function.
@@ -319,25 +338,5 @@ namespace Silphid.Extensions
 
             return default(T);
         }
-
-//
-//        public class IndexedPair<T>
-//        {
-//            public int Index { get; set; }
-//            public T Value { get; set; }
-//        }
-//
-//        public static IEnumerable<IndexedPair<T>> Indexed<T>(this IEnumerable<T> source)
-//        {
-//            int index = 0;
-//            foreach (var item in source)
-//            {
-//                yield return new IndexedPair<T>
-//                    {
-//                        Index = index++,
-//                        Value = item
-//                    };
-//            }
-//        }
     }
 }

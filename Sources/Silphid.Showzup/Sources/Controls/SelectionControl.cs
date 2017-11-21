@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using Silphid.Extensions;
 using Silphid.Requests;
@@ -11,24 +11,13 @@ using UnityEngine.EventSystems;
 namespace Silphid.Showzup
 {
     public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
-    {
-        private bool _isSynching;
-        private readonly SerialDisposable _focusDisposable = new SerialDisposable();
-        private readonly ReactiveProperty<IView> _lastSelectedView = new ReactiveProperty<IView>();
-        private ReadOnlyReactiveProperty<IView> _lastSelectedViewReadOnly;
+    {      
+        private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
 
-        public ReactiveProperty<IView> SelectedView { get; } = new ReactiveProperty<IView>();
+        public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
-
-        public ReadOnlyReactiveProperty<IView> LastSelectedView =>
-            _lastSelectedViewReadOnly
-            ?? (_lastSelectedViewReadOnly = _lastSelectedView.ToReadOnlyReactiveProperty());
-
         public NavigationOrientation Orientation;
-        public bool AutoFocus = true;
-        public float FocusDelay;
         public bool WrapAround;
-
         public bool HandlesSelectRequest;
 
         protected override void Start()
@@ -36,31 +25,20 @@ namespace Silphid.Showzup
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException(
                     $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
-
-            if (AutoSelect)
-                Views
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(x => SelectView(_lastSelectedView.Value ?? x.FirstOrDefault()))
-                    .AddTo(this);
-
-            SubscribeToUpdateFocusables(SelectedView);
-
-            SelectedView
-                .BindTo(_lastSelectedView)
+            
+            Views
+                .CombineLatest(SelectedIndex, (views, selectedIndex) => new {views, selectedIndex})
+                .Subscribe(x => _selectedView.Value = x.views.GetAtOrDefault(x.selectedIndex))
                 .AddTo(this);
 
-            SubscribeToSynchOther(SelectedView, () =>
-                SelectedIndex.Value = IndexOfView(SelectedView.Value));
-
-            SubscribeToSynchOther(SelectedIndex, () =>
-                SelectedView.Value = GetViewAtIndex(SelectedIndex.Value));
+            SubscribeToUpdateFocusables(SelectedView);
         }
 
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
         {
             base.RemoveAllViews(container, except);
 
-            SelectedView.Value = null;
+            SelectedIndex.Value = null;
         }
 
         private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
@@ -71,106 +49,72 @@ namespace Silphid.Showzup
                 {
                     RemoveFocus(x.Item1 as IFocusable);
                     SetFocus(x.Item2 as IFocusable);
-                    AutoSelectView(x.Item2 as IView);
                 })
                 .AddTo(this);
         }
 
-        private void AutoSelectView(IView view)
-        {
-            if (AutoSelect && view != null)
-                base.SelectView(view);
-        }
-
         private void SetFocus(IFocusable focusable)
         {
-            if (!AutoFocus || focusable == null)
+            if (focusable == null)
                 return;
 
-            if (FocusDelay.IsAlmostZero())
-            {
-                focusable.IsFocused.Value = true;
-                return;
-            }
-
-            _focusDisposable.Disposable = Observable
-                .Timer(TimeSpan.FromSeconds(FocusDelay))
-                .Subscribe(_ => focusable.IsFocused.Value = true);
+            focusable.IsFocused.Value = true;
         }
 
         private void RemoveFocus(IFocusable focusable)
         {
-            if (!AutoFocus || focusable == null)
+            if (focusable == null)
                 return;
 
             focusable.IsFocused.Value = false;
         }
 
-        private void SubscribeToSynchOther<T>(IObservable<T> observable, Action synchAction)
-        {
-            observable.Subscribe(x =>
-                {
-                    if (_isSynching)
-                        return;
-
-                    _isSynching = true;
-                    synchAction();
-                    _isSynching = false;
-                })
-                .AddTo(this);
-        }
-
         protected override void SelectView(IView view)
         {
-            if (SelectedView.Value == view)
-                SelectedView.Value = null;
-
-            SelectedView.Value = view;
+            SelectedIndex.Value = IndexOfView(view);
         }
 
         public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
         {
-            SelectedView.Value = _views
+            SelectedIndex.Value = IndexOfView(_views
                 .OfType<TView>()
-                .FirstOrDefault(predicate);
+                .FirstOrDefault(predicate));
         }
 
         public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
         {
-            SelectedView.Value = _views
+            SelectedIndex.Value = IndexOfView(_views
                 .Where(x => x.ViewModel is TViewModel)
-                .FirstOrDefault(x => ReferenceEquals(x.ViewModel, viewModel));
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel, viewModel)));
         }
 
         public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
         {
-            SelectedView.Value = _views
+            SelectedIndex.Value = IndexOfView(_views
                 .Where(x => x.ViewModel is TViewModel)
-                .FirstOrDefault(x => predicate((TViewModel) x.ViewModel));
+                .FirstOrDefault(x => predicate((TViewModel) x.ViewModel)));
         }
 
         public void SelectModel<TModel>(TModel model)
         {
-            SelectedView.Value = _views
+            SelectedIndex.Value = IndexOfView(_views
                 .Where(x => x.ViewModel?.Model is TModel)
-                .FirstOrDefault(x => ReferenceEquals(x.ViewModel.Model, model));
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel.Model, model)));
         }
 
         public void SelectModel<TModel>(Func<TModel, bool> predicate)
         {
-            SelectedView.Value = _views
+            SelectedIndex.Value = IndexOfView(_views
                 .Where(x => x.ViewModel?.Model is TModel)
-                .FirstOrDefault(x => predicate((TModel) x.ViewModel.Model));
+                .FirstOrDefault(x => predicate((TModel) x.ViewModel.Model)));
         }
 
         public bool SelectIndex(int index)
         {
-            var viewAtIndex = GetViewAtIndex(index);
-
-            if (viewAtIndex == null)
+            if (index >= Views.Value.Count)
                 return false;
 
-            SelectedView.Value = viewAtIndex;
+            SelectedIndex.Value = index;
 
             return true;
         }
@@ -195,7 +139,7 @@ namespace Silphid.Showzup
 
         public void SelectNone()
         {
-            SelectedView.Value = null;
+            SelectedIndex.Value = null;
         }
 
         public bool SelectPrevious()
@@ -260,12 +204,10 @@ namespace Silphid.Showzup
                 return false;
 
             var req = request as SelectRequest;
-
             if (req == null)
                 return false;
 
             var view = req.Input as IView;
-
             if (view != null)
             {
                 SelectView(view);
@@ -273,7 +215,6 @@ namespace Silphid.Showzup
             }
 
             var viewModel = req.Input as IViewModel;
-
             if (viewModel != null)
             {
                 SelectViewModel(viewModel);
