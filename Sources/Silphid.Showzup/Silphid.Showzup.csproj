@@ -44,11 +44,23 @@
       <HintPath>..\Dependencies\DOTween50.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEditor.UI.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Dependencies\UnityEngine.UI.dll</HintPath>
@@ -170,6 +182,12 @@
     <Compile Include="Sources\Requests\PresentRequest.cs" />
     <Compile Include="Sources\Requests\SelectRequest.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
+    <Compile Include="Sources\Editor\ManifestBuilder.cs" />
+    <Compile Include="Sources\Editor\ManifestEditor.cs" />
+    <Compile Include="Sources\Editor\ManifestManager.cs" />
+    <Compile Include="Sources\Editor\ManifestWindow.cs" />
+    <Compile Include="Sources\Editor\MenuItems.cs" />
+    <Compile Include="Sources\Editor\ScriptableObjectUtility.cs" />
     <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />
     <Compile Include="Sources\Transitions\Components\SlideTransition.cs" />
