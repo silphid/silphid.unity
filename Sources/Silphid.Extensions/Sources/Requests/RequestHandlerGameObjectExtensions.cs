@@ -19,7 +19,7 @@ namespace Silphid.Requests
             This.Send(new TRequest());
 
         public static bool Send(this GameObject This, Exception exception) =>
-            This.Send(exception as IRequest ?? new RequestException(exception));
+            This.Send(exception as IRequest ?? new ExceptionRequest(exception));
 
         public static bool Send(this Component This, Exception exception) =>
             This.gameObject.Send(exception);
