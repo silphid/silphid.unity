@@ -5,6 +5,7 @@ using log4net;
 using Silphid.DataTypes;
 using Silphid.Extensions;
 using Silphid.Showzup.ListLayouts;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,6 +70,38 @@ namespace Silphid.Showzup
             return base.PresentInternal(input, options);
         }
 
+        public bool ScrollToModel<T>(T model, float offset = 0) =>
+            ScrollToIndex(
+                _entries.IndexOf(entry =>
+                    Equals(model, entry.Model)),
+                offset);
+
+        public bool ScrollToModel<T>(Func<T, bool> predicate, float offset = 0) =>
+            ScrollToIndex(
+                _entries.IndexOf(entry =>
+                    entry.Model is T &&
+                    predicate((T) entry.Model)),
+                offset);
+
+        public bool ScrollToIndex(int? index, float offset = 0)
+        {
+            if (index == null || index < 0 || index >= _views.Count)
+                return false;
+
+            var rect = Layout.GetItemRect(index.Value, Viewport.GetSize());
+            var pos = _containerRectTransform.anchoredPosition;
+            
+            if (Orientation == NavigationOrientation.None)
+                throw new InvalidOperationException($"ScrollToIndex() requires Orientation property to be specified on {gameObject.ToHierarchyPath()}");
+
+            _containerRectTransform.anchoredPosition =
+                Orientation == NavigationOrientation.Vertical
+                    ? pos.WithY(rect.yMin - offset)
+                    : pos.WithX(-rect.xMin + offset);
+
+            return true;
+        }
+        
         protected override IObservable<IView> LoadViews(List<Entry> entries, Options options)
         {
             lock (this)

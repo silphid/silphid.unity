@@ -7,6 +7,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ namespace Silphid.Showzup
         public Comparer<IView> ViewComparer { get; set; }
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }
+        public NavigationOrientation Orientation;
 
         #endregion
 

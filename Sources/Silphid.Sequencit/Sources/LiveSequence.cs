@@ -160,10 +160,10 @@ namespace Silphid.Sequencit
         private bool Truncate(IObservable<Unit> observable, bool isInclusive)
         {
             var index = _observables.IndexOf(observable);
-            if (index == -1)
+            if (index == null)
                 return false;
 
-            var count = isInclusive ? index : index + 1;
+            var count = index.Value + (isInclusive ? 0 : 1);
             _observables = new Queue<IObservable<Unit>>(_observables.Take(count));
             return true;
         }

@@ -229,7 +229,7 @@ namespace Silphid.Extensions
             return -1;
         }
 
-        public static int IndexOf<T>(this IEnumerable<T> This, T item)
+        public static int? IndexOf<T>(this IEnumerable<T> This, T item)
         {
             var index = 0;
             foreach (var candidate in This)
@@ -240,7 +240,21 @@ namespace Silphid.Extensions
                 index++;
             }
 
-            return -1;
+            return null;
+        }
+
+        public static int? IndexOf<T>(this IEnumerable<T> This, Func<T, bool> predicate)
+        {
+            var index = 0;
+            foreach (var candidate in This)
+            {
+                if (predicate(candidate))
+                    return index;
+
+                index++;
+            }
+
+            return null;
         }
         
         public static T GetAtOrDefault<T>(this IEnumerable<T> This, int? index, T defaultValue = default(T))
