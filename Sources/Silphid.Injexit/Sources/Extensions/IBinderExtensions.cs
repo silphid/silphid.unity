@@ -58,6 +58,9 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
+        public static IBinding BindAnonymous<T>(this IBinder This) =>
+            This.BindToSelf<T>();
+
         public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null, Predicate<Type> predicate = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
