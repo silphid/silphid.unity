@@ -26,7 +26,7 @@ namespace Silphid.Showzup.InputLayers
             Observable.Defer(() =>
             {
                 var disposable = layer.Disable(reason);
-                return This.DoOnTerminate(() => disposable.Dispose());
+                return This.Finally(() => disposable.Dispose());
             });
     }
 }
