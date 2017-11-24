@@ -103,9 +103,6 @@ namespace Silphid.Injexit
 
             try
             {
-                if (Log.IsDebugEnabled)
-                    Log.Debug($"Resolving {abstractionType.Name}");
-
                 if (_recursionDepth > MaxRecursionDepth)
                     throw new CircularDependencyException(abstractionType);
 
@@ -437,7 +434,7 @@ namespace Silphid.Injexit
             var value = result.ResolveInstance(resolver);
 
             if (Log.IsDebugEnabled)
-                Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
+                Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} = {FormatValue(value)}");
 
             member.SetValue(obj, value);
         }
