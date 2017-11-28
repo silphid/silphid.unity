@@ -79,6 +79,7 @@ namespace Silphid.Injexit
             var text = LoadFromDataPath() ??
                        LoadFromResources();
             
+            Debug.Log($"Injecting log config with DataPath: {DataPath}");
             text = text.Replace("${DataPath}", DataPath);
             var xmldoc = new XmlDocument();
             xmldoc.LoadXml(text);
