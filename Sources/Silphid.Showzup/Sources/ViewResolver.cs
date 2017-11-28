@@ -38,6 +38,19 @@ namespace Silphid.Showzup
 
         private void ValidateManifest()
         {
+            if (_manifest == null)
+                throw new InvalidManifestException("Manifest is null");
+            
+            if (_manifest.ModelsToViewModels == null ||
+                _manifest.ViewModelsToViews == null ||
+                _manifest.ViewsToPrefabs == null)
+                throw new InvalidManifestException("Some manifest dictionary is null");
+
+            if (_manifest.ModelsToViewModels.Any(x => x == null) ||
+                _manifest.ViewModelsToViews.Any(x => x == null) ||
+                _manifest.ViewsToPrefabs.Any(x => x == null))
+                throw new InvalidManifestException("Some manifest dictionary contains null values");
+                
             var invalidModelToViewModel = _manifest.ModelsToViewModels.FirstOrDefault(x => !x.IsValid);
             if (invalidModelToViewModel != null)
                 throw new InvalidMappingException(invalidModelToViewModel, "Invalid Model to ViewModel mapping, try rebuilding manifest.");
