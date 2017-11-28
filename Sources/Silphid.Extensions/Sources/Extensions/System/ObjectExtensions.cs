@@ -9,5 +9,8 @@ namespace Silphid.Extensions
 
         public static List<T> ToSingleItemList<T>(this T This) =>
             new List<T>(new[] { This });
+        
+        public static string ToStringOrNullLiteral(this object This) =>
+            This?.ToString() ?? "null";
     }
 }

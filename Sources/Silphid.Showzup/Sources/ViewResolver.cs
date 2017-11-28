@@ -38,10 +38,17 @@ namespace Silphid.Showzup
 
         private void ValidateManifest()
         {
-            if (_manifest.ModelsToViewModels.Any(x => x.Source == null || x.Target == null || x.Variants == null) ||
-                _manifest.ViewModelsToViews.Any(x => x.Source == null || x.Target == null || x.Variants == null) ||
-                _manifest.ViewsToPrefabs.Any(x => x.Source == null || x.Target == null || x.Variants == null))
-                throw new InvalidOperationException("Manifest needs to be rebuilt.");
+            var invalidModelToViewModel = _manifest.ModelsToViewModels.FirstOrDefault(x => !x.IsValid);
+            if (invalidModelToViewModel != null)
+                throw new InvalidMappingException(invalidModelToViewModel, "Invalid Model to ViewModel mapping, try rebuilding manifest.");
+            
+            var invalidViewModelToView = _manifest.ViewModelsToViews.FirstOrDefault(x => !x.IsValid);
+            if (invalidViewModelToView != null)
+                throw new InvalidMappingException(invalidViewModelToView, "Invalid ViewModel to View mapping, try rebuilding manifest.");
+
+            var invalidViewToPrefab = _manifest.ViewsToPrefabs.FirstOrDefault(x => !x.IsValid);
+            if (invalidViewToPrefab != null)
+                throw new InvalidMappingException(invalidViewToPrefab, "Invalid View to Prefab mapping, try rebuilding manifest.");
         }
 
         public ViewInfo Resolve(object input, Options options = null)
