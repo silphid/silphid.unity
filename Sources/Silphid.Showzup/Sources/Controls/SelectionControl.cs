@@ -172,6 +172,10 @@ namespace Silphid.Showzup
                 SelectIndex(SelectedIndex.Value.Value - 1) ||
                 moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 &&
                 SelectIndex(SelectedIndex.Value.Value + 1) ||
+                moveDirection == MoveDirection.Left && WrapAround && SelectedIndex.Value == 0 &&
+                SelectIndex(Views.Value.Count - 1) ||
+                moveDirection == MoveDirection.Right && WrapAround && SelectedIndex.Value == Views.Value.Count - 1 &&
+                SelectIndex(0) ||
                 moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns &&
                 SelectIndex(SelectedIndex.Value.Value - RowsOrColumns) ||
                 moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&

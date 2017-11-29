@@ -74,6 +74,7 @@
     <Compile Include="Sources\Configs\VariantGroup.cs" />
     <Compile Include="Sources\Configs\Manifest.cs" />
     <Compile Include="Sources\Configs\VariantSet.cs" />
+    <Compile Include="Sources\Controls\CarrouselControl.cs" />
     <Compile Include="Sources\Controls\Control.cs" />
     <Compile Include="Sources\Controls\ItemControl.cs" />
     <Compile Include="Sources\Controls\ListControl.cs" />
