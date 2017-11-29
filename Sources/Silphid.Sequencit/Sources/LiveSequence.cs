@@ -45,7 +45,7 @@ namespace Silphid.Sequencit
         {
             if (!_isStarted)
             {
-                _subscriptionLapse = new Lapse(); 
+                _subscriptionLapse = Lapse.Create(); 
                 _isStarted = true;
                 StartNext();
             }

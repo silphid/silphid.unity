@@ -60,7 +60,7 @@ namespace Silphid.Sequencit.Test
         [Test]
         public void LambdaShouldBeCalledOnlyUponSubscription()
         {
-            var lapse = new Lapse(disposable => _value = 1);
+            var lapse = Lapse.Create(disposable => _value = 1);
 
             Assert.That(_value, Is.EqualTo(0));
             
