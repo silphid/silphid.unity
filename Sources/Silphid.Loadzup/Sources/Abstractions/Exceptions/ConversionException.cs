@@ -41,9 +41,9 @@ namespace Silphid.Loadzup
 
         public override string Message =>
             $"{base.Message}\r\n" +
-            $"Converter: {ConverterType.Name}\r\n" +
+            $"Converter: {ConverterType?.Name}\r\n" +
             $"Input: {FormatInput()}\r\n" +
-            $"OutputType: {OutputType.Name}\r\n" +
+            $"OutputType: {OutputType?.Name}\r\n" +
             $"ContentType: {ContentType}\r\n" +
             $"Encoding: {Encoding?.WebName}\r\n";
 
