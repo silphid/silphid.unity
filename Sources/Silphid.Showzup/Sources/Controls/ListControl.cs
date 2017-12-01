@@ -106,7 +106,7 @@ namespace Silphid.Showzup
             // If input is observable, resolve it first
             var observable = input as IObservable<object>;
             if (observable != null)
-                return observable.ContinueWith(x => Present(x, options));
+                return observable.ContinueWith(x => PresentView(x, options));
             
             options = options.With(VariantProvider.GetVariantsNamed(Variants));
 

@@ -50,7 +50,7 @@ namespace Silphid.Showzup
 
             _isFirstPresent = false;
             
-            return base.Present(x.Input, options);
+            return base.PresentView(x.Input, options);
         }
     }
 }
