@@ -102,7 +102,7 @@ namespace Silphid.Showzup
             }
             catch (Exception ex)
             {
-                throw new LoadException($"Failed to loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}", ex);
+                return Observable.Throw<IView>(new LoadException($"Failed to loading prefab {uri} with {viewType} for {viewModel?.GetType().Name}", ex));
             }
         }
 
@@ -123,10 +123,20 @@ namespace Silphid.Showzup
             }
         }
 
-        private IObservable<Unit> LoadLoadable(IView view) =>
-            (view as ILoadable)?.Load()?
-                .Catch<Unit, Exception>(ex => Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex)))
-            ?? Observable.ReturnUnit();
+        private IObservable<Unit> LoadLoadable(IView view)
+        {
+            try
+            {
+                return (view as ILoadable)?.Load()?
+                       .Catch<Unit, Exception>(ex =>
+                           Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex)))
+                       ?? Observable.ReturnUnit();
+            }
+            catch (Exception ex)
+            {
+                return Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex));
+            }
+        }
 
         #region Prefab view loading
 
