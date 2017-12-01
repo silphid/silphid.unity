@@ -45,8 +45,8 @@ namespace Silphid.Showzup
         public string[] Variants;
         public ReadOnlyReactiveProperty<IView> View { get; }
         
-        [FormerlySerializedAs("ShouldHandlePresentRequests")]
-        public bool HandlesPresentRequest;
+        [FormerlySerializedAs("HandlesPresentRequest")]
+        public bool HandlePresentRequest;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -71,7 +71,7 @@ namespace Silphid.Showzup
 
         #region IPresenter members
 
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
             options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
@@ -178,7 +178,7 @@ namespace Silphid.Showzup
         public virtual bool Handle(IRequest request)
         {
             var presentRequest = request as PresentRequest;
-            if (presentRequest != null && HandlesPresentRequest)
+            if (presentRequest != null && HandlePresentRequest)
             {
                 Present(presentRequest.Input, presentRequest.Options).SubscribeAndForget();
                 return true;

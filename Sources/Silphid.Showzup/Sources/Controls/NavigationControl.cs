@@ -30,8 +30,8 @@ namespace Silphid.Showzup
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
         
-        [FormerlySerializedAs("ShouldHandleBackRequests")]
-        public bool HandlesBackRequest;
+        [FormerlySerializedAs("HandlesBackRequest")]
+        public bool HandleBackRequest;
 
         #region Life-time
 
@@ -86,7 +86,7 @@ namespace Silphid.Showzup
             viewObject.transform.SetParent(HistoryContainer.transform, false);
         }
 
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
             options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
@@ -279,7 +279,7 @@ namespace Silphid.Showzup
                 return true;
 
             var backRequest = request as BackRequest;
-            if (backRequest == null || !HandlesBackRequest || !CanPop.Value)
+            if (backRequest == null || !HandleBackRequest || !CanPop.Value)
                 return false;
 
             Pop().SubscribeAndForget();

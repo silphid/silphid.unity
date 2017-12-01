@@ -56,8 +56,9 @@ namespace Silphid.Showzup
                 .AddTo(this);
         }
 
-        public override IObservable<IView> Present(object input, Options options = null) =>
-            TabSelectionControl.Present(input, _lastOptions = options);
+        protected override IObservable<IView> PresentView(object input, Options options = null) =>
+            TabSelectionControl
+                .Present(input, _lastOptions = options);
 
         public override IReadOnlyReactiveProperty<PresenterState> State =>
             _state
@@ -99,12 +100,11 @@ namespace Silphid.Showzup
             var view = TabSelectionControl.GetViewAtIndex(index);
             var direction = _currentIndex > index ? Direction.Backward : Direction.Forward;
             _currentIndex = index;
-            return Observable.Return(view)
-                .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
-                .Do(x => _presentingContent.OnNext(x))
-                .SelectMany(x => ContentTransitionControl
-                    .With(direction)
-                    .Present(x, _lastOptions));
+            var model = (view?.ViewModel as IContentProvider)?.GetContent() ?? view?.ViewModel?.Model;
+            _presentingContent.OnNext(model);
+            return ContentTransitionControl
+                .With(direction)
+                .Present(model, _lastOptions);
         }
     }
 }
