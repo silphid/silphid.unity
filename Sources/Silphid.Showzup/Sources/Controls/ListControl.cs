@@ -101,7 +101,7 @@ namespace Silphid.Showzup
         #region IPresenter members
 
         [Pure]
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
             // If input is observable, resolve it first
             var observable = input as IObservable<object>;
@@ -168,7 +168,7 @@ namespace Silphid.Showzup
 
         #region Private methods
 
-        public virtual IObservable<IView> PresentInternal(object input, Options options)
+        protected virtual IObservable<IView> PresentInternal(object input, Options options)
         {
             MutableState.Value = PresenterState.Loading;
             
