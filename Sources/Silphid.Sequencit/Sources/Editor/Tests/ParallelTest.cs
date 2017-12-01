@@ -13,7 +13,7 @@ public class ParallelTest : SequencingTestBase
     public override void Setup()
     {
         base.Setup();
-        _parallel = new Parallel();
+        _parallel = Parallel.Create();
     }
 
     [Test]

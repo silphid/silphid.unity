@@ -12,7 +12,7 @@ namespace Silphid.Showzup
         {
             Id = id;
             Presentation = presentation;
-            Parallel = new Parallel();
+            Parallel = Parallel.Create();
         }
     }
 }

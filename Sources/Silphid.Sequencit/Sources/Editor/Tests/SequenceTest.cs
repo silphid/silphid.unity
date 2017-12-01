@@ -13,7 +13,7 @@ public class SequenceTest : SequencingTestBase
     public override void Setup()
     {
         base.Setup();
-        _sequence = new Sequence();
+        _sequence = Sequence.Create();
     }
 
     [Test]

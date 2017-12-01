@@ -210,7 +210,7 @@ namespace Silphid.Showzup
             var nav = new Nav(
                 presentation.SourceView,
                 presentation.TargetView,
-                new Parallel(),
+                Parallel.Create(),
                 presentation.Transition,
                 presentation.Duration);
 
