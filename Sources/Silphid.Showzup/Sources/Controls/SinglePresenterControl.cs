@@ -45,6 +45,7 @@ namespace Silphid.Showzup
         public string[] Variants;
         public ReadOnlyReactiveProperty<IView> View { get; }
         
+        [FormerlySerializedAs("ShouldHandlePresentRequests")]
         [FormerlySerializedAs("HandlesPresentRequest")]
         public bool HandlePresentRequest;
 

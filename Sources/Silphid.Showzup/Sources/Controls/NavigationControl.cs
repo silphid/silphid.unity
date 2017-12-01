@@ -30,6 +30,7 @@ namespace Silphid.Showzup
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
         
+        [FormerlySerializedAs("ShouldHandleBackRequests")]
         [FormerlySerializedAs("HandlesBackRequest")]
         public bool HandleBackRequest;
 
