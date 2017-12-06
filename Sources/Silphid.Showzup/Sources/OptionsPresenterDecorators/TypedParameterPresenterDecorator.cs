@@ -10,6 +10,9 @@ namespace Silphid.Showzup
 
         public TypedParameterPresenterDecorator(IPresenter presenter, Type type, object instance) : base(presenter)
         {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+            
             _type = type;
             _instance = instance;
         }
