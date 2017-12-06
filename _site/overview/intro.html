@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=",  ">
+<title>Introduction | Silphid.Unity Documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/customstyles.css">
+<link rel="stylesheet" href="/css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="/css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="silphid.unity" href="http://localhost:4001/feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="/">&nbsp;<span class="projectTitle"> Silphid.Unity Documentation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <!-- <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li> -->
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://github.com/silphid/silphid.unity" target="_blank">GitHub</a></li>
+                
+                
+                
+                <li><a href="http://www.silphid.com" target="_blank">Silphid Blog</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                
+                
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Introduction">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle"> </li>
+  
+  
+  
+  <li>
+      <a href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li class="active"><a href="/overview/intro">Intro</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a href="/overview/dependencies">Dependencies</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Introduction</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+
+    
+
+  <p><em>Silphid.Unity</em> is a high quality <em>.NET</em> library for the development of modern and fluid <em>Unity</em> applications leveraging <em>Reactive Extensions</em> (<em>Rx</em>) and the <em>MVVM</em> pattern, in order to achieve a fully dynamic, data-driven UI, advanced animation sequencing and transitioning, streamlined dependency injection, as well as asynchronous data loading, caching and conversion.</p>
+
+<p><em>Silphid.Unity</em> was inspired by my work of the past 17 years at <a href="http://simbioz.com">Simbioz</a> and then <a href="http://lvlstudio.com">LVL Studio</a>, initially targeting the WPF framework, but now completely rethought and redesigned for <a href="http://unity.com">Unity</a> and <a href="http://reactivex.io">Rx</a>.</p>
+
+<p>Even though it has been used to deliver multiple commercial-grade applications, it is still constantly evolving and improving, and I am just now releasing it to the public for the first time. Documentation and examples are still in their early stages and more work still has to be done to make the whole thing easier to integrate into your Unity projects. But, as they say, we have to start somewhere! ;)  All your comments are more than welcomed!</p>
+
+<p>My sincere thanks to <a href="http://lvlstudio.com">LVL Studio</a> for supporting this effort and being such a great place to work at. If you are looking for an outstanding job opportunity in the Montreal area, make sure to visit our <a href="http://lvlstudio.com/en/careers">Careers</a> page! :)</p>
+
+<h1 id="modules">Modules</h1>
+
+<ul>
+  <li><a href="#Extensions">Extensions</a> - Extension methods (and more) for <em>.NET</em>, <em>Unity</em>, <em>UniRx</em>, <em>DOTween</em>, etc, providing a concise fluent syntax for many useful operations.</li>
+  <li><a href="#Sequencit">Sequencit</a> - Rx-based sequencing of elements with dynamic durations.</li>
+  <li><a href="#Injexit">Injexit</a> - Dependency injection framework with a clean and efficient fluent syntax.</li>
+  <li><a href="#Machina">Machina</a> - Lightweight Rx-based state machine with polymorphic states.</li>
+  <li><a href="#Loadzup">Loadzup</a> - Rx-based asynchronous asset/resource/object loading and conversion, with simple URI-addressing.</li>
+  <li><a href="#Showzup">Showzup</a> - Full-fledged MVVM framework with asynchronous data-driven UI, custom transitions and dynamic view variants.</li>
+</ul>
+
+<h1 id="getting-started">Getting started</h1>
+
+<ul>
+  <li>Download the latest release from <a href="https://github.com/Silphid/Silphid.Unity/releases">GitHub</a>.</li>
+  <li>Drag the package file onto your Project window in Unity.</li>
+  <li>Uncheck the files you do not need, while respecting the dependencies described in the <em>Dependencies</em> section.
+    <ul>
+      <li>I recommend initially importing all files, as it is easier to remove them afterwards, once  your code compiles (and is under source control, in case you need to revert or recover anything).</li>
+      <li>If you are not targeting the Windows Store, you may uncheck the <code class="highlighter-rouge">Plugins/WSA</code> folder.</li>
+    </ul>
+  </li>
+  <li>Try the examples and look at the scripts for those examples (there are lots of comments there).  More examples coming soon.</li>
+</ul>
+
+<h1 id="building-from-source">Building from source</h1>
+
+<ul>
+  <li>If you intend to target the Windows Store / Xbox One, ensure your machine is configured properly by following these <a href="https://docs.microsoft.com/en-us/windows/uwp/xbox-apps/development-environment-setup">instructions</a> first.</li>
+  <li>Clone the repository from <a href="https://github.com/Silphid/Silphid.Unity.git">GitHub</a>.</li>
+  <li>Do <strong>not</strong> open the Unity project just yet.  The <code class="highlighter-rouge">dll</code>s and <code class="highlighter-rouge">pdb</code>s must be compiled first, otherwise Unity will remove their corresponding <code class="highlighter-rouge">.meta</code> files and therefore lose their platform configs and placeholder mappings.</li>
+  <li>Open and build this solution: <code class="highlighter-rouge">/Sources/Silphid.Unity.sln</code>
+    <ul>
+      <li>If not targeting the Windows Store, you may ignore all projects ending with <code class="highlighter-rouge">.UWP</code></li>
+    </ul>
+  </li>
+  <li>All projects have a post-build step that copies their output <code class="highlighter-rouge">dll</code> and <code class="highlighter-rouge">pdb</code> to:
+    <ul>
+      <li><code class="highlighter-rouge">/UnityProject/Assets/Plugins</code> (for regular .NET 3.5 projects)</li>
+      <li><code class="highlighter-rouge">/UnityProject/Assets/Plugins/WSA</code> (for <code class="highlighter-rouge">.UWP</code> projects)</li>
+    </ul>
+  </li>
+  <li>You can now open the Unity project, located at <code class="highlighter-rouge">/UnityProject</code>.</li>
+</ul>
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+    </div>
+
+
+
+<div id="disqus_thread"></div>
+<script>
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4001/overview/intro";  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "overview/intro"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() {  // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+        var d = document, s = d.createElement('script');
+
+        s.src = 'https://silphid-unity-doc.disqus.com/embed.js';  // IMPORTANT: Replace EXAMPLE with your forum shortname!
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2017 Silphid. All rights reserved. <br />
+ Site last generated: Dec 6, 2017 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+<!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-110208729-2','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+
+</html>
