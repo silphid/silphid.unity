@@ -14,6 +14,7 @@ namespace Silphid.Showzup
         #region Private
 
         private Transform _instantiationContainer;
+        private readonly Subject<Exception> _errorsSubject = new Subject<Exception>(); 
 
         private void Awake()
         {
@@ -46,7 +47,10 @@ namespace Silphid.Showzup
         #region Public
 
         public IReadOnlyReactiveProperty<IView> FirstView => MutableFirstView;
-        
+
+        public IObservable<IView> GetView() =>
+            MutableFirstView.MergeErrors(_errorsSubject);
+
         [Tooltip("Whether control should send ExceptionRequests when errors occur.")]
         public bool SendExceptionRequest;
 
@@ -58,8 +62,17 @@ namespace Silphid.Showzup
             PresentView(input, options)
                 .DoOnError(ex =>
                 {
-                    if (SendExceptionRequest)
-                        this.Send(ex);
+                    MutableState.Value = PresenterState.Ready;
+
+                    try
+                    {
+                        _errorsSubject.OnNext(ex);
+                    }
+                    finally 
+                    {
+                        if (SendExceptionRequest)
+                            this.Send(ex);
+                    }
                 });
 
         protected abstract IObservable<IView> PresentView(object input, Options options = null);
