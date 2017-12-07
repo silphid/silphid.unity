@@ -1,0 +1,76 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  levels: one
+  folders:
+
+  - title: Welcome
+    output: web
+    folderitems:
+    - title: Introduction
+      url: /
+      output: web
+    - title: Dependencies
+      url: /welcome/dependencies
+      output: web
+
+  - title: Showzup
+    output: web
+    folderitems:
+    - title: Overview
+      url: /showzup/overview
+      output: web
+    
+  - title: Loadzup
+    output: web
+    folderitems:
+    - title: Overview
+      url: /loadzup/overview
+      output: web
+    
+  - title: Injexit
+    output: web
+    folderitems:
+    - title: Overview
+      url: /injexit/overview
+      output: web
+    - title: Types of Injection
+      url: /injexit/injection-types
+      output: web
+    - title: Container
+      url: /injexit/container
+      output: web
+    - title: Installers
+      url: /injexit/installers
+      output: web
+    - title: Binding
+      url: /injexit/binding
+      output: web
+    - title: Resolving
+      url: /injexit/resolving
+      output: web
+    - title: Injecting
+      url: /injexit/injecting
+      output: web
+
+  - title: Sequencit
+    output: web
+    folderitems:
+    - title: Overview
+      url: /sequencit/overview
+      output: web
+
+  - title: Machina
+    output: web
+    folderitems:
+    - title: Overview
+      url: /machina/overview
+      output: web
+
+  - title: Commons
+    output: web
+    folderitems:
+    - title: Overview
+      url: /commons/overview
+      output: web

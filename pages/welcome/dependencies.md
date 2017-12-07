@@ -4,9 +4,9 @@ keywords:
 last_updated: 
 tags: []
 summary:
-sidebar: overview
-permalink: overview/dependencies
-folder: overview
+sidebar: main
+folder: welcome
+permalink: welcome/dependencies
 ---
 
 ## Inter-Dependencies

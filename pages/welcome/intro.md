@@ -4,9 +4,9 @@ keywords:
 last_updated: 
 tags: []
 summary:
-sidebar: overview
-permalink: overview/intro
-folder: overview
+sidebar: main
+folder: welcome
+permalink: /
 ---
 
 *Silphid.Unity* is a high quality *.NET* library for the development of modern and fluid *Unity* applications leveraging *Reactive Extensions* (*Rx*) and the *MVVM* pattern, in order to achieve a fully dynamic, data-driven UI, advanced animation sequencing and transitioning, streamlined dependency injection, as well as asynchronous data loading, caching and conversion.
