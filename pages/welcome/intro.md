@@ -19,16 +19,16 @@ My sincere thanks to [LVL Studio](http://lvlstudio.com) for supporting this effo
 
 # Modules
 
-- [Extensions](#Extensions) - Extension methods (and more) for *.NET*, *Unity*, *UniRx*, *DOTween*, etc, providing a concise fluent syntax for many useful operations.
-- [Sequencit](#Sequencit) - Rx-based sequencing of elements with dynamic durations.
-- [Injexit](#Injexit) - Dependency injection framework with a clean and efficient fluent syntax.
-- [Machina](#Machina) - Lightweight Rx-based state machine with polymorphic states.
-- [Loadzup](#Loadzup) - Rx-based asynchronous asset/resource/object loading and conversion, with simple URI-addressing.
-- [Showzup](#Showzup) - Full-fledged MVVM framework with asynchronous data-driven UI, custom transitions and dynamic view variants.
+- [Showzup]({{"showzup" | relative_url}}) - Full-fledged MVVM framework with asynchronous data-driven UI, custom transitions and dynamic view variants.
+- [Loadzup]({{"loadzup" | relative_url}}) - Rx-based asynchronous asset/resource/object loading and conversion, with simple URI-addressing.
+- [Injexit]({{"injexit" | relative_url}}) - Dependency injection framework with a clean and efficient fluent syntax.
+- [Sequencit]({{"/sequencit" | relative_url}}) - Rx-based sequencing of elements with dynamic durations.
+- [Machina]({{"machina" | relative_url}}) - Lightweight Rx-based state machine with polymorphic states.
+- [Commons]({{"/commons" | relative_url}}) - Extension methods (and more) for *.NET*, *Unity*, *UniRx*, *DOTween*, etc, providing a concise fluent syntax for many useful operations.
 
 # Getting started
 
-- Download the latest release from [GitHub](https://github.com/Silphid/Silphid.Unity/releases).
+- Download the latest release from [GitHub](https://github.com/silphid/silphid.unity/releases).
 - Drag the package file onto your Project window in Unity.
 - Uncheck the files you do not need, while respecting the dependencies described in the *Dependencies* section.
     - I recommend initially importing all files, as it is easier to remove them afterwards, once  your code compiles (and is under source control, in case you need to revert or recover anything).

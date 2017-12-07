@@ -19,21 +19,21 @@ entries:
     output: web
     folderitems:
     - title: Overview
-      url: /showzup/overview
+      url: /showzup
       output: web
     
   - title: Loadzup
     output: web
     folderitems:
     - title: Overview
-      url: /loadzup/overview
+      url: /loadzup
       output: web
     
   - title: Injexit
     output: web
     folderitems:
     - title: Overview
-      url: /injexit/overview
+      url: /injexit
       output: web
     - title: Types of Injection
       url: /injexit/injection-types
@@ -58,19 +58,19 @@ entries:
     output: web
     folderitems:
     - title: Overview
-      url: /sequencit/overview
+      url: /sequencit
       output: web
 
   - title: Machina
     output: web
     folderitems:
     - title: Overview
-      url: /machina/overview
+      url: /machina
       output: web
 
   - title: Commons
     output: web
     folderitems:
     - title: Overview
-      url: /commons/overview
+      url: /commons
       output: web

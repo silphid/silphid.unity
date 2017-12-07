@@ -1,15 +1,15 @@
 ---
-title: Silphid.Commons
+title: Commons
 keywords: 
 last_updated: 
 tags: []
 summary:
 sidebar: main
 folder: commons
-permalink: /commons/overview
+permalink: /commons
 ---
 
-*Silphid.Commons* is a library of various helpers and extension methods for types from *.NET*, *Unity*, *UniRx*, *DOTween*, etc, that provides a concise fluent syntax for many common or more complex operations. This is where I put everything I feel is missing from the APIs I use everyday.
+*Commons* is a library of various helpers and extension methods for types from *.NET*, *Unity*, *UniRx*, *DOTween*, etc, that provides a concise fluent syntax for many common or more complex operations. This is where I put everything I feel is missing from the APIs I use everyday.
 
 ## Features
 
