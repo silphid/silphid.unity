@@ -19,7 +19,19 @@ entries:
     output: web
     folderitems:
     - title: Overview
-      url: /showzup
+      url: /showzup/
+      output: web
+    - title: Models, ViewModels, Views
+      url: /showzup/mvvm
+      output: web
+    - title: Controls
+      url: /showzup/controls
+      output: web
+    - title: Manifest
+      url: /showzup/manifest
+      output: web
+    - title: Variants
+      url: /showzup/variants
       output: web
     
   - title: Loadzup
@@ -33,7 +45,7 @@ entries:
     output: web
     folderitems:
     - title: Overview
-      url: /injexit
+      url: /injexit/
       output: web
     - title: Types of Injection
       url: /injexit/injection-types

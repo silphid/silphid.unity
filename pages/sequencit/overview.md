@@ -22,4 +22,4 @@ permalink: /sequencit
   - Wait for some time interval...
 - Extension methods for `IObservable<T>` and DOTween's `Tween`.
 
-![](Doc/Sequencit.png "Sequencit")
+![](/images/Sequencit.png "Sequencit")

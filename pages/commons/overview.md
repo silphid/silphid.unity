@@ -6,7 +6,7 @@ tags: []
 summary:
 sidebar: main
 folder: commons
-permalink: /commons
+permalink: /commons/
 ---
 
 *Commons* is a library of various helpers and extension methods for types from *.NET*, *Unity*, *UniRx*, *DOTween*, etc, that provides a concise fluent syntax for many common or more complex operations. This is where I put everything I feel is missing from the APIs I use everyday.

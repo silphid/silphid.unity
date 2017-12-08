@@ -15,7 +15,7 @@ permalink: /machina
 
 The addition of polymorphism greatly simplifies the modelling of states and the handling of changes between them. For example, here are a few states for objects in a game I am working on: 
 
-![](Doc/MachinaPolymorphism.png "Machina Polymorphism")
+![](/images/MachinaPolymorphism.png "Machina Polymorphism")
 
 An object can either be *Idle* or *Busy*.  But *Moving* and *Falling* are both considered equivalent to being *Busy*.  There are also two ways of being considered *Moving*, by *Pushing* some other object or being *Pushed* by it.
 

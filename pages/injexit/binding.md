@@ -11,7 +11,7 @@ permalink: /injexit/binding
 
 Because the `IContainer` also implements `IBinder`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IBinder`).
 
-#### Binding concrete types
+## Binding concrete types
 
 This is the best type of binding, because it lets *Injexit* create the object and resolve all sub-dependencies:
 
@@ -23,7 +23,7 @@ Container.Bind<IBar, Bar>();
 
 Here, all `Bar` instances will automatically have their constructor injected with instances of `Foo` and `Goo`, because the `Bar` constructor has `IFoo` and `IGoo` parameters, which are respectively bound to the `Foo` and `Goo` concrete classes.
 
-#### Binding instances
+## Binding instances
 
 In cases where you already have an instance and simply want to inject it into other objects, use this form:
 
@@ -64,7 +64,7 @@ public class AppInstaller : RootInstaller
 
 For anything else than MonoBehaviours, the downside of binding a specific instance is that the instance will not have its own dependencies injected, because *Injexit* did not instantiate it. For MonoBehaviours part of your scene, that's OK, because they get injected automatically anyway by the Installer.
 
-#### Binding shared objects
+## Binding shared objects
 
 By default, *Injexit* will create a new instance of a class for every other class that depends on it. This is a good pattern, because it limits side-effects between objects. However, sometimes you want an object to be shared, so that changes made to it will be visible to all other objects sharing it as a dependency. This is achieved using the `.AsSingle()` suffix:
 
@@ -74,7 +74,7 @@ Container.Bind<IFoo, Foo>().AsSingle();
 
 Note that instance binding using `BindInstance()` does not support the `.AsSingle()` suffix, because instances specified explicitly are forcibly always shared.
 
-#### Binding lists of objects
+## Binding lists of objects
 
 Sometimes, you want many objects implementing the same interface to be injected together as a `List<T>`, `IEnumerable<T>` or `T[]`:
 
@@ -116,7 +116,7 @@ Container.BindAsListOf<IFoo>(x =>
 });
 ```
 
-#### Binding all implementations/derivatives as a list
+## Binding all implementations/derivatives as a list
 
 ```c#
 Container.BindAllAsListOf<IFoo>();
@@ -130,7 +130,7 @@ You may also specify the assembly to scan explicitly:
 Container.BindAllAsListOf<IFoo>(GetType().Assembly);
 ```
 
-#### Qualifying bindings with identifiers
+## Qualifying bindings with identifiers
 
 When you need finer control over what gets injected where, for instance when you need different implementations of an interface to be injected in various places, you will have to tag your bindings with identifiers:
 
@@ -199,7 +199,7 @@ public class Bar : IBar
 }
 ```
 
-#### Optional injection
+## Optional injection
 
 When injection is not required, you may tag your injection points with the `[Optional]` attribute:
 
@@ -230,7 +230,7 @@ The `[Optional]` attribute is not necessary for parameters with default values.
 TODO: Example with optional int parameters...
 ```
 
-#### Controlling the composition tree explicitly
+## Controlling the composition tree explicitly
 
 I am a big fan of the [Composite](https://en.wikipedia.org/wiki/Composite_pattern) and [Decorator](https://en.wikipedia.org/wiki/Decorator_pattern) design patterns and I use them abundantly, notably in *Loadzup*. The problem they raise with dependency injection is that they require precise control over their composition tree. You cannot just register each class individually and expect the container to figure how you want all of them to be assembled together. Let's take an example from *Loadzup*, where the `ILoader` interface is implemented by `HttpLoader`, `ResourceLoader` and `CompositeLoader`. The responsibility of `CompositeLoader` is to delegate to the proper child loader according to the URI scheme, so its constructor expects a list of `ILoader` child objects to delegate to:
 
@@ -264,7 +264,7 @@ I love this syntax because it shows the composition tree in a very visual way.
 
 However, in order to maximize the benefits of dependency injection, only use this syntax when you need explicit control over the composition tree. Otherwise, you better let the container figure the composition tree for you.
 
-#### Forwarding multiple interfaces to same binding
+## Forwarding multiple interfaces to same binding
 
 Sometimes the same class implements multiple interfaces and you want all those interfaces to be bound to the same object, with the same binding options.
 
@@ -280,7 +280,7 @@ Container.Bind<IFoo, FooGooBar>().Alias<IGoo>().Alias<IBar>().AsSingle();
 
 Here, the `IFoo`, `IGoo` and `IBar` interfaces will all be bound to the same `FooGooBar` instance. 
 
-#### Self-binding a type
+## Self-binding a type
 
 Even though it is a best practice to access most of your concrete classes through abstract interfaces, especially in the context of dependency injection, in some cases you might only have a concrete type with no interface and prefer to inject it as is.
 
@@ -293,7 +293,7 @@ Container.BindToSelf<Goo>();
 
 *This approach however defeats multiple advantages of dependency injection, such as being able to swap an implementation of an interface with some other arbitrary implementation, so try to avoid it, unless it's part of your design.*
 
-#### Self-binding all of a type's derivatives
+## Self-binding all of a type's derivatives
 
 ```c#
 Container.BindToSelfAll<IFoo>();
@@ -307,7 +307,7 @@ You may also specify the assembly to scan explicitly:
 Container.BindToSelfAll<IFoo>(GetType().Assembly);
 ```
 
-#### Self-binding multiple instances
+## Self-binding multiple instances
 
 If you want multiple instances of different types, that will only be known at run-time, to be bound to their own type, you can use the `BindInstances()` extension method:
 

@@ -18,25 +18,21 @@ For example, *Showzup* leverages *Loadzup* in order to load views from prefabs. 
 ## Features
 
 - Unified, asynchronous, IObservable-based loading pipeline.
-- URI-based asset addressing according to schemes: ```http://```, ```bundle://```, ```res://```
+- URI-based asset addressing according to schemes: `http://`, `bundle://`, `res://`
 - Support for loading from WWW, Resources (and soon AssetBundleManager).
 - Support for Content/MIME types and custom request headers.
+- Support for Unity's new `WebRequest` (in replacement of `WWW`).
+- Complete rewrite of Unity's `AssetBundleManager` (by [crazydadz](https://github.com/crazydadz)).
+- Time-out
 - Automatic conversion, with built-in converters for Sprite, Texture and Json.NET.
 - Advanced caching policies (ETag/Last-Modified, cache/origin-first…).
 - Highly modular and extensible (pluggable loaders and converters).
 
-![](Doc/Loadzup.png "Loadzup")
-
-## Under Development
-
-- Complete rewrite of Unity's `AssetBundleManager` (by [crazydadz](github.com/crazydadz)).
-- AssetBundleManager support.
+![](/images/Loadzup.png "Loadzup")
 
 ## Wishlist
 
-- Support for Unity's new `WebRequest` (as replacement for `WWW`).
 - Cache expiration
-- Time-out as an option (more robust than `IObservable.Timeout()`).
 - Priority queues
 - `CancellationToken` support
 - `IProgress` support

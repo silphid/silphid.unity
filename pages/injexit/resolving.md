@@ -13,19 +13,19 @@ You typically won't need to resolve dependencies manually, as *Injexit* will do 
 
 Because the `IContainer` also implements `IResolver`, all the following examples would also work directly with the container. It is just a best practice to work with the most specific interface (for instance, `IResolver`).
 
-#### Resolving a type known at compile-time
+## Resolving a type known at compile-time
 
 ```c#
 resolver.Resolve<IFoo>();
 ```
 
-#### Resolving a type only known at run-time
+## Resolving a type only known at run-time
 
 ```c#
 Container.Resolve(type);
 ```
 
-#### Overriding bindings at resolution-time
+## Overriding bindings at resolution-time
 
 When you want to specify bindings that should only apply to the current resolution operation (or that should temporarily override existing bindings), you can create a sub-container on the fly with the `Using()` extension method, just before calling `Resolve()`:
 
@@ -63,7 +63,7 @@ resolver.UsingInstances(foo, goo, hoo).Resolve<IBar>();
 
 We will see this syntax in action in the *Factories* section below.
 
-#### Factories
+## Factories
 
 When a class needs to create or resolve objects on-the-fly, you can use factory classes or lambdas. Here we will only look at the simplest approach, using factory lambda functions. Let's consider the following class, that gets injected a `Func<IFoo>` factory lambda function and uses it at run-time to create instances of `IFoo` on-the-fly:
 
@@ -102,7 +102,7 @@ Because this simple type of factory with no parameters is quite common, there is
 Container.BindDefaultFactory<IFoo>();
 ```
 
-##### Parametrized factories
+### Parametrized factories
 
 In the previous example, because we are using `Container.Resolve<IFoo>()` to resolve our object, any dependency that it might have will also be resolved automatically for you. That's why you should avoid using the `new` keyword in your factories. But what about if you need to pass a specific parameter at run-time? Let's say our `Foo` class needs to know its parent `IBar` that created it, and maybe some other `IGoo` object:
 
@@ -157,7 +157,7 @@ Container.BindDefaultFactory<IBar1, IBar2, IFoo>();        // Func<IBar1, IBar2,
 Container.BindDefaultFactory<IBar1, IBar2, IBar3, IFoo>(); // Func<IBar1, IBar2, IBar3, IFoo>
 ```
 
-##### Typed factories
+### Typed factories
 
 ```c#
 Container.BindTypedFactory<IFoo>();                        // Func<Type, IFoo>

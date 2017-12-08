@@ -11,7 +11,7 @@ permalink: /injexit/installers
 
 An *installer* is a script responsible for configuring bindings and injecting dependencies into a scene. *Injexit* provides two installer classes that you can extend.
 
-#### RootInstaller
+### RootInstaller
 
 The `RootInstaller` allows to configure most of your bindings in your main scene.  Simply extend the `RootInstaller` class, override its `OnBind()` method to specify your bindings, and (because it's a `MonoBehaviour`) attach it to some root game object in your main scene:
 
@@ -35,7 +35,7 @@ public class AppInstaller : RootInstaller
 }
 ```
 
-#### SceneInstaller
+### SceneInstaller
 
 Only in *multi-scene* scenarios, the `SceneInstaller` allows your secondary scenes to specify their own bindings and have their game objects injected when they are loaded.  You must extend that class and specify a parent installer type as generic parameter, which it will look for in the root game objects of some other scene and use as parent to inherit all its bindings.
 

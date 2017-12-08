@@ -29,7 +29,7 @@ public class Bar : IBar
 }
 ```
 
-#### Constructor injection
+## Constructor injection
 
 ```c#
 public class Bar : IBar
@@ -78,7 +78,7 @@ public class Bar : IBar
 }
 ```
 
-#### Method injection
+## Method injection
 
 When you cannot use *constructor injection*, this approach is a good compromise, with some of the same advantages.
 
@@ -104,7 +104,7 @@ public class Bar : IBar
 
 *Use this approach for all MonoBehaviours.*
 
-#### Field or property injection
+## Field or property injection
 
 ```c#
 public class Bar : IBar
