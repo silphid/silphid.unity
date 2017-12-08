@@ -83,4 +83,4 @@ In the root `links.yaml` file, put:
 
 ## Credits
 
-Original script by Emmanuel Jacquier (emmanuel.jacquier@gmail.com)
+Inspired from a script by Emmanuel Jacquier (emmanuel.jacquier@gmail.com)
