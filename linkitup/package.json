@@ -1,17 +1,18 @@
 {
-  "name": "symlinker",
+  "name": "linkitup",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
   "bin": {
-    "symlinker": "index.js"
+    "linkitup": "index.js"
   },
-  "author": "Emmanuel Jacquier",
+  "author": "Mathieu Frenette",
   "license": "ISC",
   "dependencies": {
+    "commander": "^2.12.2",
+    "del-symlinks": "^0.1.2",
     "globule": "^1.1.0",
-    "js-yaml": "^3.7.0",
-    "shelljs": "^0.7.6"
+    "js-yaml": "^3.7.0"
   }
 }
