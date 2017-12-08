@@ -1,4 +1,4 @@
-# linkitup
+# symlynx
 
 A simple tool to create multiple symlinks specified in one or more configuration files.
 
@@ -14,7 +14,7 @@ A simple tool to create multiple symlinks specified in one or more configuration
 
 Install the package via npm:
 ```
-npm install -g linkitup
+npm install -g symlynx
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ Create one or more `links.yaml` config files in your project, ensuring all paths
 
 Run the following command from your project's root directory to create symlinks recursively, add them to .gitignore, and display verbose messages:
 ```
-linkitup -crgv
+symlynx -crgv
 ```
 
 > Note that, on Windows platform, this command must be ran in Administrator mode.
@@ -39,7 +39,7 @@ linkitup -crgv
 ## Syntax
 
 ```
-linkitup [options]
+symlynx [options]
 ```
 
 Options:
