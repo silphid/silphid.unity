@@ -137,6 +137,27 @@ namespace Silphid.Extensions
         #region Misc
 
         [Pure]
+        public static IObservable<T> MergeErrors<T, TException>(this IObservable<T> This, IObservable<TException> errors) where TException : Exception =>
+            This.Merge(errors.SelectMany(ex => Observable.Throw<T>(ex)));
+
+        [Pure]
+        public static IObservable<T> DoOnError<T, TException>(this IObservable<T> This, Action<TException> action) where TException : Exception =>
+            This.DoOnError(ex =>
+            {
+                var t = ex as TException;
+                if (t != null)
+                    action(t);
+            });
+
+        [Pure]
+        public static IObservable<T> DoOnError<T, TException>(this IObservable<T> This, Action action) where TException : Exception =>
+            This.DoOnError(ex =>
+            {
+                if (ex is TException)
+                    action();
+            });
+
+        [Pure]
         public static IObservable<T> First<T>(this IObservable<T> This, T value) =>
             This.First(x => Equals(x, value));
 

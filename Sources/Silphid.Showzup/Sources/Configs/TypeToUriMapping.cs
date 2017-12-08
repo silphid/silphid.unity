@@ -26,8 +26,17 @@ namespace Silphid.Showzup
 
         public override string ToString()
         {
-            var variants = Variants.Any() ? $" [{Variants}]" : "";
-            return $"{Source.Name} => {_target}{variants}";
+            var variants = Variants != null
+                ? Variants.Any() ? $" [{Variants}]" : ""
+                : "null";
+            
+            return $"{Source?.Name.ToStringOrNullLiteral()} => " +
+                   $"{_target.ToStringOrNullLiteral()}" +
+                   $"{variants}";
         }
+
+        public override bool IsValid =>
+            base.IsValid &&
+            _target != null;
     }
 }

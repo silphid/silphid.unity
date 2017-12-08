@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Silphid.Extensions;
 using Silphid.Showzup;
 using UnityEditor;
@@ -10,6 +11,8 @@ using UnityEngine;
 
 public class ManifestBuilder
 {
+    private static readonly Regex ExcludedNamespacesRegex = new Regex(@"\bTest\b");
+    
     [MenuItem("Assets/Build Showzup Manifest %#&s")]
     public static void Build()
     {
@@ -242,9 +245,8 @@ public class ManifestBuilder
     
     #region Helpers
 
-    private static IEnumerable<Type> GetAllTypesInAppDomain()
-    {
-        return AppDomain.CurrentDomain
+    private static IEnumerable<Type> GetAllTypesInAppDomain() =>
+        AppDomain.CurrentDomain
             .GetAssemblies()
             .SelectMany(assembly =>
             {
@@ -255,10 +257,10 @@ public class ManifestBuilder
                 catch
                 {
                     Debug.LogWarning($"Failed to load types from assembly: {assembly.GetName().Name}");
-                    return new Type[]{};
+                    return new Type[] { };
                 }
-            });
-    }
+            })
+            .Where(type => !ExcludedNamespacesRegex.IsMatch(type?.Namespace ?? ""));
 
     private static VariantSet GetVariantsFromType(Type type, VariantSet allVariants)
     {

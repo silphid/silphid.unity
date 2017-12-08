@@ -63,7 +63,7 @@ namespace Silphid.Showzup
             UpdateVisibleRange();
         }
 
-        public override IObservable<IView> PresentInternal(object input, Options options)
+        protected override IObservable<IView> PresentInternal(object input, Options options)
         {
             EnsureInitialized();
             _currentRange = IntRange.Empty;

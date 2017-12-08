@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Silphid.Extensions;
 
 namespace Silphid.Showzup
@@ -10,6 +11,9 @@ namespace Silphid.Showzup
 
         public ParametersPresenterDecorator(IPresenter presenter, object[] instances) : base(presenter)
         {
+            if (instances.Any(x => x == null))
+                throw new ArgumentNullException(nameof(instances), "Some instance was null");
+                    
             _instances = instances;
         }
 

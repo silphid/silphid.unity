@@ -8,7 +8,7 @@ namespace Silphid.Requests
         {
         }
 
-        public ExceptionRequest(string message, Exception innerException = null)
+        protected ExceptionRequest(string message, Exception innerException = null)
             : base(message, innerException)
         {
         }

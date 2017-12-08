@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Silphid.Extensions;
 using UniRx;
 
 namespace Silphid.Showzup
@@ -47,8 +49,16 @@ namespace Silphid.Showzup
         public static IPresenter WithParameters(this IPresenter This, params object[] instances) =>
             new ParametersPresenterDecorator(This, instances);
 
+        public static IPresenter WithOptionalParameters(this IPresenter This, params object[] instances) =>
+            new ParametersPresenterDecorator(This, instances.WhereNotNull().ToArray());
+
         public static IPresenter WithParameter<T>(this IPresenter This, T instance) =>
             new TypedParameterPresenterDecorator(This, typeof(T), instance);
+
+        public static IPresenter WithOptionalParameter<T>(this IPresenter This, T instance) =>
+            instance != null
+                ? new TypedParameterPresenterDecorator(This, typeof(T), instance)
+                : This;
 
         public static bool IsReady(this IPresenter This) =>
             This.State.Value == PresenterState.Ready;

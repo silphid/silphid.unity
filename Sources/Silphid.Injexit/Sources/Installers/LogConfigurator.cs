@@ -41,7 +41,9 @@ namespace Silphid.Injexit
             var path = GetPathToWatch();
             if (path == null)
             {
-                Debug.LogWarning($"Log config file not found for watching changes: {path}");
+                Debug.LogWarning("Log config file not found for watching changes, " +
+                                 $"neither in ConfigDataPath: {ConfigDataPath} " +
+                                 $"nor in ConfigResourcePath: {ConfigResourcePath}");
                 return;
             }
             
@@ -77,6 +79,7 @@ namespace Silphid.Injexit
             var text = LoadFromDataPath() ??
                        LoadFromResources();
             
+            Debug.Log($"Injecting log config with DataPath: {DataPath}");
             text = text.Replace("${DataPath}", DataPath);
             var xmldoc = new XmlDocument();
             xmldoc.LoadXml(text);

@@ -24,7 +24,7 @@ namespace Silphid.Loadzup.Http
                     if (ex is NetworkException)
                         _status.Value = NetworkStatus.Offline;
                     
-                    Log.Info($"Failed {GetLogMessage(uri, options)}", ex);
+                    Log.Debug($"Failed {GetLogMessage(uri, options)} with exception:\r\n{ex}");
                 })
                 .Select(www => new
                 {

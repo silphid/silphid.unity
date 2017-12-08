@@ -30,7 +30,7 @@ namespace Silphid.Loadzup.Bundles
             }
 
             return Observable.Return((T) (object) AssetDatabase.LoadMainAssetAtPath(assetPaths[0]));
-#else            
+#else
             return Observable.Return((T)(object)null);
 #endif
         }

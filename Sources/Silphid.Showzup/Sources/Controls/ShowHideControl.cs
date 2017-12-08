@@ -36,7 +36,7 @@ namespace Silphid.Showzup
                 .AddTo(this);
         }
 
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
             _inputAndOptions.OnNext(new InputAndOptions(input, options));
             return _presentedView;
@@ -50,7 +50,7 @@ namespace Silphid.Showzup
 
             _isFirstPresent = false;
             
-            return base.Present(x.Input, options);
+            return base.PresentView(x.Input, options);
         }
     }
 }
