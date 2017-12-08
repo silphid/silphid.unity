@@ -3,6 +3,7 @@
 'use strict';
 
 const fs = require("fs"),
+    mkdirp = require('mkdirp'),
     path = require("path"),
     process = require("process"),
     globule = require("globule"),
@@ -16,7 +17,7 @@ function make() {
     var args = require('commander');
 
     args
-        .version('1.0.0')
+        .version('1.0.2')
         .option('-c, --create', 'create symlinks')
         .option('-d, --delete', 'delete all symlinks (use -dr to delete recursively)')
         .option('-r, --recursive', 'process recursively')
@@ -101,7 +102,7 @@ function deleteLinksSilently(args) {
         if (symlinks.length > 0)
             console.log('Deleted symlinks:\n' + symlinks.join('\n'));
         else
-           console.log('No symlinks found.');
+           console.warn('No symlinks found.');
     });
 }
 
@@ -109,7 +110,9 @@ function createLink(args, item) {
     // Create parent directories recursively if needed
     var parentDir = path.resolve(item.source, "..");
     if (!fs.existsSync(parentDir))
-        mkdir('-p', parentDir);
+        mkdirp(parentDir, function (err) {
+            if (err) console.error("Failed to create parent dir: " + err)
+        });
 
     // Remove symlink if already exists
     if (fs.existsSync(item.source) && fs.lstatSync(item.source).isSymbolicLink()) {
