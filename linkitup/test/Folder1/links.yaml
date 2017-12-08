@@ -1,0 +1,4 @@
+- source: Symlink1
+  target: ../Folder2/SubFolder2/TargetFolder1
+- source: Symlink2
+  target: ../Folder2/SubFolder2/TargetFolder2

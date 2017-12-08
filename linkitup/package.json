@@ -13,6 +13,8 @@
     "commander": "^2.12.2",
     "del-symlinks": "^0.1.2",
     "globule": "^1.1.0",
-    "js-yaml": "^3.7.0"
+    "js-yaml": "^3.7.0",
+    "shelljs": "^0.7.8",
+    "yesno": "0.0.1"
   }
 }

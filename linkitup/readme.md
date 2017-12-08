@@ -10,14 +10,24 @@ A simple tool to create multiple symlinks specified in one or more configuration
 
 *Important: Paths are relative to each config file's directory.*
 
-## Usage
+## Installing
 
 Install the package via npm:
 ```
 npm install -g linkitup
 ```
 
-Create one or more `links.yaml` config files in your project, ensuring all paths are relative to each config file.
+## Usage
+
+Create one or more `links.yaml` config files in your project, ensuring all paths are relative to their defining config file:
+
+```
+- source: Relative/Path/To/Symlink1
+  target: Relative/Path/To/TargetFolder1
+- source: Relative/Path/To/Symlink2
+  target: Relative/Path/To/TargetFolder2
+[...]
+```
 
 Run the following command from your project's root directory to create symlinks recursively, add them to .gitignore, and display verbose messages:
 ```
@@ -26,9 +36,23 @@ linkitup -crgv
 
 > Note that, on Windows platform, this command must be ran in Administrator mode.
 
-Display usage with:
+## Syntax
+
 ```
-linkitup -h
+linkitup [options]
+```
+
+Options:
+```
+-V, --version       output the version number
+-c, --create        create symlinks
+-d, --delete        delete all symlinks (use -dr to delete recursively)
+-r, --recursive     process recursively
+-g, --git-ignore    add symlinks to .gitignore in each config's folder
+-i, --input <file>  config file name (default: links.yaml)
+-l, --log <file>    log file name
+-v, --verbose       output extra information to console
+-h, --help          output usage information
 ```
 
 ## Example
