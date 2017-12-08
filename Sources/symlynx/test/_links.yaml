@@ -1,4 +1,0 @@
-- source: Folder1/SubFolder1/Symlink1
-  target: Folder2/SubFolder2/Symlink1
-- source: Folder1/SubFolder1/SourceFolder2
-  target: Folder2/SubFolder2/TargetFolder2
