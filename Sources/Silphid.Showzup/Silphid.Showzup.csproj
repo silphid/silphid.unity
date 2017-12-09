@@ -43,6 +43,12 @@
     <Reference Include="DOTween50, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Dependencies\DOTween\DOTween50.dll</HintPath>
     </Reference>
+    <Reference Include="NSubstitute, Version=2.0.3.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca">
+      <HintPath>..\Dependencies\NSubstitute.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
+      <HintPath>..\Dependencies\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEditor.dll</HintPath>
@@ -112,7 +118,11 @@
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Controls\VirtualListControl.cs" />
     <Compile Include="Sources\DesignTime\SelfDestroy.cs" />
+    <Compile Include="Sources\Editor\Tests\ScoreEvaluatorTest.cs" />
+    <Compile Include="Sources\Editor\Tests\ViewResolverTest.cs" />
     <Compile Include="Sources\Exceptions\BindException.cs" />
+    <Compile Include="Sources\Exceptions\InvalidManifestException.cs" />
+    <Compile Include="Sources\Exceptions\InvalidMappingException.cs" />
     <Compile Include="Sources\Exceptions\LoadException.cs" />
     <Compile Include="Sources\Exceptions\PopException.cs" />
     <Compile Include="Sources\Exceptions\PresentException.cs" />
@@ -213,9 +223,9 @@
     <Compile Include="Sources\ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
+    <ProjectReference Include="..\Silphid.Commons\Silphid.Commons.csproj">
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
-      <Name>Silphid.Extensions</Name>
+      <Name>Silphid.Commons</Name>
     </ProjectReference>
     <ProjectReference Include="..\Silphid.Injexit\Silphid.Injexit.csproj">
       <Project>{61dacae5-d957-4e50-92a7-e467a5e977f3}</Project>
