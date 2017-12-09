@@ -33,16 +33,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DOTween, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween.dll</HintPath>
+      <HintPath>..\Dependencies\DOTween\DOTween.dll</HintPath>
     </Reference>
     <Reference Include="DOTween43, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween43.dll</HintPath>
+      <HintPath>..\Dependencies\DOTween\DOTween43.dll</HintPath>
     </Reference>
     <Reference Include="DOTween46, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween46.dll</HintPath>
+      <HintPath>..\Dependencies\DOTween\DOTween46.dll</HintPath>
     </Reference>
     <Reference Include="DOTween50, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween50.dll</HintPath>
+      <HintPath>..\Dependencies\DOTween\DOTween50.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

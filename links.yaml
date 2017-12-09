@@ -19,5 +19,8 @@
 - source: UnityProject/Assets/Plugins/UniRx
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
 
+- source: UnityProject/Assets/Plugins/DOTween
+  target: Sources/Dependencies/DOTween
+  
 - source: Sources/UniRx/Sources
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
