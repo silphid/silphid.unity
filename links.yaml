@@ -20,7 +20,10 @@
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
 
 - source: UnityProject/Assets/Plugins/DOTween
-  target: Sources/Dependencies/DOTween
-  
+  target: Submodules/DOTween/UnityTests.Unity5/Assets/Demigiant/DOTween
+
 - source: Sources/UniRx/Sources
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
+
+- source: Sources/Dependencies/DOTween
+  target: Submodules/DOTween/UnityTests.Unity5/Assets/Demigiant/DOTween

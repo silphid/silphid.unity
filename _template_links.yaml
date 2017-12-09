@@ -20,4 +20,4 @@
   target: Silphid.Unity/Submodules/UniRx/Assets/Plugins/UniRx/Scripts
 
 - source: UnityProject/Assets/Plugins/DOTween
-  target: Silphid.Unity/Sources/Dependencies/DOTween  
+  target: Silphid.Unity/Submodules/DOTween/UnityTests.Unity5/Assets/Demigiant/DOTween
