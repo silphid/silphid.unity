@@ -15,3 +15,4 @@ UnityProject/Assets/Plugins/DOTween
 Sources/UniRx/Sources
 Sources/Dependencies/DOTween
 Sources/Silphid.Commons/Sources/Log4Net
+*.unitypackage
