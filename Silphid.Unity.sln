@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniRx", "Sources\UniRx\UniRx.csproj", "{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Extensions", "Sources\Silphid.Extensions\Silphid.Extensions.csproj", "{503103E3-C216-4C5E-BDA7-3268D401E185}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Commons", "Sources\Silphid.Commons\Silphid.Commons.csproj", "{503103E3-C216-4C5E-BDA7-3268D401E185}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silphid.Sequencit", "Sources\Silphid.Sequencit\Silphid.Sequencit.csproj", "{C0716045-F08A-489F-9B7A-25863BC13118}"
 EndProject

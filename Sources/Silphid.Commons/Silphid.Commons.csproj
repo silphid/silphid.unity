@@ -7,8 +7,8 @@
     <ProjectGuid>{503103E3-C216-4C5E-BDA7-3268D401E185}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Silphid.Extensions</RootNamespace>
-    <AssemblyName>Silphid.Extensions</AssemblyName>
+    <RootNamespace>Silphid</RootNamespace>
+    <AssemblyName>Silphid.Commons</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

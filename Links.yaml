@@ -1,5 +1,5 @@
-- source: UnityProject/Assets/Plugins/Silphid/Extensions
-  target: Sources/Silphid.Extensions/Sources
+- source: UnityProject/Assets/Plugins/Silphid/Commons
+  target: Sources/Silphid.Commons/Sources
 
 - source: UnityProject/Assets/Plugins/Silphid/Injexit
   target: Sources/Silphid.Injexit/Sources
