@@ -11,8 +11,11 @@ entries:
     - title: Introduction
       url: /
       output: web
-    - title: Dependencies
-      url: /welcome/dependencies
+    - title: Getting started
+      url: /welcome/getting-started
+      output: web
+    - title: Integrating as a Git submodule
+      url: /welcome/integrating-submodule
       output: web
 
   - title: Showzup

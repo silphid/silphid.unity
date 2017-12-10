@@ -26,23 +26,6 @@ My sincere thanks to [LVL Studio](http://lvlstudio.com) for supporting this effo
 - [Machina]({{"machina" | relative_url}}) - Lightweight Rx-based state machine with polymorphic states.
 - [Commons]({{"/commons" | relative_url}}) - Extension methods (and more) for *.NET*, *Unity*, *UniRx*, *DOTween*, etc, providing a concise fluent syntax for many useful operations.
 
-# Getting started
+---
 
-- Download the latest release from [GitHub](https://github.com/silphid/silphid.unity/releases).
-- Drag the package file onto your Project window in Unity.
-- Uncheck the files you do not need, while respecting the dependencies described in the *Dependencies* section.
-    - I recommend initially importing all files, as it is easier to remove them afterwards, once  your code compiles (and is under source control, in case you need to revert or recover anything).
-    - If you are not targeting the Windows Store, you may uncheck the `Plugins/WSA` folder.
-- Try the examples and look at the scripts for those examples (there are lots of comments there).  More examples coming soon.
-
-# Building from source
-
-- If you intend to target the Windows Store / Xbox One, ensure your machine is configured properly by following these [instructions](https://docs.microsoft.com/en-us/windows/uwp/xbox-apps/development-environment-setup) first.
-- Clone the repository from [GitHub](https://github.com/Silphid/Silphid.Unity.git).
-- Do **not** open the Unity project just yet.  The `dll`s and `pdb`s must be compiled first, otherwise Unity will remove their corresponding `.meta` files and therefore lose their platform configs and placeholder mappings.
-- Open and build this solution: `/Sources/Silphid.Unity.sln`
-  - If not targeting the Windows Store, you may ignore all projects ending with `.UWP`
-- All projects have a post-build step that copies their output `dll` and `pdb` to:
-    - `/UnityProject/Assets/Plugins` (for regular .NET 3.5 projects)
-    - `/UnityProject/Assets/Plugins/WSA` (for `.UWP` projects)
-- You can now open the Unity project, located at `/UnityProject`.
+Next: [Getting started]({{"welcome/getting-started" | relative_url}})

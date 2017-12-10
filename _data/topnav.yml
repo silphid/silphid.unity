@@ -3,6 +3,8 @@
 topnav:
 - title: Topnav
   items:
+    - title: Download
+      external_url: https://github.com/silphid/silphid.unity/releases/latest
     - title: GitHub
       external_url: https://github.com/silphid/silphid.unity
     - title: Silphid Blog
