@@ -81,19 +81,43 @@ namespace Silphid.Extensions
         }
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        public static int AtLeast(this int value, int min) => Math.Max(value, min);
+        public static int Min(this int This, int min) =>
+            Math.Min(This, min);
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        public static int AtMost(this int value, int max) => Math.Min(value, max);
+        public static int Max(this int This, int max) =>
+            Math.Max(This, max);
 
-        public static int Min(this int value, int min) => Math.Min(value, min);
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static int AtLeast(this int This, int min) =>
+            This.Max(min);
+
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static int AtMost(this int This, int max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static int Minimum(this int This, int min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static int Maximum(this int This, int max) =>
+            This.AtMost(max);
         
-        public static int Max(this int value, int min) => Math.Max(value, min);
-
         #endregion
 
         #region Wrapping

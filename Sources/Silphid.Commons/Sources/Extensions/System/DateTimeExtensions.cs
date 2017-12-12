@@ -67,18 +67,42 @@ namespace Silphid.Extensions
             new DateTime(This.Ticks.Clamp(min.Ticks, max.Ticks));
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        [Pure]
-        public static DateTime Minimum(this DateTime value, DateTime min) =>
-            new DateTime(value.Ticks.Minimum(min.Ticks));
+        public static DateTime Min(this DateTime This, long min) =>
+            new DateTime(This.Ticks.Min(min));
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        [Pure]
-        public static DateTime Maximum(this DateTime value, DateTime max) =>
-            new DateTime(value.Ticks.Maximum(max.Ticks));
+        public static DateTime Max(this DateTime This, long max) =>
+            new DateTime(This.Ticks.Max(max));
+
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static DateTime AtLeast(this DateTime This, long min) =>
+            This.Max(min);
+
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static DateTime AtMost(this DateTime This, long max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static DateTime Minimum(this DateTime This, long min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static DateTime Maximum(this DateTime This, long max) =>
+            This.AtMost(max);
 
         #endregion
     }

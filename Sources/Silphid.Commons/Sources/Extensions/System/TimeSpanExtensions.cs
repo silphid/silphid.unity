@@ -41,6 +41,13 @@ namespace Silphid.Extensions
         public static float Ratio(this TimeSpan value, TimeSpan min, TimeSpan max) =>
             value.Ticks.Ratio(min.Ticks, max.Ticks);
 
+        /// <summary>
+        /// Returns [0, 1] ratio of given value within the [0, max] interval
+        /// </summary>
+        [Pure]
+        public static float Ratio(this TimeSpan value, TimeSpan max) =>
+            value.Ticks.Ratio(0, max.Ticks);
+
         #endregion
 
         #region Comparison
@@ -79,18 +86,42 @@ namespace Silphid.Extensions
             new TimeSpan(This.Ticks.Clamp(min.Ticks, max.Ticks));
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        [Pure]
-        public static TimeSpan Minimum(this TimeSpan value, TimeSpan min) =>
-            new TimeSpan(value.Ticks.Minimum(min.Ticks));
+        public static TimeSpan Min(this TimeSpan This, long min) =>
+            TimeSpan.FromTicks(This.Ticks.Min(min));
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        [Pure]
-        public static TimeSpan Maximum(this TimeSpan value, TimeSpan max) =>
-            new TimeSpan(value.Ticks.Maximum(max.Ticks));
+        public static TimeSpan Max(this TimeSpan This, long max) =>
+            TimeSpan.FromTicks(This.Ticks.Max(max));
+
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static TimeSpan AtLeast(this TimeSpan This, long min) =>
+            This.Max(min);
+
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static TimeSpan AtMost(this TimeSpan This, long max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static TimeSpan Minimum(this TimeSpan This, long min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static TimeSpan Maximum(this TimeSpan This, long max) =>
+            This.AtMost(max);
 
         #endregion
     }

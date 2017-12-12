@@ -216,22 +216,42 @@ namespace Silphid.Extensions
         public static double Clamp(this double This) => Clamp(This, 0, 1);
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        [Pure]
-        public static double AtLeast(this double value, double min) => Math.Max(value, min);
+        public static double Min(this double This, double min) =>
+            Math.Min(This, min);
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        [Pure]
-        public static double AtMost(this double value, double max) => Math.Min(value, max);
+        public static double Max(this double This, double max) =>
+            Math.Max(This, max);
 
-        [Pure]
-        public static double Min(this double value, double min) => Math.Min(value, min);
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static double AtLeast(this double This, double min) =>
+            This.Max(min);
 
-        [Pure]
-        public static double Max(this double value, double max) => Math.Max(value, max);
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static double AtMost(this double This, double max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static double Minimum(this double This, double min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static double Maximum(this double This, double max) =>
+            This.AtMost(max);
 
         #endregion
 

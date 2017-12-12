@@ -9,25 +9,30 @@ namespace Silphid.Extensions
         #region Maths
 
         [Pure]
-        public static long Sign(this long This) => Math.Sign(This);
+        public static long Sign(this long This) =>
+            Math.Sign(This);
 
         /// <summary>
         /// Returns absolute value of this value
         /// </summary>
         [Pure]
-        public static long Abs(this long value) => Math.Abs(value);
+        public static long Abs(this long value) =>
+            Math.Abs(value);
 
         [Pure]
-        public static long Negate(this long This) => -This;
+        public static long Negate(this long This) =>
+            -This;
 
         /// <summary>
         /// Returns absolute delta between two values.
         /// </summary>
         [Pure]
-        public static long Delta(this long This, long to) => Math.Abs(This - to);
+        public static long Delta(this long This, long to) =>
+            Math.Abs(This - to);
 
         [Pure]
-        public static long Average(this long This, long other) => (This + other) / 2;
+        public static long Average(this long This, long other) =>
+            (This + other) / 2;
 
         #endregion
 
@@ -37,7 +42,8 @@ namespace Silphid.Extensions
         /// Returns [0, 1] ratio of given value within the [min, max] interval
         /// </summary>
         [Pure]
-        public static float Ratio(this long value, long min, long max) => (float)(value - min) / (max - min);
+        public static float Ratio(this long value, long min, long max) =>
+            (float)(value - min) / (max - min);
 
         /// <summary>
         /// Returns [0, 1] ratio of given value within the [min, max] interval,
@@ -67,34 +73,54 @@ namespace Silphid.Extensions
         /// <summary>
         /// Returns value clamped to the [min, max] interval
         /// </summary>
-        public static long Clamp(this long value, long min, long inclusiveMax)
-        {
-            return min < inclusiveMax ? value.Minimum(min).Maximum(inclusiveMax) : value.Minimum(inclusiveMax).Maximum(min);
-        }
+        public static long Clamp(this long This, long min, long inclusiveMax) =>
+            min < inclusiveMax
+                ? This.Minimum(min).Maximum(inclusiveMax)
+                : This.Minimum(inclusiveMax).Maximum(min);
 
         /// <summary>
         /// Returns value clamped to the [min, max[ interval
         /// </summary>
-        public static long ClampExclusively(this long value, long min, long exclusiveMax)
-        {
-            return value.Clamp(min, exclusiveMax - 1);
-        }
+        public static long ClampExclusively(this long This, long min, long exclusiveMax) =>
+            This.Clamp(min, exclusiveMax - 1);
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        public static long Minimum(this long value, long min)
-        {
-            return Math.Max(value, min);
-        }
+        public static long Min(this long This, long min) =>
+            Math.Min(This, min);
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        public static long Maximum(this long value, long max)
-        {
-            return Math.Min(value, max);
-        }
+        public static long Max(this long This, long max) =>
+            Math.Max(This, max);
+
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static long AtLeast(this long This, long min) =>
+            This.Max(min);
+
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static long AtMost(this long This, long max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static long Minimum(this long This, long min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static long Maximum(this long This, long max) =>
+            This.AtMost(max);
 
         #endregion
 

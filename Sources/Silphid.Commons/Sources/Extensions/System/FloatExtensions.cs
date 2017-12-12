@@ -217,22 +217,42 @@ namespace Silphid.Extensions
         public static float Clamp(this float This) => This.Clamp(0, 1);
 
         /// <summary>
-        /// Returns value clipped to the [min, +INF] interval
+        /// Returns the minimum value between this and another value
         /// </summary>
-        [Pure]
-        public static float AtLeast(this float value, float min) => Math.Max(value, min);
+        public static float Min(this float This, float min) =>
+            Math.Min(This, min);
 
         /// <summary>
-        /// Returns value clipped to the [-INF, max] interval
+        /// Returns the maximum value between this and another value
         /// </summary>
-        [Pure]
-        public static float AtMost(this float value, float max) => Math.Min(value, max);
+        public static float Max(this float This, float max) =>
+            Math.Max(This, max);
 
-        [Pure]
-        public static float Min(this float value, float min) => Math.Min(value, min);
+        /// <summary>
+        /// Returns value clamped to be greater than or at least equal to given value
+        /// </summary>
+        public static float AtLeast(this float This, float min) =>
+            This.Max(min);
 
-        [Pure]
-        public static float Max(this float value, float min) => Math.Max(value, min);
+        /// <summary>
+        /// Returns value clamped to be at less than or at most equal to given value
+        /// </summary>
+        public static float AtMost(this float This, float max) =>
+            This.Min(max);
+
+        /// <summary>
+        /// Returns the minimum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtLeast() instead")]
+        public static float Minimum(this float This, float min) =>
+            This.AtLeast(min);
+
+        /// <summary>
+        /// Returns the maximum value between this and another value
+        /// </summary>
+        [Obsolete("Use AtMost() instead")]
+        public static float Maximum(this float This, float max) =>
+            This.AtMost(max);
 
         #endregion
 
