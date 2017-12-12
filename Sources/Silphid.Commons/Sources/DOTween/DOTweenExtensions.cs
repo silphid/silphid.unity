@@ -10,9 +10,6 @@ namespace Silphid.Extensions
 {
     public static class DOTweenExtensions
     {
-        public static Tween DOScale(this Transform This, float endValue, float duration) =>
-            DOTween.To(() => This.localScale.x, x => This.localScale = new Vector3(x, x, x), endValue, duration);
-
         public static Tween TweenTo(this ReactiveProperty<float> This, float endValue, float duration) =>
             DOTween.To(() => This.Value, x => This.Value = x, endValue, duration);
 
