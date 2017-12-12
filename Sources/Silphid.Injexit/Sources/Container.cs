@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using log4net;
 using Silphid.Extensions;
 using UnityEngine;
@@ -71,7 +72,12 @@ namespace Silphid.Injexit
             };
             _bindings.Add(binding);
 
+            // TODO: Obsolete, to remove
             abstractionType.GetAttributes<BindAttribute>()
+                .Select(x => x.Type)
+                .ForEach(x => BindInstance(x, instance));
+            
+            abstractionType.GetAttributes<KnownTypeAttribute>()
                 .Select(x => x.Type)
                 .ForEach(x => BindInstance(x, instance));
 
