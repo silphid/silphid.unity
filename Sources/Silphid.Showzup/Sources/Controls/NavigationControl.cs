@@ -29,9 +29,8 @@ namespace Silphid.Showzup
 
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
-        
-        [FormerlySerializedAs("ShouldHandleBackRequests")]
-        [FormerlySerializedAs("HandlesBackRequest")]
+
+        [FormerlySerializedAs("ShouldHandleBackRequests")] [FormerlySerializedAs("HandlesBackRequest")]
         public bool HandleBackRequest;
 
         #region Life-time
@@ -67,8 +66,8 @@ namespace Silphid.Showzup
                 .ToReadOnlyReactiveProperty());
 
         public IReadOnlyReactiveProperty<IView> RootView => History
-                .Select(x => x.FirstOrDefault())
-                .ToReadOnlyReactiveProperty();
+            .Select(x => x.FirstOrDefault())
+            .ToReadOnlyReactiveProperty();
 
         public ReactiveProperty<List<IView>> History { get; } =
             new ReactiveProperty<List<IView>>(new List<IView>());
@@ -97,17 +96,19 @@ namespace Silphid.Showzup
                 .DoOnTerminate(CompleteChange);
         }
 
-        private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
+        private IObservable<Presentation> StartPushAndLoadView(object input, Options options, bool recursiveCall = false)
         {
+            if (!recursiveCall) // Do not assert because state is in loading state
+                AssertCanPresent(input, options);
+
+            StartChange();
+
             var observable = input as IObservable<object>;
             if (observable != null)
-                return observable.SelectMany(x => StartPushAndLoadView(x, options));
-            AssertCanPresent(input, options);
+                return observable.ContinueWith(x => StartPushAndLoadView(x, options, true));
 
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
-
-            StartChange();
 
             return LoadView(viewInfo)
                 .DoOnCompleted(() => MutableState.Value = PresenterState.Presenting)
