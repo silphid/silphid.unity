@@ -75,8 +75,8 @@ namespace Silphid.Extensions
         /// </summary>
         public static long Clamp(this long This, long min, long inclusiveMax) =>
             min < inclusiveMax
-                ? This.Minimum(min).Maximum(inclusiveMax)
-                : This.Minimum(inclusiveMax).Maximum(min);
+                ? This.AtLeast(min).AtMost(inclusiveMax)
+                : This.AtLeast(inclusiveMax).AtMost(min);
 
         /// <summary>
         /// Returns value clamped to the [min, max[ interval
