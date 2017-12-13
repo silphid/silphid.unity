@@ -17,7 +17,16 @@ namespace Silphid.Sequencit
 
         public IDisposable Subscribe(IObserver<Unit> observer)
         {
-            _action?.Invoke();
+            try
+            {
+                _action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                observer.OnError(ex);
+                return Disposable.Empty;
+            }
+            
             observer.OnCompleted();
             return Disposable.Empty;
         }
