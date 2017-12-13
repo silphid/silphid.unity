@@ -44,6 +44,12 @@ Add the framework as a Git submodule by executing the following command in your 
 git submodule add https://github.com/silphid/silphid.unity.git Silphid.Unity
 ```
 
+Now update all submodules recursively (the framework has its own submodules that would remain empty otherwise):
+
+```
+git submodule update --recursive
+```
+
 ## Installing the *symlynx* tool
 
 I created a Node.js tool, named *symlynx*, to automate the creation of symbolic links in your Unity project's `Assets/Plugins` folder that point to the proper folders in the framework submodule.
