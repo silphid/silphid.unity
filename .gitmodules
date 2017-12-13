@@ -1,9 +1,6 @@
 [submodule "Submodules/UniRx"]
 	path = Submodules/UniRx
 	url = ../../Silphid/UniRx.git
-[submodule "Submodules/DOTween"]
-	path = Submodules/DOTween
-	url = ../../Demigiant/dotween.git
 [submodule "Submodules/Log4Net"]
 	path = Submodules/Log4Net
 	url = ../UnityLog4Net.git
