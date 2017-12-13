@@ -4,3 +4,6 @@
 [submodule "Submodules/Log4Net"]
 	path = Submodules/Log4Net
 	url = ../UnityLog4Net.git
+[submodule "Submodules/DOTween"]
+	path = Submodules/DOTween
+	url = ../dotween.git
