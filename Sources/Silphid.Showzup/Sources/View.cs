@@ -6,6 +6,7 @@ using Silphid.Loadzup;
 using Silphid.Injexit;
 using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
+using Silphid.Sequencit;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ namespace Silphid.Showzup
     {
         protected virtual HttpCachePolicy? DefaultImageHttpCachePolicy => null;
     }
-    
+
     public abstract class View<TViewModel> :
         View, IView<TViewModel>, IDisposable,
         ILoadable where TViewModel : IViewModel
@@ -32,7 +33,7 @@ namespace Silphid.Showzup
         {
             Dispose();
         }
-        
+
         #endregion
 
         #region IDisposable members
@@ -57,7 +58,7 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region IView members
 
         private IViewModel _viewModel;
@@ -72,7 +73,7 @@ namespace Silphid.Showzup
         public TViewModel ViewModel => (TViewModel) _viewModel;
 
         #endregion
-        
+
         #region ILoadable members
 
         public virtual IObservable<Unit> Load()
@@ -85,11 +86,11 @@ namespace Silphid.Showzup
         #region Object members
 
         public override string ToString() => GetType().Name;
-        
+
         #endregion
-        
+
         #region Binding helpers
-        
+
         protected void Bind(Text text, string value)
         {
             if (text != null)
@@ -128,40 +129,53 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false, Loadzup.Options options = null,
+        protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false,
+            Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
                 return Observable.ReturnUnit();
-            
+
             if (uri == null)
             {
                 if (isOptional)
                     return Observable.ReturnUnit();
-                    
+
                 return Observable.Throw<Unit>(
-                    new BindException($"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
+                    new BindException(
+                        $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
 
             if (fadeDuration != null)
                 image.color = Color.clear;
             else
                 image.enabled = keepVisible;
-            
+
             return Loader
                 .With(DefaultImageHttpCachePolicy)
                 .Load<DisposableSprite>(uri, options)
                 .Catch<DisposableSprite, Exception>(ex =>
                     Observable.Throw<DisposableSprite>(
-                        new BindException($"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
+                        new BindException(
+                            $"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
                 .Do(x =>
                 {
+                    if (image == null)
+                    {
+                        if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
+                            uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
+                            x.Dispose();
+                        return;
+                    }
+
                     image.sprite = x.Sprite;
                     image.enabled = true;
 
                     if (fadeDuration != null)
-                        Observable.NextFrame().SubscribeAndForget(_ =>
-                            image.DOColor(Color.white, fadeDuration.Value));
+                        Observable.NextFrame()
+                            .ContinueWith(_ => image.DOColor(Color.white, fadeDuration.Value).ToObservable())
+                            .SubscribeAndForget()
+                            .AddTo(this);
 
                     if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset
                         || uri.Scheme == Scheme.StreamingFile)
@@ -170,20 +184,22 @@ namespace Silphid.Showzup
                 .AutoDetach()
                 .AsSingleUnitObservable();
         }
-        
-        protected IObservable<Unit> BindAsync(RawImage image, Uri uri, bool isOptional = false, Loadzup.Options options = null,
+
+        protected IObservable<Unit> BindAsync(RawImage image, Uri uri, bool isOptional = false,
+            Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
                 return Observable.ReturnUnit();
-            
+
             if (uri == null)
             {
                 if (isOptional)
                     return Observable.ReturnUnit();
-                    
+
                 return Observable.Throw<Unit>(
-                    new BindException($"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
+                    new BindException(
+                        $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
 
             if (fadeDuration != null)
@@ -199,15 +215,25 @@ namespace Silphid.Showzup
                         $"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
                 .Do(x =>
                 {
+                    if (image == null)
+                    {
+                        if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
+                            uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
+                            Destroy(x);
+                        return;
+                    }
+
                     image.texture = x;
                     image.enabled = true;
 
                     if (fadeDuration != null)
-                        Observable.NextFrame().SubscribeAndForget(_ =>
-                            image.DOColor(Color.white, fadeDuration.Value));
+                        Observable.NextFrame()
+                            .ContinueWith(_ => image.DOColor(Color.white, fadeDuration.Value).ToObservable())
+                            .SubscribeAndForget()
+                            .AddTo(this);
 
-                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset
-                        || uri.Scheme == Scheme.StreamingFile)
+                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
+                        uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
                     {
                         Disposable
                             .Create(() => Destroy(x))
@@ -224,13 +250,13 @@ namespace Silphid.Showzup
 
         protected void Send(IRequest request) =>
             gameObject.Send(request);
-        
+
         protected void Send(Exception exception) =>
             gameObject.Send(exception);
 
         protected void Send<TRequest>() where TRequest : IRequest, new() =>
             gameObject.Send(new TRequest());
-        
+
         #endregion
     }
 }
