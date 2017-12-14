@@ -8,9 +8,7 @@ namespace Silphid.Sequencit
         private readonly Action _action;
         public static readonly IObservable<Unit> Default = new Instant();
 
-        public Instant() {}
-
-        public Instant(Action action)
+        public Instant(Action action = null)
         {
             _action = action;
         }
@@ -23,10 +21,11 @@ namespace Silphid.Sequencit
             }
             catch (Exception ex)
             {
-                observer.OnError(ex);
-                return Disposable.Empty;
+                return Observable
+                    .Throw<Unit>(ex)
+                    .Subscribe(observer);
             }
-            
+
             observer.OnCompleted();
             return Disposable.Empty;
         }
