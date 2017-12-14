@@ -10,7 +10,9 @@ namespace Silphid.Injexit
 {
     public class LogConfigurator
     {
-        private const string FileName = "Log4net";
+        private readonly string _dataPath;
+        private readonly string _resourcePath;
+        private readonly string _fileName;
         
         private static string DataPath =>
             #if UNITY_EDITOR
@@ -20,10 +22,17 @@ namespace Silphid.Injexit
             #endif
 
         private string ConfigDataPath =>
-            Path.Combine(DataPath, $"{FileName}.xml");
+            Path.Combine(DataPath, $"{_dataPath}{_fileName}.xml");
 
         private string ConfigResourcePath =>
-            Path.Combine(Environment.CurrentDirectory, $"Assets/Resources/{FileName}.xml");
+            Path.Combine(Environment.CurrentDirectory, $"{_resourcePath}{_fileName}.xml");
+
+        public LogConfigurator(string dataPath = "", string resourcePath = "Assets/Resources/", string fileName = "Log4net")
+        {
+            _dataPath = dataPath;
+            _resourcePath = resourcePath;
+            _fileName = fileName;
+        }
 
         public void Configure()
         {
@@ -102,7 +111,7 @@ namespace Silphid.Injexit
         private string LoadFromResources()
         {
             Debug.Log("Loading log config from resources");
-            return Resources.Load<TextAsset>(FileName).text;
+            return Resources.Load<TextAsset>(_fileName).text;
         }
     }
 }
