@@ -19,6 +19,18 @@ namespace Silphid.Showzup
         public static IDisposable BindTo<TRequest>(this Button This) where TRequest : IRequest, new() =>
             This.OnClickAsObservable().Subscribe(_ => This.Send<TRequest>());
 
+        public static IDisposable BindTo<T>(this IReadOnlyReactiveCollection<T> This, ListControl listControl) =>
+            This.ObserveCurrentAddRemove().BindTo(listControl);
+
+        public static IDisposable BindTo<T>(this IObservable<CollectionAddRemoveEvent<T>> This, ListControl listControl) =>
+            This.Subscribe(x =>
+                {
+                    if (x.IsAdded)
+                        listControl.Add(x.Value);
+                    else
+                        listControl.Remove(x.Value);
+                });
+        
         #endregion
 
         #region IObservable<Nav>
