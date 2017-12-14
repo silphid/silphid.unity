@@ -75,10 +75,12 @@ namespace Silphid.Injexit
             // TODO: Obsolete, to remove
             abstractionType.GetAttributes<BindAttribute>()
                 .Select(x => x.Type)
+                .Where(x => x.IsInstanceOfType(instance))
                 .ForEach(x => BindInstance(x, instance));
             
             abstractionType.GetAttributes<KnownTypeAttribute>()
                 .Select(x => x.Type)
+                .Where(x => x.IsInstanceOfType(instance))
                 .ForEach(x => BindInstance(x, instance));
 
             return binding;
