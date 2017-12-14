@@ -7,6 +7,6 @@ namespace Silphid.Sequencit
     {
         protected IObservable<Unit> GetObservableFromItem(object item) =>
             item as IObservable<Unit> ??
-            ((Func<IObservable<Unit>>) item)();
+            Observable.Defer((Func<IObservable<Unit>>) item);
     }
 }
