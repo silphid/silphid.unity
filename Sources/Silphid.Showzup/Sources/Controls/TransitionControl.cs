@@ -1,7 +1,6 @@
 using System;
 using JetBrains.Annotations;
 using log4net;
-using NSubstitute.Exceptions;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -76,13 +75,13 @@ namespace Silphid.Showzup
             var transition = presentation.Transition;
             var duration = presentation.Duration;
 
-//            if (!gameObject.activeInHierarchy ||
-//                sourceView == null && TransitionInstantlyFromNull ||
-//                targetView == null && TransitionInstantlyToNull)
-//            {
-//                transition = InstantTransition.Instance;
-//                duration = 0f;
-//            }
+            if (!gameObject.activeInHierarchy ||
+                sourceView == null && TransitionInstantlyFromNull ||
+                targetView == null && TransitionInstantlyToNull)
+            {
+                transition = InstantTransition.Instance;
+                duration = 0f;
+            }
 
             return Sequence
                 .Create(seq =>
