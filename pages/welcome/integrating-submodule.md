@@ -19,9 +19,9 @@ toc: false
 The following instructions assume a specific folder structure:
 
 ```
-\---SuperProject
+\---SuperProject (replace by your own project name)
     |   
-    +---Unity.Silphid (as a Git submodule)
+    +---Unity.Silphid (the framework as a Git submodule)
     |   
     \---UnityProject (your Unity project)
 ```
@@ -38,16 +38,18 @@ The following instructions assume a specific folder structure:
 
 ## Adding the framework submodule
 
-Add the framework as a Git submodule by executing the following command in your *SuperProject* folder:
+Add the framework as a Git submodule (as a subfolder named *Silphid.Unity*) by executing the following command from your *SuperProject* folder:
 
 ```
 git submodule add https://github.com/silphid/silphid.unity.git Silphid.Unity
 ```
 
-Now update all submodules recursively (the framework has its own submodules that would remain empty otherwise):
+Now update the framework's own submodules (therefore, sub-submodules):
 
 ```
-git submodule update --recursive
+cd Silphid.Unity
+git submodule init
+git submodule update
 ```
 
 ## Installing the *symlynx* tool
