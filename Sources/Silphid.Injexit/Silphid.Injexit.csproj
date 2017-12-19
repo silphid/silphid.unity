@@ -37,6 +37,9 @@
       <HintPath>..\Dependencies\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\4.6.0\lib\mono\4.5\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>..\Dependencies\UnityEngine.dll</HintPath>

@@ -50,7 +50,7 @@ public class Sequencing1 : MonoBehaviour
         // it gets automatically disposed when this component is destroyed). 
         StartButton.BindTo(canStart, StartLoading).AddTo(this);   
         CancelButton.BindTo(canCancel, CancelLoading).AddTo(this);
-    }
+	}
 
     private void StartLoading()
     {
@@ -75,7 +75,7 @@ public class Sequencing1 : MonoBehaviour
                 // method supports any type T for IObservable<T>, but it disregards all emitted values, so it is our responsability
                 // to act upon meaningful values, as we are doing here with the Do() Rx operator to log the loaded greeting as a
                 // side-effect.
-                seq.Add(RotateCubeIndefinitely().TakeUntil(
+                seq.Add(RotateCubeIndefinitely().Until(
                     LoadGreeting().Do(x => Debug.Log($"Greeting loaded: {x}"))));
 
                 // This is a more verbose, but much more flexible overload of AddParallel(), because it passes the new parallel
@@ -132,7 +132,7 @@ public class Sequencing1 : MonoBehaviour
     // breaking that chain with calls to Subscribe().  As much as possible/reasonable, try to defer the call to Subscribe() to
     // callers up the chain.  That ensures errors can always bubble up to higher level functions and also that disposing the chain
     // at a higher level will dispose it completely.
-    private IObservable<Unit> RotateCubeIndefinitely() =>
+    private ICompletable RotateCubeIndefinitely() =>
         Sequence
             .Create(
                 () => RotateCube(Vector3.up * 180),
@@ -140,26 +140,26 @@ public class Sequencing1 : MonoBehaviour
                 () => RotateCube(Vector3.forward * 180))
             .Repeat();
 
-    // The DOTween extension methods return Tween objects, which we convert to an IObservable<Unit> using ToObservable().
+    // The DOTween extension methods return Tween objects, which we convert to an ICompletable using ToObservable().
     // Disposing that observable has the effect of killing (stopping) the underlying Tween.
-    private IObservable<Unit> RotateCube(Vector3 angle) =>
+    private ICompletable RotateCube(Vector3 angle) =>
         Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
-    private IObservable<Unit> ResetCubeRotation() =>
+    private ICompletable ResetCubeRotation() =>
         Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
 
     // Move cube
 
-    private IObservable<Unit> MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
-    private IObservable<Unit> MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
-    private IObservable<Unit> MoveCubeTo(Vector3 position) =>
+    private ICompletable MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
+    private ICompletable MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
+    private ICompletable MoveCubeTo(Vector3 position) =>
         Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToObservable();
 
     // Show or hide text
 
-    private IObservable<Unit> ShowText() => ShowHideText(LoadingTextPosition, 1);
-    private IObservable<Unit> HideText() => ShowHideText(NormalTextPosition, 0);
-    private IObservable<Unit> ShowHideText(Vector3 position, float alpha) =>
+    private ICompletable ShowText() => ShowHideText(LoadingTextPosition, 1);
+    private ICompletable HideText() => ShowHideText(NormalTextPosition, 0);
+    private ICompletable ShowHideText(Vector3 position, float alpha) =>
         Parallel.Create(
             () => Text.GetComponent<CanvasGroup>().DOFadeTo(alpha, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable(),
             () => Text.transform.DOLocalMove(position, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable());

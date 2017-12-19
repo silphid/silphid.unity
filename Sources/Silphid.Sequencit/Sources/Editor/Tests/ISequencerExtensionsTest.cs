@@ -12,7 +12,7 @@ public class ISequencerExtensionsTest : SequencingTestBase
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 123);
-            s.Add(CreateDelay(100));
+            s.Add(CreateTimer(100));
             s.AddAction(() => _value = 456);
         });
 
@@ -27,11 +27,11 @@ public class ISequencerExtensionsTest : SequencingTestBase
     {
         Sequence.Start(s =>
         {
-            s.Add(CreateDelay(100));
+            s.Add(CreateTimer(100));
             s.Add(() =>
             {
                 _value = 111;
-                return CreateDelay(100);
+                return CreateTimer(100);
             });
         });
 
@@ -84,7 +84,7 @@ public class ISequencerExtensionsTest : SequencingTestBase
     {
         Sequence.Start(s =>
         {
-            s.Add(CreateDelay(100));
+            s.Add(CreateTimer(100));
             s.Add(() =>
             {
                 _value = 111;

@@ -39,9 +39,9 @@ namespace Silphid.Sequencit
         
         #endregion
         
-        #region IObservable<Unit> members
+        #region ICompletable members
 
-        public IDisposable Subscribe(IObserver<Unit> observer)
+        public IDisposable Subscribe(ICompletableObserver observer)
         {
             if (!_isStarted)
             {
@@ -59,10 +59,10 @@ namespace Silphid.Sequencit
 
         #region ISequencer members
 
-        public object Add(IObservable<Unit> observable) =>
+        public object Add(ICompletable observable) =>
             AddInternal(observable);
 
-        public object Add(Func<IObservable<Unit>> selector) =>
+        public object Add(Func<ICompletable> selector) =>
             AddInternal(selector);
 
         private object AddInternal(object item)

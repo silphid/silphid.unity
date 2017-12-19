@@ -7,12 +7,12 @@ namespace Silphid.Sequencit
     /// <summary>
     /// An observable that completes only when it is disposed.
     /// </summary>
-    public class Lapse : IObservable<Unit>, IDisposable
+    public class Lapse : ICompletable, IDisposable
     {
         private readonly Action<IDisposable> _action;
         private bool _isSubscribed;
         private bool _isDisposed;
-        private Subject<Unit> _subject;
+        private CompletableSubject _subject;
 
         public static Lapse Create(Action<IDisposable> action = null) =>
             new Lapse(action);
@@ -26,13 +26,13 @@ namespace Silphid.Sequencit
             _action = action;
         }
 
-        public IDisposable Subscribe(IObserver<Unit> observer)
+        public IDisposable Subscribe(ICompletableObserver observer)
         {
             if (_isDisposed)
                 throw new ObjectDisposedException(nameof(Lapse));
 
             if (_subject == null)
-                _subject = new Subject<Unit>();
+                _subject = new CompletableSubject();
 
             if (!_isSubscribed)
             {

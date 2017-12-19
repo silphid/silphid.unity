@@ -1,6 +1,4 @@
-﻿using System;
-using DG.Tweening;
-using Silphid.Extensions;
+﻿using DG.Tweening;
 using Silphid.Sequencit;
 using UniRx;
 using UnityEngine;
@@ -23,7 +21,7 @@ namespace Silphid.Showzup
             ((RectTransform) targetContainer.transform).localScale = Vector3.one * scale;
         }
 
-        public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer,
+        public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer,
             Direction direction, float duration)
         {
             return Parallel.Create(step =>

@@ -14,7 +14,7 @@ namespace Silphid.Showzup
         public bool FadeOutSource { get; set; } = true;
         public bool FadeInTarget { get; set; } = true;
         public bool SourceAboveTarget { get; set; } = true;
-        public bool IsSequential { get; set; } = false;
+        public bool IsSequential { get; set; }
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {
@@ -29,7 +29,7 @@ namespace Silphid.Showzup
                 sourceContainer.transform.SetAsFirstSibling();
         }
 
-        public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
+        public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
         {
             var sequencer = IsSequential ? (ISequencer) Sequence.Create() : Parallel.Create();
             PerformTransition(sourceContainer, targetContainer, IsSequential ? duration *  0.5f : duration, sequencer);

@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
 
@@ -19,7 +18,7 @@ public class ParallelTest : SequencingTestBase
     [Test]
     public void SubscribingToEmptySequenceCompletesImmediately()
     {
-        _parallel.SubscribeCompletion(() => _value = 1);
+        _parallel.Subscribe(() => _value = 1);
         Assert.That(_value, Is.EqualTo(1));
     }
 
@@ -39,7 +38,7 @@ public class ParallelTest : SequencingTestBase
         _parallel.Add(Observable.ReturnUnit());
         _parallel.AddAction(() => _value = 2);
         _parallel.Add(Observable.ReturnUnit());
-        _parallel.SubscribeCompletion(() => _value = 3);
+        _parallel.Subscribe(() => _value = 3);
 
         Assert.That(_value, Is.EqualTo(3));
     }
@@ -65,9 +64,9 @@ public class ParallelTest : SequencingTestBase
         Sequence.Start(s =>
         {
             s.AddAction(() => _value = 1);
-            s.Add(CreateDelay(10));
+            s.Add(CreateTimer(10));
             s.AddAction(() => _value = 2);
-            s.Add(CreateDelay(10));
+            s.Add(CreateTimer(10));
             s.AddAction(() => _value = 3);
         });
 
@@ -86,9 +85,9 @@ public class ParallelTest : SequencingTestBase
         var disposable = Sequence.Start(s =>
         {
             s.AddAction(() => _value = 1);
-            s.Add(CreateDelay(10));
+            s.Add(CreateTimer(10));
             s.AddAction(() => _value = 2);
-            s.Add(CreateDelay(10));
+            s.Add(CreateTimer(10));
             s.AddAction(() => _value = 3);
         });
 

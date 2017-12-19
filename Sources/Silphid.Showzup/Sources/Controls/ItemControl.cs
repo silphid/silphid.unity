@@ -10,7 +10,7 @@ namespace Silphid.Showzup
         public GameObject Container;
         public bool AutoSelect = true;
 
-        protected override IObservable<Unit> Present(Presentation presentation)
+        protected override ICompletable Present(Presentation presentation)
         {
             if (Container == null)
                 throw new InvalidOperationException($"Must specify ContentContainer property of ContentControl {gameObject}");
@@ -28,7 +28,7 @@ namespace Silphid.Showzup
             PostHide(sourceView, options);
             PostShow(targetView, options);
 
-            return Observable.ReturnUnit();
+            return Completable.Empty();
         }
 
         protected virtual void Start()

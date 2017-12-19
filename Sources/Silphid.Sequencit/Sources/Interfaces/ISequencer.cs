@@ -3,9 +3,9 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public interface ISequencer : IObservable<Unit>
+    public interface ISequencer : ICompletable
     {
-        object Add(IObservable<Unit> observable);
-        object Add(Func<IObservable<Unit>> selector);
+        object Add(ICompletable completable);
+        object Add(Func<ICompletable> selector);
     }
 }

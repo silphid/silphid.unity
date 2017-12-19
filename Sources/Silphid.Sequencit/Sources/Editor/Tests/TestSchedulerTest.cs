@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Silphid.Extensions.UniRx.Schedulers;
+using UniRx;
 
 [TestFixture]
 public class TestSchedulerTest

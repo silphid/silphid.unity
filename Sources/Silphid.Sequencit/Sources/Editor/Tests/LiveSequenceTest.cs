@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
 
@@ -57,15 +56,15 @@ public class LiveSequenceTest : SequencingTestBase
         var disposable = LiveSequence.Start(s =>
         {
             s.AddAction(() => _value = 1);
-            s.Add(CreateDelay(10).DoOnCompleted(() => _value = 2));
+            s.Add(CreateTimer(10).DoOnCompleted(() => _value = 2));
             s.Add(() =>
             {
                 _value = 3;
-                return CreateDelay(10)
+                return CreateTimer(10)
                     .DoOnCompleted(() => _value = 4)
                     .DoOnCancel(() => _value = 100);
             });
-            s.Add(CreateDelay(10).DoOnCompleted(() => _value = 5));
+            s.Add(CreateTimer(10).DoOnCompleted(() => _value = 5));
             s.AddAction(() => _value = 6);
         });
 
@@ -86,16 +85,16 @@ public class LiveSequenceTest : SequencingTestBase
     {
         var seq = LiveSequence.Create(s =>
         {
-            s.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+            s.Add(CreateTimer(10).DoOnCompleted(() => _value = 1));
             s.Add(() =>
             {
                 _value = 2;
-                return CreateDelay(10).DoOnCancel(() => _value = 3);
+                return CreateTimer(10).DoOnCancel(() => _value = 3);
             });
             s.Add(() =>
             {
                 _value = 4;
-                return CreateDelay(10);
+                return CreateTimer(10);
             });
             s.AddAction(() => _value = 5);
         });
@@ -122,7 +121,7 @@ public class LiveSequenceTest : SequencingTestBase
     [Test]
     public void Add_AddedActionIsStartedImmediatelyWhenQueueIsEmpty()
     {
-        _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _liveSequence.Add(CreateTimer(10).DoOnCompleted(() => _value = 1));
         _liveSequence.Subscribe();
         _scheduler.AdvanceTo(10);
         AssertValue(1);
@@ -130,7 +129,7 @@ public class LiveSequenceTest : SequencingTestBase
         _liveSequence.Add(() =>
         {
             _value = 2;
-            return CreateDelay(10).DoOnCompleted(() => _value = 3);
+            return CreateTimer(10).DoOnCompleted(() => _value = 3);
         });
         AssertValue(2);
     }
@@ -139,7 +138,7 @@ public class LiveSequenceTest : SequencingTestBase
     public void Add_AddedActionIsNotExecutedAfterSubscriptionDisposed()
     {
         var disposable = _liveSequence.Subscribe();
-        _liveSequence.Add(CreateDelay(10).DoOnCompleted(() => _value = 1));
+        _liveSequence.Add(CreateTimer(10).DoOnCompleted(() => _value = 1));
         _scheduler.AdvanceTo(10);
         AssertValue(1);
 
@@ -150,7 +149,7 @@ public class LiveSequenceTest : SequencingTestBase
     [Test]
     public void SkipBefore()
     {
-        var obs = CreateDelay(10);
+        var obs = CreateTimer(10);
         
         _liveSequence.Subscribe();
         _liveSequence.AddAction(() => _value = 1);
@@ -174,7 +173,7 @@ public class LiveSequenceTest : SequencingTestBase
     [Test]
     public void SkipAfter()
     {
-        var obs = CreateDelay(10);
+        var obs = CreateTimer(10);
         
         _liveSequence.Subscribe();
         _liveSequence.Add(Observable.Never<Unit>());
@@ -254,7 +253,7 @@ public class LiveSequenceTest : SequencingTestBase
         var instant = new Instant();
         
         _liveSequence.AddAction(() => _value = 1);
-        _liveSequence.Add(CreateDelay(10));
+        _liveSequence.Add(CreateTimer(10));
         _liveSequence.AddAction(() => checkpoint1 = true);
         _liveSequence.Add(instant);
         _liveSequence.AddAction(ShouldNotReachThisPoint);
@@ -266,7 +265,7 @@ public class LiveSequenceTest : SequencingTestBase
         // Marker already in sequence: will truncate after it
         _liveSequence.AddOrTruncateAfter(instant);
         _liveSequence.AddAction(() => _value = 2);
-        _liveSequence.Add(CreateDelay(100));
+        _liveSequence.Add(CreateTimer(100));
         _liveSequence.AddAction(() => _value = 3);
 
         Assert.That(checkpoint1, Is.False);
@@ -276,7 +275,7 @@ public class LiveSequenceTest : SequencingTestBase
 
         // Marker no longer in sequence: will add marker
         _liveSequence.AddOrTruncateAfter(instant);
-        _liveSequence.Add(CreateDelay(200));
+        _liveSequence.Add(CreateTimer(200));
         _liveSequence.AddAction(() => _value = 4);
         AssertValue(2);
 
@@ -293,11 +292,11 @@ public class LiveSequenceTest : SequencingTestBase
         _liveSequence.AddAction(() => _value = 1);
 
         var isCompleted = false;
-        _liveSequence.SubscribeCompletion(() => isCompleted = true);
+        _liveSequence.Subscribe(() => isCompleted = true);
         AssertValue(1);
         Assert.That(isCompleted, Is.False);
 
-        _liveSequence.Add(CreateDelay(10));
+        _liveSequence.Add(CreateTimer(10));
         _liveSequence.AddAction(() => _value = 2);
         _liveSequence.AddComplete();
         AssertValue(1);

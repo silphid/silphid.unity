@@ -36,7 +36,7 @@ namespace Silphid.Showzup
 
         #region Virtual and abstract overrides
 
-        protected override IObservable<Unit> Present(Presentation presentation)
+        protected override ICompletable Present(Presentation presentation)
         {
             return PerformTransition(presentation);
         }
@@ -63,7 +63,7 @@ namespace Silphid.Showzup
             options?.TransitionDuration ??
             transition.Duration;
 
-        protected IObservable<Unit> PerformTransition(Presentation presentation)
+        protected ICompletable PerformTransition(Presentation presentation)
         {
             var sourceView = presentation.SourceView;
             var targetView = presentation.TargetView;

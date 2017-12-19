@@ -19,7 +19,7 @@ namespace Silphid.Sequencit.Test
                 s.AddAction(() => _value = 2);
                 s.AddGate(gate);
                 s.AddAction(() => _value = 3);
-                s.Add(CreateDelay(10));
+                s.Add(CreateTimer(10));
                 s.AddAction(() => _value = 4);
                 s.AddGate(gate);
                 s.AddAction(() => _value = 5);

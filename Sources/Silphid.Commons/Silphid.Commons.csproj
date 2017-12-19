@@ -78,7 +78,6 @@
     <Compile Include="Sources\Extensions\System\ICustomAttributeProviderExtensions.cs" />
     <Compile Include="Sources\Extensions\System\IEnumerableExtensions.cs" />
     <Compile Include="Sources\Extensions\System\Int32Extensions.cs" />
-    <Compile Include="Sources\Extensions\System\IntegerExtensions.cs" />
     <Compile Include="Sources\Extensions\System\LongExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ObjectExtensions.cs" />
     <Compile Include="Sources\Extensions\System\RandomExtension.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="Sources\Extensions\System\TimeSpanExtensions.cs" />
     <Compile Include="Sources\Extensions\System\TypeExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\AsyncOperationExtensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\ICompletableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IEnumerableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableFloatExtensions.cs" />

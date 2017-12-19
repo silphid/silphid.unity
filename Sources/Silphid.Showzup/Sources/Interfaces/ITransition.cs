@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UniRx;
 
@@ -11,7 +10,7 @@ namespace Silphid.Showzup
         void Prepare(GameObject sourceContainer, GameObject targetContainer,
             Direction direction);
         
-        IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer,
+        ICompletable Perform(GameObject sourceContainer, GameObject targetContainer,
             Direction direction, float duration);
 
         void Complete(GameObject sourceContainer, GameObject targetContainer);

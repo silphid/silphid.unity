@@ -1,5 +1,4 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup
@@ -10,7 +9,7 @@ namespace Silphid.Showzup
         
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction) {}
 
-        public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer,
-            Direction direction, float duration) => Observable.ReturnUnit();
+        public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer,
+            Direction direction, float duration) => Completable.Empty();
     }
 }

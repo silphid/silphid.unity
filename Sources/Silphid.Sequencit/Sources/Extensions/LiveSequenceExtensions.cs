@@ -1,5 +1,4 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 
 namespace Silphid.Sequencit
 {
@@ -9,17 +8,17 @@ namespace Silphid.Sequencit
             This.AddAction(This.Complete);
 
         /// <summary>
-        /// Tries to add given observable at the end of sequence, but if observable was already
+        /// Tries to add given completable at the end of sequence, but if completable was already
         /// present in sequence, truncate everything after it instead.
         /// </summary>
-        /// <returns>True if observable was added at the end of sequence, or False if observable
+        /// <returns>True if completable was added at the end of sequence, or False if completable
         /// was already present in sequence and everything after it was truncated instead.</returns>
-        public static bool AddOrTruncateAfter(this LiveSequence This, IObservable<Unit> observable)
+        public static bool AddOrTruncateAfter(this LiveSequence This, ICompletable completable)
         {
-            if (This.TruncateAfter(observable))
+            if (This.TruncateAfter(completable))
                 return false;
             
-            This.Add(observable);
+            This.Add(completable);
             return true;
         }
     }

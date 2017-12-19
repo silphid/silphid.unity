@@ -23,7 +23,7 @@ namespace Silphid.Showzup
             ((RectTransform) targetContainer.transform).anchoredPosition = offset;
         }
 
-        public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer,
+        public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer,
             Direction direction, float duration)
         {
             return Parallel.Create(parallel =>

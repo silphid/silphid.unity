@@ -17,17 +17,13 @@ namespace Silphid.Sequencit
             return This;
         }
 
-        public static IObservable<Unit> ToObservable(this Tween This, bool completeTweenOnDispose = false)
+        public static ICompletable ToObservable(this Tween This, bool completeTweenOnDispose = false)
         {
             This.Pause();
-            return Observable.Create<Unit>(subscriber =>
+            return Completable.Create(subscriber =>
             {
                 This.Play();
-                This.OnComplete(() =>
-                {
-                    subscriber.OnNext(Unit.Default);
-                    subscriber.OnCompleted();
-                });
+                This.OnComplete(subscriber.OnCompleted);
                 return Disposable.Create(() => This.Kill(completeTweenOnDispose));
             });
         }

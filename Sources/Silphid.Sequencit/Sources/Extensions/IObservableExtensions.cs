@@ -25,15 +25,20 @@ namespace Silphid.Sequencit
                 .ObserveOn(Scheduler.MainThreadEndOfFrame);
         }
 
+        public static void In(this ICompletable This, ISequencer sequencer)
+        {
+            sequencer.Add(This);
+        }
+
         public static void In<T>(this IObservable<T> This, ISequencer sequencer)
         {
             sequencer.Add(This);
         }
 
-        public static Sequence ToSequence(this IEnumerable<IObservable<Unit>> This) =>
+        public static Sequence ToSequence(this IEnumerable<ICompletable> This) =>
             Sequence.Create(This);
 
-        public static Parallel ToParallel(this IEnumerable<IObservable<Unit>> This) =>
+        public static Parallel ToParallel(this IEnumerable<ICompletable> This) =>
             Parallel.Create(This);
     }
 }

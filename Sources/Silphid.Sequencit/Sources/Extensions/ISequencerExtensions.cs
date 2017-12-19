@@ -8,27 +8,30 @@ namespace Silphid.Sequencit
     public static class ISequencerExtensions
     {
         public static object Add<T>(this ISequencer This, IObservable<T> observable) =>
-            This.Add(observable.AsSingleUnitObservable());
+            This.Add(observable.AsCompletable);
 
         public static object Add<T>(this ISequencer This, Func<IObservable<T>> observableFactory) =>
             This.Add(Observable.Defer(observableFactory));
 
+        public static object Add(this ISequencer This, Func<ICompletable> completableFactory) =>
+            This.Add(Completable.Defer(completableFactory));
+
         public static object AddParallel(this ISequencer This, Action<ISequencer> action) =>
             This.Add(() => Parallel.Create(action));
 
-        public static object AddParallel(this ISequencer This, params Func<IObservable<Unit>>[] selectors) =>
+        public static object AddParallel(this ISequencer This, params Func<ICompletable>[] selectors) =>
             This.Add(() => Parallel.Create(selectors));
 
-        public static object AddParallel(this ISequencer This, IEnumerable<IObservable<Unit>> observables) =>
+        public static object AddParallel(this ISequencer This, IEnumerable<ICompletable> observables) =>
             This.Add(() => Parallel.Create(observables));
 
         public static object AddSequence(this ISequencer This, Action<ISequencer> action) =>
             This.Add(() => Sequence.Create(action));
 
-        public static object AddSequence(this ISequencer This, params Func<IObservable<Unit>>[] selectors) =>
+        public static object AddSequence(this ISequencer This, params Func<ICompletable>[] selectors) =>
             This.Add(() => Sequence.Create(selectors));
 
-        public static object AddSequence(this ISequencer This, IEnumerable<IObservable<Unit>> observables) =>
+        public static object AddSequence(this ISequencer This, IEnumerable<ICompletable> observables) =>
             This.Add(() => Sequence.Create(observables));
 
         public static LiveSequence AddLiveSequence(this ISequencer This)

@@ -3,11 +3,11 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Instant : IObservable<Unit>
+    public class Instant : ICompletable
     {
-        public static readonly IObservable<Unit> Default = new Instant();
+        public static readonly ICompletable Default = new Instant();
         
-        public IDisposable Subscribe(IObserver<Unit> observer)
+        public IDisposable Subscribe(ICompletableObserver observer)
         {
             observer.OnCompleted();
             return Disposable.Empty;

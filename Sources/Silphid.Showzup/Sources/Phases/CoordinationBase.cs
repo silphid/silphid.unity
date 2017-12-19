@@ -46,7 +46,7 @@ namespace Silphid.Showzup
 
         protected abstract IDisposable CoordinateInternal();
 
-        protected IObservable<Unit> CancellationPoint()
+        protected ICompletable CancellationPoint()
         {
             if (Presentation.CancellationToken.IsCancellationRequested)
             {
@@ -55,10 +55,10 @@ namespace Silphid.Showzup
                     .Reverse()
                     .ForEach(x => x.Cancel());
 
-                return Observable.Throw<Unit>(new PhaseCancelledException());
+                return Completable.Throw(new PhaseCancelledException());
             }
 
-            return Observable.Empty<Unit>();
+            return Completable.Empty();
         }
     }
 }

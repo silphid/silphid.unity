@@ -119,7 +119,7 @@ namespace Silphid.Showzup
         {
             var nav = StartNavigation(presentation);
 
-            return Observable
+            return Completable
                 .WhenAll(
                     Present(presentation),
                     nav.Parallel)
@@ -184,7 +184,7 @@ namespace Silphid.Showzup
             presentation.TargetView = view;
             var nav = StartNavigation(presentation);
 
-            return Observable
+            return Completable
                 .WhenAll(
                     PerformTransition(presentation),
                     nav.Parallel)

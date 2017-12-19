@@ -12,19 +12,19 @@ namespace Silphid.Sequencit
         public static Sequence Create(Action<ISequencer> action = null) =>
             new Sequence(action);
 
-        public static Sequence Create<T>(params Func<IObservable<T>>[] selectors) =>
+        public static Sequence Create(params Func<ICompletable>[] selectors) =>
             Create(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public static Sequence Create<T>(IEnumerable<IObservable<T>> observables) =>
+        public static Sequence Create(IEnumerable<ICompletable> observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
-        public static Sequence Create<T>(params IObservable<T>[] observables) =>
+        public static Sequence Create(params ICompletable[] observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<ISequencer> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start<T>(params IObservable<T>[] observables) =>
+        public static IDisposable Start(params ICompletable[] observables) =>
             Create(observables).AutoDetach().Subscribe();
 
         #endregion
@@ -37,9 +37,9 @@ namespace Silphid.Sequencit
         
         #endregion
         
-        #region IObservable<Unit> members
+        #region ICompletable members
 
-        public override IDisposable Subscribe(IObserver<Unit> observer) =>
+        public override IDisposable Subscribe(ICompletableObserver observer) =>
             GetObservables()
                 .Concat()
                 .Subscribe(observer);
