@@ -75,8 +75,8 @@ namespace Silphid.Extensions
         /// </summary>
         public static long Clamp(this long This, long min, long inclusiveMax) =>
             min < inclusiveMax
-                ? This.Minimum(min).Maximum(inclusiveMax)
-                : This.Minimum(inclusiveMax).Maximum(min);
+                ? This.AtLeast(min).AtMost(inclusiveMax)
+                : This.AtLeast(inclusiveMax).AtMost(min);
 
         /// <summary>
         /// Returns value clamped to the [min, max[ interval
@@ -107,20 +107,6 @@ namespace Silphid.Extensions
         /// </summary>
         public static long AtMost(this long This, long max) =>
             This.Min(max);
-
-        /// <summary>
-        /// Returns the minimum value between this and another value
-        /// </summary>
-        [Obsolete("Use AtLeast() instead")]
-        public static long Minimum(this long This, long min) =>
-            This.AtLeast(min);
-
-        /// <summary>
-        /// Returns the maximum value between this and another value
-        /// </summary>
-        [Obsolete("Use AtMost() instead")]
-        public static long Maximum(this long This, long max) =>
-            This.AtMost(max);
 
         #endregion
 
