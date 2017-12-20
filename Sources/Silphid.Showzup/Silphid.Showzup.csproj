@@ -132,6 +132,16 @@
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
     <Compile Include="Sources\Extensions\IViewExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
+    <Compile Include="Sources\Flows\Flow.cs" />
+    <Compile Include="Sources\Flows\FlowFactory.cs" />
+    <Compile Include="Sources\Flows\IFlow.cs" />
+    <Compile Include="Sources\Flows\IFlowFactory.cs" />
+    <Compile Include="Sources\Flows\Requests\CompleteSubFlowRequest.cs" />
+    <Compile Include="Sources\Flows\Requests\CompleteTopFlowRequest.cs" />
+    <Compile Include="Sources\Flows\Requests\FlowRequest.cs" />
+    <Compile Include="Sources\Flows\Requests\SubFlowRequest.cs" />
+    <Compile Include="Sources\Flows\Requests\TopFlowRequest.cs" />
+    <Compile Include="Sources\Flows\Requests\ViewChangedRequest.cs" />
     <Compile Include="Sources\InputLayers\IInputLayer.cs" />
     <Compile Include="Sources\InputLayers\IInputLayerExtensions.cs" />
     <Compile Include="Sources\InputLayers\InputLayer.cs" />
@@ -234,6 +244,10 @@
     <ProjectReference Include="..\Silphid.Loadzup\Silphid.Loadzup.csproj">
       <Project>{dad5df27-9fa3-4f02-96be-e28ea2530f0f}</Project>
       <Name>Silphid.Loadzup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.Machina\Silphid.Machina.csproj">
+      <Project>{5f154d39-cc27-4143-9612-7751ecdea4e7}</Project>
+      <Name>Silphid.Machina</Name>
     </ProjectReference>
     <ProjectReference Include="..\Silphid.Sequencit\Silphid.Sequencit.csproj">
       <Project>{c0716045-f08a-489f-9b7a-25863bc13118}</Project>
