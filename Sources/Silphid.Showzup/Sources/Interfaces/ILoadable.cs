@@ -1,5 +1,4 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 
 namespace Silphid.Showzup
 {
@@ -9,6 +8,6 @@ namespace Silphid.Showzup
     /// </summary>
     public interface ILoadable
     {
-        IObservable<Unit> Load();
+        ICompletable Load();
     }
 }

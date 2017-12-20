@@ -75,7 +75,7 @@ namespace Silphid.Showzup
         
         #region ILoadable members
 
-        public virtual IObservable<Unit> Load()
+        public virtual ICompletable Load()
         {
             return null;
         }
