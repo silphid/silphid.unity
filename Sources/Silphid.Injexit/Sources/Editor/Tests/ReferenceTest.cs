@@ -30,10 +30,23 @@ namespace Silphid.Injexit.Test
         }
 
         [Test]
+        public void ShouldResolveReferenceToLocallyCreatedBindingId()
+        {
+            var bar = new Bar();
+
+            var BarId = _fixture.BindInstance(bar).Id();
+            _fixture.BindReference<IBar>(BarId);
+
+            var bar2 = _fixture.Resolve<IBar>();
+
+            Assert.That(bar2, Is.SameAs(bar));
+        }
+
+        [Test]
         public void ShouldResolveReferenceToBindingIdDefinedOutsideUsingScope()
         {
             var bar = new Bar();
-            var BarId = new BindingId("BarId");
+            var BarId = new BindingId();
             
             _fixture.BindInstance(bar).Id(BarId);
             _fixture.BindToSelf<Foo>().Using(x =>
@@ -47,7 +60,7 @@ namespace Silphid.Injexit.Test
         [Test]
         public void ShouldThrowIfBindingIdDoesNotImplementReferenceAbstractionType()
         {
-            var FooId = new BindingId("FooId");
+            var FooId = new BindingId();
             _fixture.BindToSelf<Foo>().Id(FooId);
             _fixture.BindReference<IBar>(FooId);
 
@@ -59,7 +72,7 @@ namespace Silphid.Injexit.Test
         [Test]
         public void ShouldThrowIfBindingReferenceToUnboundId()
         {
-            var FooId = new BindingId("FooId");
+            var FooId = new BindingId();
             _fixture.BindReference<IBar>(FooId);
             
             var exception = Assert.Throws<DependencyException>(() => _fixture.Resolve<IBar>());

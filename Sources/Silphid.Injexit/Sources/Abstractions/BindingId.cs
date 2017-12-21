@@ -2,15 +2,19 @@
 {
     public class BindingId
     {
-        public string Name { get; }
-
-        public BindingId(string name)
-        {
-            Name = name;
-        }
-
         internal Binding Binding { get; set; }
 
-        public override string ToString() => Name;
+        public BindingId()
+        {
+        }
+
+        internal BindingId(Binding binding)
+        {
+            Binding = binding;
+        }
+
+        public override string ToString() =>
+            Binding?.ToString() ??
+            "Unknown";
     }
 }

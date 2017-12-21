@@ -11,7 +11,16 @@ namespace Silphid.Injexit
         public IBinding Using(IResolver resolver) => Binding.Null;
         public IBinding UsingRecursively(IResolver resolver) => Binding.Null;
         public IBinding Named(string name) => Binding.Null;
-        public IBinding Id(BindingId id) => Binding.Null;
         public IBinding Alias(Type aliasAbstractionType) => Binding.Null;
+
+        public IBinding Id(BindingId id)
+        {
+            throw new NotSupportedException("Cannot associate an Id with NullBinding");
+        }
+
+        public BindingId Id()
+        {
+            throw new NotSupportedException("Cannot associate an Id with NullBinding");
+        }
     }
 }
