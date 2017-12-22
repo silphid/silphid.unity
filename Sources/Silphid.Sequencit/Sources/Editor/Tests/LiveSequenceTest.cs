@@ -235,8 +235,8 @@ public class LiveSequenceTest : SequencingTestBase
     public void AddMarker()
     {
         _liveSequence.Subscribe();
-        _liveSequence.Add(Observable.Never<Unit>());
-        _liveSequence.AddAction(() => _value = 1);
+        _liveSequence.Add(Completable.Never());
+        _liveSequence.AddAction(Assert.Fail);
         var instant = _liveSequence.AddInstant();
         _liveSequence.AddAction(() => _value = 2);
 

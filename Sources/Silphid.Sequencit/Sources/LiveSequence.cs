@@ -149,7 +149,6 @@ namespace Silphid.Sequencit
                 return false;
 
             _isExecuting = false;
-            _currentExecution?.Dispose();
             
             while (_items.Peek() != item)
                 _items.Dequeue();
@@ -157,7 +156,9 @@ namespace Silphid.Sequencit
             if (isInclusive)
                 _items.Dequeue();
 
-            if (_isStarted)
+            _currentExecution?.Dispose();
+
+            if (_isStarted && !_isExecuting)
                 StartNext();
 
             return true;
