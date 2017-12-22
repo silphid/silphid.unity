@@ -10,8 +10,31 @@ namespace Silphid.Extensions
 {
     public static class DOTweenExtensions
     {
-        public static Tween TweenTo(this ReactiveProperty<float> This, float endValue, float duration) =>
-            DOTween.To(() => This.Value, x => This.Value = x, endValue, duration);
+        private static IObservable<Unit> TweenTo<T>(this IReactiveProperty<T> This, Func<Tween> selector, Ease ease = Ease.Linear, bool completeTweenOnDispose = false) =>
+            Observable.Create<Unit>(subscriber =>
+            {
+                var tween = selector()
+                    .SetEase(ease)
+                    .OnComplete(() =>
+                    {
+                        subscriber.OnNext(Unit.Default);
+                        subscriber.OnCompleted();
+                    });
+
+                return Disposable.Create(() => tween.Kill(completeTweenOnDispose));
+            });
+
+        public static IObservable<Unit> TweenTo(this IReactiveProperty<float> This, float target, float duration, Ease ease = Ease.Linear, bool completeTweenOnDispose = false) =>
+            This.TweenTo(() => DOTween.To(() => This.Value, x => This.Value = x, target, duration), ease, completeTweenOnDispose);
+
+        public static IObservable<Unit> TweenTo(this IReactiveProperty<float?> This, float target, float duration, Ease ease = Ease.Linear, bool completeTweenOnDispose = false) =>
+            This.TweenTo(() => DOTween.To(() => This.Value ?? 0f, x => This.Value = x, target, duration), ease, completeTweenOnDispose);
+
+        public static IObservable<Unit> TweenTo(this IReactiveProperty<TimeSpan> This, TimeSpan target, float duration, Ease ease = Ease.Linear, bool completeTweenOnDispose = false) =>
+            This.TweenTo(() => DOTween.To(() => This.Value.Ticks, x => This.Value = TimeSpan.FromTicks(x), target.Ticks, duration), ease, completeTweenOnDispose);
+
+        public static IObservable<Unit> TweenTo(this IReactiveProperty<TimeSpan?> This, TimeSpan target, float duration, Ease ease = Ease.Linear, bool completeTweenOnDispose = false) =>
+            This.TweenTo(() => DOTween.To(() => This.Value?.Ticks ?? 0, x => This.Value = TimeSpan.FromTicks(x), target.Ticks, duration), ease, completeTweenOnDispose);
 
         public static Tweener ToAlpha(DOGetter<Color> getter, DOSetter<Color> setter, float endValue, float duration)
         {

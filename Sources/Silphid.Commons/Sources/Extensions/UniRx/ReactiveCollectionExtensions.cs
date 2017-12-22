@@ -30,7 +30,7 @@ namespace Silphid.Extensions
 
     public static class ReactiveCollectionExtensions
     {
-        public static IObservable<CollectionAddRemoveEvent<T>> ObserveCurrentAddRemove<T>(this ReactiveCollection<T> This) =>
+        public static IObservable<CollectionAddRemoveEvent<T>> ObserveCurrentAddRemove<T>(this IReadOnlyReactiveCollection<T> This) =>
             This.Select((x, i) => new CollectionAddRemoveEvent<T>(i, x, true))
                 .ToObservable()
                 .Concat(This
