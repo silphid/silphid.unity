@@ -17,7 +17,7 @@ namespace Silphid.Sequencit
             return This;
         }
 
-        public static ICompletable ToObservable(this Tween This, bool completeTweenOnDispose = false)
+        public static ICompletable ToCompletable(this Tween This, bool completeTweenOnDispose = false)
         {
             This.Pause();
             return Completable.Create(subscriber =>
@@ -30,7 +30,7 @@ namespace Silphid.Sequencit
 
         public static void AddTween(this ISequencer This, Func<Tween> action)
         {
-            This.Add(() => action().ToObservable());
+            This.Add(() => action().ToCompletable());
         }
     }
 }

@@ -143,17 +143,17 @@ public class Sequencing1 : MonoBehaviour
     // The DOTween extension methods return Tween objects, which we convert to an ICompletable using ToObservable().
     // Disposing that observable has the effect of killing (stopping) the underlying Tween.
     private ICompletable RotateCube(Vector3 angle) =>
-        Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
+        Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToCompletable();
 
     private ICompletable ResetCubeRotation() =>
-        Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToObservable();
+        Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToCompletable();
 
     // Move cube
 
     private ICompletable MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
     private ICompletable MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
     private ICompletable MoveCubeTo(Vector3 position) =>
-        Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToObservable();
+        Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToCompletable();
 
     // Show or hide text
 
@@ -161,6 +161,6 @@ public class Sequencing1 : MonoBehaviour
     private ICompletable HideText() => ShowHideText(NormalTextPosition, 0);
     private ICompletable ShowHideText(Vector3 position, float alpha) =>
         Parallel.Create(
-            () => Text.GetComponent<CanvasGroup>().DOFadeTo(alpha, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable(),
-            () => Text.transform.DOLocalMove(position, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToObservable());
+            () => Text.GetComponent<CanvasGroup>().DOFadeTo(alpha, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToCompletable(),
+            () => Text.transform.DOLocalMove(position, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToCompletable());
 }

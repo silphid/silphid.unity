@@ -65,9 +65,9 @@ namespace Silphid.Sequencit
 
         public abstract IDisposable Subscribe(ICompletableObserver completableObserver);
 
-        protected IEnumerable<ICompletable> GetObservables()
+        protected IEnumerable<ICompletable> GetCompletables()
         {
-            var observables = _items.Select(GetObservableFromItem);
+            var observables = _items.Select(GetCompletableFromItem);
             if (_action == null)
                 return observables;
 
@@ -75,7 +75,7 @@ namespace Silphid.Sequencit
             _action(collector);
             
             return collector.Items
-                .Select(GetObservableFromItem)
+                .Select(GetCompletableFromItem)
                 .Concat(observables);
         }
 

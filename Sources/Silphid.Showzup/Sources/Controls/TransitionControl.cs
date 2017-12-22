@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using log4net;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -10,6 +11,8 @@ namespace Silphid.Showzup
 {
     public class TransitionControl : SinglePresenterControl
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TransitionControl));
+
         #region Fields
 
         private GameObject _sourceContainer;
@@ -45,7 +48,8 @@ namespace Silphid.Showzup
 
         #region Implementation
 
-        protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options)
+        protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType,
+            Options options)
         {
             var presentation = base.CreatePresentation(viewModel, sourceView, targetViewType, options);
             presentation.Transition = ResolveTransition(presentation, options);
@@ -90,7 +94,8 @@ namespace Silphid.Showzup
 
                     seq.Add(() => Observable.NextFrame());
                     seq.Add(() =>
-                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirectionOrDefault(), duration));
+                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirectionOrDefault(),
+                            duration));
 
                     PostHide(sourceView, options, seq);
                     Construct(targetView, options, seq);
@@ -100,12 +105,12 @@ namespace Silphid.Showzup
                 })
                 .DoOnError(ex =>
                 {
-                    // ReSharper disable once MergeSequentialChecks
-                    // ReSharper disable once UseNullPropagation
-                    if (targetView != null && targetView.GameObject != null)
+                    if (ex is TransitionParentDestroyedException)
+                        Log.Error("TransitionControl has been destroyed");
+                    else if (targetView != null && targetView.GameObject != null)
                         targetView.GameObject.Destroy();
 
-                    Debug.LogException(
+                    Log.Error(
                         new Exception($"Failed to transition from {sourceView} to {targetView}.", ex));
                 });
         }

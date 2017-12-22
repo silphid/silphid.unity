@@ -179,9 +179,9 @@ namespace Silphid.Sequencit
             if (!_isStarted || _isExecuting || _items.Count == 0)
                 return;
 
-            var item = _items.Dequeue();
-            var observable = GetObservableFromItem(item);
             _isExecuting = true;
+            var item = _items.Dequeue();
+            var observable = GetCompletableFromItem(item);
             _currentExecution = observable
                 .Finally(() =>
                 {

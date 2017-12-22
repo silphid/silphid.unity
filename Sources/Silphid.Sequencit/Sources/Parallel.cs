@@ -40,7 +40,7 @@ namespace Silphid.Sequencit
         #region ICompletable members
 
         public override IDisposable Subscribe(ICompletableObserver observer) =>
-            GetObservables()
+            GetCompletables()
                 .WhenAll()
                 .Subscribe(observer);
 

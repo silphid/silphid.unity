@@ -103,6 +103,8 @@ namespace Silphid.Showzup
         [Pure]
         protected override IObservable<IView> PresentView(object input, Options options = null)
         {
+            MutableState.Value = PresenterState.Loading;
+            
             // If input is observable, resolve it first
             var observable = input as IObservable<object>;
             if (observable != null)
@@ -169,9 +171,7 @@ namespace Silphid.Showzup
         #region Private methods
 
         protected virtual IObservable<IView> PresentInternal(object input, Options options)
-        {
-            MutableState.Value = PresenterState.Loading;
-            
+        {            
             var models = (input as List<object>)?.ToList() ?? 
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??

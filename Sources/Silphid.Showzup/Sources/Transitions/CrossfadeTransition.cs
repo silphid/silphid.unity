@@ -1,5 +1,4 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
@@ -22,7 +21,7 @@ namespace Silphid.Showzup
 
             if (sourceContainer == null)
                 return;
-            
+
             if (SourceAboveTarget)
                 sourceContainer.transform.SetAsLastSibling();
             else
@@ -32,25 +31,36 @@ namespace Silphid.Showzup
         public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
         {
             var sequencer = IsSequential ? (ISequencer) Sequence.Create() : Parallel.Create();
-            PerformTransition(sourceContainer, targetContainer, IsSequential ? duration *  0.5f : duration, sequencer);
+            PerformTransition(sourceContainer, targetContainer, IsSequential ? duration * 0.5f : duration, sequencer);
             return sequencer;
         }
 
-        private void PerformTransition(GameObject sourceContainer, GameObject targetContainer, float duration, ISequencer sequencer)
+        private void PerformTransition(GameObject sourceContainer, GameObject targetContainer, float duration,
+            ISequencer sequencer)
         {
             if (sourceContainer != null && FadeOutSource)
-                sourceContainer.GetComponent<CanvasGroup>()
+            {
+                var canvasGroup = sourceContainer.GetComponent<CanvasGroup>();
+                canvasGroup
                     .DOFadeOut(duration)
                     .SetEase(Ease)
                     .SetAutoKill()
-                    .In(sequencer);
+                    .In(sequencer)
+                    .AsDisposable()
+                    .AddTo(canvasGroup);
+            }
 
             if (FadeInTarget)
-                targetContainer.GetComponent<CanvasGroup>()
+            {
+                var canvasGroup = targetContainer.GetComponent<CanvasGroup>();
+                canvasGroup
                     .DOFadeIn(duration)
                     .SetEase(Ease)
                     .SetAutoKill()
-                    .In(sequencer);
+                    .In(sequencer)
+                    .AsDisposable()
+                    .AddTo(canvasGroup);
+            }
         }
 
         public override void Complete(GameObject sourceContainer, GameObject targetContainer)

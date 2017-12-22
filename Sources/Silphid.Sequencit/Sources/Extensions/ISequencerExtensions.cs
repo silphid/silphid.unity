@@ -49,11 +49,7 @@ namespace Silphid.Sequencit
         }
 
         public static object AddAction(this ISequencer This, Action action) =>
-            This.Add(() =>
-            {
-                action();
-                return new Instant();
-            });
+            This.Add(() => new Instant(action));
 
         // Adds an item that pauses sequencing until a given disposable is disposed.
         // It returns that disposable immediately, so that you store it and dispose

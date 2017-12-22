@@ -5,8 +5,8 @@ namespace Silphid.Sequencit
 {
     public abstract class SequencerBase
     {
-        protected ICompletable GetObservableFromItem(object item) =>
+        protected static ICompletable GetCompletableFromItem(object item) =>
             item as ICompletable ??
-            ((Func<ICompletable>) item)();
+            Completable.Defer((Func<ICompletable>) item);
     }
 }

@@ -42,14 +42,18 @@ namespace Silphid.Showzup
                         .DOAnchorPos(offset, duration, true)
                         .SetEase(Ease)
                         .SetAutoKill()
-                        .In(parallel);
+                        .In(parallel)
+                        .AsDisposable()
+                        .AddTo(sourceTransform);
                 }
 
                 targetTransform
                     .DOAnchorPos(Vector2.zero, duration)
                     .SetEase(Ease)
                     .SetAutoKill()
-                    .In(parallel);
+                    .In(parallel)
+                    .AsDisposable()
+                    .AddTo(targetTransform);
             });
         }
 

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+using DG.Tweening;
+using Silphid.Extensions;
 using Silphid.Sequencit;
 using UniRx;
 using UnityEngine;
@@ -32,18 +33,24 @@ namespace Silphid.Showzup
                 if (sourceContainer != null)
                 {
                     var scale = direction == Direction.Forward ? EndScale : StartScale;
-                    ((RectTransform) sourceContainer.transform)
+                    var rectTransform = (RectTransform) sourceContainer.transform;
+                    rectTransform
                         .DOScale(scale, duration)
                         .SetEase(Ease)
                         .SetAutoKill()
-                        .In(step);
+                        .In(step)
+                        .AsDisposable()
+                        .AddTo(rectTransform);
                 }
 
-                ((RectTransform) targetContainer.transform)
+                var targetRectTransform = (RectTransform) targetContainer.transform;
+                targetRectTransform
                     .DOScale(1f, duration)
                     .SetEase(Ease)
                     .SetAutoKill()
-                    .In(step);
+                    .In(step)
+                    .AsDisposable()
+                    .AddTo(targetRectTransform);
             });
         }
 
