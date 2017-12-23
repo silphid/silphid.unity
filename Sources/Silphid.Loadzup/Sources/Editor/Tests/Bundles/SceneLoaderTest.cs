@@ -1,271 +1,273 @@
 ﻿using System;
 using NSubstitute;
 using NUnit.Framework;
-using Silphid.Loadzup;
 using Silphid.Loadzup.Bundles;
 using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneLoaderTest
+namespace Silphid.Loadzup.Test.Bundles
 {
-    private const string SceneName = "testscene";
-    private const int SceneIndex = 1;
-    private ISceneManager _sceneManager;
-    private SceneLoader _fixture;
-    private IScene _scene;
-
-    private Uri SceneNameUri => new Uri($"scene://{SceneName}");
-    private Uri SceneIndexUri => new Uri($"scene://#{SceneIndex}");
-    private Uri WrongSceneIndexUri => new Uri($"scene://#E{SceneIndex}");
-
-    #region SetUp
-
-    [SetUp]
-    public void SetUp()
+    public class SceneLoaderTest
     {
-        _sceneManager = Substitute.For<ISceneManager>();
-        _fixture = new SceneLoader(_sceneManager);
+        private const string SceneName = "testscene";
+        private const int SceneIndex = 1;
+        private ISceneManager _sceneManager;
+        private SceneLoader _fixture;
+        private IScene _scene;
 
-        _scene = Substitute.For<IScene>();
+        private Uri SceneNameUri => new Uri($"scene://{SceneName}");
+        private Uri SceneIndexUri => new Uri($"scene://#{SceneIndex}");
+        private Uri WrongSceneIndexUri => new Uri($"scene://#E{SceneIndex}");
 
-        _sceneManager.GetSceneByName(Arg.Any<string>())
-            .Returns(_scene);
-        _sceneManager.GetSceneAt(Arg.Any<int>())
-            .Returns(_scene);
-    }
+        #region SetUp
 
-    private void SetUpLoadSceneAsync(IObservable<AsyncOperation> returnedObservable)
-    {
-        _sceneManager.LoadSceneAsync(Arg.Any<int>(), Arg.Any<LoadSceneMode>())
-            .Returns(returnedObservable);
+        [SetUp]
+        public void SetUp()
+        {
+            _sceneManager = Substitute.For<ISceneManager>();
+            _fixture = new SceneLoader(_sceneManager);
 
-        _sceneManager.LoadSceneAsync(Arg.Any<string>(), Arg.Any<LoadSceneMode>())
-            .Returns(returnedObservable);
-    }
+            _scene = Substitute.For<IScene>();
 
-    private void SetUpIsValid(bool isValid = true)
-    {
-        _scene.IsValid().Returns(isValid);
-    }
+            _sceneManager.GetSceneByName(Arg.Any<string>())
+                .Returns(_scene);
+            _sceneManager.GetSceneAt(Arg.Any<int>())
+                .Returns(_scene);
+        }
 
-    #endregion
+        private void SetUpLoadSceneAsync(IObservable<AsyncOperation> returnedObservable)
+        {
+            _sceneManager.LoadSceneAsync(Arg.Any<int>(), Arg.Any<LoadSceneMode>())
+                .Returns(returnedObservable);
 
-    #region CheckMethodCalls
+            _sceneManager.LoadSceneAsync(Arg.Any<string>(), Arg.Any<LoadSceneMode>())
+                .Returns(returnedObservable);
+        }
 
-    private void CheckReceivedAnyMethodCalls(bool isSceneIndex, LoadSceneMode mode)
-    {
-        CheckReceivedLoadAsyncCalls(isSceneIndex, mode);
-        CheckReceivedGetSceneCalls(isSceneIndex);
-    }
+        private void SetUpIsValid(bool isValid = true)
+        {
+            _scene.IsValid().Returns(isValid);
+        }
 
-    private void CheckReceivedLoadAsyncCalls(bool isSceneIndex, LoadSceneMode mode)
-    {
-        // Set calls if by index
-        var sceneIndexCall = isSceneIndex ? 1 : 0;
-        var sceneIndex = isSceneIndex ? SceneIndex : Arg.Any<int>();
-        _sceneManager
-            .Received(sceneIndexCall)
-            .LoadSceneAsync(sceneIndex, mode);
+        #endregion
 
-        // Set calls if by name
-        var sceneNameCall = !isSceneIndex ? 1 : 0;
-        var sceneName = !isSceneIndex ? SceneName : Arg.Any<string>();
-        _sceneManager
-            .Received(sceneNameCall)
-            .LoadSceneAsync(sceneName, mode);
-    }
+        #region CheckMethodCalls
 
-    private void CheckReceivedGetSceneCalls(bool isSceneIndex)
-    {
-        // Set calls if by index
-        var sceneIndexCall = isSceneIndex ? 1 : 0;
-        var sceneIndex = isSceneIndex ? SceneIndex : Arg.Any<int>();
-        _sceneManager
-            .Received(sceneIndexCall)
-            .GetSceneAt(sceneIndex);
+        private void CheckReceivedAnyMethodCalls(bool isSceneIndex, LoadSceneMode mode)
+        {
+            CheckReceivedLoadAsyncCalls(isSceneIndex, mode);
+            CheckReceivedGetSceneCalls(isSceneIndex);
+        }
 
-        // Set calls if by name
-        var sceneNameCall = !isSceneIndex ? 1 : 0;
-        var sceneName = !isSceneIndex ? SceneName : Arg.Any<string>();
-        _sceneManager
-            .Received(sceneNameCall)
-            .GetSceneByName(sceneName);
-    }
+        private void CheckReceivedLoadAsyncCalls(bool isSceneIndex, LoadSceneMode mode)
+        {
+            // Set calls if by index
+            var sceneIndexCall = isSceneIndex ? 1 : 0;
+            var sceneIndex = isSceneIndex ? SceneIndex : Arg.Any<int>();
+            _sceneManager
+                .Received(sceneIndexCall)
+                .LoadSceneAsync(sceneIndex, mode);
 
-    private void CheckDoNotReceivedAnyMethodNoCalls()
-    {
-        CheckDoNotReceivedLoadAsyncCalls();
-        CheckDoNotReceivedGetSceneCalls();
-    }
+            // Set calls if by name
+            var sceneNameCall = !isSceneIndex ? 1 : 0;
+            var sceneName = !isSceneIndex ? SceneName : Arg.Any<string>();
+            _sceneManager
+                .Received(sceneNameCall)
+                .LoadSceneAsync(sceneName, mode);
+        }
 
-    private void CheckDoNotReceivedLoadAsyncCalls()
-    {
-        _sceneManager
-            .DidNotReceive()
-            .LoadSceneAsync(Arg.Any<int>(), Arg.Any<LoadSceneMode>());
-        _sceneManager
-            .DidNotReceive()
-            .LoadSceneAsync(Arg.Any<string>(), Arg.Any<LoadSceneMode>());
-    }
+        private void CheckReceivedGetSceneCalls(bool isSceneIndex)
+        {
+            // Set calls if by index
+            var sceneIndexCall = isSceneIndex ? 1 : 0;
+            var sceneIndex = isSceneIndex ? SceneIndex : Arg.Any<int>();
+            _sceneManager
+                .Received(sceneIndexCall)
+                .GetSceneAt(sceneIndex);
 
-    private void CheckDoNotReceivedGetSceneCalls()
-    {
-        _sceneManager
-            .DidNotReceive()
-            .GetSceneAt(Arg.Any<int>());
-        _sceneManager
-            .DidNotReceive()
-            .GetSceneByName(Arg.Any<string>());
-    }
+            // Set calls if by name
+            var sceneNameCall = !isSceneIndex ? 1 : 0;
+            var sceneName = !isSceneIndex ? SceneName : Arg.Any<string>();
+            _sceneManager
+                .Received(sceneNameCall)
+                .GetSceneByName(sceneName);
+        }
 
-    #endregion
+        private void CheckDoNotReceivedAnyMethodNoCalls()
+        {
+            CheckDoNotReceivedLoadAsyncCalls();
+            CheckDoNotReceivedGetSceneCalls();
+        }
 
-    private void TestSceneLoadMode(Uri uri, bool isSceneLoadAdditive)
-    {
-        SetUpIsValid();
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
-        var options = new Options {IsAdditiveSceneLoading = isSceneLoadAdditive};
+        private void CheckDoNotReceivedLoadAsyncCalls()
+        {
+            _sceneManager
+                .DidNotReceive()
+                .LoadSceneAsync(Arg.Any<int>(), Arg.Any<LoadSceneMode>());
+            _sceneManager
+                .DidNotReceive()
+                .LoadSceneAsync(Arg.Any<string>(), Arg.Any<LoadSceneMode>());
+        }
 
-        var result = _fixture.Load<Scene>(uri, options).Wait();
+        private void CheckDoNotReceivedGetSceneCalls()
+        {
+            _sceneManager
+                .DidNotReceive()
+                .GetSceneAt(Arg.Any<int>());
+            _sceneManager
+                .DidNotReceive()
+                .GetSceneByName(Arg.Any<string>());
+        }
 
-        Assert.That(_scene.Scene, Is.EqualTo(result));
-    }
+        #endregion
 
-    private void TestSceneLoadModeWithoutOptions(Uri uri)
-    {
-        SetUpIsValid();
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+        private void TestSceneLoadMode(Uri uri, bool isSceneLoadAdditive)
+        {
+            SetUpIsValid();
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+            var options = new Options {IsAdditiveSceneLoading = isSceneLoadAdditive};
 
-        var result = _fixture.Load<Scene>(uri).Wait();
+            var result = _fixture.Load<Scene>(uri, options).Wait();
 
-        Assert.That(_scene.Scene, Is.EqualTo(result));
-    }
+            Assert.That(_scene.Scene, Is.EqualTo(result));
+        }
 
-    [Test]
-    public void LoadSceneByIndex_ReturnScene()
-    {
-        SetUpIsValid();
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+        private void TestSceneLoadModeWithoutOptions(Uri uri)
+        {
+            SetUpIsValid();
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
 
-        var result = _fixture.Load<Scene>(SceneIndexUri).Wait();
+            var result = _fixture.Load<Scene>(uri).Wait();
 
-        CheckReceivedAnyMethodCalls(true, Arg.Any<LoadSceneMode>());
+            Assert.That(_scene.Scene, Is.EqualTo(result));
+        }
 
-        Assert.That(_scene.Scene, Is.EqualTo(result));
-    }
+        [Test]
+        public void LoadSceneByIndex_ReturnScene()
+        {
+            SetUpIsValid();
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
 
-    [Test]
-    public void LoadSceneByName_ReturnScene()
-    {
-        SetUpIsValid();
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+            var result = _fixture.Load<Scene>(SceneIndexUri).Wait();
 
-        var result = _fixture.Load<Scene>(SceneNameUri).Wait();
+            CheckReceivedAnyMethodCalls(true, Arg.Any<LoadSceneMode>());
 
-        CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
+            Assert.That(_scene.Scene, Is.EqualTo(result));
+        }
 
-        Assert.That(_scene.Scene, Is.EqualTo(result));
-    }
+        [Test]
+        public void LoadSceneByName_ReturnScene()
+        {
+            SetUpIsValid();
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
 
-    [Test]
-    public void LoadSceneByWrongIndex_ThrowsInvalidOperationException()
-    {
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+            var result = _fixture.Load<Scene>(SceneNameUri).Wait();
 
-        Assert.Throws<InvalidOperationException>(() =>
-            _fixture
-                .Load<Scene>(WrongSceneIndexUri)
-                .Wait());
+            CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
 
-        CheckDoNotReceivedAnyMethodNoCalls();
-    }
+            Assert.That(_scene.Scene, Is.EqualTo(result));
+        }
 
-    [Test]
-    public void LoadSceneByNameWithAdditiveMode_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadMode(SceneNameUri, true);
-        CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
-    }
+        [Test]
+        public void LoadSceneByWrongIndex_ThrowsInvalidOperationException()
+        {
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
 
-    [Test]
-    public void LoadSceneByNameWithSingleMode_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadMode(SceneNameUri, false);
-        CheckReceivedAnyMethodCalls(false, LoadSceneMode.Single);
-    }
+            Assert.Throws<InvalidOperationException>(() =>
+                _fixture
+                    .Load<Scene>(WrongSceneIndexUri)
+                    .Wait());
 
-    [Test]
-    public void LoadSceneByIndexWithAdditiveMode_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadMode(SceneIndexUri, true);
-        CheckReceivedAnyMethodCalls(true, LoadSceneMode.Additive);
-    }
+            CheckDoNotReceivedAnyMethodNoCalls();
+        }
 
-    [Test]
-    public void LoadSceneByIndexWithSingleMode_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadMode(SceneIndexUri, false);
-        CheckReceivedAnyMethodCalls(true, LoadSceneMode.Single);
-    }
+        [Test]
+        public void LoadSceneByNameWithAdditiveMode_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadMode(SceneNameUri, true);
+            CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
+        }
 
-    [Test]
-    public void LoadSceneByNameWithoutOptions_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadModeWithoutOptions(SceneNameUri);
-        CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
-    }
+        [Test]
+        public void LoadSceneByNameWithSingleMode_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadMode(SceneNameUri, false);
+            CheckReceivedAnyMethodCalls(false, LoadSceneMode.Single);
+        }
 
-    [Test]
-    public void LoadSceneByIndexWithoutOptions_ReturnScene()
-    {
-        SetUpIsValid();
-        TestSceneLoadModeWithoutOptions(SceneIndexUri);
-        CheckReceivedAnyMethodCalls(true, LoadSceneMode.Additive);
-    }
+        [Test]
+        public void LoadSceneByIndexWithAdditiveMode_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadMode(SceneIndexUri, true);
+            CheckReceivedAnyMethodCalls(true, LoadSceneMode.Additive);
+        }
 
-    [Test]
-    public void CannotLoadSceneByName_ThrowsException()
-    {
-        SetUpLoadSceneAsync(Observable.Throw<AsyncOperation>(new Exception()));
+        [Test]
+        public void LoadSceneByIndexWithSingleMode_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadMode(SceneIndexUri, false);
+            CheckReceivedAnyMethodCalls(true, LoadSceneMode.Single);
+        }
 
-        Assert.Throws<Exception>(() => _fixture.Load<Scene>(SceneNameUri).Wait());
+        [Test]
+        public void LoadSceneByNameWithoutOptions_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadModeWithoutOptions(SceneNameUri);
+            CheckReceivedAnyMethodCalls(false, LoadSceneMode.Additive);
+        }
 
-        CheckReceivedLoadAsyncCalls(false, LoadSceneMode.Additive);
-        CheckDoNotReceivedGetSceneCalls();
-    }
+        [Test]
+        public void LoadSceneByIndexWithoutOptions_ReturnScene()
+        {
+            SetUpIsValid();
+            TestSceneLoadModeWithoutOptions(SceneIndexUri);
+            CheckReceivedAnyMethodCalls(true, LoadSceneMode.Additive);
+        }
 
-    [Test]
-    public void CannotLoadSceneByIndex_ThrowsException()
-    {
-        SetUpLoadSceneAsync(Observable.Throw<AsyncOperation>(new Exception()));
+        [Test]
+        public void CannotLoadSceneByName_ThrowsException()
+        {
+            SetUpLoadSceneAsync(Observable.Throw<AsyncOperation>(new Exception()));
 
-        Assert.Throws<Exception>(() => _fixture.Load<Scene>(SceneIndexUri).Wait());
+            Assert.Throws<Exception>(() => _fixture.Load<Scene>(SceneNameUri).Wait());
 
-        CheckReceivedLoadAsyncCalls(true, LoadSceneMode.Additive);
-        CheckDoNotReceivedGetSceneCalls();
-    }
+            CheckReceivedLoadAsyncCalls(false, LoadSceneMode.Additive);
+            CheckDoNotReceivedGetSceneCalls();
+        }
 
-    [Test]
-    public void LoadSceneByInvalidName_ReturnInvalidOperation()
-    {
-        SetUpIsValid(false);
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+        [Test]
+        public void CannotLoadSceneByIndex_ThrowsException()
+        {
+            SetUpLoadSceneAsync(Observable.Throw<AsyncOperation>(new Exception()));
 
-        Assert.Throws<InvalidOperationException>(() =>_fixture.Load<Scene>(SceneNameUri).Wait());
-    }
+            Assert.Throws<Exception>(() => _fixture.Load<Scene>(SceneIndexUri).Wait());
 
-    [Test]
-    public void LoadSceneByInvalidIndex_ReturnInvalidOperation()
-    {
-        SetUpIsValid(false);
-        SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+            CheckReceivedLoadAsyncCalls(true, LoadSceneMode.Additive);
+            CheckDoNotReceivedGetSceneCalls();
+        }
 
-        Assert.Throws<InvalidOperationException>(() => _fixture.Load<Scene>(SceneIndexUri).Wait());
+        [Test]
+        public void LoadSceneByInvalidName_ReturnInvalidOperation()
+        {
+            SetUpIsValid(false);
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+
+            Assert.Throws<InvalidOperationException>(() =>_fixture.Load<Scene>(SceneNameUri).Wait());
+        }
+
+        [Test]
+        public void LoadSceneByInvalidIndex_ReturnInvalidOperation()
+        {
+            SetUpIsValid(false);
+            SetUpLoadSceneAsync(Observable.Return(new AsyncOperation()));
+
+            Assert.Throws<InvalidOperationException>(() => _fixture.Load<Scene>(SceneIndexUri).Wait());
+        }
     }
 }

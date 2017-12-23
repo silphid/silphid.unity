@@ -14,7 +14,7 @@
         }
 
         public override string ToString() =>
-            Binding?.ToString() ??
+            Binding?.ConcretionType?.Name ??
             "Unknown";
     }
 }

@@ -6,7 +6,6 @@ namespace Silphid.Injexit.Test
     [TestFixture]
     public class ReferenceTest
     {
-        public interface IFoo {}
         public interface IBar {}
 
         public class Foo
@@ -34,8 +33,8 @@ namespace Silphid.Injexit.Test
         {
             var bar = new Bar();
 
-            var BarId = _fixture.BindInstance(bar).Id();
-            _fixture.BindReference<IBar>(BarId);
+            var barId = _fixture.BindInstance(bar).Id();
+            _fixture.BindReference<IBar>(barId);
 
             var bar2 = _fixture.Resolve<IBar>();
 
@@ -46,11 +45,11 @@ namespace Silphid.Injexit.Test
         public void ShouldResolveReferenceToBindingIdDefinedOutsideUsingScope()
         {
             var bar = new Bar();
-            var BarId = new BindingId();
+            var barId = new BindingId();
             
-            _fixture.BindInstance(bar).Id(BarId);
+            _fixture.BindInstance(bar).Id(barId);
             _fixture.BindToSelf<Foo>().Using(x =>
-                x.BindReference<IBar>(BarId));
+                x.BindReference<IBar>(barId));
 
             var foo = _fixture.Resolve<Foo>();
 
@@ -60,24 +59,23 @@ namespace Silphid.Injexit.Test
         [Test]
         public void ShouldThrowIfBindingIdDoesNotImplementReferenceAbstractionType()
         {
-            var FooId = new BindingId();
-            _fixture.BindToSelf<Foo>().Id(FooId);
-            _fixture.BindReference<IBar>(FooId);
+            var fooId = _fixture.BindAnonymous<Foo>().Id();
+            _fixture.BindReference<IBar>(fooId);
 
             var exception = Assert.Throws<DependencyException>(() => _fixture.Resolve<IBar>());
 
-            Assert.That(exception.Message, Does.StartWith("Binding FooId concrete type Foo is not assignable to Reference abstraction type IBar"));
+            Assert.That(exception.Message, Does.StartWith("BindingId concrete type Foo is not assignable to Reference abstraction type IBar"));
         }
 
         [Test]
         public void ShouldThrowIfBindingReferenceToUnboundId()
         {
-            var FooId = new BindingId();
-            _fixture.BindReference<IBar>(FooId);
+            var fooId = new BindingId();
+            _fixture.BindReference<IBar>(fooId);
             
             var exception = Assert.Throws<DependencyException>(() => _fixture.Resolve<IBar>());
 
-            Assert.That(exception.Message, Does.StartWith("No binding bound to FooId"));
+            Assert.That(exception.Message, Does.StartWith("No binding associated with Id for abstraction type IBar. You are missing a call to .Id(...)"));
         }
     }
 }

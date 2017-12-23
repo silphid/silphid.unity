@@ -212,28 +212,7 @@ namespace Silphid.Injexit
         private Result GetFactoryForBinding(Binding binding, Type dependentType, string name)
         {
             if (binding.Reference != null)
-            {
-                var referenceBinding = binding.Reference.Binding;
-                if (referenceBinding == null)
-                    return new Result(
-                        new DependencyException(
-                            binding.AbstractionType,
-                            dependentType,
-                            name,
-                            $"No binding bound to {binding.Reference}",
-                            this));
-
-                if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
-                    return new Result(
-                        new DependencyException(binding.AbstractionType, dependentType, name,
-                            $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not " +
-                            $"assignable to Reference abstraction type {binding.AbstractionType.Name}", this));
-
-                if (Log.IsDebugEnabled)
-                    Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
-
-                return GetFactoryForBinding(referenceBinding, dependentType, name);
-            }
+                return GetFactoryForReferenceBinding(binding, dependentType, name);
 
             if (binding.Lifetime == Lifetime.Transient)
                 return GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver,
@@ -244,6 +223,31 @@ namespace Silphid.Injexit
                 ?? (binding.Instance = GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver,
                         binding.IsOverrideResolverRecursive, dependentType, name)
                     .ResolveInstance(resolver.BaseResolver)));
+        }
+
+        private Result GetFactoryForReferenceBinding(Binding binding, Type dependentType, string name)
+        {
+            var referenceBinding = binding.Reference.Binding;
+            if (referenceBinding == null)
+                return new Result(
+                    new DependencyException(
+                        binding.AbstractionType,
+                        dependentType,
+                        name,
+                        $"No binding associated with Id for abstraction type {binding.AbstractionType.Name}. " +
+                        "You are missing a call to .Id(...)",
+                        this));
+
+            if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
+                return new Result(
+                    new DependencyException(binding.AbstractionType, dependentType, name,
+                        $"BindingId concrete type {referenceBinding.ConcretionType.Name} is not " +
+                        $"assignable to Reference abstraction type {binding.AbstractionType.Name}", this));
+
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
+
+            return GetFactoryForBinding(referenceBinding, dependentType, name);
         }
 
         private Result GetFactoryForConcretion(Type concretionType, IResolver overrideResolver, bool isRecursive,
