@@ -92,6 +92,7 @@
     <Compile Include="Sources\Extensions\UniRx\IObservableQuaternionExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableVector2Extensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableVector3Extensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\ReactiveCollectionExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\ReactivePropertyExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\ISchedulerProvider.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\SchedulerProvider.cs" />

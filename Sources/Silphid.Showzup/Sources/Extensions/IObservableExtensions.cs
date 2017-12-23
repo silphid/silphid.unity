@@ -26,7 +26,7 @@ namespace Silphid.Showzup
             This.Subscribe(x =>
                 {
                     if (x.IsAdded)
-                        listControl.Add(x.Value);
+                        listControl.Add(x.Value).SubscribeAndForget();
                     else
                         listControl.Remove(x.Value);
                 });
