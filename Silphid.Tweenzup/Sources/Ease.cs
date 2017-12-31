@@ -1,0 +1,38 @@
+﻿namespace Silphid.Tweenzup
+{
+    public enum Ease
+    {
+        Instant,
+        Linear,
+        InQuadratic,
+        OutQuadratic,
+        InOutQuadratic,
+        InCubic,
+        OutCubic,
+        InOutCubic,
+        InQuartic,
+        OutQuartic,
+        InOutQuartic,
+        InQuintic,
+        OutQuintic,
+        InOutQuintic,
+        InSine,
+        OutSine,
+        InOutSine,
+        InCircular,
+        OutCircular,
+        InOutCircular,
+        InExponential,
+        OutExponential,
+        InOutExponential,
+        InElastic,
+        OutElastic,
+        InOutElastic,
+        InBack,
+        OutBack,
+        InOutBack,
+        InBounce,
+        OutBounce,
+        InOutBounce
+    }
+}

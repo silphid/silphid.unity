@@ -1,7 +1,6 @@
-﻿using System;
-using DG.Tweening;
-using Silphid.Extensions;
+﻿using Silphid.Extensions;
 using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
 
@@ -39,21 +38,13 @@ namespace Silphid.Showzup
                     var offset = Offset.Multiply(targetTransform.rect.size) *
                                  (direction == Direction.Forward ? -1 : 1);
                     sourceTransform
-                        .DOAnchorPos(offset, duration, true)
-                        .SetEase(Ease)
-                        .SetAutoKill()
-                        .In(parallel)
-                        .AsDisposable()
-                        .AddTo(sourceTransform);
+                        .TweenAnchorPosTo(offset, duration, Ease.GetFunc())
+                        .In(parallel);
                 }
 
                 targetTransform
-                    .DOAnchorPos(Vector2.zero, duration)
-                    .SetEase(Ease)
-                    .SetAutoKill()
-                    .In(parallel)
-                    .AsDisposable()
-                    .AddTo(targetTransform);
+                    .TweenAnchorPosTo(Vector2.zero, duration, Ease.GetFunc())
+                    .In(parallel);
             });
         }
 

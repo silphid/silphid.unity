@@ -233,6 +233,10 @@
     <Compile Include="Sources\ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Silphid.Tweenzup\Silphid.Tweenzup.csproj">
+      <Project>{61F136FD-90CD-4D6C-BB1C-43B6503CB31F}</Project>
+      <Name>Silphid.Tweenzup</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Silphid.Commons\Silphid.Commons.csproj">
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Commons</Name>

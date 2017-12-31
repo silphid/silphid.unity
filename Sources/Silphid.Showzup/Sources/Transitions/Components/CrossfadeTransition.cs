@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+﻿using Silphid.Tweenzup;
 
 namespace Silphid.Showzup.Components
 {

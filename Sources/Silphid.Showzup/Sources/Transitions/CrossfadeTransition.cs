@@ -1,9 +1,7 @@
-﻿using DG.Tweening;
-using Silphid.Extensions;
-using Silphid.Sequencit;
+﻿using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
-using Sequence = Silphid.Sequencit.Sequence;
 
 namespace Silphid.Showzup
 {
@@ -42,24 +40,16 @@ namespace Silphid.Showzup
             {
                 var canvasGroup = sourceContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .DOFadeOut(duration)
-                    .SetEase(Ease)
-                    .SetAutoKill()
-                    .In(sequencer)
-                    .AsDisposable()
-                    .AddTo(canvasGroup);
+                    .FadeOut(duration, Ease)
+                    .In(sequencer);
             }
 
             if (FadeInTarget)
             {
                 var canvasGroup = targetContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .DOFadeIn(duration)
-                    .SetEase(Ease)
-                    .SetAutoKill()
-                    .In(sequencer)
-                    .AsDisposable()
-                    .AddTo(canvasGroup);
+                    .FadeIn(duration, Ease)
+                    .In(sequencer);
             }
         }
 

@@ -30,17 +30,24 @@ namespace Silphid.Extensions
             return color.WithAlpha(1);
         }
 
+        [Pure]
+        public static bool IsAlmostEqualTo(this Color This, Color other) =>
+            This.r.IsAlmostEqualTo(other.r) &&
+            This.g.IsAlmostEqualTo(other.g) &&
+            This.b.IsAlmostEqualTo(other.b) &&
+            This.a.IsAlmostEqualTo(other.a);
+
         /// <summary>
-        /// Returns interpolated color at given ratio, between This and target colors.
+        /// Uses This value as ratio to interpolate between source and target.
         /// </summary>
         [Pure]
-        public static Color InterpolateTo(this Color This, Color target, float ratio)
+        public static Color Lerp(this float This, Color source, Color target)
         {
             return new Color(
-                This.r + ((target.r - This.r) * ratio),
-                This.g + ((target.g - This.g) * ratio),
-                This.b + ((target.b - This.b) * ratio),
-                This.a + ((target.a - This.a) * ratio));
+                source.r + (target.r - source.r) * This,
+                source.g + (target.g - source.g) * This,
+                source.b + (target.b - source.b) * This,
+                source.a + (target.a - source.a) * This);
         }
     }
 }

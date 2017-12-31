@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if DOTWEEN
+
+using System;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -154,3 +156,5 @@ namespace Silphid.Extensions
             Disposable.Create(() => This.Kill(complete));
     }
 }
+
+#endif

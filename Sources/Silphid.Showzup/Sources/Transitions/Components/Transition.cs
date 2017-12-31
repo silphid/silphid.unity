@@ -1,6 +1,5 @@
 using UniRx;
 using UnityEngine;
-using Trans = Silphid.Showzup.Transition;
 
 namespace Silphid.Showzup.Components
 {

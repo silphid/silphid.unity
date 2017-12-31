@@ -53,5 +53,23 @@ namespace Silphid.Extensions
             smoothness.Lerp(This, previousValue);
 
         #endregion
+
+        #region Comparison
+
+        [Pure]
+        public static bool IsAlmostEqualTo(this Quaternion This, Quaternion other) =>
+            This.x.IsAlmostEqualTo(other.x) &&
+            This.y.IsAlmostEqualTo(other.y) &&
+            This.z.IsAlmostEqualTo(other.z) &&
+            This.w.IsAlmostEqualTo(other.w);
+
+        [Pure]
+        public static bool IsAlmostEqualTo(this Quaternion This, Quaternion other, float epsilon) =>
+            This.x.IsAlmostEqualTo(other.x, epsilon) &&
+            This.y.IsAlmostEqualTo(other.y, epsilon) &&
+            This.z.IsAlmostEqualTo(other.z, epsilon) &&
+            This.w.IsAlmostEqualTo(other.w, epsilon);
+
+        #endregion
     }
 }

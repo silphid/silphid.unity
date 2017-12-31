@@ -74,6 +74,7 @@
     <Compile Include="Sources\Extensions\System\DictionaryExtensions.cs" />
     <Compile Include="Sources\Extensions\System\DoubleExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ExceptionExtensions.cs" />
+    <Compile Include="Sources\Extensions\System\FloatEaseExtensions.cs" />
     <Compile Include="Sources\Extensions\System\FloatExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ICustomAttributeProviderExtensions.cs" />
     <Compile Include="Sources\Extensions\System\IEnumerableExtensions.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Sources\Extensions\UniRx\AsyncOperationExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\ICompletableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IEnumerableExtensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\IObservableColorExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableFloatExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableQuaternionExtensions.cs" />
