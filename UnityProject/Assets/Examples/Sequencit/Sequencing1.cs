@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Silphid.Extensions;
 using Silphid.Sequencit;
 using Silphid.Tweenzup;
@@ -74,8 +74,9 @@ public class Sequencing1 : MonoBehaviour
                 // method supports any type T for IObservable<T>, but it disregards all emitted values, so it is our responsability
                 // to act upon meaningful values, as we are doing here with the Do() Rx operator to log the loaded greeting as a
                 // side-effect.
-                seq.Add(RotateCubeIndefinitely().Until(
-                    LoadGreeting().Do(x => Debug.Log($"Greeting loaded: {x}"))));
+                seq.Add(RotateCubeIndefinitely()
+                    .Until(LoadGreeting()
+                        .Do(x => Debug.Log($"Greeting loaded: {x}"))));
 
                 // This is a more verbose, but much more flexible overload of AddParallel(), because it passes the new parallel
                 // object to the lambda and you therefore have access to all its extensions methods (like AddSequence() in this case).
@@ -139,8 +140,7 @@ public class Sequencing1 : MonoBehaviour
                 () => RotateCube(Vector3.forward * 180))
             .Repeat();
 
-    // The DOTween extension methods return Tween objects, which we convert to an ICompletable using ToObservable().
-    // Disposing that observable has the effect of killing (stopping) the underlying Tween.
+    // Disposing the returned completable has the effect of unterrupting the underlying Tween
     private ICompletable RotateCube(Vector3 angle) =>
         Cube.transform.RotateLocallyTo(angle, RotateDuration, Ease.InOutCubic);
 
