@@ -7,9 +7,9 @@ namespace Silphid.Tweenzup
     public class TweenObservable : IObservable<float>
     {
         private readonly float _duration;
-        private readonly Func<float, float> _ease;
+        private readonly Ease _ease;
 
-        public TweenObservable(float duration, Func<float, float> ease = null)
+        public TweenObservable(float duration, Ease ease = Ease.Linear)
         {
             _duration = duration;
             _ease = ease;
@@ -32,7 +32,7 @@ namespace Silphid.Tweenzup
 
                 try
                 {
-                    observer.OnNext(_ease?.Invoke(t) ?? t);
+                    observer.OnNext(_ease.Eval(t));
                     if (isCompleted)
                         observer.OnCompleted();
 

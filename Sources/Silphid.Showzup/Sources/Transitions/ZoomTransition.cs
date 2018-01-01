@@ -34,13 +34,13 @@ namespace Silphid.Showzup
                     var scale = direction == Direction.Forward ? EndScale : StartScale;
                     var rectTransform = (RectTransform) sourceContainer.transform;
                     rectTransform
-                        .TweenScaleTo(scale, duration, Ease)
+                        .ScaleLocallyTo(scale, duration, Ease)
                         .In(step);
                 }
 
                 var targetRectTransform = (RectTransform) targetContainer.transform;
                 targetRectTransform
-                    .TweenScaleTo(1f, duration, Ease)
+                    .ScaleLocallyTo(1f, duration, Ease)
                     .In(step);
             });
         }

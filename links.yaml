@@ -16,11 +16,11 @@
 - source: UnityProject/Assets/Plugins/Silphid/Showzup
   target: Sources/Silphid.Showzup/Sources
 
+- source: UnityProject/Assets/Plugins/Silphid/Tweenzup
+  target: Sources/Silphid.Tweenzup/Sources
+
 - source: UnityProject/Assets/Plugins/UniRx
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts
-
-- source: UnityProject/Assets/Plugins/DOTween
-  target: Submodules/DOTween/UnityTests.Unity5/Assets/Demigiant/DOTween
 
 - source: Sources/UniRx/Sources
   target: Submodules/UniRx/Assets/Plugins/UniRx/Scripts

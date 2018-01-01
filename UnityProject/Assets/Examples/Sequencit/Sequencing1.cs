@@ -1,11 +1,10 @@
 ﻿using System;
-using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UnityEngine;
 using UniRx;
 using UnityEngine.UI;
-using Sequence = Silphid.Sequencit.Sequence;
 
 public class Sequencing1 : MonoBehaviour
 {
@@ -143,17 +142,17 @@ public class Sequencing1 : MonoBehaviour
     // The DOTween extension methods return Tween objects, which we convert to an ICompletable using ToObservable().
     // Disposing that observable has the effect of killing (stopping) the underlying Tween.
     private ICompletable RotateCube(Vector3 angle) =>
-        Cube.transform.DOLocalRotate(angle, RotateDuration).SetEase(Ease.InOutCubic).ToCompletable();
+        Cube.transform.RotateLocallyTo(angle, RotateDuration, Ease.InOutCubic);
 
     private ICompletable ResetCubeRotation() =>
-        Cube.transform.DOLocalRotate(Vector3.zero, RotateDuration).SetEase(Ease.InOutCubic).ToCompletable();
+        Cube.transform.RotateLocallyTo(Vector3.zero, RotateDuration, Ease.InOutCubic);
 
     // Move cube
 
     private ICompletable MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
     private ICompletable MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
     private ICompletable MoveCubeTo(Vector3 position) =>
-        Cube.transform.DOLocalMove(position, MoveDuration).SetEase(Ease.InOutCubic).ToCompletable();
+        Cube.transform.MoveLocallyTo(position, MoveDuration, Ease.InOutCubic);
 
     // Show or hide text
 
@@ -161,6 +160,6 @@ public class Sequencing1 : MonoBehaviour
     private ICompletable HideText() => ShowHideText(NormalTextPosition, 0);
     private ICompletable ShowHideText(Vector3 position, float alpha) =>
         Parallel.Create(
-            () => Text.GetComponent<CanvasGroup>().DOFadeTo(alpha, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToCompletable(),
-            () => Text.transform.DOLocalMove(position, ShowHideTextDuration).SetEase(Ease.InOutCubic).ToCompletable());
+            () => Text.GetComponent<CanvasGroup>().FadeTo(alpha, ShowHideTextDuration, Ease.InOutCubic),
+            () => Text.transform.MoveLocallyTo(position, ShowHideTextDuration, Ease.InOutCubic));
 }

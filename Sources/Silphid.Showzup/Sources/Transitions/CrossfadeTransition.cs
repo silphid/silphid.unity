@@ -7,7 +7,7 @@ namespace Silphid.Showzup
 {
     public class CrossfadeTransition : Transition
     {
-        public Ease Ease { get; set; } = Ease.InOutCubic;
+        public Ease Ease { protected get; set; } = Ease.InOutCubic;
         public bool FadeOutSource { get; set; } = true;
         public bool FadeInTarget { get; set; } = true;
         public bool SourceAboveTarget { get; set; } = true;

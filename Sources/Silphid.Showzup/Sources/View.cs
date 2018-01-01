@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections;
-using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
 using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
-using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Silphid.Showzup
 {
@@ -173,7 +173,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .Then(_ => image.DOColor(Color.white, fadeDuration.Value).ToCompletable())
+                            .Then(_ => image.ColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 
@@ -228,7 +228,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .Then(_ => image.DOColor(Color.white, fadeDuration.Value).ToCompletable())
+                            .Then(_ => image.ColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 
