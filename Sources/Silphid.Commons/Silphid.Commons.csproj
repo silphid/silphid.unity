@@ -74,7 +74,6 @@
     <Compile Include="Sources\Extensions\System\DictionaryExtensions.cs" />
     <Compile Include="Sources\Extensions\System\DoubleExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ExceptionExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\FloatEaseExtensions.cs" />
     <Compile Include="Sources\Extensions\System\FloatExtensions.cs" />
     <Compile Include="Sources\Extensions\System\ICustomAttributeProviderExtensions.cs" />
     <Compile Include="Sources\Extensions\System\IEnumerableExtensions.cs" />

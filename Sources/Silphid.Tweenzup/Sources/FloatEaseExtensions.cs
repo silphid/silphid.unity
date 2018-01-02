@@ -1,6 +1,9 @@
-﻿using Math = UnityEngine.Mathf;
+﻿using System;
+using Silphid.Extensions;
+using UniRx;
+using Math = UnityEngine.Mathf;
 
-namespace Silphid.Extensions
+namespace Silphid.Tweenzup
 {
     public static class FloatEaseExtensions
     {
@@ -12,7 +15,19 @@ namespace Silphid.Extensions
 	    /// <summary>
 	    /// Constant Pi / 2.
 	    /// </summary>
-	    private const float HalfPi = Math.PI / 2f; 
+	    private const float HalfPi = Math.PI / 2f;
+
+	    /// <summary>
+	    /// Eases This value using given ease function
+	    /// </summary>
+	    public static float Ease(this float This, Ease ease) =>
+		    ease.Eval(This);
+
+	    /// <summary>
+	    /// Eases values of This observable using given ease function
+	    /// </summary>
+	    public static IObservable<float> Ease(this IObservable<float> This, Ease ease) =>
+		    This.Select(x => ease.Eval(x));
 
 	    /// <summary>
 	    /// Modeled after the parabola y = x^2
