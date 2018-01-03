@@ -21,6 +21,11 @@ namespace Silphid.Injexit
                 ? new CompositeBinding(instances.Select(This.BindInstance))
                 : Binding.Null;
 
+        public static IBinding BindInstances(this IBinder This, IDictionary<Type, object> instances) =>
+            instances != null
+                ? new CompositeBinding(instances.Select(x => This.BindInstance(x.Key, x.Value)))
+                : Binding.Null;
+
         #endregion
 
         #region BindOptionalInstance(s)
@@ -53,6 +58,9 @@ namespace Silphid.Injexit
         public static IBinding BindToSelf<T>(this IBinder This) =>
             This.Bind<T, T>();
 
+        public static IBinding BindAnonymous<T>(this IBinder This) =>
+            This.BindToSelf<T>();
+
         public static void BindToSelfAll<T>(this IBinder This, Assembly assembly = null, Predicate<Type> predicate = null)
         {
             var types = (assembly ?? typeof(T).Assembly).GetTypes();
@@ -63,10 +71,10 @@ namespace Silphid.Injexit
 
         #endregion
 
-        #region BindForward
+        #region BindReference
 
-        public static void BindForward<TSourceAbstraction, TTargetAbstraction>(this IBinder This) =>
-            This.BindForward(typeof(TSourceAbstraction), typeof(TTargetAbstraction));
+        public static IBinding BindReference<TSourceAbstraction>(this IBinder This, BindingId id) =>
+            This.BindReference(typeof(TSourceAbstraction), id);
 
         #endregion
 

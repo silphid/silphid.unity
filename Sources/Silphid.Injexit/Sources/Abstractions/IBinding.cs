@@ -1,4 +1,6 @@
-﻿namespace Silphid.Injexit
+﻿using System;
+
+namespace Silphid.Injexit
 {
     public interface IBinding
     {
@@ -12,7 +14,7 @@
         /// abstraction type T, to be injected as some IEnumerable&lt;T&gt;,
         /// List&lt;T&gt; or T[].
         /// </summary>
-        IBinding AsList();
+        IBinding InList();
         
         /// <summary>
         /// Marks binding as singleton and for lazy loading. Multiple injections of the same
@@ -29,17 +31,36 @@
         IBinding AsEagerSingle();
         
         /// <summary>
+        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
+        /// and AddReference() (in lists).
+        /// </summary>
+        IBinding Id(BindingId id);
+
+        /// <summary>
+        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
+        /// and AddReference() (in lists).
+        /// </summary>
+        IBinding Alias(Type aliasAbstractionType);
+        
+        /// <summary>
         /// Attaches a child resolver to this binding, which will be used
-        /// to resolve its dependencies. Useful for compositing objects more
+        /// to resolve its direct dependencies. Useful for compositing objects more
         /// explicitly.
         /// </summary>
         IBinding Using(IResolver resolver);
-        
+
         /// <summary>
-        /// Marks binding with given Id, when multiple bindings have same
-        /// abstraction type and you want to explicitly specify which to use
-        /// for which members using [Inject(Id="SomeId")] attributes.
+        /// Attaches a child resolver to this binding, which will be used
+        /// to resolve its direct and indirect dependencies. Useful for compositing objects more
+        /// explicitly.
         /// </summary>
-        IBinding WithId(string id);
+        IBinding UsingRecursively(IResolver resolver);
+
+        /// <summary>
+        /// Marks binding with given Named, when multiple bindings have same
+        /// abstraction type and you want to explicitly specify which to use
+        /// for which members using [Inject(Named="SomeId")] attributes.
+        /// </summary>
+        IBinding Named(string name);
     }
 }

@@ -1,18 +1,18 @@
 # Silphid.Unity
 
-*Silphid.Unity* is a collection of high quality *.NET* libraries for the development of modern and fluid *Unity* applications leveraging *Reactive Extensions* and the *MVVM* pattern to achieve a fully dynamic, data-driven UI, advanced animation sequencing and transitioning, streamlined dependency injection, as well as asynchronous data loading, caching and conversion.
+*Silphid.Unity* is a high quality *.NET* library for the development of modern and fluid *Unity* applications leveraging *Reactive Extensions* (*Rx*) and the *MVVM* pattern, in order to achieve a fully dynamic, data-driven UI, advanced animation sequencing and transitioning, streamlined dependency injection, as well as asynchronous data loading, caching and conversion.
 
-*Silphid.Unity* was inspired by my work of the past 17 years at [Simbioz](http://simbioz.com) and then [LVL Studio](http://lvlstudio.com), initially targeting the WPF framework, but now completely rethought and redesigned for [Unity](http://unity.com) and [Reactive Extensions](http://reactivex.io).
+*Silphid.Unity* was inspired by my work of the past 17 years at [Simbioz](http://simbioz.com) and then [LVL Studio](http://lvlstudio.com), initially targeting the WPF framework, but now completely rethought and redesigned for [Unity](http://unity.com) and [Rx](http://reactivex.io).
 
 Even though it has been used to deliver multiple commercial-grade applications, it is still constantly evolving and improving, and I am just now releasing it to the public for the first time. Documentation and examples are still in their early stages and more work still has to be done to make the whole thing easier to integrate into your Unity projects. But, as they say, we have to start somewhere! ;)  All your comments are more than welcomed!
 
 My sincere thanks to [LVL Studio](http://lvlstudio.com) for supporting this effort and being such a great place to work at. If you are looking for an outstanding job opportunity in the Montreal area, make sure to visit our [Careers](http://lvlstudio.com/en/careers) page! :)
 
-# Libraries
+# Modules
 
 - [Extensions](#Extensions) - Extension methods (and more) for *.NET*, *Unity*, *UniRx*, *DOTween*, etc, providing a concise fluent syntax for many useful operations.
 - [Sequencit](#Sequencit) - Rx-based sequencing of elements with dynamic durations.
-- [Injexit](#Injexit) - Lightweight dependency injection framework with a clean and efficient fluent syntax.
+- [Injexit](#Injexit) - Dependency injection framework with a clean and efficient fluent syntax.
 - [Machina](#Machina) - Lightweight Rx-based state machine with polymorphic states.
 - [Loadzup](#Loadzup) - Rx-based asynchronous asset/resource/object loading and conversion, with simple URI-addressing.
 - [Showzup](#Showzup) - Full-fledged MVVM framework with asynchronous data-driven UI, custom transitions and dynamic view variants.
@@ -50,9 +50,9 @@ In other words, there is no dependency from lower level libraries to higher leve
 
 ## Required Dependencies
 
-### Unity 2017.1
+### Unity 2017.1 or greater
 
-*Silphid.Unity* requires Unity 2017.1 for its .NET 4.6 and C# 6.0 support.
+*Silphid.Unity* requires Unity 2017.1 or greater for its .NET 4.6 and C# 6.0 support.
 
 ### UniRx
 
@@ -61,24 +61,18 @@ In other words, there is no dependency from lower level libraries to higher leve
 If you are new to Rx, there are plenty of resources on the Net.  Here are my personal recommendations:
 
 - [The introduction to Reactive Programming you've been missing](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) - A great intro and overview. The place to start.
-- [IntroToRx.com](introtorx.com) - The complete online version of a great book by Lee Campbell, very thorough and insightful.  But start with the previous link first! ;)
-- [ReactiveX.io](reactivex.io) - The official reference hub for implementations of Rx on all platforms.
-- [RxMarbles](rxmarbles.com) - Interactive diagrams to experiment with and better understand observables and their various operators.
+- [IntroToRx.com](http://introtorx.com) - The complete online version of a great book by Lee Campbell, very thorough and insightful.  But start with the previous link first! ;)
+- [ReactiveX.io](http://reactivex.io) - The official reference hub for implementations of Rx on all platforms.
+- [RxMarbles](http://rxmarbles.com) - Interactive diagrams to experiment with and better understand observables and their various operators.
 - [UniRx](https://github.com/neuecc/UniRx) - Obviously, the UniRx documentation is another good read, with many good examples specific to Unity.
+
+### DOTween
+
+*Silphid.Unity* can be used with DemiGiant's [DOTween](http://dotween.demigiant.com/), a great high-performance tweening/animation library for Unity with a rich and clean fluent API.  It supports low-level time-based sequencing, which *Sequencit* nicely complements with higher-level observable-based sequencing.
 
 ## Optional Dependencies
 
 All optional integrations with third-parties have been isolated into their own sub-libraries or script sub-folders, that can be stripped away without impacting anything else.  For example, *Sequencit.DOTween* is an extension to *Sequencit* that supports integration with *DOTween*, but is not required for *Sequencit* to work.
-
-### DOTween (only required for *Showzup*)
-
-*Silphid.Unity* can be used with DemiGiant's [DOTween](http://dotween.demigiant.com/), a great high-performance tweening/animation library for Unity with a rich and clean fluent API.  It supports low-level time-based sequencing, which *Sequencit* nicely complements with higher-level observable-based sequencing.
-
-*Note: The latest version of DOTween is distributed with Silphid.Unity in binary form, including a version that has been converted to UWP for Windows Store support (required for building the `.DOTween.UWP` projects from source).*
-
-#### How to remove it, if you don't need it
-
-Simply remove all `dll`s and `pdb`s with `DOTween` in their name from the `Assets/Plugins` and `Assets/Plugins/WSA` folders.
 
 ### Json.NET
 
@@ -282,7 +276,7 @@ using Silphid.Injexit;
 
 public class AppInstaller : RootInstaller
 {
-  protected override void OnBind()
+  protected override void Configure()
   {
     // Add your bindings here
     Container.Bind<IFoo, Foo>();
@@ -290,7 +284,7 @@ public class AppInstaller : RootInstaller
     Container.Bind<IBar, Bar>();
   }
   
-  protected override void OnReady()
+  protected override void Complete()
   {
     // All game objects in current scene have now been injected
   }
@@ -306,13 +300,13 @@ using Silphid.Injexit;
 
 public class MySceneInstaller : SceneInstaller<AppInstaller>
 {
-  protected override void OnBind()
+  protected override void Configure()
   {
     // Add your scene-specific bindings (or overrides) here, if any
     Container.Bind<IFoo, Foo2>();
   }
   
-  protected override void OnReady()
+  protected override void Complete()
   {
     // All game objects in current scene have now been injected
   }
@@ -366,7 +360,7 @@ public class AppInstaller : RootInstaller
   // Assign a value to this field via the Inspector
   public MyComponent myComponent;
 
-  protected override void OnBind(IBinder binder)
+  protected override void Configure(IBinder binder)
   {
     Container.BindInstance(myComponent);
     
@@ -586,12 +580,10 @@ Sometimes the same class implements multiple interfaces and you want all those i
 public class FooGooBar : IFoo, IGoo, IBar {}
 ```
 
-Simply bind the first interface the regular way and then use `BindForward()` to forward the other interfaces to the first one:
+Simply use the `Alias()` operator to specify those extra interfaces:
 
 ```c#
-Container.Bind<IFoo, FooGooBar>().AsSingle();
-Container.BindForward<IGoo, IFoo>();
-Container.BindForward<IBar, IFoo>();
+Container.Bind<IFoo, FooGooBar>().Alias<IGoo>().Alias<IBar>().AsSingle();
 ```
 
 Here, the `IFoo`, `IGoo` and `IBar` interfaces will all be bound to the same `FooGooBar` instance. 
@@ -864,10 +856,6 @@ An object can either be *Idle* or *Busy*.  But *Moving* and *Falling* are both c
 
 It is then easy to handle whenever an object enters or leaves the *Busy* state, no matter the specific state that made it busy. The same applies to *Moving*, which can be handled generically, independently from the specific kind of movement.
 
-## Wishlist
-
-- Allow some states to be marked as *Abstract*, to prevent entering those states directly (only their derived states) and make intents clearer.
-
 # <a id="Loadzup"></a>Loadzup
 
 Typically in *Unity*, depending on the source you want to load your assets from (*WWW*, *Resources*, *AssetBundleManager*...), you need to use a different class, with different syntax and peculiarities. And if you change the type of storage for an asset, you actually need to change your code.
@@ -986,7 +974,7 @@ All your view prefabs must be contained within your resources or asset bundles, 
 - `ListControl` displays a collection of items as multiple *views* (potentially of different types); 
 - `SelectionControl` extends `ListControl` to add current item awareness;
 - `TransitionControl` extends `ItemControl` to add visual transitions between *views*;
-- `NavigationControl` extends `ItemControl` to add browser-like Back/Forward navigation support.
+- `NavigationControl` extends `TransitionControl` to add browser-like Back/Forward navigation support.
 
 ### IPresenter
 

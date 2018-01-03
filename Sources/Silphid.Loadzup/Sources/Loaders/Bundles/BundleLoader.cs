@@ -9,14 +9,14 @@ namespace Silphid.Loadzup.Bundles
     public class BundleLoader : ILoader, IBundleUnloader
     {
         private readonly IBundleCachedLoader _cachedLoader;
-        private readonly IManifestLoader _manifestLoader;
+        private readonly IBundleManifestLoader _bundleManifestLoader;
 
         public bool Supports<T>(Uri uri) => uri.Scheme == Scheme.Bundle;
 
-        public BundleLoader(IBundleCachedLoader cachedLoader, IManifestLoader manifestLoader)
+        public BundleLoader(IBundleCachedLoader cachedLoader, IBundleManifestLoader bundleManifestLoader)
         {
             _cachedLoader = cachedLoader;
-            _manifestLoader = manifestLoader;
+            _bundleManifestLoader = bundleManifestLoader;
         }
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
@@ -27,7 +27,7 @@ namespace Silphid.Loadzup.Bundles
             // Todo only passed parsed uri
             var bundleName = uri.Host;
 
-            return _manifestLoader.Load()
+            return _bundleManifestLoader.Load()
                 .ContinueWith(m => LoadAllDependencies(m, bundleName, options))
                 .ContinueWith(x => _cachedLoader
                     .Load(bundleName, options)
@@ -35,11 +35,11 @@ namespace Silphid.Loadzup.Bundles
                     .Cast<IBundle, T>();
         }
 
-        private IObservable<List<string>> LoadAllDependencies(IManifest manifest, string bundleName, Options options)
+        private IObservable<List<string>> LoadAllDependencies(IBundleManifest bundleManifest, string bundleName, Options options)
         {
             var loadedBundleNames = new List<string>();
 
-            return manifest
+            return bundleManifest
                 .GetAllDependencies(bundleName)
                 .Select(x => _cachedLoader
                     .LoadDependency(x, options, bundleName)
@@ -60,7 +60,7 @@ namespace Silphid.Loadzup.Bundles
             if (!_cachedLoader.Unload(bundleName))
                 return;
 
-            _manifestLoader.Load()
+            _bundleManifestLoader.Load()
                 .AutoDetach()
                 .Subscribe(x => x
                     .GetAllDependencies(bundleName)

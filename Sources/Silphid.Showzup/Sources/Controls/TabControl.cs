@@ -17,19 +17,21 @@ namespace Silphid.Showzup
 
     public class TabControl : PresenterControl, IMoveHandler, ICancelHandler
     {
-        private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
-        private int _currentIndex;
         private readonly MoveHandler _moveHandler = new MoveHandler();
+        private readonly Subject<object> _presentingContent = new Subject<object>();
+        private readonly ReactiveProperty<IView> _contentView = new ReactiveProperty<IView>();
         private Options _lastOptions;
+        private int _currentIndex;
+        private ReadOnlyReactiveProperty<PresenterState> _state;
 
         public float SelectionDelay;
         public SelectionControl TabSelectionControl;
         public PresenterControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
         public bool UseIntuitiveTransitionDirection = true;
-
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
-
+        public IObservable<object> PresentingContent => _presentingContent;
+        
         public override GameObject ForwardSelection() => TabSelectionControl.gameObject;
 
         public void Start()
@@ -48,26 +50,33 @@ namespace Silphid.Showzup
                 ContentTransitionControl,
                 TabSelectionControl,
                 (MoveDirection) TabPlacement,
-                () => _currentIndex == TabSelectionControl.SelectedIndex.Value && !IsPresenting.Value &&
-                      ContentTransitionControl.FirstView.Value != null);
-
+                () => _currentIndex == TabSelectionControl.SelectedIndex.Value && MutableState.Value != PresenterState.Presenting
+                      && ContentTransitionControl.FirstView.Value != null);
+            
             _moveHandler.BindCancel(
                 ContentTransitionControl,
                 TabSelectionControl);
         }
 
-        public override IObservable<IView> Present(object input, Options options = null) =>
-            TabSelectionControl.Present(input, _lastOptions = options);
+        protected override IObservable<IView> PresentView(object input, Options options = null) =>
+            TabSelectionControl
+                .Present(input, _lastOptions = options);
 
-        public override ReadOnlyReactiveProperty<bool> IsLoading =>
-            TabSelectionControl.IsLoading
-                .Merge(ContentTransitionControl.IsLoading)
-                .ToReadOnlyReactiveProperty();
+        public override IReadOnlyReactiveProperty<PresenterState> State =>
+            _state
+            ?? (_state = TabSelectionControl.State
+                .CombineLatest(ContentTransitionControl.State, (x, y) =>
+                {
+                    if (x == PresenterState.Loading || y == PresenterState.Loading)
+                        return PresenterState.Loading;
 
-        public override ReadOnlyReactiveProperty<bool> IsPresenting =>
-            TabSelectionControl.IsPresenting
-                .Merge(ContentTransitionControl.IsPresenting)
-                .ToReadOnlyReactiveProperty();
+                    if (x == PresenterState.Presenting || y == PresenterState.Presenting)
+                        return PresenterState.Presenting;
+
+                    return PresenterState.Ready;
+                })
+                .ToReadOnlyReactiveProperty());
+
 
         public void OnMove(AxisEventData eventData)
         {
@@ -87,12 +96,11 @@ namespace Silphid.Showzup
                 : Direction.Forward;
             
             _currentIndex = index;
-            
-            return Observable.Return(view)
-                .Select(x => (x?.ViewModel as IContentProvider)?.GetContent() ?? x?.ViewModel?.Model)
-                .SelectMany(x => ContentTransitionControl
-                    .With(direction)
-                    .Present(x, _lastOptions));
+            var model = (view?.ViewModel as IContentProvider)?.GetContent() ?? view?.ViewModel?.Model;
+            _presentingContent.OnNext(model);
+            return ContentTransitionControl
+                .With(direction)
+                .Present(model, _lastOptions);
         }
     }
 }

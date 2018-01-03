@@ -14,11 +14,14 @@ namespace Silphid.Sequencit
         private bool _isDisposed;
         private Subject<Unit> _subject;
 
-        public Lapse()
+        public static Lapse Create(Action<IDisposable> action = null) =>
+            new Lapse(action);
+
+        protected Lapse()
         {
         }
 
-        public Lapse(Action<IDisposable> action)
+        protected Lapse(Action<IDisposable> action)
         {
             _action = action;
         }

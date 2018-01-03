@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DOTWEEN;NET_4_0;NET_4_6;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_2_0;UNITY_2017_2;UNITY_2017;PLATFORM_ARCH_64;UNITY_64;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;ENABLE_SPRITE_MASKING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_VIDEO;ENABLE_RMGUI;ENABLE_PACKMAN;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_STYLE_SHEETS;PLATFORM_STANDALONE_OSX;PLATFORM_STANDALONE;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_VR;ENABLE_AR;ENABLE_SPATIALTRACKING;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -31,29 +31,42 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DOTween">
-      <HintPath>..\Dependencies\net35\DOTween.dll</HintPath>
+    <Reference Include="DOTween, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\DOTween.dll</HintPath>
     </Reference>
-    <Reference Include="DOTween43">
-      <HintPath>..\Dependencies\net35\DOTween43.dll</HintPath>
+    <Reference Include="DOTween43, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\DOTween43.dll</HintPath>
     </Reference>
-    <Reference Include="DOTween46">
-      <HintPath>..\Dependencies\net35\DOTween46.dll</HintPath>
+    <Reference Include="DOTween46, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\DOTween46.dll</HintPath>
     </Reference>
-    <Reference Include="DOTween50">
-      <HintPath>..\Dependencies\net35\DOTween50.dll</HintPath>
+    <Reference Include="DOTween50, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\DOTween50.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\Dependencies\net35\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\Dependencies\net35\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine">
+      <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Silphid\Silphid.Unity\Sources\Dependencies\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -82,25 +95,34 @@
     <Compile Include="Sources\Controls\ListLayouts\HorizontalGridListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\HorizontalListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\IListLayout.cs" />
-    <Compile Include="Sources\Controls\ListLayouts\IndexRange.cs" />
     <Compile Include="Sources\Controls\ListLayouts\ListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\VerticalGridListLayout.cs" />
     <Compile Include="Sources\Controls\ListLayouts\VerticalListLayout.cs" />
     <Compile Include="Sources\Controls\NavigationControl.cs" />
     <Compile Include="Sources\Controls\PresenterControl.cs" />
+    <Compile Include="Sources\Controls\PresenterState.cs" />
+    <Compile Include="Sources\Controls\ShowHideControl.cs" />
     <Compile Include="Sources\Controls\SinglePresenterControl.cs" />
     <Compile Include="Sources\Controls\SelectionControl.cs" />
     <Compile Include="Sources\Controls\TabControl.cs" />
     <Compile Include="Sources\Controls\TransitionControl.cs" />
     <Compile Include="Sources\Controls\TransitionParentDestroyedException.cs" />
     <Compile Include="Sources\Controls\VirtualListControl.cs" />
+    <Compile Include="Sources\DesignTime\SelfDestroy.cs" />
     <Compile Include="Sources\Exceptions\BindException.cs" />
+    <Compile Include="Sources\Exceptions\InvalidManifestException.cs" />
+    <Compile Include="Sources\Exceptions\InvalidMappingException.cs" />
     <Compile Include="Sources\Exceptions\LoadException.cs" />
+    <Compile Include="Sources\Exceptions\PopException.cs" />
+    <Compile Include="Sources\Exceptions\PresentException.cs" />
     <Compile Include="Sources\Extensions\INavigationPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\IPresenterExtensions.cs" />
     <Compile Include="Sources\Extensions\IScoreEvaluatorExtensions.cs" />
     <Compile Include="Sources\Extensions\OptionsExtensions.cs" />
+    <Compile Include="Sources\InputLayers\IInputLayer.cs" />
+    <Compile Include="Sources\InputLayers\IInputLayerExtensions.cs" />
+    <Compile Include="Sources\InputLayers\InputLayer.cs" />
     <Compile Include="Sources\Interfaces\IConstructable.cs" />
     <Compile Include="Sources\Interfaces\IContentProvider.cs" />
     <Compile Include="Sources\Interfaces\IDeconstructable.cs" />
@@ -137,6 +159,9 @@
     <Compile Include="Sources\OptionsPresenterDecorators\TransitionDurationPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\ParametersPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\PushModePresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TransitionPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TransitionSelectorPresenterDecorator.cs" />
+    <Compile Include="Sources\OptionsPresenterDecorators\TypedParameterPresenterDecorator.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\VariantsPresenterDecorator.cs" />
     <Compile Include="Sources\Phases\CoordinationBase.cs" />
     <Compile Include="Sources\Phases\CoordinatorBase.cs" />
@@ -157,14 +182,15 @@
     <Compile Include="Sources\Phases\PhaseState.cs" />
     <Compile Include="Sources\OptionsPresenterDecorators\OptionsPresenterDecoratorBase.cs" />
     <Compile Include="Sources\Requests\BackRequest.cs" />
-    <Compile Include="Sources\Requests\IRequest.cs" />
-    <Compile Include="Sources\Requests\IRequestHandler.cs" />
-    <Compile Include="Sources\Requests\IRequestHandlerExtensions.cs" />
-    <Compile Include="Sources\Requests\ITypedRequestHandler.cs" />
-    <Compile Include="Sources\Requests\RequestHandlerGameObjectExtensions.cs" />
     <Compile Include="Sources\Requests\PresentRequest.cs" />
-    <Compile Include="Sources\Requests\TypedRequestHandler.cs" />
+    <Compile Include="Sources\Requests\SelectRequest.cs" />
     <Compile Include="Sources\ScoreEvaluator.cs" />
+    <Compile Include="Sources\Editor\ManifestBuilder.cs" />
+    <Compile Include="Sources\Editor\ManifestEditor.cs" />
+    <Compile Include="Sources\Editor\ManifestManager.cs" />
+    <Compile Include="Sources\Editor\ManifestWindow.cs" />
+    <Compile Include="Sources\Editor\MenuItems.cs" />
+    <Compile Include="Sources\Editor\ScriptableObjectUtility.cs" />
     <Compile Include="Sources\Transitions\Components\CrossfadeTransition.cs" />
     <Compile Include="Sources\Transitions\Components\InstantTransition.cs" />
     <Compile Include="Sources\Transitions\Components\SlideTransition.cs" />
@@ -190,10 +216,6 @@
     <Compile Include="Sources\ViewResolver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Silphid.Extensions.DOTween\Silphid.Extensions.DOTween.csproj">
-      <Project>{47797ee4-1e8c-4305-9f45-655ca2710a3d}</Project>
-      <Name>Silphid.Extensions.DOTween</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Silphid.Extensions\Silphid.Extensions.csproj">
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Extensions</Name>
@@ -206,10 +228,6 @@
       <Project>{dad5df27-9fa3-4f02-96be-e28ea2530f0f}</Project>
       <Name>Silphid.Loadzup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Silphid.Sequencit.DOTween\Silphid.Sequencit.DOTween.csproj">
-      <Project>{3364b083-3fa4-4426-97d4-bfe1c2d1d4e8}</Project>
-      <Name>Silphid.Sequencit.DOTween</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Silphid.Sequencit\Silphid.Sequencit.csproj">
       <Project>{c0716045-f08a-489f-9b7a-25863bc13118}</Project>
       <Name>Silphid.Sequencit</Name>
@@ -220,8 +238,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)Common.targets" />
-  <Target Name="AfterBuild">
-    <CallTarget Targets="CopyOutputToPlugins" />
-  </Target>
 </Project>

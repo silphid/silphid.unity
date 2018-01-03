@@ -1,4 +1,5 @@
 ﻿using System;
+using UniRx;
 
 namespace Silphid.Showzup
 {
@@ -11,18 +12,24 @@ namespace Silphid.Showzup
             _presenter = presenter;
         }
 
-        protected abstract void UpdateOptions(Options options);
+        protected abstract void UpdateOptions(object input, Options options);
 
-        private Options GetOptions(Options options)
+        private Options GetOptions(object input, Options options)
         {
             if (options == null)
                 options = new Options();
             
-            UpdateOptions(options);
+            UpdateOptions(input, options);
             return options;
         }
 
+        #region IPresenter members
+
         public IObservable<IView> Present(object input, Options options = null) =>
-            _presenter.Present(input, GetOptions(options));
+            _presenter.Present(input, GetOptions(input, options));
+
+        public IReadOnlyReactiveProperty<PresenterState> State => _presenter.State;
+
+        #endregion
     }
 }

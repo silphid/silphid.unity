@@ -30,5 +30,9 @@ namespace Silphid.Showzup
             filter.IsNullOrEmpty() ||
             Source.Name.CaseInsensitiveContains(filter) ||
             Variants.Any(x => x.Name.CaseInsensitiveContains(filter));
+
+        public virtual bool IsValid =>
+            _source != null &&
+            _variants != null;
     }
 }

@@ -1,28 +1,21 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-using UniRx;
 
 namespace Silphid.Loadzup
 {
-    public class XmlConverter : IConverter
+    public class XmlConverter : ConverterBase<byte[]>
     {
-        private readonly string[] _xmlMediaTypes =
+        public XmlConverter()
         {
-            KnownMediaType.ApplicationXml,
-            "text/xml"
-        };
-        
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            _xmlMediaTypes.Contains(contentType.MediaType);
+            SetMediaTypes(KnownMediaType.ApplicationXml, KnownMediaType.TextXml);
+        }
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        protected override object ConvertSync<T>(byte[] input, ContentType contentType, Encoding encoding)
         {
             var serializer = new XmlSerializer(typeof(T));
-            using (var stream = new MemoryStream(bytes))
-                return Observable.Return((T) serializer.Deserialize(stream));
+            using (var stream = new MemoryStream(input))
+                return serializer.Deserialize(stream);
         }
     }
 }

@@ -9,7 +9,7 @@
             _variants = variants;
         }
 
-        protected override void UpdateOptions(Options options)
+        protected override void UpdateOptions(object input, Options options)
         {
             options.Variants = _variants;
         }

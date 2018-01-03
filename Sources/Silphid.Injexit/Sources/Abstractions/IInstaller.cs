@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Silphid.Injexit
+﻿namespace Silphid.Injexit
 {
     public interface IInstaller
     {
@@ -8,7 +6,5 @@ namespace Silphid.Injexit
         /// Container that is configured by this installer, used for nesting containers.
         /// </summary>
         IContainer Container { get; }
-        
-        ILogger Logger { get; }
     }
 }

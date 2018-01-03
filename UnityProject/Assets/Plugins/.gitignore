@@ -3,3 +3,5 @@
 *.mdb
 *.mdb.meta
 *.dll.meta
+*.meta
+/Silphid/

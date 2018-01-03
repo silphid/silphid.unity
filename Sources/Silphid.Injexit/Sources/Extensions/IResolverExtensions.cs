@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Silphid.Injexit
 {
     public static class IResolverExtensions
     {
-        public static IResolver Using(this IResolver This, Action<IBinder> bind)
+        public static IResolver Using(this IResolver This, Action<IBinder> bind, bool isRecursive = true)
         {
             var overrideContainer = This.Create();
             bind(overrideContainer);
-            return new CompositeResolver(overrideContainer, This);
+            return new OverrideResolver(This, overrideContainer, isRecursive);
         }
 
-        public static IResolver Using(this IResolver This, IResolver overrideResolver) =>
+        public static IResolver Using(this IResolver This, IResolver overrideResolver, bool isRecursive = true) =>
             overrideResolver != null
-                ? new CompositeResolver(overrideResolver, This)
+                ? new OverrideResolver(This, overrideResolver, isRecursive)
                 : This;
         
         public static IResolver UsingInstance<T>(this IResolver This, T instance) =>
@@ -33,14 +35,31 @@ namespace Silphid.Injexit
                 x.BindInstance(instance2);
                 x.BindInstance(instance3);
             });
-        
-        public static IResolver UsingInstances(this IResolver This, object[] instances) =>
-            This.Using(x => x.BindInstances(instances));
 
-        public static object Resolve(this IResolver This, Type abstractionType, string id = null) =>
-            This.ResolveFactory(abstractionType, id).Invoke(This);
+        public static IResolver UsingInstances(this IResolver This, [CanBeNull] object[] instances) =>
+            instances != null
+                ? This.Using(x => x.BindInstances(instances))
+                : This;
 
-        public static T Resolve<T>(this IResolver This, string id = null) =>
-            (T) This.Resolve(typeof(T), id);
+        public static IResolver UsingInstances(this IResolver This, [CanBeNull] IDictionary<Type, object> instances) =>
+            instances != null
+                ? This.Using(x => x.BindInstances(instances))
+                : This;
+
+        public static object Resolve(this IResolver This, Type abstractionType, Type dependentType = null, string name = null)
+        {
+            try
+            {
+                var result = This.ResolveResult(abstractionType, dependentType, name);
+                return result.ResolveInstance(This);
+            }
+            catch (DependencyException ex)
+            {
+                throw ex.With(This);
+            }
+        }
+
+        public static T Resolve<T>(this IResolver This, Type dependentType = null, string name = null) =>
+            (T) Resolve(This, typeof(T), dependentType, name);
     }
 }

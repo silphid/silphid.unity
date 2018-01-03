@@ -1,30 +1,54 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Silphid.Extensions;
 using Silphid.Loadzup.Caching;
+using Silphid.Loadzup.Http;
+using Silphid.Loadzup.Http.Caching;
+using UnityEngine;
 
 namespace Silphid.Loadzup
 {
     public class Options
     {
         public ContentType ContentType;
-        public CachePolicy? CachePolicy;
-        public Dictionary<string, string> RequestHeaders;
-        public bool IsSceneLoadAdditive = true;
+        public HttpCachePolicy? HttpCachePolicy;
+        public MemoryCachePolicy? MemoryCachePolicy;
+        public IDictionary<string, string> Headers;
+        public IDictionary<object, object> CustomValues;
+        public bool IsAdditiveSceneLoading = true;
+        public HttpMethod Method = HttpMethod.Get;
+        public WWWForm PostForm;
+        public string PutBody;
+        public TimeSpan? Timeout;
 
-        public void SetRequestHeader(string key, string value)
+        public void SetHeader(string key, string value)
         {
-            if (RequestHeaders == null)
-                RequestHeaders = new Dictionary<string, string>();
+            if (Headers == null)
+                Headers = new Dictionary<string, string>();
 
-            RequestHeaders[key] = value;
+            Headers[key] = value;
         }
 
-        public static implicit operator Options(CachePolicy cachePolicy) =>
-            new Options { CachePolicy = cachePolicy };
+        public void SetCustomValue(object key, object value)
+        {
+            if (CustomValues == null)
+                CustomValues = new Dictionary<object, object>();
 
-        public static implicit operator Options(ContentType contentType) =>
-            new Options { ContentType = contentType };
+            CustomValues[key] = value;
+        }
 
-        public static implicit operator Options(Dictionary<string, string> requestHeaders) =>
-            new Options { RequestHeaders = requestHeaders };
+        public static Options Clone(Options other) =>
+            new Options
+            {
+                ContentType = other?.ContentType,
+                HttpCachePolicy = other?.HttpCachePolicy,
+                MemoryCachePolicy = other?.MemoryCachePolicy,
+                Headers = other?.Headers?.Clone(),
+                CustomValues = other?.CustomValues?.Clone(),
+                IsAdditiveSceneLoading = other?.IsAdditiveSceneLoading ?? false,
+                Method = other?.Method ?? HttpMethod.Get,
+                PostForm = other?.PostForm,
+                PutBody = other?.PutBody
+            };
     }
 }

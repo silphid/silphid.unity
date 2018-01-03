@@ -46,6 +46,8 @@ namespace Silphid.Showzup
             _hashSet = hashSet;
         }
 
+        public int Count => _hashSet.Count;
+
         [Pure]
         public VariantSet UnionWith(IEnumerable<IVariant> other)
         {
@@ -103,7 +105,7 @@ namespace Silphid.Showzup
             _hashSet.SetEquals(other);
 
         public override string ToString() =>
-            this.ToDelimitedString(", ");
+            this.JoinAsString(", ");
 
         #region ISerializationCallbackReceiver members
 

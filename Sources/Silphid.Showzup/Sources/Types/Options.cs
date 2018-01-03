@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Silphid.Extensions;
 
 namespace Silphid.Showzup
@@ -36,10 +37,12 @@ namespace Silphid.Showzup
         /// Optional instances that will be bound to their own type and automatically injected into ViewModel and/or
         /// View as extra bindings.
         /// </summary>
-        public IEnumerable<object> Parameters { get; set; }
+        public IDictionary<Type, object> Parameters { get; set; }
 
         public override string ToString() =>
-            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, {nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, {nameof(Parameters)}: [{Parameters?.ToDelimitedString(", ")}]";
+            $"{nameof(Direction)}: {Direction}, {nameof(PushMode)}: {PushMode}, {nameof(Variants)}: {Variants}, " +
+            $"{nameof(Transition)}: {Transition}, {nameof(TransitionDuration)}: {TransitionDuration}, " +
+            $"{nameof(Parameters)}: [{Parameters?.JoinAsString("", ":", ", ")}]";
 
         public static Options Clone(Options other) =>
             new Options
@@ -51,12 +54,5 @@ namespace Silphid.Showzup
                 TransitionDuration = other?.TransitionDuration,
                 Parameters = other?.Parameters
             };
-
-        public static Options CloneWithExtraVariants(Options other, VariantSet extraVariants)
-        {
-            var clone = Clone(other);
-            clone.Variants = other?.Variants.UnionWith(extraVariants) ?? extraVariants;
-            return clone;
-        }
     }
 }

@@ -14,10 +14,13 @@ namespace Silphid.Injexit
         /// concrete objects of that type.
         /// </summary>
         /// <param name="abstractionType">Abstraction type that object must derive from or implement (if it's an interface)</param>
-        /// <param name="id">Optional Id to match on binding (if not specified/null, binding must not have any Id associated with it in order to match)</param>
-        /// <param name="isOptional">Whether to return null upon failure (isOptional=true) or throw an exception (isOptional=false)</param>
-        Func<IResolver, object> ResolveFactory(
+        /// <param name="dependentType">Type that depends on the abstraction to be resolved</param>
+        /// <param name="name">Name of dependency member that will be assigned the resolved</param>
+        Result ResolveResult(
             Type abstractionType,
-            string id = null);
+            Type dependentType = null,
+            string name = null);
+        
+        IResolver BaseResolver { get; }
     }
 }

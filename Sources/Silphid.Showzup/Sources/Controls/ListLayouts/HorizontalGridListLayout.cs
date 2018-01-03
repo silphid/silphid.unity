@@ -1,4 +1,5 @@
-﻿using Silphid.Extensions;
+﻿using Silphid.DataTypes;
+using Silphid.Extensions;
 using UnityEngine;
 // ReSharper disable PossibleLossOfFraction
 
@@ -24,9 +25,9 @@ namespace Silphid.Showzup.ListLayouts
                 viewportSize.y);
         }
 
-        public override IndexRange GetVisibleIndexRange(Rect rect) =>
-            new IndexRange( 
-                ((rect.xMin - FirstItemPosition.x) / ItemOffset.x).FloorInt() * Rows,
-                ((rect.xMax - FirstItemPosition.x) / ItemOffset.x).FloorInt() * Rows + 1);
+        public override IntRange GetVisibleIndexRange(Rect rect) =>
+            new IntRange( 
+                ((rect.xMin - FirstItemPosition.x + Spacing.x) / ItemOffset.x).FloorInt() * Rows,
+                (((rect.xMax - FirstItemPosition.x) / ItemOffset.x).FloorInt() + 1) * Rows);
     }
 }

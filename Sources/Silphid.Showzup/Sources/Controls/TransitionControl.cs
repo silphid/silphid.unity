@@ -1,4 +1,6 @@
 using System;
+using JetBrains.Annotations;
+using log4net;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -9,6 +11,8 @@ namespace Silphid.Showzup
 {
     public class TransitionControl : SinglePresenterControl
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TransitionControl));
+
         #region Fields
 
         private GameObject _sourceContainer;
@@ -28,19 +32,8 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] [Optional] internal ITransitionResolver TransitionResolver { get; set; }
-
-        #endregion
-
-        #region Life-time
-
-        protected override void Start()
-        {
-            base.Start();
-            
-            Container1.SetActive(false);
-            Container2.SetActive(false);
-        }
+        [Inject, Optional, UsedImplicitly]
+        private ITransitionResolver TransitionResolver { get; set; }
 
         #endregion
 
@@ -55,19 +48,24 @@ namespace Silphid.Showzup
 
         #region Implementation
 
-        protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType, Options options)
+        protected override Presentation CreatePresentation(object viewModel, IView sourceView, Type targetViewType,
+            Options options)
         {
             var presentation = base.CreatePresentation(viewModel, sourceView, targetViewType, options);
-            presentation.Transition = ResolveTransition(presentation);
+            presentation.Transition = ResolveTransition(presentation, options);
             presentation.Duration = ResolveDuration(presentation.Transition, options);
             return presentation;
         }
 
-        protected ITransition ResolveTransition(Presentation presentation) =>
-            TransitionResolver?.Resolve(presentation) ?? DefaultTransition ?? InstantTransition.Instance;
+        protected ITransition ResolveTransition(Presentation presentation, Options options) =>
+            options?.Transition ??
+            TransitionResolver?.Resolve(presentation) ??
+            DefaultTransition ??
+            InstantTransition.Instance;
 
-        protected float ResolveDuration(ITransition transition, Options options)
-            => options?.TransitionDuration ?? transition.Duration;
+        protected float ResolveDuration(ITransition transition, Options options) =>
+            options?.TransitionDuration ??
+            transition.Duration;
 
         protected IObservable<Unit> PerformTransition(Presentation presentation)
         {
@@ -77,37 +75,42 @@ namespace Silphid.Showzup
             var transition = presentation.Transition;
             var duration = presentation.Duration;
 
-            if (sourceView == null && TransitionInstantlyFromNull ||
+            if (!gameObject.activeInHierarchy ||
+                sourceView == null && TransitionInstantlyFromNull ||
                 targetView == null && TransitionInstantlyToNull)
             {
                 transition = InstantTransition.Instance;
                 duration = 0f;
             }
 
-            return Sequence.Create(seq =>
-            {
-                seq.AddAction(() => PrepareContainers(presentation));
+            return Sequence
+                .Create(seq =>
+                {
+                    seq.AddAction(() => PrepareContainers(presentation));
 
-                PreHide(sourceView, options, seq);
-                Deconstruct(sourceView, options, seq);
-                PreShow(targetView, options, seq);
+                    PreHide(sourceView, options, seq);
+                    Deconstruct(sourceView, options, seq);
+                    PreShow(targetView, options, seq);
 
-                seq.Add(() => transition.Perform(_sourceContainer, _targetContainer, options.GetDirection(), duration));
+                    seq.Add(() => Observable.NextFrame());
+                    seq.Add(() =>
+                        transition.Perform(_sourceContainer, _targetContainer, options.GetDirectionOrDefault(),
+                            duration));
 
-                PostHide(sourceView, options, seq);
-                Construct(targetView, options, seq);
-                PostShow(targetView, options, seq);
+                    PostHide(sourceView, options, seq);
+                    Construct(targetView, options, seq);
+                    PostShow(targetView, options, seq);
 
-                seq.AddAction(() => CompleteTransition(presentation));
-            })
+                    seq.AddAction(() => CompleteTransition(presentation));
+                })
                 .DoOnError(ex =>
                 {
-                    // ReSharper disable once MergeSequentialChecks
-                    // ReSharper disable once UseNullPropagation
-                    if (targetView != null && targetView.GameObject != null)
+                    if (ex is TransitionParentDestroyedException)
+                        Log.Error("TransitionControl has been destroyed");
+                    else if (targetView != null && targetView.GameObject != null)
                         targetView.GameObject.Destroy();
 
-                    Debug.LogException(
+                    Log.Error(
                         new Exception($"Failed to transition from {sourceView} to {targetView}.", ex));
                 });
         }
@@ -169,7 +172,7 @@ namespace Silphid.Showzup
             _targetContainer = _sourceContainer;
             _sourceContainer = temp;
 
-            var direction = presentation.Options.GetDirection();
+            var direction = presentation.Options.GetDirectionOrDefault();
             var targetView = presentation.TargetView;
             var transition = presentation.Transition;
 
@@ -178,18 +181,13 @@ namespace Silphid.Showzup
 
             _sourceContainer.SetActive(true);
             _targetContainer.SetActive(true);
-            if (targetView != null)
-                targetView.IsActive = true;
         }
 
-        protected virtual void CompleteTransition(Presentation presentation)
+        protected void CompleteTransition(Presentation presentation)
         {
-            var sourceView = presentation.SourceView;
             var targetView = presentation.TargetView;
             var transition = presentation.Transition;
 
-            if (sourceView != null)
-                sourceView.IsActive = false;
             _view.Value = targetView;
             RemoveAllViews(_sourceContainer);
             _sourceContainer.SetActive(false);

@@ -1,25 +1,27 @@
 ﻿using System;
-using JetBrains.Annotations;
+using System.Linq;
 using Silphid.Extensions;
+using Silphid.Requests;
 using Silphid.Showzup.Navigation;
+using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class SelectionControl : ListControl, IMoveHandler
-    {
+    public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
+    {      
         private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
 
-        public ReadOnlyReactiveProperty<IView> SelectedView => _selectedView.ToReadOnlyReactiveProperty();
+        public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
 
         public NavigationOrientation Orientation;
         public bool WrapAround;
         public int RowsOrColumns = 1;
-
         public bool AutoSelectFirst = true;
+        public bool HandlesSelectRequest;
 
         public override GameObject ForwardSelection() => _selectedView.Value?.GameObject;
 
@@ -41,6 +43,13 @@ namespace Silphid.Showzup
                 .AddTo(this);
 
             SubscribeToUpdateFocusables(SelectedView);
+        }
+
+        protected override void RemoveAllViews(GameObject container, GameObject except = null)
+        {
+            base.RemoveAllViews(container, except);
+
+            SelectedIndex.Value = null;
         }
 
         private void SubscribeToUpdateFocusables<T>(IObservable<T> observable)
@@ -71,19 +80,44 @@ namespace Silphid.Showzup
             focusable.IsFocused.Value = false;
         }
 
-        [Pure]
-        public override IObservable<IView> Present(object input, Options options = null) =>
-            base.Present(input, options).DoOnCompleted(() =>
-            {
-                if (AutoSelectFirst)
-                    SelectFirst();
-            });
-
-        protected override void RemoveAllViews(GameObject container, GameObject except = null)
+        public void SelectView(IView view)
         {
-            base.RemoveAllViews(container, except);
+            SelectedIndex.Value = IndexOfView(view);
+        }
 
-            SelectedIndex.Value = null;
+        public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
+        {
+            SelectedIndex.Value = IndexOfView(_views
+                .OfType<TView>()
+                .FirstOrDefault(predicate));
+        }
+
+        public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        {
+            SelectedIndex.Value = IndexOfView(_views
+                .Where(x => x.ViewModel is TViewModel)
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel, viewModel)));
+        }
+
+        public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        {
+            SelectedIndex.Value = IndexOfView(_views
+                .Where(x => x.ViewModel is TViewModel)
+                .FirstOrDefault(x => predicate((TViewModel) x.ViewModel)));
+        }
+
+        public void SelectModel<TModel>(TModel model)
+        {
+            SelectedIndex.Value = IndexOfView(_views
+                .Where(x => x.ViewModel?.Model is TModel)
+                .FirstOrDefault(x => ReferenceEquals(x.ViewModel.Model, model)));
+        }
+
+        public void SelectModel<TModel>(Func<TModel, bool> predicate)
+        {
+            SelectedIndex.Value = IndexOfView(_views
+                .Where(x => x.ViewModel?.Model is TModel)
+                .FirstOrDefault(x => predicate((TModel) x.ViewModel.Model)));
         }
 
         public bool SelectIndex(int index)
@@ -181,6 +215,33 @@ namespace Silphid.Showzup
                 moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&
                 SelectIndex(SelectedIndex.Value.Value + RowsOrColumns))
                 eventData.Use();
+        }
+
+        public bool Handle(IRequest request)
+        {
+            if (!HandlesSelectRequest)
+                return false;
+
+            var req = request as SelectRequest;
+            if (req == null)
+                return false;
+
+            var view = req.Input as IView;
+            if (view != null)
+            {
+                SelectView(view);
+                return true;
+            }
+
+            var viewModel = req.Input as IViewModel;
+            if (viewModel != null)
+            {
+                SelectViewModel(viewModel);
+                return true;
+            }
+
+            SelectModel(req.Input);
+            return true;
         }
     }
 }

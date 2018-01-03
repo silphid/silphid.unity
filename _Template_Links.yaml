@@ -1,0 +1,20 @@
+- source: UnityProject/Assets/Plugins/Silphid/Extensions
+  target: Silphid.Unity/Sources/Silphid.Extensions/Sources
+
+- source: UnityProject/Assets/Plugins/Silphid/Injexit
+  target: Silphid.Unity/Sources/Silphid.Injexit/Sources
+
+- source: UnityProject/Assets/Plugins/Silphid/Loadzup
+  target: Silphid.Unity/Sources/Silphid.Loadzup/Sources
+
+- source: UnityProject/Assets/Plugins/Silphid/Machina
+  target: Silphid.Unity/Sources/Silphid.Machina/Sources
+
+- source: UnityProject/Assets/Plugins/Silphid/Sequencit
+  target: Silphid.Unity/Sources/Silphid.Sequencit/Sources
+
+- source: UnityProject/Assets/Plugins/Silphid/Showzup
+  target: Silphid.Unity/Sources/Silphid.Showzup/Sources
+
+- source: UnityProject/Assets/Plugins/UniRx
+  target: Silphid.Unity/Submodules/UniRx/Assets/Plugins/UniRx/Scripts

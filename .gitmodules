@@ -1,0 +1,3 @@
+[submodule "Submodules/UniRx"]
+	path = Submodules/UniRx
+	url = ../../Silphid/UniRx.git

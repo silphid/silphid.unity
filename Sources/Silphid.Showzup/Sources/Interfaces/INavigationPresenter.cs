@@ -7,10 +7,10 @@ namespace Silphid.Showzup
 {
     public interface INavigationPresenter : IPresenter
     {
-        ReadOnlyReactiveProperty<bool> IsNavigating { get; }
         ReadOnlyReactiveProperty<bool> CanPresent { get; }
         ReadOnlyReactiveProperty<bool> CanPop { get; }
         ReadOnlyReactiveProperty<IView> View { get; }
+        IReadOnlyReactiveProperty<IView> RootView { get; }
         IObservable<Nav> Navigating { get; }
         IObservable<Nav> Navigated { get; }
         ReactiveProperty<List<IView>> History { get; }

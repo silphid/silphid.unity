@@ -1,25 +1,16 @@
-﻿using UnityEngine;
-
-namespace Silphid.Injexit
+﻿namespace Silphid.Injexit
 {
     public abstract class RootInstaller : Installer
     {
-        public bool LogContainer;
-        public bool LogAll;
+        protected override IContainer CreateContainer() =>
+            new Container(new Reflector(), ShouldInject);
 
-        public virtual void Start()
+        protected virtual bool ShouldInject(object obj)
         {
-            Logger = LogContainer ? Debug.unityLogger : null;
-            Container = new Container(new Reflector(), Logger);
-
-            if (LogAll)
-                Container.BindInstance(Debug.unityLogger);
-
-            Logger?.Log($"Installing {GetType().Name}");
-
-            OnBind();
-            InjectScene();
-            OnReady();
+            var ns = obj.GetType().Namespace;
+            return ns == null ||
+                   !ns.StartsWith("Unity") &&
+                   !ns.StartsWith("TMPro");
         }
     }
 }

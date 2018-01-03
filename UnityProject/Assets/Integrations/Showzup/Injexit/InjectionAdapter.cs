@@ -4,6 +4,11 @@ using Silphid.Injexit;
 
 namespace Silphid.Showzup
 {
+    /// <summary>
+    /// Used by Showzup for all dependency injection (DI) needs. The IInjectionAdapter interface abstracts the DI
+    /// framework away from Showzup, so that another DI framework could (in theory) be swapped in, if it
+    /// supports all required functionalities.
+    /// </summary>
     public class InjectionAdapter : IInjectionAdapter
     {
         private readonly IContainer _container;
@@ -13,20 +18,20 @@ namespace Silphid.Showzup
             _container = container;
         }
 
-        public object Resolve(Type type, IEnumerable<object> extraInstances = null) =>
-            extraInstances == null
+        public object Resolve(Type type, IDictionary<Type, object> parameters = null) =>
+            parameters == null
                 ? _container.Resolve(type)
                 : _container
-                    .Using(x => x.BindInstances(extraInstances))
+                    .Using(x => x.BindInstances(parameters))
                     .Resolve(type);
 
-        public void Inject(object obj, IEnumerable<object> extraInstances = null)
+        public void Inject(object obj, IDictionary<Type, object> parameters = null)
         {
-            if (extraInstances == null)
+            if (parameters == null)
                 _container.Inject(obj);
             else
                 _container
-                    .Using(x => x.BindInstances(extraInstances))
+                    .Using(x => x.BindInstances(parameters))
                     .Inject(obj);
         }
     }

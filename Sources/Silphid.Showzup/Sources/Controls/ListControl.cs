@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
@@ -42,14 +43,9 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject]
-        internal IViewResolver ViewResolver { get; set; }
-
-        [Inject]
-        internal IViewLoader ViewLoader { get; set; }
-
-        [Inject]
-        internal IVariantProvider VariantProvider { get; set; }
+        [Inject] internal IViewResolver ViewResolver { get; set; }
+        [Inject] internal IViewLoader ViewLoader { get; set; }
+        [Inject] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -60,16 +56,15 @@ namespace Silphid.Showzup
         public Comparer<IView> ViewComparer { get; set; }
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }
+        public NavigationOrientation Orientation;
 
         #endregion
 
         #region Public properties
 
-        public override ReadOnlyReactiveProperty<bool> IsLoading { get; }
-        public override ReadOnlyReactiveProperty<bool> IsPresenting { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<IView>> Views { get; }
         public ReadOnlyReactiveProperty<ReadOnlyCollection<object>> Models { get; }
-        public int Count => _models.Value.Count;
+        public virtual int Count => _views.Count;
         public bool HasItems => Count > 0;
         public int? LastIndex => HasItems ? Count - 1 : (int?) null;
         public int? FirstIndex => HasItems ? 0 : (int?) null;
@@ -79,9 +74,6 @@ namespace Silphid.Showzup
         #region Protected/private fields/properties
 
         protected List<IView> _views = new List<IView>();
-        private readonly ReactiveProperty<bool> _isLoading = new ReactiveProperty<bool>(false);
-        private readonly ReactiveProperty<bool> _isPresenting = new ReactiveProperty<bool>(false);
-
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
 
@@ -100,8 +92,6 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
-            IsLoading = _isLoading.ToReadOnlyReactiveProperty();
-            IsPresenting = _isPresenting.ToReadOnlyReactiveProperty();
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
@@ -113,14 +103,16 @@ namespace Silphid.Showzup
         #region IPresenter members
 
         [Pure]
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
-            _isPresenting.Value = true;
+            MutableState.Value = PresenterState.Loading;
+            
+            // If input is observable, resolve it first
             var observable = input as IObservable<object>;
             if (observable != null)
-                return observable.ContinueWith(x => Present(x, options));
-
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+                return observable.ContinueWith(x => PresentView(x, options));
+            
+            options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
             return Observable.Defer(() => PresentInternal(input, options));
         }
@@ -181,35 +173,36 @@ namespace Silphid.Showzup
 
         #region Private methods
 
-        public virtual IObservable<IView> PresentInternal(object input, Options options)
-        {
-            var models = (input as List<object>)?.ToList() ??
+        protected virtual IObservable<IView> PresentInternal(object input, Options options)
+        {            
+            var models = (input as List<object>)?.ToList() ?? 
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??
                          new List<object>();
 
             _models.Value = models;
+            RemoveViews(Container, _views);
             _views.Clear();
             _reactiveViews.Value = new ReadOnlyCollection<IView>(Array.Empty<IView>());
-            RemoveAllViews(Container);
 
             var entries = models
                 .Select((x, i) => new Entry(i, x))
                 .ToList();
 
-            return LoadViews(entries, options)
-                .DoOnCompleted(() => _isPresenting.Value = false);
+            return LoadViews(entries, options);
         }
 
         protected virtual IObservable<IView> LoadViews(List<Entry> entries, Options options) =>
             LoadAllViews(entries, options)
-                .Do(x => AddView(x.Index, x.View))
+                .Do(x =>
+                {
+                    MutableState.Value = PresenterState.Presenting;
+                    AddView(x.Index, x.View);
+                })
                 .Select(x => x.View);
 
         private IObservable<Entry> LoadAllViews(List<Entry> entries, Options options)
         {
-            _isLoading.Value = true;
-
             return entries
                 .Do(entry => entry.ViewInfo = ResolveView(entry.Model, options))
                 .ToObservable()
@@ -218,7 +211,7 @@ namespace Silphid.Showzup
                     .Select(_ => entry))
                 .DoOnCompleted(() =>
                 {
-                    _isLoading.Value = false;
+                    MutableState.Value = PresenterState.Ready;
                     UpdateReactiveViews();
                 });
         }
@@ -294,7 +287,7 @@ namespace Silphid.Showzup
             ViewResolver.Resolve(input, options);
 
         protected virtual IObservable<IView> LoadView(ViewInfo viewInfo) =>
-            ViewLoader.Load(viewInfo, CancellationToken.None);
+            ViewLoader.Load(GetInstantiationContainer(), viewInfo, CancellationToken.None);
 
         #endregion
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UnityEngine;
 
@@ -8,24 +9,26 @@ namespace Silphid.Injexit
 {
     public class Container : IContainer
     {
+        public const int MaxRecursionDepth = 15;
         public static readonly IContainer Null = new NullContainer();
-        
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Container));
+
         #region Private fields
 
-        private readonly List<Binding> _bindings = new List<Binding>();
-        private readonly Dictionary<Type, Type> _forwards = new Dictionary<Type, Type>();
         private readonly IReflector _reflector;
-        private readonly ILogger _logger;
-        private static readonly Func<IResolver, object> NullFactory = null;
+        private readonly Func<object, bool> _injectionPredicate;
+        private readonly List<Binding> _bindings = new List<Binding>();
+        private int _recursionDepth;
+        private bool _isDisposed;
 
         #endregion
 
         #region Constructors
 
-        public Container(IReflector reflector, ILogger logger = null)
+        public Container(IReflector reflector, Func<object, bool> injectionPredicate = null)
         {
             _reflector = reflector;
-            _logger = logger;
+            _injectionPredicate = injectionPredicate;
         }
 
         #endregion
@@ -33,30 +36,33 @@ namespace Silphid.Injexit
         #region IContainer members
 
         public IContainer Create() =>
-            new Container(_reflector, _logger);
+            new Container(_reflector, _injectionPredicate);
 
         #endregion
-        
+
         #region IBinder members
 
-        public void BindForward(Type sourceAbstractionType, Type targetAbstractionType)
+        public IBinding BindReference(Type abstractionType, BindingId id)
         {
-            if (_forwards.ContainsKey(sourceAbstractionType))
-                throw new InvalidOperationException($"Cannot specify same source abstraction type {sourceAbstractionType.Name} in more than one forward binding.");
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
-            _forwards[sourceAbstractionType] = targetAbstractionType;
+            var binding = new Binding(this, abstractionType, id);
+            _bindings.Add(binding);
+            return binding;
         }
 
         public IBinding BindInstance(Type abstractionType, object instance)
         {
             if (abstractionType == null)
                 throw new ArgumentNullException(nameof(abstractionType));
-            
+
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
-            
+
             if (!instance.GetType().IsAssignableTo(abstractionType))
-                throw new InvalidOperationException($"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
+                throw new InvalidOperationException(
+                    $"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
 
             var binding = new Binding(this, abstractionType, instance.GetType())
             {
@@ -64,7 +70,7 @@ namespace Silphid.Injexit
                 Lifetime = Lifetime.Single
             };
             _bindings.Add(binding);
-            
+
             abstractionType.GetAttributes<BindAttribute>()
                 .Select(x => x.Type)
                 .ForEach(x => BindInstance(x, instance));
@@ -75,7 +81,8 @@ namespace Silphid.Injexit
         public IBinding Bind(Type abstractionType, Type concretionType)
         {
             if (!concretionType.IsAssignableTo(abstractionType))
-                throw new InvalidOperationException($"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
+                throw new InvalidOperationException(
+                    $"Concretion type {concretionType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
             if (concretionType.IsAbstract)
                 throw new InvalidOperationException($"Concretion type {concretionType.Name} cannot be abstract.");
@@ -87,44 +94,58 @@ namespace Silphid.Injexit
         }
 
         #endregion
-        
+
         #region IResolver members
 
-        public Func<IResolver, object> ResolveFactory(Type abstractionType, string id = null)
+        public Result ResolveResult(Type abstractionType, Type dependentType, string name = null)
         {
-            _logger?.Log($"Resolving {abstractionType.Name}...");
+            _recursionDepth++;
 
-            abstractionType = ResolveForward(abstractionType);
+            try
+            {
+                if (_recursionDepth > MaxRecursionDepth)
+                    throw new CircularDependencyException(abstractionType);
 
-            return ResolveFromTypeMappings(abstractionType, id) ??
-                   ResolveFromListMappings(abstractionType, id) ??
-                   ThrowUnresolvedType(abstractionType, id);
+                try
+                {
+                    return ResolveFromTypeMappings(abstractionType, dependentType, name) ??
+                           ResolveFromListMappings(abstractionType, dependentType, name) ??
+                           GetUnresolvedDependencyResult(abstractionType, dependentType, name);
+                }
+                catch (CircularDependencyException ex)
+                {
+                    throw new CircularDependencyException(abstractionType, ex);
+                }
+            }
+            finally
+            {
+                _recursionDepth--;
+            }
         }
 
-        private Type ResolveForward(Type abstractionType) =>
-            _forwards.GetValueOrDefault(abstractionType) ?? abstractionType;
+        public IResolver BaseResolver => this;
 
-        private Func<IResolver, object> ThrowUnresolvedType(Type abstractionType, string id)
-        {
-            throw new UnresolvedTypeException(abstractionType, id);
-        }
+        private Result GetUnresolvedDependencyResult(Type abstractionType, Type dependentType, string name) =>
+            new Result(new DependencyException(abstractionType, dependentType, name, "Binding not found", this));
 
-        private Func<IResolver, object> ResolveFromListMappings(Type abstractionType, string id)
+        private Result? ResolveFromListMappings(Type abstractionType, Type dependentType, string name)
         {
             var elementType = GetListElementType(abstractionType);
             if (elementType == null)
-                return NullFactory;
+                return null;
 
-            var factories = GetListFactories(elementType, id);
+            var factories = GetListFactories(elementType, dependentType, name);
             if (factories.Count == 0)
-                return NullFactory;
-            
+                return null;
+
             // Array or Enumerable<T>
             if (IsArrayOrGenericEnumerable(abstractionType))
-                return resolver => ToTypedArray(factories.Select(x => x(resolver)), elementType);
+                return new Result(resolver =>
+                    ToTypedArray(factories.Select(x => x.ResolveInstance(resolver)), elementType));
 
             // List<T>
-            return resolver => ToTypedList(factories.Select(x => x(resolver)), elementType);
+            return new Result(resolver =>
+                ToTypedList(factories.Select(x => x.ResolveInstance(resolver)), elementType));
         }
 
         private bool IsArrayOrGenericEnumerable(Type type) =>
@@ -151,7 +172,7 @@ namespace Silphid.Injexit
 
             if (!abstractionType.IsGenericType)
                 return null;
-            
+
             var typeDef = abstractionType.GetGenericTypeDefinition();
             if (typeDef == typeof(IEnumerable<>) || typeDef == typeof(IList<>) || typeDef == typeof(List<>))
                 return abstractionType.GetGenericArguments().First();
@@ -159,87 +180,155 @@ namespace Silphid.Injexit
             return null;
         }
 
-        private List<Func<IResolver, object>> GetListFactories(Type abstractionType, string id) =>
+        private List<Result> GetListFactories(Type abstractionType, Type dependentType, string name) =>
             _bindings
-                .Where(x => x.AbstractionType == abstractionType && x.IsList && x.Id == id)
-                .Select(ResolveFactoryInternal)
+                .Where(x => x.AbstractionType == abstractionType && x.InList && (x.Name == null || x.Name == name))
+                .Select(x => GetFactoryForBinding(x, dependentType, name))
                 .ToList();
 
-        private Func<IResolver, object> ResolveFromTypeMappings(Type abstractionType, string id) =>
-            ResolveFactoryInternal(ResolveType(abstractionType, id));
+        private Result? ResolveFromTypeMappings(Type abstractionType, Type dependentType, string name)
+        {
+            var binding = ResolveBindingForType(abstractionType, dependentType, name);
+            if (binding == null)
+                return null;
 
-        private Binding ResolveType(Type abstractionType, string id)
+            return GetFactoryForBinding(binding, dependentType, name);
+        }
+
+        private Binding ResolveBindingForType(Type abstractionType, Type dependentType, string name)
         {
             var binding = _bindings.FirstOrDefault(x =>
                 x.AbstractionType == abstractionType &&
-                x.Id == id);
-            
-            if (binding != null)
-                _logger?.Log($"Resolved {binding}");
+                (x.Name == null || x.Name == name));
+
+            if (binding != null && Log.IsDebugEnabled)
+                Log.Debug($"Resolved {binding}");
 
             return binding;
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Binding binding)
+        private Result GetFactoryForBinding(Binding binding, Type dependentType, string name)
         {
-            if (binding == null)
-                return NullFactory;
-            
+            if (binding.Reference != null)
+            {
+                var referenceBinding = binding.Reference.Binding;
+                if (referenceBinding == null)
+                    return new Result(
+                        new DependencyException(
+                            binding.AbstractionType,
+                            dependentType,
+                            name,
+                            $"No binding bound to {binding.Reference}",
+                            this));
+
+                if (!referenceBinding.ConcretionType.IsAssignableTo(binding.AbstractionType))
+                    return new Result(
+                        new DependencyException(binding.AbstractionType, dependentType, name,
+                            $"Binding {binding.Reference} concrete type {referenceBinding.ConcretionType.Name} is not " +
+                            $"assignable to Reference abstraction type {binding.AbstractionType.Name}", this));
+
+                if (Log.IsDebugEnabled)
+                    Log.Debug($"Resolved &{binding.Reference} to {referenceBinding}");
+
+                return GetFactoryForBinding(referenceBinding, dependentType, name);
+            }
+
             if (binding.Lifetime == Lifetime.Transient)
-                return ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver);
+                return GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver,
+                    binding.IsOverrideResolverRecursive, dependentType, name);
 
-            return resolver =>
+            return new Result(resolver =>
                 binding.Instance
-                ?? (binding.Instance = ResolveFactoryInternal(binding.ConcretionType, binding.OverrideResolver).Invoke(resolver));
+                ?? (binding.Instance = GetFactoryForConcretion(binding.ConcretionType, binding.OverrideResolver,
+                        binding.IsOverrideResolverRecursive, dependentType, name)
+                    .ResolveInstance(resolver.BaseResolver)));
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Type concretionType, IResolver overrideResolver)
+        private Result GetFactoryForConcretion(Type concretionType, IResolver overrideResolver, bool isRecursive,
+            Type dependentType, string name)
         {
-            var factory = ResolveFactoryInternal(concretionType);
-            return factory != null
-                ? resolver => factory(resolver.Using(overrideResolver))
-                : NullFactory;
+            var factory = GetFactoryForConcretion(concretionType);
+            return new Result(resolver =>
+            {
+                try
+                {
+                    return factory(resolver.Using(overrideResolver, isRecursive));
+                }
+                catch (DependencyException ex)
+                {
+                    // TODO: Temporary work-around to prevent an extra level of exception wrapping
+                    if (ex.DependentTypes.LastOrDefault() == concretionType)
+                        throw;
+
+                    throw ex.WithDependent(concretionType);
+                }
+            });
         }
 
-        private Func<IResolver, object> ResolveFactoryInternal(Type concretionType) =>
+        private Func<IResolver, object> GetFactoryForConcretion(Type concretionType) =>
             resolver =>
             {
-                var typeInfo = GetTypeInfo(concretionType);
-                if (typeInfo.Constructor.ConstructorException != null)
-                    throw typeInfo.Constructor.ConstructorException;
-                
-                var parameters = ResolveParameters(concretionType, typeInfo.Constructor.Parameters, resolver);
+                _recursionDepth++;
 
-                var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
-                Inject(instance, resolver);
-                return instance;
+                try
+                {
+                    if (_recursionDepth > MaxRecursionDepth)
+                        throw new CircularDependencyException(concretionType);
+
+                    try
+                    {
+                        var typeInfo = GetTypeInfo(concretionType);
+                        if (typeInfo.Constructor.ConstructorException != null)
+                            throw typeInfo.Constructor.ConstructorException;
+
+                        var parameters = ResolveParameters(concretionType, typeInfo.Constructor.Parameters, resolver);
+
+                        var instance = typeInfo.Constructor.Constructor.Invoke(parameters);
+                        Inject(instance, resolver);
+                        return instance;
+                    }
+                    catch (CircularDependencyException ex)
+                    {
+                        throw new CircularDependencyException(concretionType, ex);
+                    }
+                }
+                finally
+                {
+                    _recursionDepth--;
+                }
             };
 
-        private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters, IResolver resolver) =>
+        private object[] ResolveParameters(Type dependentType, IEnumerable<InjectParameterInfo> parameters,
+            IResolver resolver) =>
             parameters
                 .Select(x => ResolveParameter(dependentType, x, resolver))
                 .ToArray();
 
         private object ResolveParameter(Type dependentType, InjectParameterInfo parameter, IResolver resolver)
         {
-            _logger?.Log($"Resolving parameter {parameter.Name}");
-            try
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Resolving parameter {parameter.Name}");
+
+            var result = resolver.ResolveResult(parameter.Type, dependentType, parameter.CanonicalName);
+
+            if (result.Exception != null)
             {
-                return resolver.Resolve(parameter.Type, parameter.Id);
-            }
-            catch (UnresolvedDependencyException ex)
-            {
-                if (!parameter.IsOptional)
-                    throw new UnresolvedDependencyException(dependentType, ex, ex.MemberName);
-            }
-            catch (UnresolvedTypeException ex)
-            {
-                if (!parameter.IsOptional)
-                    throw new UnresolvedDependencyException(dependentType, ex, parameter.Name);
+                if (parameter.IsOptional)
+                {
+                    if (Log.IsDebugEnabled)
+                        Log.Debug($"Falling back to default value: {parameter.DefaultValue}");
+
+                    return parameter.DefaultValue;
+                }
+
+                var ex = result.Exception as DependencyException;
+                if (ex != null)
+                    throw ex;
+
+                throw result.Exception;
             }
 
-            _logger?.Log($"Falling back to default value: {parameter.DefaultValue}");
-            return parameter.DefaultValue;
+            return result.ResolveInstance(resolver);
         }
 
         #endregion
@@ -250,11 +339,11 @@ namespace Silphid.Injexit
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
-            
+
             resolver = resolver ?? this;
-            
+
             var typeInfo = GetObjectTypeInfo(obj);
-            
+
             InjectFieldsAndProperties(obj, typeInfo, resolver);
             InjectMethods(obj, typeInfo, resolver);
         }
@@ -265,10 +354,10 @@ namespace Silphid.Injexit
                 throw new ArgumentNullException(nameof(objects));
 
             resolver = resolver ?? this;
-            
+
             var list = objects.ToArray();
             var typeInfos = list.Select(GetObjectTypeInfo).ToArray();
-            
+
             list.ForEach((i, x) => InjectFieldsAndProperties(x, typeInfos[i], resolver));
             list.ForEach((i, x) => InjectMethods(x, typeInfos[i], resolver));
         }
@@ -277,7 +366,7 @@ namespace Silphid.Injexit
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
-            
+
             if (obj is GameObject)
             {
                 InjectGameObjectFieldsAndProperties((GameObject) obj, resolver);
@@ -294,25 +383,29 @@ namespace Silphid.Injexit
                 InjectGameObjectMethods((GameObject) obj, resolver);
                 return;
             }
-            
-            typeInfo.Methods.ForEach(method => InjectMethod(obj, method, resolver));            
+
+            typeInfo.Methods.ForEach(method => InjectMethod(obj, method, resolver));
         }
 
         private bool IsValidComponent(MonoBehaviour behaviour)
         {
-            if (behaviour != null)
-                return true;
-            
-            _logger?.LogWarning(nameof(Container), "Skipping null MonoBehaviour.");
-            return false;
+            if (behaviour == null)
+            {
+                if (Log.IsWarnEnabled)
+                    Log.Warn("Skipping null MonoBehaviour.");
+
+                return false;
+            }
+
+            return _injectionPredicate?.Invoke(behaviour) ?? true;
         }
-        
+
         private void InjectGameObjectFieldsAndProperties(GameObject go, IResolver resolver)
         {
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
                 .ForEach(component => InjectFieldsAndProperties(component, GetObjectTypeInfo(component), resolver));
-            
+
             go.Children()
                 .ForEach(child => InjectGameObjectFieldsAndProperties(child, resolver));
         }
@@ -322,30 +415,37 @@ namespace Silphid.Injexit
             go.GetComponents<MonoBehaviour>()
                 .Where(IsValidComponent)
                 .ForEach(component => InjectMethods(component, GetObjectTypeInfo(component), resolver));
-            
+
             go.Children()
                 .ForEach(child => InjectGameObjectMethods(child, resolver));
         }
 
         private void InjectFieldOrProperty(object obj, InjectFieldOrPropertyInfo member, IResolver resolver)
         {
-            try
-            {
-                var value = resolver.Resolve(member.Type, member.Id);
-                _logger?.Log($"Injecting {obj.GetType().Name}.{member.Name} ({member.Name}) <= {FormatValue(value)}");
-                member.SetValue(obj, value);
-            }
-            catch (UnresolvedTypeException ex)
+            var result = resolver.ResolveResult(member.Type, obj.GetType(), member.CanonicalName);
+            if (result.Exception != null)
             {
                 if (!member.IsOptional)
-                    throw new UnresolvedDependencyException(obj.GetType(), ex, member.Name);
+                    throw result.Exception;
+
+                return;
             }
+
+            var value = result.ResolveInstance(resolver);
+
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Injecting {obj.GetType().Name}.{member.Name} = {FormatValue(value)}");
+
+            member.SetValue(obj, value);
         }
 
         private void InjectMethod(object obj, InjectMethodInfo method, IResolver resolver)
         {
             var parameters = ResolveParameters(obj.GetType(), method.Parameters, resolver);
-            _logger?.Log($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
+
+            if (Log.IsDebugEnabled)
+                Log.Debug($"Injecting {obj.GetType().Name}.{method.Name}({FormatParameters(parameters)})");
+
             method.Method.Invoke(obj, parameters);
         }
 
@@ -355,12 +455,12 @@ namespace Silphid.Injexit
 
         private InjectTypeInfo GetTypeInfo(Type type) =>
             _reflector.GetTypeInfo(type);
-        
+
         private InjectTypeInfo GetObjectTypeInfo(object obj) =>
             _reflector.GetTypeInfo(obj.GetType());
-        
+
         private static string FormatParameters(object[] parameters) =>
-            parameters.Select(FormatValue).ToDelimitedString(", ");
+            parameters.Select(FormatValue).JoinAsString(", ");
 
         private static string FormatValue(object value) =>
             value?.ToString() ?? "null";
@@ -371,20 +471,26 @@ namespace Silphid.Injexit
 
         public void Dispose()
         {
+            if (_isDisposed) 
+                return;
+            
+            _isDisposed = true;
             _bindings
                 .Select(x => x.Instance)
                 .OfType<IDisposable>()
                 .ForEach(x => x.Dispose());
         }
 
-        /// <inheritdoc/>
         public void InstantiateEagerSingles()
         {
             _bindings
                 .Where(x => x.Lifetime == Lifetime.EagerSingle && x.Instance == null)
-                .ForEach(x => this.Resolve(x.AbstractionType, x.Id));
+                .ForEach(x => this.Resolve(x.AbstractionType, null, x.Name));
         }
 
-        #endregion        
+        #endregion
+
+        public override string ToString() =>
+            _bindings.JoinAsString("\r\n");
     }
 }

@@ -7,6 +7,7 @@
         public const string ETag = "ETag";
         public const string IfNoneMatch = "If-None-Match";
         public const string IfModifiedSince = "If-Modified-Since";
-        public const string Status = "STATUS";
+        public const string CacheControl = "Cache-Control";
+        public const string Date = "Date";
     }
 }

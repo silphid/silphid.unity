@@ -3,7 +3,7 @@ using UniRx;
 
 namespace Silphid.Loadzup.Bundles
 {
-    // Use to wait for Loading of bundle (BundleCachedLoader loadingCount)
+    // Use to wait for Loading of bundle (BundleCacheLoader loadingCount)
     internal class LoadingBundle : IBundle
     {
         private readonly IBundle _bundle;

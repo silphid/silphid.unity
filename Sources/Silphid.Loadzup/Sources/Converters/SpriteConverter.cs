@@ -1,29 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using UniRx;
+﻿using System.Text;
 using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class SpriteConverter : IConverter
+    public class SpriteConverter : ConverterBase<Texture2D, byte[]>
     {
-        private readonly string[] _imageMediaTypes =
+        public SpriteConverter()
         {
-            "image/jpeg",
-            "image/png"
-        };
+            SetMediaTypes("image/jpeg", "image/png");
+            SetOutput<DisposableSprite>();
+        }
 
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            _imageMediaTypes.Contains(contentType.MediaType);
+        protected override bool SupportsInternal<T>(object input, ContentType contentType) =>
+            typeof(T) == typeof(DisposableSprite);
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        protected override object ConvertSync<T>(Texture2D input, ContentType contentType, Encoding encoding) =>
+            new DisposableSprite(input, false);
+
+        protected override object ConvertSync<T>(byte[] input, ContentType contentType, Encoding encoding)
         {
-            var texture = new Texture2D(2, 2) {wrapMode = TextureWrapMode.Clamp};
-            texture.LoadImage(bytes, true);
-
-            return Observable.Return((T) (object) Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                                new Vector2(0.5f, 0.5f)));
+            var texture = new Texture2D(2, 2)
+            {
+                wrapMode = TextureWrapMode.Clamp
+            };
+            
+            texture.LoadImage(input, true);
+            return new DisposableSprite(texture, true);
         }
     }
 }

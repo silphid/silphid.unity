@@ -5,20 +5,26 @@ using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {
-    public class BundleConverter : IConverter
+    public class BundleConverter : ConverterBase<byte[]>
     {
-        public bool Supports<T>(byte[] bytes, ContentType contentType) => typeof(T) == typeof(IBundle);
+        public BundleConverter()
+        {
+            SetOutput<IBundle>();
+        }
 
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding) =>
+        protected override bool SupportsInternal<T>(byte[] input, ContentType contentType) =>
+            typeof(T) == typeof(IBundle);
+
+        protected override IObservable<object> ConvertAsync<T>(byte[] input, ContentType contentType, Encoding encoding) =>
             AssetBundle
-                .LoadFromMemoryAsync(bytes)
+                .LoadFromMemoryAsync(input)
                 .AsAsyncOperationObservable()
                 .Select(x =>
                 {
                     if(x.assetBundle == null)
                         throw new InvalidOperationException("Failed to convert bytes to AssetBundle");
 
-                    return (T) (object) new AssetBundleAdaptor(x.assetBundle);
+                    return new BundleAdaptor(x.assetBundle);
                 });
     }
 }

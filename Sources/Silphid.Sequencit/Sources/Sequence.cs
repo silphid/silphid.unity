@@ -5,52 +5,45 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Sequence : ISequencer
+    public class Sequence : SequenceOrParallelBase
     {
-        #region Public methods
+        #region Static methods
 
-        public static Sequence Create(Action<Sequence> action)
-        {
-            var sequence = new Sequence();
-            action(sequence);
-            return sequence;
-        }
+        public static Sequence Create(Action<ISequencer> action = null) =>
+            new Sequence(action);
 
-        public static Sequence Create(params Func<IObservable<Unit>>[] selectors) =>
-            Create(seq => selectors.ForEach(selector => seq.Add(Observable.Defer(selector))));
+        public static Sequence Create<T>(params Func<IObservable<T>>[] selectors) =>
+            Create(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public static Sequence Create(IEnumerable<IObservable<Unit>> observables) =>
+        public static Sequence Create<T>(IEnumerable<IObservable<T>> observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
-        public static IDisposable Start(Action<Sequence> action) =>
+        public static Sequence Create<T>(params IObservable<T>[] observables) =>
+            Create(seq => observables.ForEach(x => seq.Add(x)));
+
+        public static IDisposable Start(Action<ISequencer> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start(params Func<IObservable<Unit>>[] selectors) =>
-            Start(seq => selectors.ForEach(selector => seq.Add(selector())));
+        public static IDisposable Start<T>(params IObservable<T>[] observables) =>
+            Create(observables).AutoDetach().Subscribe();
 
         #endregion
 
-        #region Private fields
+        #region Constructors
 
-        private readonly List<IObservable<Unit>> _observables = new List<IObservable<Unit>>();
-
-        #endregion
-
-        #region ISequencer members
-
-        public IObservable<Unit> Add(IObservable<Unit> observable)
+        private Sequence(Action<ISequencer> action = null) : base(action)
         {
-            _observables.Add(observable);
-            return observable;
         }
-
+        
         #endregion
-
+        
         #region IObservable<Unit> members
 
-        public IDisposable Subscribe(IObserver<Unit> observer) =>
-            _observables.Concat().Subscribe(observer);
+        public override IDisposable Subscribe(IObserver<Unit> observer) =>
+            GetObservables()
+                .Concat()
+                .Subscribe(observer);
 
-        #endregion        
+        #endregion
     }
 }

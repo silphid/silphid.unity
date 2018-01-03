@@ -45,8 +45,8 @@ namespace Silphid.Showzup.Navigation
 
             if (IsLogEnabled)
             {
-                SelectionAndAncestors.Subscribe(x =>
-                    Debug.Log($"Selection: {x.ToDelimitedString(" > ")}"));
+            //    SelectionAndAncestors.Subscribe(x =>
+            //        Debug.Log($"Selection: {x.ToDelimitedString(" > ")}"));
             }
         }
 

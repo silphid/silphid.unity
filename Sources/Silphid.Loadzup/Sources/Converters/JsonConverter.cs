@@ -1,18 +1,16 @@
-﻿using System;
-using System.Text;
-using UniRx;
+﻿using System.Text;
 using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class JsonConverter : IConverter
+    public class JsonConverter : ConverterBase<byte[]>
     {
-        public bool Supports<T>(byte[] bytes, ContentType contentType) =>
-            contentType.MediaType == KnownMediaType.ApplicationJson;
-
-        public IObservable<T> Convert<T>(byte[] bytes, ContentType contentType, Encoding encoding)
+        public JsonConverter()
         {
-            return Observable.Return(JsonUtility.FromJson<T>(encoding.GetString(bytes)));
+            SetMediaTypes(KnownMediaType.ApplicationJson);
         }
+
+        protected override object ConvertSync<T>(byte[] input, ContentType contentType, Encoding encoding) =>
+            JsonUtility.FromJson<T>(encoding.GetString(input));
     }
 }

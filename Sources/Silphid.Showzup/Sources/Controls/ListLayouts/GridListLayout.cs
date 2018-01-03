@@ -15,7 +15,7 @@ namespace Silphid.Showzup.ListLayouts
 
         public override Rect GetItemRect(int index, Vector2 viewportSize) =>
             new Rect(
-                FirstItemPosition + ItemOffset.Multiply(GetWrappedItemIndices(index).NegateY()),
+                FirstItemPosition + ItemOffset.Multiply(GetWrappedItemIndices(index)),
                 GetItemSize(viewportSize));
     }
 }

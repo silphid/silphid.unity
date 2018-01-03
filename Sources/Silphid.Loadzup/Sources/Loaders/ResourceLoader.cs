@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using log4net;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
@@ -7,33 +8,30 @@ using Object = UnityEngine.Object;
 
 namespace Silphid.Loadzup.Resource
 {
-    public class ResourceLoader : ILoader
+    public class ResourceLoader : LoaderBase
     {
-        private const string _pathSeparator = "/";
-
         private readonly IConverter _converter;
-        private readonly ILogger _logger;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResourceLoader));
 
-        public ResourceLoader(IConverter converter, ILogger logger = null)
+        public ResourceLoader(IConverter converter)
         {
             _converter = converter;
-            _logger = logger;
         }
 
-        public bool Supports<T>(Uri uri) =>
+        public override bool Supports<T>(Uri uri) =>
             uri.Scheme == Scheme.Resource;
 
-        public IObservable<T> Load<T>(Uri uri, Options options)
+        public override IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             if (!Supports<T>(uri))
                 throw new NotSupportedException($"Uri not supported: {uri}");
 
             var contentType = options?.ContentType;
-            var path = uri.GetPathAndContentType(ref contentType, _pathSeparator, false);
+            var path = GetPathAndContentType(uri, ref contentType, false);
 
             return LoadAsync<T>(path)
                 .ContinueWith(x => Convert<T>(x, contentType))
-                .DoOnError(ex => _logger?.LogError($"#Loadzup# Failed to load resource at '{path}' to type {typeof(T)}.", ex));
+                .DoOnError(ex => Log.Error($"Failed to load resource at '{path}' to type {typeof(T)}.", ex));
         }
 
         private bool IsUnityObject<T>() => typeof(T).IsAssignableTo<Object>();
@@ -56,6 +54,9 @@ namespace Silphid.Loadzup.Resource
                 var textAsset = (TextAsset) obj;
                 return _converter.Convert<T>(textAsset.bytes, contentType, Encoding.UTF8);
             }
+
+            if (_converter.Supports<T>(obj, contentType))
+                return _converter.Convert<T>(obj, contentType, Encoding.UTF8);
 
             throw new NotSupportedException($"Conversion not supported from {obj.GetType().Name} to {typeof(T).Name}.");
         }

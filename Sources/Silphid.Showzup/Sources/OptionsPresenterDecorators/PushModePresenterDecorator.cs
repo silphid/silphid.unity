@@ -9,7 +9,7 @@
             _pushMode = pushMode;
         }
 
-        protected override void UpdateOptions(Options options)
+        protected override void UpdateOptions(object input, Options options)
         {
             options.PushMode = _pushMode;
         }

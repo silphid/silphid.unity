@@ -1,48 +1,199 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using log4net;
 using Silphid.Extensions;
+using Silphid.Requests;
 using UniRx;
 
 namespace Silphid.Machina
 {
-    public class Machine<TState> : IMachine<TState>
+    public class Machine<TState> : IMachine<TState>, IDisposable
     {
-        private readonly Dictionary<TState, StateInfo> _stateInfos = new Dictionary<TState, StateInfo>();
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly ILog Log = LogManager.GetLogger(typeof(IMachine));
         
-        public IReactiveProperty<TState> State { get; }
+        private readonly object _initialState;
+        private readonly bool _disposeOnCompleted;
+        private readonly List<Rule> _rules = new List<Rule>();
+        private readonly ReactiveProperty<object> _state;
+        public ReadOnlyReactiveProperty<object> State { get; }
+        public IObservable<Transition> Transitions { get; }
 
-        public Machine(TState initialState = default(TState))
+        protected readonly CompositeDisposable Disposables = new CompositeDisposable();
+        protected bool IsDisposed { get; private set; }
+
+        public Machine(object initialState = null, bool disposeOnCompleted = false)
         {
-            State = new ReactiveProperty<TState>(initialState);
-        }
+            _initialState = initialState;
+            _disposeOnCompleted = disposeOnCompleted;
+            _state = new ReactiveProperty<object>(initialState);
+            State = _state.ToReadOnlyReactiveProperty();
+            Transitions = _state
+                .DistinctUntilChanged()
+                .PairWithPrevious()
+                .Select(x => new Transition(x.Item1, x.Item2));
 
-        public void Set(TState state)
-        {
-            if (!(State.Value?.Equals(state) ?? false))
-                State.Value = state;
-        }
+            this.Entering<IMachine>()
+                .Subscribe(x => x.Start())
+                .AddTo(Disposables);
 
-        public bool Is(TState state) =>
-            IMachineExtensions.IsStateEquivalent(State.Value, state);
-
-        public bool Trigger(object trigger)
-        {
-            if (State.Value == null)
-                return false;
+            this.Exiting<IMachine>()
+                .Subscribe(x => x.Complete())
+                .AddTo(Disposables);
             
-            var stateInfo = _stateInfos.GetValueOrDefault(State.Value);
-            var handler = stateInfo?.Handlers.GetValueOrDefault(trigger.GetType());
-            return handler?.Invoke(trigger) ?? false;
+            Transitions
+                .Subscribe(x => Log.Debug($"{Name} - {x.Source ?? "null"} -> {x.Target ?? "null"}"))
+                .AddTo(Disposables);
         }
 
-        public IStateConfig When(TState state) =>
-            _stateInfos.GetOrCreateValue(state, () => new StateInfo());
+        public virtual string Name => GetType().Name;
+        public override string ToString() => Name;
 
-        public IStateConfig When(TState state, Action<IStateConfig> action)
+        public void Start(object initialState = null)
         {
-            var config = When(state);
-            action(config);
-            return config;
+            AssertNotDisposed();
+            Log.Info($"{Name} - Started");
+            OnStarting(initialState);
+        }
+
+        public void Enter(TState state)
+        {
+            EnterInternal(state);
+        }
+
+        public void Enter(IMachine machine)
+        {
+            EnterInternal(machine);
+        }
+
+        public void ExitState()
+        {
+            EnterInternal(null);
+        }
+
+        private void EnterInternal(object state)
+        {
+            AssertNotDisposed();
+            OnEnter(state);
+        }
+
+        void IMachine.Complete()
+        {
+            AssertNotDisposed();
+            OnCompleted();
+            Log.Info($"{Name} - Completed");
+        }
+
+        private void AssertNotDisposed()
+        {
+            if (IsDisposed)
+                throw new ObjectDisposedException(nameof(Machine<TState>));
+        }
+
+        public virtual bool Handle(IRequest request)
+        {
+            var state = State.Value;
+            return state != null && HandleWithState(request, state) ||
+                   HandleWithRules(request, state);
+        }
+
+        private bool HandleWithState(IRequest request, object state)
+        {
+            var handler = state as IRequestHandler;
+            if (handler?.Handle(request) ?? false)
+            {
+                Log.Info($"{Name} - {state} - {request} handled by state");
+                return true;
+            }
+            
+            return false;
+        }
+
+        private bool HandleWithRules(IRequest request, object state)
+        {
+            if (_rules.Any(rule => rule.Matches(state, request) && rule.Handle(request)))
+            {
+                Log.Info($"{Name} - {state ?? "null"} - {request} handled by rule");
+                return true;
+            }
+
+            return false;
+        }
+
+        public IRule Always()
+        {
+            var rule = new Rule(_ => true);
+            _rules.Add(rule);
+            return rule;
+        }
+
+        public IRule When<T>() where T : TState =>
+            WhenInternal<T>();
+
+        public IRule When<T>(T state) where T : TState =>
+            WhenInternal(state);
+
+        public IRule When<T>(Predicate<T> predicate) where T : TState =>
+            WhenInternal(predicate);
+
+        public IRule WhenMachine<TMachine>() where TMachine : IMachine =>
+            WhenInternal<TMachine>();
+
+        public IRule WhenMachine<TMachine>(TMachine state) where TMachine : IMachine =>
+            WhenInternal(state);
+
+        public IRule WhenMachine<TMachine>(Predicate<TMachine> predicate) where TMachine : IMachine =>
+            WhenInternal(predicate);
+
+        private IRule WhenInternal<T>()
+        {
+            var rule = new Rule(x => x is T);
+            _rules.Add(rule);
+            return rule;
+        }
+
+        private IRule WhenInternal<T>(T state)
+        {
+            var rule = new Rule(x => Equals(x, state));
+            _rules.Add(rule);
+            return rule;
+        }
+
+        private IRule WhenInternal<T>(Predicate<T> predicate)
+        {
+            var rule = new Rule(x => x is T && predicate((T) x));
+            _rules.Add(rule);
+            return rule;
+        }
+
+        protected virtual void OnStarting(object initialState)
+        {
+            _state.Value = initialState ?? _initialState;
+        }
+
+        protected virtual void OnEnter(object state)
+        {
+            _state.Value = state;
+        }
+
+        protected virtual void OnCompleted()
+        {
+            _state.Value = null;
+            
+            if (_disposeOnCompleted)
+                Dispose();
+        }
+
+        public virtual void Dispose()
+        {
+            if (IsDisposed)
+                return;
+            
+            Disposables.Dispose();
+            _state.Dispose();
+            State.Dispose();
+            IsDisposed = true;
         }
     }
 }

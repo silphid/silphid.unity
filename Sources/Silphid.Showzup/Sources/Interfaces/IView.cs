@@ -4,7 +4,6 @@ namespace Silphid.Showzup
 {
     public interface IView
     {
-        bool IsActive { get; set; }
         IViewModel ViewModel { get; set; }
         GameObject GameObject { get; }
     }

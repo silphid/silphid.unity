@@ -11,9 +11,12 @@ namespace Silphid.Injexit
         public Type ConcretionType { get; }
         public Lifetime Lifetime { get; set; }
         public IResolver OverrideResolver { get; private set; }
+        public bool IsOverrideResolverRecursive { get; private set; }
         public object Instance { get; set; }
-        public bool IsList { get; private set; }
-        public string Id { get; private set; }
+        public bool InList { get; private set; }
+        public string Name { get; private set; }
+        public BindingId Id { get; private set; }
+        public BindingId Reference { get; }
 
         public Binding(IContainer container, Type abstractionType, Type concretionType)
         {
@@ -22,12 +25,19 @@ namespace Silphid.Injexit
             ConcretionType = concretionType;
         }
 
-        public IBinding AsList()
+        public Binding(IContainer container, Type abstractionType, BindingId reference)
         {
-            if (IsList)
+            Container = container;
+            AbstractionType = abstractionType;
+            Reference = reference;
+        }
+
+        IBinding IBinding.InList()
+        {
+            if (InList)
                 throw new InvalidOperationException("Already a list binding.");
                 
-            IsList = true;
+            InList = true;
             return this;
         }
 
@@ -49,6 +59,25 @@ namespace Silphid.Injexit
             return this;
         }
 
+        IBinding IBinding.Id(BindingId id)
+        {
+            if (Id != null)
+                throw new InvalidOperationException("Already specified Id or Alias.");
+                    
+            Id = id;
+            id.Binding = this;
+            return this;
+        }
+
+        public IBinding Alias(Type aliasAbstractionType)
+        {
+            if (Id == null)
+                ((IBinding) this).Id(new BindingId($"{ConcretionType.Name}Alias"));
+
+            Container.BindReference(aliasAbstractionType, Id);
+            return this;
+        }
+
         public IBinding Using(IResolver resolver)
         {
             if (OverrideResolver != null)
@@ -58,22 +87,40 @@ namespace Silphid.Injexit
             return this;
         }
 
-        public IBinding WithId(string id)
+        public IBinding UsingRecursively(IResolver resolver)
         {
-            if (Id != null)
-                throw new InvalidOperationException("Already specified binding Id.");
+            if (OverrideResolver != null)
+                throw new InvalidOperationException("Already specified binding overrides.");
                     
-            Id = id;
+            OverrideResolver = resolver;
+            IsOverrideResolverRecursive = true;
+            return this;
+        }
+
+        IBinding IBinding.Named(string name)
+        {
+            if (Name != null)
+                throw new InvalidOperationException("Already specified binding name.");
+                    
+            Name = Reflector.GetCanonicalName(name);
             return this;
         }
 
         public override string ToString()
         {
-            var overrides = OverrideResolver != null ? " with overrides" : "";
-            var list = IsList ? " into list" : "";
-            var instance = Instance != null ? $" using instance {Instance}" : "";
+            if (Reference != null)
+                return $"BindReference<{AbstractionType.Name}>({Reference})";
             
-            return $"{AbstractionType} => {ConcretionType} {Lifetime}{overrides}{list}{instance}";
+            var lifetime = Lifetime != Lifetime.Transient ? $".As{Lifetime}()" : "";
+            var id = Id != null ? $".Id({Id})" : "";
+            var list = InList ? ".InList()" : "";
+            var overrides = OverrideResolver != null ? ".Using(...)" : "";
+            var typeNames = AbstractionType != ConcretionType
+                ? $"{AbstractionType.Name}, {ConcretionType?.Name ?? "???"}"
+                : AbstractionType.Name;
+            var kind = AbstractionType != ConcretionType ? "" : "ToSelf";
+            
+            return $"Bind{kind}<{typeNames}>(){lifetime}{id}{list}{overrides}";
         }
     }
 }

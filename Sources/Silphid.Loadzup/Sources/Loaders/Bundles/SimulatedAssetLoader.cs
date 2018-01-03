@@ -1,11 +1,11 @@
 ﻿using System;
 using UniRx;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 using Silphid.Extensions;
 #endif
-using UnityEngine;
 
 namespace Silphid.Loadzup.Bundles
 {
@@ -30,8 +30,9 @@ namespace Silphid.Loadzup.Bundles
             }
 
             return Observable.Return((T) (object) AssetDatabase.LoadMainAssetAtPath(assetPaths[0]));
-#endif
+#else
             return Observable.Return((T)(object)null);
+#endif
         }
     }
 }

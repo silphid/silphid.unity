@@ -37,6 +37,7 @@ namespace Silphid.Loadzup
 
             Type = typeAndSubType[0];
             SubType = typeAndSubType[1];
+            Name = Type;
 
             // Parse parameters
             tokens.Skip(1).ForEach(ParseParameter);
@@ -63,5 +64,7 @@ namespace Silphid.Loadzup
             else if (key == "boundary")
                 Boundary = value;
         }
+
+        public override string ToString() => MediaType;
     }
 }

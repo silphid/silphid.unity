@@ -1,0 +1,27 @@
+<log4net>
+
+    <appender name="UnityAppender" type="log4net.Unity.UnityLogAppender">
+        <layout type="log4net.Layout.PatternLayout">
+            <conversionPattern value="%-4timestamp [%thread] %-5level %logger - %message%newline" />
+        </layout>
+    </appender>
+
+    <appender name="EventLog" type="log4net.Appender.RollingFileAppender">
+        <file value="${DataPath}/Logs/App.log" />
+        <appendToFile value="true" />
+        <rollingStyle value="Once" />
+        <maxSizeRollBackups value="10" />
+        <maximumFileSize value="1MB" />
+        <staticLogFileName value="true" />
+        <layout type="log4net.Layout.PatternLayout">
+            <conversionPattern value="%-4timestamp [%thread] %-5level %logger - %message%newline" />
+        </layout>
+    </appender>
+
+    <root>
+        <level value="WARN" />
+        <appender-ref ref="EventLog"/>
+        <appender-ref ref="UnityAppender" />
+    </root>
+    
+</log4net>

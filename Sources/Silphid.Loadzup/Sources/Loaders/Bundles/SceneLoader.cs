@@ -19,7 +19,7 @@ namespace Silphid.Loadzup.Bundles
         }
 
         public IObservable<T> Load<T>(Uri uri, Options options = null) =>
-            LoadInternal(uri, options?.IsSceneLoadAdditive == false ? LoadSceneMode.Single : LoadSceneMode.Additive)
+            LoadInternal(uri, options?.IsAdditiveSceneLoading == false ? LoadSceneMode.Single : LoadSceneMode.Additive)
                 .Cast<Scene, T>();
 
         private IObservable<Scene> LoadInternal(Uri uri, LoadSceneMode mode)

@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
+using Silphid.Extensions;
 using UniRx;
 
 namespace Silphid.Showzup
@@ -13,6 +14,11 @@ namespace Silphid.Showzup
         public static IObservable<IView> PresentViewModel<TViewModel>(this IPresenter This) where TViewModel : IViewModel =>
             This.Present(typeof(TViewModel));
         
+        public static IObservable<IView> TryPresent(this IPresenter This, object input, Options options = null) =>
+            This.IsReady()
+                ? This.Present(input, options)
+                : Observable.Empty<IView>();
+
         public static IPresenter With(this IPresenter This, PushMode pushMode) =>
             new PushModePresenterDecorator(This, pushMode);
 
@@ -25,13 +31,51 @@ namespace Silphid.Showzup
         public static IPresenter With(this IPresenter This, params IVariant[] variants) =>
             new VariantsPresenterDecorator(This, variants.ToVariantSet());
 
+        public static IPresenter With(this IPresenter This, ITransition transition) =>
+            new TransitionPresenterDecorator(This, transition);
+
+        public static IPresenter With(this IPresenter This, Func<object, Options, ITransition> transition) =>
+            new TransitionSelectorPresenterDecorator(This, transition);
+
+        public static IPresenter With(this IPresenter This, Func<object, ITransition> transition) =>
+            new TransitionSelectorPresenterDecorator(This, (obj, options) => transition(obj));
+
+        public static IPresenter WithTransitionForInputOfType<T>(this IPresenter This, ITransition transition) =>
+            new TransitionSelectorPresenterDecorator(This, (obj, options) => obj is T ? transition : null);
+
         public static IPresenter WithDuration(this IPresenter This, float duration) =>
             new TransitionDurationPresenterDecorator(This, duration);
 
-        public static IPresenter WithParameters(this IPresenter This, IEnumerable<object> parameters) =>
-            new ParametersPresenterDecorator(This, parameters);
+        public static IPresenter WithParameters(this IPresenter This, params object[] instances) =>
+            new ParametersPresenterDecorator(This, instances);
 
-        public static IPresenter WithParameters(this IPresenter This, params object[] parameters) =>
-            new ParametersPresenterDecorator(This, parameters);
+        public static IPresenter WithOptionalParameters(this IPresenter This, params object[] instances) =>
+            new ParametersPresenterDecorator(This, instances.WhereNotNull().ToArray());
+
+        public static IPresenter WithParameter<T>(this IPresenter This, T instance) =>
+            new TypedParameterPresenterDecorator(This, typeof(T), instance);
+
+        public static IPresenter WithOptionalParameter<T>(this IPresenter This, T instance) =>
+            instance != null
+                ? new TypedParameterPresenterDecorator(This, typeof(T), instance)
+                : This;
+
+        public static bool IsReady(this IPresenter This) =>
+            This.State.Value == PresenterState.Ready;
+
+        public static bool IsLoading(this IPresenter This) =>
+            This.State.Value == PresenterState.Loading;
+
+        public static bool IsPresenting(this IPresenter This) =>
+            This.State.Value == PresenterState.Presenting;
+
+        public static IObservable<bool> Ready(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Ready);
+
+        public static IObservable<bool> Loading(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Loading);
+
+        public static IObservable<bool> Presenting(this IPresenter This) =>
+            This.State.Select(x => x == PresenterState.Presenting);
     }
 }

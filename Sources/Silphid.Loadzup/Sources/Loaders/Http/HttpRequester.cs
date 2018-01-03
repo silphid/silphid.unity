@@ -1,60 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Silphid.Extensions;
+using log4net;
 using UniRx;
-using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Silphid.Loadzup.Http
 {
-    public class HttpRequester : IRequester
+    public class HttpRequester : IHttpRequester, INetworkStatusProvider
     {
-        private static readonly string[] MeaningfulHeaders =
-        {
-            KnownHttpHeaders.ContentType,
-            KnownHttpHeaders.LastModified,
-            KnownHttpHeaders.ETag,
-            KnownHttpHeaders.Status
-        };
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HttpRequester));
 
-        private readonly ILogger _logger;
+        private readonly ReactiveProperty<NetworkStatus> _status =
+            new ReactiveProperty<NetworkStatus>(NetworkStatus.Undetermined);
 
-        public HttpRequester(ILogger logger = null)
-        {
-            _logger = logger;
-        }
+        public IReadOnlyReactiveProperty<NetworkStatus> Status => _status;
 
         public IObservable<Response> Request(Uri uri, Options options = null) =>
-            ObservableWWW
-                .GetWWW(uri.AbsoluteUri, options?.RequestHeaders)
-                .DoOnSubscribe(() => Log($"GET {uri}"))
-                .DoOnError(LogError)
-                .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
-                .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
+            RequestInternal(uri.AbsoluteUri, options)
+                .DoOnSubscribe(() =>
+                    Log.Info(GetLogMessage(uri, options)))
+                .DoOnError(ex =>
+                {
+                    if (ex is NetworkException)
+                        _status.Value = NetworkStatus.Offline;
+                    
+                    Log.Debug($"Failed {GetLogMessage(uri, options)} with exception:\r\n{ex}");
+                })
+                .Select(www => new
+                {
+                    WWW = www,
+                    Headers = www.GetResponseHeaders()
+                })
+                .Do(x =>
+                {
+                    if (uri.Scheme != Scheme.Http && uri.Scheme != Scheme.Https)
+                        return;
 
-        public IObservable<Response> Post(Uri uri, WWWForm form, Options options = null)
+                    if (x.Headers == null)
+                        Log.Warn($"No headers in response from {uri}");
+                        
+                    _status.Value = NetworkStatus.Online;
+                })
+                .Select(x => new Response(x.WWW.responseCode, x.WWW.downloadHandler.data,
+                    x.Headers ?? new Dictionary<string, string>(), options));
+
+        private IObservable<UnityWebRequest> RequestInternal(string url, Options options = null)
         {
-            var headers = options?.RequestHeaders ?? new Dictionary<string, string>();
-            return ObservableWWW
-                .PostWWW(uri.AbsoluteUri, form, headers)
-                .DoOnSubscribe(() => Log($"POST {uri}\r\nForm: {form}\r\nHeaders: {headers}"))
-                .DoOnError(LogError)
-                .Catch<WWW, WWWErrorException>(ex => Observable.Throw<WWW>(new RequestException(ex)))
-                .Select(www => new Response(www.bytes, GetMeaningfulHeaders(www.responseHeaders)));
+            if (options == null || options.Method == HttpMethod.Get)
+                return ObservableWebRequest.Get(url, options?.Headers, options?.Timeout);
+
+            if (options.Method == HttpMethod.Post)
+                return ObservableWebRequest.Post(url, options.PostForm, options.Headers, options.Timeout);
+
+            if (options.Method == HttpMethod.Put)
+                return ObservableWebRequest.Put(url, options.PutBody, options.Headers, options.Timeout);
+
+            throw new NotImplementedException($"HTTP method {options.Method} not implemented for: {url}");
         }
-
-        private void Log(string message) =>
-            _logger?.Log(nameof(HttpRequester), message);
-
-        private void LogError(Exception exception) =>
-            _logger?.LogError(nameof(HttpRequester), $"Request failed: {exception}");
-
-        private Dictionary<string, string> GetMeaningfulHeaders(IDictionary<string, string> allHeaders)
+        
+        private string GetLogMessage(Uri uri, Options options)
         {
-            return MeaningfulHeaders
-                .Select(x => new KeyValuePair<string, string>(x, allHeaders.GetValueOrDefault(x)))
-                .Where(x => x.Value != null)
-                .ToDictionary(x => x.Key, x => x.Value);
+            var method = (options?.Method ?? HttpMethod.Get)
+                .ToString()
+                .ToUpper();
+            
+            return $"{method} {uri}";
         }
     }
 }

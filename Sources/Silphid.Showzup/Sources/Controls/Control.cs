@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Silphid.Extensions;
 using Silphid.Showzup.Navigation;
 using UniRx;
@@ -17,9 +18,16 @@ namespace Silphid.Showzup
                 container.Children().Where(x => x != except).ForEach(RemoveView);
         }
 
+        protected void RemoveViews(GameObject viewObject, IEnumerable<IView> views)
+        {
+            foreach (var view in views)
+                RemoveView(view?.GameObject); //FIXME [jsricard] views contains sometime a liste of null
+        }
+
         protected virtual void RemoveView(GameObject viewObject)
         {
-            Destroy(viewObject);
+            if (viewObject != null)
+                Destroy(viewObject);
         }
 
         protected virtual void SetViewParent(GameObject container, GameObject viewObject)
@@ -39,7 +47,6 @@ namespace Silphid.Showzup
                 return;
 
             SetViewParent(container, view.GameObject);
-            view.IsActive = true;
         }
 
         protected virtual void InsertView(GameObject container, int index, IView view)
@@ -49,7 +56,6 @@ namespace Silphid.Showzup
 
             SetViewParent(container, view.GameObject);
             view.GameObject.transform.SetSiblingIndex(index);
-            view.IsActive = true;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Silphid.Extensions;
+using System.Collections.Generic;
 
 namespace Silphid.Showzup
 {
@@ -15,11 +15,9 @@ namespace Silphid.Showzup
         public Type ViewType { get; set; }
         public Uri PrefabUri { get; set; }
         public VariantSet Variants { get; set; }
-        public object[] Parameters { get; set; }
+        public IDictionary<Type, object> Parameters { get; set; }
 
-        public override string ToString()
-        {
-            return $"{ViewModelType} => {ViewType} ({Variants.ToDelimitedString(";")}) {PrefabUri}";
-        }
+        public override string ToString() =>
+            $"{ModelType?.Name} > {ViewModelType?.Name} > {ViewType?.Name} > {PrefabUri} ({Variants})";
     }
 }

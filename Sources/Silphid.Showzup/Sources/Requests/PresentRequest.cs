@@ -1,6 +1,8 @@
-﻿namespace Silphid.Showzup.Requests
+﻿using Silphid.Requests;
+
+namespace Silphid.Showzup.Requests
 {
-    public class PresentRequest : IRequest
+    public class PresentRequest : Request
     {
         public object Input { get; }
         public Options Options { get; }

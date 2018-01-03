@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Silphid.Sequencit;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Requests;
 using Silphid.Showzup.Requests;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Silphid.Showzup
 {
     public class NavigationControl : TransitionControl, INavigationPresenter, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NavigationControl));
+
         #region Fields
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
@@ -25,7 +30,11 @@ namespace Silphid.Showzup
 
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
-        public bool ShouldHandleBackRequests;
+        
+        public ReadOnlyReactiveProperty<bool> IsNavigating { get; private set; }
+
+        [FormerlySerializedAs("ShouldHandleBackRequests")] [FormerlySerializedAs("HandlesBackRequest")]
+        public bool HandleBackRequest;
 
         #region Life-time
 
@@ -34,6 +43,11 @@ namespace Silphid.Showzup
         {
             IsNavigating = _isNavigating.ToReadOnlyReactiveProperty();
             History.PairWithPrevious().Skip(1).Subscribe(DisposeDroppedViews).AddTo(_disposables);
+        }
+
+        private void Awake()
+        {
+            HistoryContainer.SetActive(false);
         }
 
         public void Dispose()
@@ -45,17 +59,19 @@ namespace Silphid.Showzup
 
         #region INavigationPresenter members
 
-        public ReadOnlyReactiveProperty<bool> IsNavigating { get; private set; }
-
         public ReadOnlyReactiveProperty<bool> CanPresent =>
-            _canPush ?? (_canPush = IsNavigating.Not().ToReadOnlyReactiveProperty());
+            _canPush ?? (_canPush = this.Ready().ToReadOnlyReactiveProperty());
 
         public ReadOnlyReactiveProperty<bool> CanPop =>
             _canPop ?? (_canPop = History
                 .Select(x => x.Count > (CanPopTopLevelView ? 0 : 1))
                 .DistinctUntilChanged()
-                .CombineLatest(IsNavigating.Not(), (x, y) => x && y)
+                .CombineLatest(this.Ready(), (x, y) => x && y)
                 .ToReadOnlyReactiveProperty());
+
+        public IReadOnlyReactiveProperty<IView> RootView => History
+            .Select(x => x.FirstOrDefault())
+            .ToReadOnlyReactiveProperty();
 
         public ReactiveProperty<List<IView>> History { get; } =
             new ReactiveProperty<List<IView>>(new List<IView>());
@@ -71,38 +87,34 @@ namespace Silphid.Showzup
                 return;
             }
 
-            viewObject.SetActive(false);
             viewObject.transform.SetParent(HistoryContainer.transform, false);
         }
 
-        public override IObservable<IView> Present(object input, Options options = null)
+        protected override IObservable<IView> PresentView(object input, Options options = null)
         {
-            _state.Value = State.Loading;
-
-            options = Options.CloneWithExtraVariants(options, VariantProvider.GetVariantsNamed(Variants));
+            options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
                 .ContinueWith(NavigateAndCompletePush);
         }
 
-        private IObservable<Presentation> StartPushAndLoadView(object input, Options options)
+        private IObservable<Presentation> StartPushAndLoadView(object input, Options options, bool recursiveCall = false)
         {
-            //Debug.Log($"#Nav# Present({input}, {options})");
+            if (!recursiveCall) // Do not assert because state is in loading state
+                AssertCanPresent(input, options);
+
+            StartChange();
 
             var observable = input as IObservable<object>;
             if (observable != null)
-                return observable.SelectMany(x => StartPushAndLoadView(x, options));
-            AssertCanPresent();
+                return observable.ContinueWith(x => StartPushAndLoadView(x, options, true));
 
             var viewInfo = ResolveView(input, options);
             var presentation = CreatePresentation(viewInfo.ViewModel, _view.Value, viewInfo.ViewType, options);
 
-            StartChange();
-
-            return LoadView(viewInfo, options)
-                .DoOnError(e => _state.Value = State.Ready)
-                .DoOnCompleted(() => _state.Value = State.Presenting)
+            return LoadView(viewInfo)
+                .DoOnCompleted(() => MutableState.Value = PresenterState.Presenting)
                 .Do(view => presentation.TargetView = view)
                 .ThenReturn(presentation);
         }
@@ -117,7 +129,7 @@ namespace Silphid.Showzup
                     nav.Parallel)
                 .DoOnCompleted(() =>
                 {
-                    History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushMode());
+                    History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushModeOrDefault());
                     CompleteNavigation(nav);
                     CompleteChange(nav);
                 })
@@ -139,7 +151,7 @@ namespace Silphid.Showzup
                 ? History.Value[History.Value.Count - 2]
                 : null;
 
-            //Debug.Log($"#Nav# Pop({view})");
+            Log.Debug($"Pop({view})");
             var history = History.Value.Take(History.Value.Count - 1).ToList();
 
             return PopInternal(view, history);
@@ -150,7 +162,6 @@ namespace Silphid.Showzup
             AssertCanPop();
 
             var view = CanPopTopLevelView ? null : History.Value.First();
-            //Debug.Log($"#Nav# PopToRoot({view})");
             var history = CanPopTopLevelView ? new List<IView>() : History.Value.Take(1).ToList();
 
             return PopInternal(view, history);
@@ -158,7 +169,7 @@ namespace Silphid.Showzup
 
         public IObservable<IView> PopTo(IView view)
         {
-            //Debug.Log($"#Nav# PopTo({view})");
+            Log.Debug($"PopTo({view})");
             var viewIndex = History.Value.IndexOf(view);
             AssertCanPopTo(view, viewIndex);
             var history = History.Value.Take(viewIndex + 1).ToList();
@@ -168,7 +179,7 @@ namespace Silphid.Showzup
 
         private IObservable<IView> PopInternal(IView view, List<IView> history)
         {
-            AssertCanPresent();
+            AssertCanPresent(null, null);
 
             StartChange();
 
@@ -196,7 +207,8 @@ namespace Silphid.Showzup
 
         private void StartChange()
         {
-            _isNavigating.Value = true;
+         	_isNavigating.Value = true;
+            MutableState.Value = PresenterState.Loading;
         }
 
         private Nav StartNavigation(Presentation presentation)
@@ -204,7 +216,7 @@ namespace Silphid.Showzup
             var nav = new Nav(
                 presentation.SourceView,
                 presentation.TargetView,
-                new Parallel(),
+                Parallel.Create(),
                 presentation.Transition,
                 presentation.Duration);
 
@@ -221,34 +233,32 @@ namespace Silphid.Showzup
 
         private void CompleteChange(Nav nav)
         {
-            _isNavigating.Value = false;
-            _state.Value = State.Ready;
-
+        	_isNavigating.Value = false;
+            MutableState.Value = PresenterState.Ready;
             (nav.Target as IPostNavigate)?.OnPostNavigate();
-            //Debug.Log("#Nav# Navigation complete");
         }
 
-        private void AssertCanPresent()
+        private void AssertCanPresent(object input, Options options)
         {
             if (!CanPresent.Value)
-                throw new InvalidOperationException("Cannot present at this moment");
+                throw new PresentException(gameObject, input, options, "Cannot present at this moment");
         }
 
         private void AssertCanPop()
         {
             if (!CanPop.Value)
-                throw new InvalidOperationException("Cannot pop at this moment");
+                throw new PopException(gameObject, "Cannot pop at this moment");
         }
 
-        // ReSharper disable once UnusedParameter.Local
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void AssertCanPopTo(IView view, int viewIndex)
         {
             AssertCanPop();
 
             if (viewIndex == -1)
-                throw new InvalidOperationException($"History does not contain view {view}");
+                throw new PopException(gameObject, $"History does not contain view {view}");
             if (viewIndex == History.Value.Count - 1)
-                throw new InvalidOperationException($"Cannot pop to view {view} because it is already current view");
+                throw new PopException(gameObject, $"Cannot pop to view {view} because it is already current view");
         }
 
         private void DisposeDroppedViews(Tuple<List<IView>, List<IView>> tuple)
@@ -276,9 +286,8 @@ namespace Silphid.Showzup
             if (base.Handle(request))
                 return true;
 
-            var req = request as BackRequest;
-
-            if (req == null || !ShouldHandleBackRequests || !_canPop.Value)
+            var backRequest = request as BackRequest;
+            if (backRequest == null || !HandleBackRequest || !CanPop.Value)
                 return false;
 
             Pop().SubscribeAndForget();

@@ -17,15 +17,15 @@ namespace Silphid.Injexit
             _bindings.FirstOrDefault()?.Container
             ?? Injexit.Container.Null;
 
-        public IBinding AsList()
+        public IBinding InList()
         {
-            _bindings.ForEach(x => x.AsList());
+            _bindings.ForEach(x => x.InList());
             return this;
         }
 
         public IBinding AsSingle()
         {
-            _bindings.ForEach(x => x.AsList());
+            _bindings.ForEach(x => x.InList());
             return this;
         }
 
@@ -35,21 +35,30 @@ namespace Silphid.Injexit
             return this;
         }
 
+        public IBinding Alias(Type aliasAbstractionType)
+        {
+            throw new NotSupportedException("Alias not supported on CompositeBinding");
+        }
+
         public IBinding Using(IResolver resolver)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Using not supported on CompositeBinding");
         }
 
-        public IBinding WithId(string id)
+        public IBinding UsingRecursively(IResolver resolver)
         {
-            _bindings.ForEach(x => x.WithId(id));
+            throw new NotSupportedException("UsingRecursively not supported on CompositeBinding");
+        }
+
+        public IBinding Named(string name)
+        {
+            _bindings.ForEach(x => x.Named(name));
             return this;
         }
 
-        public IBinding Using(Action<IBinder> bind)
+        public IBinding Id(BindingId id)
         {
-            _bindings.ForEach(x => x.AsList());
-            return this;
+            throw new NotSupportedException();
         }
     }
 }
