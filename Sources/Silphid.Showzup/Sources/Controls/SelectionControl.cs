@@ -17,7 +17,6 @@ namespace Silphid.Showzup
         public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
 
-        public NavigationOrientation Orientation;
         public bool WrapAround;
         public int RowsOrColumns = 1;
         public bool AutoSelectFirst = true;
