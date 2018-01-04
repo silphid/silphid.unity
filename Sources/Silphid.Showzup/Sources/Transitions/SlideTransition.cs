@@ -38,12 +38,12 @@ namespace Silphid.Showzup
                     var offset = Offset.Multiply(targetTransform.rect.size) *
                                  (direction == Direction.Forward ? -1 : 1);
                     sourceTransform
-                        .AnchorPosTo(offset, duration, Ease)
+                        .MoveAnchorTo(offset, duration, Easer)
                         .In(parallel);
                 }
 
                 targetTransform
-                    .AnchorPosTo(Vector2.zero, duration, Ease)
+                    .MoveAnchorTo(Vector2.zero, duration, Easer)
                     .In(parallel);
             });
         }

@@ -7,12 +7,12 @@ namespace Silphid.Tweenzup
     public class TweenObservable : IObservable<float>
     {
         private readonly float _duration;
-        private readonly Ease _ease;
+        private readonly IEaser _easer;
 
-        public TweenObservable(float duration, Ease ease = Ease.Linear)
+        public TweenObservable(float duration, IEaser easer = null)
         {
             _duration = duration;
-            _ease = ease;
+            _easer = easer;
         }
 
         public IDisposable Subscribe(IObserver<float> observer)
@@ -32,7 +32,7 @@ namespace Silphid.Tweenzup
 
                 try
                 {
-                    observer.OnNext(_ease.Eval(t));
+                    observer.OnNext(_easer?.Eval(t) ?? t);
                     if (isCompleted)
                         observer.OnCompleted();
 

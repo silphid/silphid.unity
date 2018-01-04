@@ -173,7 +173,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .Then(_ => image.ColorTo(Color.white, fadeDuration.Value))
+                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 
@@ -228,7 +228,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .Then(_ => image.ColorTo(Color.white, fadeDuration.Value))
+                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 

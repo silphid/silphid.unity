@@ -142,17 +142,17 @@ public class Sequencing1 : MonoBehaviour
 
     // Disposing the returned completable has the effect of unterrupting the underlying Tween
     private ICompletable RotateCube(Vector3 angle) =>
-        Cube.transform.RotateLocallyTo(angle, RotateDuration, Ease.InOutCubic);
+        Cube.transform.RotateTo(angle, RotateDuration, Easer.InOutCubic);
 
     private ICompletable ResetCubeRotation() =>
-        Cube.transform.RotateLocallyTo(Vector3.zero, RotateDuration, Ease.InOutCubic);
+        Cube.transform.RotateTo(Vector3.zero, RotateDuration, Easer.InOutCubic);
 
     // Move cube
 
     private ICompletable MoveCubeToLoadingPosition() => MoveCubeTo(LoadingCubePosition);
     private ICompletable MoveCubeToNormalPosition() => MoveCubeTo(NormalCubePosition);
     private ICompletable MoveCubeTo(Vector3 position) =>
-        Cube.transform.MoveLocallyTo(position, MoveDuration, Ease.InOutCubic);
+        Cube.transform.MoveTo(position, MoveDuration, Easer.InOutCubic);
 
     // Show or hide text
 
@@ -160,6 +160,6 @@ public class Sequencing1 : MonoBehaviour
     private ICompletable HideText() => ShowHideText(NormalTextPosition, 0);
     private ICompletable ShowHideText(Vector3 position, float alpha) =>
         Parallel.Create(
-            () => Text.GetComponent<CanvasGroup>().FadeTo(alpha, ShowHideTextDuration, Ease.InOutCubic),
-            () => Text.transform.MoveLocallyTo(position, ShowHideTextDuration, Ease.InOutCubic));
+            () => Text.GetComponent<CanvasGroup>().FadeTo(alpha, ShowHideTextDuration, Easer.InOutCubic),
+            () => Text.transform.MoveTo(position, ShowHideTextDuration, Easer.InOutCubic));
 }

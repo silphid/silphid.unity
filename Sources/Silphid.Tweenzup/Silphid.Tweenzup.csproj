@@ -50,8 +50,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Ease.cs" />
-    <Compile Include="Sources\EaseExtensions.cs" />
-    <Compile Include="Sources\FloatEaseExtensions.cs" />
+    <Compile Include="Sources\Easer.cs" />
+    <Compile Include="Sources\EasingExtensions.cs" />
+    <Compile Include="Sources\IEaser.cs" />
     <Compile Include="Sources\TweenObservable.cs" />
     <Compile Include="Sources\Tween.cs" />
   </ItemGroup>

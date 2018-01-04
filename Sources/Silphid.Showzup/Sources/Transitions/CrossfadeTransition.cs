@@ -8,6 +8,7 @@ namespace Silphid.Showzup
     public class CrossfadeTransition : Transition
     {
         public Ease Ease { protected get; set; } = Ease.InOutCubic;
+        protected IEaser Easer => Ease.ToEaser();
         public bool FadeOutSource { get; set; } = true;
         public bool FadeInTarget { get; set; } = true;
         public bool SourceAboveTarget { get; set; } = true;
@@ -40,7 +41,7 @@ namespace Silphid.Showzup
             {
                 var canvasGroup = sourceContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .FadeOut(duration, Ease)
+                    .FadeOut(duration, Easer)
                     .In(sequencer);
             }
 
@@ -48,7 +49,7 @@ namespace Silphid.Showzup
             {
                 var canvasGroup = targetContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .FadeIn(duration, Ease)
+                    .FadeIn(duration, Easer)
                     .In(sequencer);
             }
         }

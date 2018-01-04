@@ -5,7 +5,7 @@ using Math = UnityEngine.Mathf;
 
 namespace Silphid.Tweenzup
 {
-    public static class FloatEaseExtensions
+    public static class EasingExtensions
     {
 	    /// <summary>
 	    /// Constant Pi.
@@ -18,16 +18,37 @@ namespace Silphid.Tweenzup
 	    private const float HalfPi = Math.PI / 2f;
 
 	    /// <summary>
-	    /// Eases This value using given ease function
+	    /// Makes this easer animate forwards then backwards within the same time span
 	    /// </summary>
-	    public static float Ease(this float This, Ease ease) =>
+	    public static IEaser PingPong(this IEaser This) =>
+		    new Easer(t => This.Eval(
+			    t <= 0.5f
+				    ? t * 2
+				    : 1 - (t - 0.5f) * 2));
+
+	    /// <summary>
+	    /// Makes this easer animate backwards within the same time span
+	    /// </summary>
+	    public static IEaser Reversed(this IEaser This) =>
+		    new Easer(t => This.Eval(1 - t));
+	    
+	    /// <summary>
+	    /// Converts this Ease enum value into an IEaser
+	    /// </summary>
+	    public static IEaser ToEaser(this Ease This) =>
+		    Easer.From(This);
+
+	    /// <summary>
+	    /// Eases this value using given easer
+	    /// </summary>
+	    public static float Ease(this float This, IEaser ease) =>
 		    ease.Eval(This);
 
 	    /// <summary>
 	    /// Eases values of This observable using given ease function
 	    /// </summary>
-	    public static IObservable<float> Ease(this IObservable<float> This, Ease ease) =>
-		    This.Select(x => ease.Eval(x));
+	    public static IObservable<float> Ease(this IObservable<float> This, IEaser easer) =>
+		    This.Select(easer.Eval);
 
 	    /// <summary>
 	    /// Modeled after the parabola y = x^2
