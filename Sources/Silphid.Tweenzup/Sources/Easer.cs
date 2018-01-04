@@ -55,7 +55,7 @@ namespace Silphid.Tweenzup
             _func = func;
         }
 
-        public float Eval(float t) =>
+        public float Ease(float t) =>
             _func(t);
     }
 }

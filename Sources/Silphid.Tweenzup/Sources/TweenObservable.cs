@@ -32,7 +32,7 @@ namespace Silphid.Tweenzup
 
                 try
                 {
-                    observer.OnNext(_easer?.Eval(t) ?? t);
+                    observer.OnNext(_easer?.Ease(t) ?? t);
                     if (isCompleted)
                         observer.OnCompleted();
 

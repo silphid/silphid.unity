@@ -21,7 +21,7 @@ namespace Silphid.Tweenzup
 	    /// Makes this easer animate forwards then backwards within the same time span
 	    /// </summary>
 	    public static IEaser PingPong(this IEaser This) =>
-		    new Easer(t => This.Eval(
+		    new Easer(t => This.Ease(
 			    t <= 0.5f
 				    ? t * 2
 				    : 1 - (t - 0.5f) * 2));
@@ -30,7 +30,7 @@ namespace Silphid.Tweenzup
 	    /// Makes this easer animate backwards within the same time span
 	    /// </summary>
 	    public static IEaser Reversed(this IEaser This) =>
-		    new Easer(t => This.Eval(1 - t));
+		    new Easer(t => This.Ease(1 - t));
 	    
 	    /// <summary>
 	    /// Converts this Ease enum value into an IEaser
@@ -42,13 +42,13 @@ namespace Silphid.Tweenzup
 	    /// Eases this value using given easer
 	    /// </summary>
 	    public static float Ease(this float This, IEaser ease) =>
-		    ease.Eval(This);
+		    ease.Ease(This);
 
 	    /// <summary>
 	    /// Eases values of This observable using given ease function
 	    /// </summary>
 	    public static IObservable<float> Ease(this IObservable<float> This, IEaser easer) =>
-		    This.Select(easer.Eval);
+		    This.Select(easer.Ease);
 
 	    /// <summary>
 	    /// Modeled after the parabola y = x^2

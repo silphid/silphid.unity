@@ -2,6 +2,6 @@
 {
     public interface IEaser
     {
-        float Eval(float t);
+        float Ease(float t);
     }
 }
