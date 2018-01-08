@@ -1,0 +1,12 @@
+separator: /^.*?((using|namespace|/\*|#).+)$/
+items:
+  - pattern: Folder1/**/*.cs
+    header: >
+      /*
+      Test header 1
+      */
+  - pattern: Folder2/**/*.cs
+    header: >
+      /*
+      Test header 2
+      */

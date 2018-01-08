@@ -1,0 +1,17 @@
+{
+  "name": "symlynx",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "bin": {
+    "symlynx": "index.js"
+  },
+  "author": "Mathieu Frenette",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.12.2",
+    "globule": "^1.1.0",
+    "js-yaml": "^3.7.0"
+  }
+}
