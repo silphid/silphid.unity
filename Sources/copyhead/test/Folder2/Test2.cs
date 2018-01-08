@@ -1,7 +1,3 @@
-/*
-Test header 2
-*/
-/* Test header 2 */
 using System;
 
 namespace Namespace

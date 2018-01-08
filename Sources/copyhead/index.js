@@ -18,10 +18,14 @@ function main() {
         .option('-i, --input <file>', 'config file name', 'copyhead.yaml')
         .parse(process.argv);
 
-    if (args.update)
-        processFiles(args, updateHeaderInFile);
-    else if (args.remove)
-        processFiles(args, removeHeaderFromFile);
+    if (args.update) {
+        const count = processFiles(args, updateHeader);
+        console.log('Updated header of ' + count + ' file(s).');
+    }
+    else if (args.remove) {
+        const count = processFiles(args, removeHeader);
+        console.log('Removed header from ' + count + ' file(s).');
+    }
     else
         args.help();
 }
@@ -38,29 +42,31 @@ function loadConfig(args) {
     return config;
 }
 
-function processFiles(args, fileAction) {
+function processFiles(args, transform) {
     const config = loadConfig(args);
+    var count = 0;
 
     config.items.forEach(function(item) {
-        var files = globule.find(item.pattern);
+        const patterns = item.pattern.split(/,\s*/)
+        const files = globule.find(patterns, { matchBase: true });
         files.forEach(function(file) {
-            fileAction(file, config, item);
+            count++;
+            fs.readFile(file, 'utf8', function(err, data) {
+                data = transform(data, config, item);
+                fs.writeFile(file, data, { flag: 'w' }, function(err) {});
+            });
         });
     }, this);
+
+    return count;
 }
 
-function updateHeaderInFile(file, config, item) {
-    fs.readFile(file, function(err, data) {
-        data = config.regexp.replace(data, item.header);
-        fs.writeFile(file, data, { flag: 'w' });
-    });
+function removeHeader(data, config, item) {
+    return data.replace(config.regexp, '');
 }
 
-function removeHeaderFromFile(file, config, item) {
-    fs.readFile(file, function(err, data) {
-        data = config.regexp.replace(data, '');
-        fs.writeFile(file, data, { flag: 'w' });
-    });
+function updateHeader(data, config, item) {
+    return item.header + removeHeader(data, config, item);
 }
 
 main();

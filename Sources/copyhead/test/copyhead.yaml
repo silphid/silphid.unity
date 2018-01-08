@@ -1,6 +1,6 @@
-regexp: ^/\*.*?\*/\n?
+regexp: ^/\*(.|\n)*?\*/\n
 items:
-  - pattern: Folder1/**/*.cs, !**/Excluded.cs
+  - pattern: Folder1/**/*.cs, !Excluded.*
     header: |
       /*
       Test header 1
