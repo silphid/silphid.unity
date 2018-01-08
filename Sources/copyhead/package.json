@@ -1,11 +1,11 @@
 {
-  "name": "symlynx",
-  "version": "1.0.2",
+  "name": "copyhead",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
   "bin": {
-    "symlynx": "index.js"
+    "copyhead": "index.js"
   },
   "author": "Mathieu Frenette",
   "license": "ISC",

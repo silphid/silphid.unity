@@ -19,9 +19,9 @@ function main() {
         .parse(process.argv);
 
     if (args.update)
-        process(args, updateHeader);
+        processFiles(args, updateHeaderInFile);
     else if (args.remove)
-        process(args, removeHeader);
+        processFiles(args, removeHeaderFromFile);
     else
         args.help();
 }
@@ -34,11 +34,11 @@ function loadConfig(args) {
 
     const config = yaml.safeLoad(fs.readFileSync(configFiles[0], 'utf8'));
 
-    config.separator = new RegExp(config.separator);
+    config.regexp = new RegExp(config.regexp);
     return config;
 }
 
-function process(args, fileAction) {
+function processFiles(args, fileAction) {
     const config = loadConfig(args);
 
     config.items.forEach(function(item) {
@@ -49,16 +49,16 @@ function process(args, fileAction) {
     }, this);
 }
 
-function updateHeader(file, config, item) {
+function updateHeaderInFile(file, config, item) {
     fs.readFile(file, function(err, data) {
-        data = item.header + data;
+        data = config.regexp.replace(data, item.header);
         fs.writeFile(file, data, { flag: 'w' });
     });
 }
 
-function removeHeader(file, config, item) {
+function removeHeaderFromFile(file, config, item) {
     fs.readFile(file, function(err, data) {
-        // TODO: Remove header from data
+        data = config.regexp.replace(data, '');
         fs.writeFile(file, data, { flag: 'w' });
     });
 }

@@ -1,7 +1,3 @@
-/*
-Test header 1
-*/
-/* Test header 1 */
 using System;
 
 namespace Namespace
@@ -9,7 +5,7 @@ namespace Namespace
 /*
 Non-header comment should be preserved
 */
-  public class Test1
+  public class Excluded
   {
   }
 }
