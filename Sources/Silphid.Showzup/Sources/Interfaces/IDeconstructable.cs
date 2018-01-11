@@ -1,10 +1,9 @@
-﻿using System;
-using UniRx;
+﻿using UniRx;
 
 namespace Silphid.Showzup
 {
     public interface IDeconstructable
     {
-        IObservable<Unit> Deconstruct(Options options);
+        ICompletable Deconstruct(Options options);
     }
 }

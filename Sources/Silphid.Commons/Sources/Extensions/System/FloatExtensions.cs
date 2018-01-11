@@ -78,6 +78,13 @@ namespace Silphid.Extensions
             new DateTime(This.Lerp(source.Ticks, target.Ticks));
 
         /// <summary>
+        /// Uses This as ratio to linearly interpolate between source and target.
+        /// </summary>
+        [Pure]
+        public static TimeSpan Lerp(this float This, TimeSpan source, TimeSpan target) =>
+            new TimeSpan(This.Lerp(source.Ticks, target.Ticks));
+
+        /// <summary>
         /// Uses This value as ratio and a single control handle to interpolate between source and target (quadratic Bézier).
         /// </summary>
         [Pure]

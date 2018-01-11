@@ -114,12 +114,12 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(ListControl listControl, IEnumerable items) =>
+        protected ICompletable BindAsync(ListControl listControl, IEnumerable items) =>
             listControl
                 ?.Present(items)
-                .AsSingleUnitObservable()
+                .AsCompletable()
                 .AutoDetach()
-            ?? Observable.ReturnUnit();
+            ?? Completable.Empty();
 
         protected void Bind(Image image, Uri uri, bool keepVisible = false, float? fadeDuration = null)
         {
@@ -129,19 +129,19 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false,
+        protected ICompletable BindAsync(Image image, Uri uri, bool isOptional = false,
             Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
-                return Observable.ReturnUnit();
+                return Completable.Empty();
 
             if (uri == null)
             {
                 if (isOptional)
-                    return Observable.ReturnUnit();
+                    return Completable.Empty();
 
-                return Observable.Throw<Unit>(
+                return Completable.Throw(
                     new BindException(
                         $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
@@ -182,22 +182,22 @@ namespace Silphid.Showzup
                         x.AddTo(this);
                 })
                 .AutoDetach()
-                .AsSingleUnitObservable();
+                .AsCompletable();
         }
 
-        protected IObservable<Unit> BindAsync(RawImage image, Uri uri, bool isOptional = false,
+        protected ICompletable BindAsync(RawImage image, Uri uri, bool isOptional = false,
             Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
-                return Observable.ReturnUnit();
+                return Completable.Empty();
 
             if (uri == null)
             {
                 if (isOptional)
-                    return Observable.ReturnUnit();
+                    return Completable.Empty();
 
-                return Observable.Throw<Unit>(
+                return Completable.Throw(
                     new BindException(
                         $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
@@ -241,7 +241,7 @@ namespace Silphid.Showzup
                     }
                 })
                 .AutoDetach()
-                .AsSingleUnitObservable();
+                .AsCompletable();
         }
 
         #endregion
