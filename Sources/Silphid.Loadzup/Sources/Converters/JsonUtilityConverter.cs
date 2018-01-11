@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class JsonConverter : ConverterBase<byte[]>
+    public class JsonUtilityConverter : ConverterBase<byte[]>
     {
-        public JsonConverter()
+        public JsonUtilityConverter()
         {
             SetMediaTypes(KnownMediaType.ApplicationJson);
         }
