@@ -145,6 +145,24 @@ namespace Silphid.Extensions
         public static IObservable<Vector3> Clamp(this IObservable<Vector3> This, Vector3 min, Vector3 max) =>
             This.Select(x => x.Clamp(min, max));
 
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static IObservable<Vector3> ElasticClamp(this IObservable<Vector3> This, Vector3 min, Vector3 max, float elasticity) =>
+            This.Select(x => x.ElasticClamp(min, max, elasticity));
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static IObservable<Vector3> ElasticClamp(this IObservable<Vector3> This, Bounds bounds, float elasticity) =>
+            This.Select(x => x.ElasticClamp(bounds, elasticity));
+
         #endregion
 
         #region Conversion

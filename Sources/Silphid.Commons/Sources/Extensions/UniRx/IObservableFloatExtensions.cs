@@ -185,6 +185,15 @@ namespace Silphid.Extensions
             This.Select(x => x.Clamp(min, max));
 
         /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static IObservable<float> ElasticClamp(this IObservable<float> This, float min, float max, float elasticity) =>
+            This.Select(x => x.ElasticClamp(min, max, elasticity));
+
+        /// <summary>
         /// Returns value clamped to the [0, 1] interval
         /// </summary>
         [Pure]

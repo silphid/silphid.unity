@@ -224,6 +224,30 @@ namespace Silphid.Extensions
         public static float Clamp(this float This) => This.Clamp(0, 1);
 
         /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static float ElasticClamp(this float This, float min, float max, float elasticity)
+        {
+            if (min > max)
+            {
+                var tmp = min;
+                min = max;
+                max = tmp;
+            }
+
+            if (This > max)
+                return max + (This - max) * elasticity;
+            
+            if (This < min)
+                return min - (min - This) * elasticity;
+
+            return This;
+        }
+
+        /// <summary>
         /// Returns the minimum value between this and another value
         /// </summary>
         public static float Min(this float This, float min) =>
