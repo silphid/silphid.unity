@@ -102,7 +102,7 @@ namespace Silphid.Extensions
             var c = This.Lerp(targetHandle, target);
             return This.Lerp(This.Lerp(a, b), This.Lerp(b, c));
         }
-
+        
         /// <summary>
         /// Smooths this (new) value compared to its previous value to reduce noise or sudden peaks.
         /// Note that smoothness is affected by the rate at which this method is invoked and should be adjusted
@@ -112,7 +112,7 @@ namespace Silphid.Extensions
         /// <param name="previousValue">The previous value to smooth relatively from.</param>
         /// <param name="smoothness">A number between 0 (no smoothing) and 1 (ignores new values).</param>
         [Pure]
-        public static float Smooth(this float This, float previousValue, float smoothness) =>
+        public static float Smooth(this float This, float previousValue, float smoothness = Smoothness.Default) =>
             smoothness.Lerp(This, previousValue);
 
         #endregion

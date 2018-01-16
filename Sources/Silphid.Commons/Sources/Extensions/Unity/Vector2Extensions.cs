@@ -94,7 +94,7 @@ namespace Silphid.Extensions
         /// <param name="previousValue">The previous value to smooth relatively from.</param>
         /// <param name="smoothness">A number between 0 (no smoothing) and 1 (ignores new values).</param>
         [Pure]
-        public static Vector2 Smooth(this Vector2 This, Vector2 previousValue, float smoothness) =>
+        public static Vector2 Smooth(this Vector2 This, Vector2 previousValue, float smoothness = Smoothness.Default) =>
             smoothness.Lerp(This, previousValue);
 
         #endregion
