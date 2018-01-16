@@ -24,6 +24,9 @@ namespace Silphid.Sequencit
         public static IDisposable Start(Action<ISequencer> action) =>
             Create(action).AutoDetach().Subscribe();
 
+        public static IDisposable Start(Action<ISequencer> action, Action<Exception> onError) =>
+            Create(action).AutoDetach().Subscribe(onError);
+
         public static IDisposable Start(params ICompletable[] observables) =>
             Create(observables).AutoDetach().Subscribe();
 
