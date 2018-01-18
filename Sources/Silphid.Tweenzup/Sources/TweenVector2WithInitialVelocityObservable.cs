@@ -6,8 +6,8 @@ namespace Silphid.Tweenzup
 {
     public class TweenVector2WithInitialVelocityObservable : TweenWithInitialVelocityObservableBase<Vector2>
     {
-        public TweenVector2WithInitialVelocityObservable(Func<Vector2> sourceSelector, Func<Vector2> velocitySelector, Vector2 target, float duration, IEaser easer, IEaser transitionEaser) :
-            base(sourceSelector, velocitySelector, target, duration, easer, transitionEaser)
+        public TweenVector2WithInitialVelocityObservable(Func<Vector2> sourceSelector, Func<Vector2> velocitySelector, Vector2 target, float duration, IEaser easer) :
+            base(sourceSelector, velocitySelector, target, duration, easer)
         {
         }
 

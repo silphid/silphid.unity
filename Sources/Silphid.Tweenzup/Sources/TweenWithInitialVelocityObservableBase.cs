@@ -11,16 +11,14 @@ namespace Silphid.Tweenzup
         private readonly T _target;
         private readonly float _duration;
         private readonly IEaser _easer;
-        private readonly IEaser _transitionEaser;
 
-        protected TweenWithInitialVelocityObservableBase(Func<T> sourceSelector, Func<T> velocitySelector, T target, float duration, IEaser easer, IEaser transitionEaser)
+        protected TweenWithInitialVelocityObservableBase(Func<T> sourceSelector, Func<T> velocitySelector, T target, float duration, IEaser easer)
         {
             _sourceSelector = sourceSelector;
             _velocitySelector = velocitySelector;
             _target = target;
             _duration = duration;
             _easer = easer ?? Easer.Linear;
-            _transitionEaser = transitionEaser ?? Easer.OutCubic;
         }
 
         protected abstract T Lerp(float ratio, T source, T target);
@@ -49,7 +47,7 @@ namespace Silphid.Tweenzup
                 {
                     var oldProjectedValue = Lerp(t, source, oldProjectedTarget);
                     var desiredValue = Lerp(t.Ease(_easer), source, _target);
-                    var actualValue = Lerp(t.Ease(_transitionEaser), oldProjectedValue, desiredValue);
+                    var actualValue = Lerp(t, oldProjectedValue, desiredValue);
                     
                     observer.OnNext(actualValue);
                     
