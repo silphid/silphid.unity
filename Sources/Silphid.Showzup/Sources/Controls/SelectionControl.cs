@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Requests;
 using Silphid.Showzup.Navigation;
@@ -11,7 +12,7 @@ using UnityEngine.EventSystems;
 namespace Silphid.Showzup
 {
     public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
-    {      
+    {
         private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
 
         public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
@@ -43,6 +44,15 @@ namespace Silphid.Showzup
 
             SubscribeToUpdateFocusables(SelectedView);
         }
+
+        [Pure]
+        protected override IObservable<IView> PresentView(object input, Options options = null) =>
+            base.PresentView(input, options)
+                .DoOnCompleted(() =>
+                {
+                    if (AutoSelectFirst)
+                        SelectFirst();
+                });
 
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
         {
