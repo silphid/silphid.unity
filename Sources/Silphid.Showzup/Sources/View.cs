@@ -9,7 +9,6 @@ using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Silphid.Showzup
