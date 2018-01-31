@@ -31,10 +31,16 @@ namespace Silphid.Injexit
         IBinding AsEagerSingle();
         
         /// <summary>
-        /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()
-        /// and AddReference() (in lists).
+        /// Marks binding with given BindingId object, to allow reuse of binding in different contexts with
+        /// BindReference() and AddReference() (in lists).
         /// </summary>
         IBinding Id(BindingId id);
+        
+        /// <summary>
+        /// Marks binding with a new BindingId object and returns that object, to allow reuse of binding in different
+        /// contexts with BindReference() and AddReference() (in lists).
+        /// </summary>
+        BindingId Id();
 
         /// <summary>
         /// Marks binding with given Name, to allow reuse of binding in different contexts with BindReference()

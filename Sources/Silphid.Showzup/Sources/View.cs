@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections;
-using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
 using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
-using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Silphid.Showzup
 {
@@ -76,7 +77,7 @@ namespace Silphid.Showzup
 
         #region ILoadable members
 
-        public virtual IObservable<Unit> Load()
+        public virtual ICompletable Load()
         {
             return null;
         }
@@ -114,12 +115,12 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(ListControl listControl, IEnumerable items) =>
+        protected ICompletable BindAsync(ListControl listControl, IEnumerable items) =>
             listControl
                 ?.Present(items)
-                .AsSingleUnitObservable()
+                .AsCompletable()
                 .AutoDetach()
-            ?? Observable.ReturnUnit();
+            ?? Completable.Empty();
 
         protected void Bind(Image image, Uri uri, bool keepVisible = false, float? fadeDuration = null)
         {
@@ -129,19 +130,19 @@ namespace Silphid.Showzup
                     .AddTo(this);
         }
 
-        protected IObservable<Unit> BindAsync(Image image, Uri uri, bool isOptional = false,
+        protected ICompletable BindAsync(Image image, Uri uri, bool isOptional = false,
             Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
-                return Observable.ReturnUnit();
+                return Completable.Empty();
 
             if (uri == null)
             {
                 if (isOptional)
-                    return Observable.ReturnUnit();
+                    return Completable.Empty();
 
-                return Observable.Throw<Unit>(
+                return Completable.Throw(
                     new BindException(
                         $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
@@ -173,7 +174,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .ContinueWith(_ => image.DOColor(Color.white, fadeDuration.Value).ToObservable())
+                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 
@@ -182,22 +183,22 @@ namespace Silphid.Showzup
                         x.AddTo(this);
                 })
                 .AutoDetach()
-                .AsSingleUnitObservable();
+                .AsCompletable();
         }
 
-        protected IObservable<Unit> BindAsync(RawImage image, Uri uri, bool isOptional = false,
+        protected ICompletable BindAsync(RawImage image, Uri uri, bool isOptional = false,
             Loadzup.Options options = null,
             bool keepVisible = false, float? fadeDuration = null)
         {
             if (image == null)
-                return Observable.ReturnUnit();
+                return Completable.Empty();
 
             if (uri == null)
             {
                 if (isOptional)
-                    return Observable.ReturnUnit();
+                    return Completable.Empty();
 
-                return Observable.Throw<Unit>(
+                return Completable.Throw(
                     new BindException(
                         $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
             }
@@ -228,7 +229,7 @@ namespace Silphid.Showzup
 
                     if (fadeDuration != null)
                         Observable.NextFrame()
-                            .ContinueWith(_ => image.DOColor(Color.white, fadeDuration.Value).ToObservable())
+                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
                             .SubscribeAndForget()
                             .AddTo(this);
 
@@ -241,7 +242,7 @@ namespace Silphid.Showzup
                     }
                 })
                 .AutoDetach()
-                .AsSingleUnitObservable();
+                .AsCompletable();
         }
 
         #endregion

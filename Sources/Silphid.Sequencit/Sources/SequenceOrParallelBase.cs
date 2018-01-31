@@ -11,18 +11,18 @@ namespace Silphid.Sequencit
         {
             public readonly List<object> Items = new List<object>();
 
-            public IDisposable Subscribe(IObserver<Unit> observer)
+            public IDisposable Subscribe(ICompletableObserver observer)
             {
                 throw new NotSupportedException();
             }
 
-            public object Add(IObservable<Unit> observable)
+            public object Add(ICompletable observable)
             {
                 Items.Add(observable);
                 return observable;
             }
 
-            public object Add(Func<IObservable<Unit>> selector)
+            public object Add(Func<ICompletable> selector)
             {
                 Items.Add(selector);
                 return selector;
@@ -47,13 +47,13 @@ namespace Silphid.Sequencit
 
         #region ISequencer members
 
-        public object Add(IObservable<Unit> observable)
+        public object Add(ICompletable observable)
         {
             _items.Add(observable);
             return observable;
         }
 
-        public object Add(Func<IObservable<Unit>> selector)
+        public object Add(Func<ICompletable> selector)
         {
             _items.Add(selector);
             return selector;
@@ -61,13 +61,13 @@ namespace Silphid.Sequencit
 
         #endregion
 
-        #region IObservable<Unit> members
+        #region ICompletable members
 
-        public abstract IDisposable Subscribe(IObserver<Unit> observer);
+        public abstract IDisposable Subscribe(ICompletableObserver completableObserver);
 
-        protected IEnumerable<IObservable<Unit>> GetObservables()
+        protected IEnumerable<ICompletable> GetCompletables()
         {
-            var observables = _items.Select(GetObservableFromItem);
+            var observables = _items.Select(GetCompletableFromItem);
             if (_action == null)
                 return observables;
 
@@ -75,7 +75,7 @@ namespace Silphid.Sequencit
             _action(collector);
             
             return collector.Items
-                .Select(GetObservableFromItem)
+                .Select(GetCompletableFromItem)
                 .Concat(observables);
         }
 

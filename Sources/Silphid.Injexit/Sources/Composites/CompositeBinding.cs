@@ -58,7 +58,12 @@ namespace Silphid.Injexit
 
         public IBinding Id(BindingId id)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Cannot associate an Id with CompositeBinding");
+        }
+
+        public BindingId Id()
+        {
+            throw new NotSupportedException("Cannot associate an Id with CompositeBinding");
         }
     }
 }

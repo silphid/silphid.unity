@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if DOTWEEN
+
+using System;
 using DG.Tweening;
 using UniRx;
 
@@ -17,24 +19,22 @@ namespace Silphid.Sequencit
             return This;
         }
 
-        public static IObservable<Unit> ToObservable(this Tween This, bool completeTweenOnDispose = false)
+        public static ICompletable ToCompletable(this Tween This, bool completeTweenOnDispose = false)
         {
             This.Pause();
-            return Observable.Create<Unit>(subscriber =>
+            return Completable.Create(subscriber =>
             {
                 This.Play();
-                This.OnComplete(() =>
-                {
-                    subscriber.OnNext(Unit.Default);
-                    subscriber.OnCompleted();
-                });
+                This.OnComplete(subscriber.OnCompleted);
                 return Disposable.Create(() => This.Kill(completeTweenOnDispose));
             });
         }
 
         public static void AddTween(this ISequencer This, Func<Tween> action)
         {
-            This.Add(() => action().ToObservable());
+            This.Add(() => action().ToCompletable());
         }
     }
 }
+
+#endif

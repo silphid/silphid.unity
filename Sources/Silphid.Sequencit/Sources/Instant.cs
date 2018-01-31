@@ -3,17 +3,17 @@ using UniRx;
 
 namespace Silphid.Sequencit
 {
-    public class Instant : IObservable<Unit>
+    public class Instant : ICompletable
     {
         private readonly Action _action;
-        public static readonly IObservable<Unit> Default = new Instant();
+        public static readonly ICompletable Default = new Instant();
 
         public Instant(Action action = null)
         {
             _action = action;
         }
 
-        public IDisposable Subscribe(IObserver<Unit> observer)
+        public IDisposable Subscribe(ICompletableObserver observer)
         {
             try
             {
@@ -21,8 +21,8 @@ namespace Silphid.Sequencit
             }
             catch (Exception ex)
             {
-                return Observable
-                    .Throw<Unit>(ex)
+                return Completable
+                    .Throw(ex)
                     .Subscribe(observer);
             }
 

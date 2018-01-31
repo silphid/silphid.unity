@@ -76,7 +76,7 @@ namespace Silphid.Sequencit.Test
             Sequence.Start(s =>
             {
                 s.AddAction(() => _value = 1);
-                s.Add(CreateDelay(100));
+                s.Add(CreateTimer(100));
                 s.AddLapse(x =>
                 {
                     _value = 2;

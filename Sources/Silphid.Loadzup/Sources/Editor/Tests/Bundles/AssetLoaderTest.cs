@@ -1,92 +1,94 @@
 ﻿using System;
 using NSubstitute;
 using NUnit.Framework;
-using Silphid.Loadzup;
 using Silphid.Loadzup.Bundles;
 using UniRx;
 using UnityEngine.SceneManagement;
 
-public class AssetLoaderTest
+namespace Silphid.Loadzup.Test.Bundles
 {
-    private readonly string _assetName = "test-assetbundle";
-    private readonly IBundle _bundle = Substitute.For<IBundle>();
-    private readonly Scene _scene = new Scene();
-    private ILoader _innerLoader;
-    private AssetLoader _fixture;
-
-    private IObservable<Scene> GetSceneObservable() => Observable.Return(_scene);
-    private Uri GetBundleUri(string assetName) => new Uri($"bundle://test-bundle/{assetName}");
-    private Uri GetSceneUri(string sceneName) => new Uri($"scene://{sceneName}");
-
-    [SetUp]
-    public void SetUp()
+    public class AssetLoaderTest
     {
-        _innerLoader = Substitute.For<ILoader>();
-        _fixture = new AssetLoader(_innerLoader);
+        private readonly string _assetName = "test-assetbundle";
+        private readonly IBundle _bundle = Substitute.For<IBundle>();
+        private readonly Scene _scene = new Scene();
+        private ILoader _innerLoader;
+        private AssetLoader _fixture;
 
-        _innerLoader.Load<IBundle>(Arg.Any<Uri>(), Arg.Any<Options>())
-            .Returns(Observable.Return(_bundle));
-    }
+        private IObservable<Scene> GetSceneObservable() => Observable.Return(_scene);
+        private Uri GetBundleUri(string assetName) => new Uri($"bundle://test-bundle/{assetName}");
+        private Uri GetSceneUri(string sceneName) => new Uri($"scene://{sceneName}");
 
-    private void SetUpSceneLoader(IObservable<Scene> observable)
-    {
-        _innerLoader.Load<Scene>(GetSceneUri(_assetName), Arg.Any<Options>())
-            .Returns(observable);
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            _innerLoader = Substitute.For<ILoader>();
+            _fixture = new AssetLoader(_innerLoader);
 
-    private void SetUpBundleLoadAssetReturn<T>(T asset)
-    {
-        _bundle.LoadAsset<T>(Arg.Any<string>())
-            .Returns(Observable.Return(asset));
-    }
+            _innerLoader.Load<IBundle>(Arg.Any<Uri>(), Arg.Any<Options>())
+                .Returns(Observable.Return(_bundle));
+        }
 
-    [Test]
-    public void LoadSceneIfNotAsset_ReturnScene()
-    {
-        SetUpSceneLoader(GetSceneObservable());
+        private void SetUpSceneLoader(IObservable<Scene> observable)
+        {
+            _innerLoader.Load<Scene>(GetSceneUri(_assetName), Arg.Any<Options>())
+                .Returns(observable);
+        }
 
-        var scene = _fixture.Load<Scene>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
+        private void SetUpBundleLoadAssetReturn<T>(T asset)
+        {
+            _bundle.LoadAsset<T>(Arg.Any<string>())
+                .Returns(Observable.Return(asset));
+        }
 
-        Assert.AreEqual(_scene, scene);
-    }
+        [Test]
+        public void LoadSceneIfNotAsset_ReturnScene()
+        {
+            SetUpSceneLoader(GetSceneObservable());
 
-   // [Ignore]
-    [Test]
-    public void LoadAssetIfNotScene_ReturnAsset()
-    {
-        throw new NotImplementedException();
-    }
+            var scene = _fixture.Load<Scene>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
 
-   // [Ignore]
-    [Test]
-    public void CheckUriAndOptionsPassedToLoaderWhenScene_ReturnValidArgs()
-    {
-        throw new NotImplementedException();
-    }
+            Assert.AreEqual(_scene, scene);
+        }
 
-    [Test]
-    public void CheckAssetNamePassedToBundle_ReturnValidAssetName()
-    {
-        SetUpBundleLoadAssetReturn("test");
-        _fixture.Load<string>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
+        // [Ignore]
+        [Test]
+        public void LoadAssetIfNotScene_ReturnAsset()
+        {
+            throw new NotImplementedException();
+        }
 
-        _bundle.Received(1).LoadAsset<string>(_assetName);
-    }
+        // [Ignore]
+        [Test]
+        public void CheckUriAndOptionsPassedToLoaderWhenScene_ReturnValidArgs()
+        {
+            throw new NotImplementedException();
+        }
 
-    [Test]
-    public void CheckAssetNamePassedToSceneLoader_ReturnValidAssetName()
-    {
-        SetUpSceneLoader(GetSceneObservable());
+        [Test]
+        public void CheckAssetNamePassedToBundle_ReturnValidAssetName()
+        {
+            SetUpBundleLoadAssetReturn("test");
+            _fixture.Load<string>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
 
-        _fixture.Load<Scene>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
+            _bundle.Received(1).LoadAsset<string>(_assetName);
+        }
 
-        _innerLoader.Received(1).Load<Scene>(GetSceneUri(_assetName), Arg.Any<Options>());
-    }
+        [Test]
+        public void CheckAssetNamePassedToSceneLoader_ReturnValidAssetName()
+        {
+            SetUpSceneLoader(GetSceneObservable());
 
-    //[Ignore]
-    [Test]
-    public void ErrorLoadingBundle_DoNotCallBundleNorSceneLoader()
-    {
-        throw new NotImplementedException();
+            _fixture.Load<Scene>(GetBundleUri(_assetName)).Wait(TimeSpan.FromSeconds(5));
+
+            _innerLoader.Received(1).Load<Scene>(GetSceneUri(_assetName), Arg.Any<Options>());
+        }
+
+        //[Ignore]
+        [Test]
+        public void ErrorLoadingBundle_DoNotCallBundleNorSceneLoader()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

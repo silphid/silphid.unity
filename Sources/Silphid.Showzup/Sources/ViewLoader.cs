@@ -123,18 +123,18 @@ namespace Silphid.Showzup
             }
         }
 
-        private IObservable<Unit> LoadLoadable(IView view)
+        private ICompletable LoadLoadable(IView view)
         {
             try
             {
                 return (view as ILoadable)?.Load()?
-                       .Catch<Unit, Exception>(ex =>
-                           Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex)))
-                       ?? Observable.ReturnUnit();
+                       .Catch<Exception>(ex =>
+                           Completable.Throw(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex)))
+                       ?? Completable.Empty();
             }
             catch (Exception ex)
             {
-                return Observable.Throw<Unit>(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex));
+                return Completable.Throw(new LoadException($"Error in view.Load() of {view.GetType().Name}", ex));
             }
         }
 

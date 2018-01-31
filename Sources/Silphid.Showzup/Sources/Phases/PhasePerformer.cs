@@ -6,12 +6,12 @@ namespace Silphid.Showzup
     public class PhasePerformer : IDisposable
     {
         private readonly IObserver<PhaseEvent> _observer;
-        private readonly Subject<Unit> _completedSubject = new Subject<Unit>();
+        private readonly CompletableSubject _completedSubject = new CompletableSubject();
 
         public readonly CompositeDisposable _disposables = new CompositeDisposable();
         public PhaseState State { get; private set; }
         public Phase Phase { get; }
-        public IObservable<Unit> Completed => _completedSubject;
+        public ICompletable Completed => _completedSubject;
 
         public PhasePerformer(Phase phase, IObserver<PhaseEvent> observer)
         {
@@ -24,7 +24,7 @@ namespace Silphid.Showzup
             _disposables.Dispose();
         }
 
-        public IObservable<Unit> Perform()
+        public ICompletable Perform()
         {
             Start();
             return Completed.DoOnCompleted(Complete);

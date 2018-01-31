@@ -1,20 +1,18 @@
-﻿using System;
-using DG.Tweening;
-using Silphid.Extensions;
-using Silphid.Sequencit;
+﻿using Silphid.Sequencit;
+using Silphid.Tweenzup;
 using UniRx;
 using UnityEngine;
-using Sequence = Silphid.Sequencit.Sequence;
 
 namespace Silphid.Showzup
 {
     public class CrossfadeTransition : Transition
     {
-        public Ease Ease { get; set; } = Ease.InOutCubic;
+        public Ease Ease { protected get; set; } = Ease.InOutCubic;
+        protected IEaser Easer => Ease.ToEaser();
         public bool FadeOutSource { get; set; } = true;
         public bool FadeInTarget { get; set; } = true;
         public bool SourceAboveTarget { get; set; } = true;
-        public bool IsSequential { get; set; } = false;
+        public bool IsSequential { get; set; }
 
         public override void Prepare(GameObject sourceContainer, GameObject targetContainer, Direction direction)
         {
@@ -29,8 +27,7 @@ namespace Silphid.Showzup
                 sourceContainer.transform.SetAsFirstSibling();
         }
 
-        public override IObservable<Unit> Perform(GameObject sourceContainer, GameObject targetContainer,
-            Direction direction, float duration)
+        public override ICompletable Perform(GameObject sourceContainer, GameObject targetContainer, Direction direction, float duration)
         {
             var sequencer = IsSequential ? (ISequencer) Sequence.Create() : Parallel.Create();
             PerformTransition(sourceContainer, targetContainer, IsSequential ? duration * 0.5f : duration, sequencer);
@@ -44,24 +41,16 @@ namespace Silphid.Showzup
             {
                 var canvasGroup = sourceContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .DOFadeOut(duration)
-                    .SetEase(Ease)
-                    .SetAutoKill()
-                    .In(sequencer)
-                    .AsDisposable()
-                    .AddTo(canvasGroup);
+                    .FadeOut(duration, Easer)
+                    .In(sequencer);
             }
 
             if (FadeInTarget)
             {
                 var canvasGroup = targetContainer.GetComponent<CanvasGroup>();
                 canvasGroup
-                    .DOFadeIn(duration)
-                    .SetEase(Ease)
-                    .SetAutoKill()
-                    .In(sequencer)
-                    .AsDisposable()
-                    .AddTo(canvasGroup);
+                    .FadeIn(duration, Easer)
+                    .In(sequencer);
             }
         }
 

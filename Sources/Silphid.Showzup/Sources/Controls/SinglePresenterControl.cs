@@ -189,7 +189,7 @@ namespace Silphid.Showzup
 
         #region Virtual and abstract members
 
-        protected abstract IObservable<Unit> Present(Presentation presentation);
+        protected abstract ICompletable Present(Presentation presentation);
 
         #endregion
 

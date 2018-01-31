@@ -12,19 +12,19 @@ namespace Silphid.Sequencit
         public static Parallel Create(Action<ISequencer> action = null) =>
             new Parallel(action);
 
-        public static Parallel Create<T>(params Func<IObservable<T>>[] selectors) =>
+        public static Parallel Create(params Func<ICompletable>[] selectors) =>
             Create(seq => selectors.ForEach(selector => seq.Add(selector())));
 
-        public static Parallel Create<T>(IEnumerable<IObservable<T>> observables) =>
+        public static Parallel Create(IEnumerable<ICompletable> observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
-        public static Parallel Create<T>(params IObservable<T>[] observables) =>
+        public static Parallel Create(params ICompletable[] observables) =>
             Create(seq => observables.ForEach(x => seq.Add(x)));
 
         public static IDisposable Start(Action<ISequencer> action) =>
             Create(action).AutoDetach().Subscribe();
 
-        public static IDisposable Start<T>(params IObservable<T>[] observables) =>
+        public static IDisposable Start(params ICompletable[] observables) =>
             Create(observables).AutoDetach().Subscribe();
 
         #endregion
@@ -37,10 +37,10 @@ namespace Silphid.Sequencit
         
         #endregion
         
-        #region IObservable<Unit> members
+        #region ICompletable members
 
-        public override IDisposable Subscribe(IObserver<Unit> observer) =>
-            GetObservables()
+        public override IDisposable Subscribe(ICompletableObserver observer) =>
+            GetCompletables()
                 .WhenAll()
                 .Subscribe(observer);
 

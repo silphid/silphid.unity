@@ -1,91 +1,93 @@
 ﻿using System;
 using NSubstitute;
 using NUnit.Framework;
-using Silphid.Loadzup;
 using Silphid.Loadzup.Bundles;
 using UniRx;
 using UnityEngine;
 
-public class ManifestLoaderTest
+namespace Silphid.Loadzup.Test.Bundles
 {
-    private const string BaseUri = "http://localhost:8080";
-    private ILoader _innerLoader;
-    private BundleManifestLoader _fixture;
-    private IPlatformProvider _platformProvider;
-    private IBundle _bundle;
-
-    [SetUp]
-    public void SetUp()
+    public class ManifestLoaderTest
     {
-        _innerLoader = Substitute.For<ILoader>();
-        _platformProvider = Substitute.For<IPlatformProvider>();
-        _bundle = Substitute.For<IBundle>();
-    }
+        private const string BaseUri = "http://localhost:8080";
+        private ILoader _innerLoader;
+        private BundleManifestLoader _fixture;
+        private IPlatformProvider _platformProvider;
+        private IBundle _bundle;
 
-    private void SetupLoaderReturn(IObservable<IBundle> returnObservable)
-    {
-        _innerLoader.Load<IBundle>(Arg.Any<Uri>())
-            .Returns(returnObservable);
-    }
+        [SetUp]
+        public void SetUp()
+        {
+            _innerLoader = Substitute.For<ILoader>();
+            _platformProvider = Substitute.For<IPlatformProvider>();
+            _bundle = Substitute.For<IBundle>();
+        }
 
-    private void SetupBundleReturn(IObservable<AssetBundleManifest> returnObservable)
-    {
-        _bundle.LoadAsset<AssetBundleManifest>(Arg.Any<string>())
-            .Returns(returnObservable);
-    }
+        private void SetupLoaderReturn(IObservable<IBundle> returnObservable)
+        {
+            _innerLoader.Load<IBundle>(Arg.Any<Uri>())
+                .Returns(returnObservable);
+        }
 
-    private void SetupPlatformProvider(string platformName)
-    {
-        _platformProvider.GetPlatformName()
-            .Returns(platformName);
-    }
+        private void SetupBundleReturn(IObservable<AssetBundleManifest> returnObservable)
+        {
+            _bundle.LoadAsset<AssetBundleManifest>(Arg.Any<string>())
+                .Returns(returnObservable);
+        }
 
-    private void CreateFixture()
-    {
-        _fixture = new BundleManifestLoader(_innerLoader, _platformProvider, BaseUri);
-    }
+        private void SetupPlatformProvider(string platformName)
+        {
+            _platformProvider.GetPlatformName()
+                .Returns(platformName);
+        }
 
-    [Test]
-    public void ErrorLoadingBundle_ReturnInvalidOperationException()
-    {
-        CreateFixture();
-        SetupLoaderReturn(Observable.Throw<IBundle>(new InvalidOperationException()));
-        SetupBundleReturn(Observable.Return(new AssetBundleManifest()));
+        private void CreateFixture()
+        {
+            _fixture = new BundleManifestLoader(_innerLoader, _platformProvider, BaseUri);
+        }
 
-        Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
+        [Test]
+        public void ErrorLoadingBundle_ReturnInvalidOperationException()
+        {
+            CreateFixture();
+            SetupLoaderReturn(Observable.Throw<IBundle>(new InvalidOperationException()));
+            SetupBundleReturn(Observable.Return(new AssetBundleManifest()));
 
-        _innerLoader.Received(1).Load<IBundle>(Arg.Any<Uri>());
-        _bundle.DidNotReceive().LoadAsset<AssetBundleManifest>(Arg.Any<string>());
-    }
+            Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
 
-    [Test]
-    public void AssetBundleManifestIsNull_ReturnInvalidOperationException()
-    {
-        CreateFixture();
-        SetupLoaderReturn(Observable.Return(_bundle));
-        SetupBundleReturn(Observable.Return((AssetBundleManifest) null));
+            _innerLoader.Received(1).Load<IBundle>(Arg.Any<Uri>());
+            _bundle.DidNotReceive().LoadAsset<AssetBundleManifest>(Arg.Any<string>());
+        }
 
-        Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
+        [Test]
+        public void AssetBundleManifestIsNull_ReturnInvalidOperationException()
+        {
+            CreateFixture();
+            SetupLoaderReturn(Observable.Return(_bundle));
+            SetupBundleReturn(Observable.Return((AssetBundleManifest) null));
 
-        _innerLoader.Received(1).Load<IBundle>(Arg.Any<Uri>());
-        _bundle.Received(1).LoadAsset<AssetBundleManifest>(Arg.Any<string>());
-    }
+            Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
 
-    [Test]
-    public void CheckUriPassedToLoader_ReturnValidUri()
-    {
-        const string platformName = "Windows";
-        var uri = new Uri($"{BaseUri}/{platformName}/{platformName}");
-        SetupPlatformProvider(platformName);
+            _innerLoader.Received(1).Load<IBundle>(Arg.Any<Uri>());
+            _bundle.Received(1).LoadAsset<AssetBundleManifest>(Arg.Any<string>());
+        }
 
-        CreateFixture();
+        [Test]
+        public void CheckUriPassedToLoader_ReturnValidUri()
+        {
+            const string platformName = "Windows";
+            var uri = new Uri($"{BaseUri}/{platformName}/{platformName}");
+            SetupPlatformProvider(platformName);
 
-        // SetupReturn to exception because we can't test IBundle.LoadAsset with a new AssetBundleManifest (Unknown Unity issue?)
-        SetupLoaderReturn(Observable.Throw<IBundle>(new InvalidOperationException()));
-        SetupBundleReturn(Observable.Return((AssetBundleManifest)null));
+            CreateFixture();
 
-        Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
+            // SetupReturn to exception because we can't test IBundle.LoadAsset with a new AssetBundleManifest (Unknown Unity issue?)
+            SetupLoaderReturn(Observable.Throw<IBundle>(new InvalidOperationException()));
+            SetupBundleReturn(Observable.Return((AssetBundleManifest)null));
 
-        _innerLoader.Received(1).Load<IBundle>(uri);
+            Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
+
+            _innerLoader.Received(1).Load<IBundle>(uri);
+        }
     }
 }

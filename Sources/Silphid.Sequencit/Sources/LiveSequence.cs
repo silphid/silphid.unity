@@ -39,9 +39,9 @@ namespace Silphid.Sequencit
         
         #endregion
         
-        #region IObservable<Unit> members
+        #region ICompletable members
 
-        public IDisposable Subscribe(IObserver<Unit> observer)
+        public IDisposable Subscribe(ICompletableObserver observer)
         {
             if (!_isStarted)
             {
@@ -59,10 +59,10 @@ namespace Silphid.Sequencit
 
         #region ISequencer members
 
-        public object Add(IObservable<Unit> observable) =>
+        public object Add(ICompletable observable) =>
             AddInternal(observable);
 
-        public object Add(Func<IObservable<Unit>> selector) =>
+        public object Add(Func<ICompletable> selector) =>
             AddInternal(selector);
 
         private object AddInternal(object item)
@@ -149,7 +149,6 @@ namespace Silphid.Sequencit
                 return false;
 
             _isExecuting = false;
-            _currentExecution?.Dispose();
             
             while (_items.Peek() != item)
                 _items.Dequeue();
@@ -157,7 +156,9 @@ namespace Silphid.Sequencit
             if (isInclusive)
                 _items.Dequeue();
 
-            if (_isStarted)
+            _currentExecution?.Dispose();
+
+            if (_isStarted && !_isExecuting)
                 StartNext();
 
             return true;
@@ -181,7 +182,7 @@ namespace Silphid.Sequencit
 
             _isExecuting = true;
             var item = _items.Dequeue();
-            var observable = GetObservableFromItem(item);
+            var observable = GetCompletableFromItem(item);
             _currentExecution = observable
                 .Finally(() =>
                 {

@@ -69,10 +69,19 @@ namespace Silphid.Injexit
             return this;
         }
 
+        BindingId IBinding.Id()
+        {
+            if (Id != null)
+                throw new InvalidOperationException("Already specified Id or Alias.");
+
+            Id = new BindingId(this);
+            return Id;
+        }
+
         public IBinding Alias(Type aliasAbstractionType)
         {
             if (Id == null)
-                ((IBinding) this).Id(new BindingId($"{ConcretionType.Name}Alias"));
+                ((IBinding) this).Id(new BindingId(this));
 
             Container.BindReference(aliasAbstractionType, Id);
             return this;

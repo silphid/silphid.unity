@@ -60,7 +60,7 @@ namespace Silphid.Injexit
         public static IBinding Using<TAbstraction, TConcretion>(this IBinding This) where TConcretion : TAbstraction =>
             This.Using(x => x.Bind<TAbstraction, TConcretion>());
 
-        public static IBinding Id(this IBinding This, string id) =>
+        public static IBinding Named(this IBinding This, string id) =>
             This.Named(id);
 
         public static IBinding Alias<TAbstraction>(this IBinding This) =>

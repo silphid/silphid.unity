@@ -137,13 +137,16 @@ namespace Silphid.Machina
         public IRule When<T>(Predicate<T> predicate) where T : TState =>
             WhenInternal(predicate);
 
-        public IRule WhenMachine<TMachine>() where TMachine : IMachine =>
+        public IRule WhenSubMachine() =>
+            WhenInternal<IMachine>();
+
+        public IRule WhenSubMachine<TMachine>() where TMachine : IMachine =>
             WhenInternal<TMachine>();
 
-        public IRule WhenMachine<TMachine>(TMachine state) where TMachine : IMachine =>
+        public IRule WhenSubMachine<TMachine>(TMachine state) where TMachine : IMachine =>
             WhenInternal(state);
 
-        public IRule WhenMachine<TMachine>(Predicate<TMachine> predicate) where TMachine : IMachine =>
+        public IRule WhenSubMachine<TMachine>(Predicate<TMachine> predicate) where TMachine : IMachine =>
             WhenInternal(predicate);
 
         private IRule WhenInternal<T>()
