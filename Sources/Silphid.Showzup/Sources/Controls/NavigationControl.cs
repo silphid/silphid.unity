@@ -20,7 +20,6 @@ namespace Silphid.Showzup
         #region Fields
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly ReactiveProperty<bool> _isNavigating = new ReactiveProperty<bool>(false);
         private readonly Subject<Nav> _navigating = new Subject<Nav>();
         private readonly Subject<Nav> _navigated = new Subject<Nav>();
         private ReadOnlyReactiveProperty<bool> _canPush;
@@ -30,8 +29,6 @@ namespace Silphid.Showzup
 
         public GameObject HistoryContainer;
         public bool CanPopTopLevelView;
-        
-        public ReadOnlyReactiveProperty<bool> IsNavigating { get; private set; }
 
         [FormerlySerializedAs("ShouldHandleBackRequests")] [FormerlySerializedAs("HandlesBackRequest")]
         public bool HandleBackRequest;
@@ -41,7 +38,6 @@ namespace Silphid.Showzup
         [Inject]
         public void Inject()
         {
-            IsNavigating = _isNavigating.ToReadOnlyReactiveProperty();
             History.PairWithPrevious().Skip(1).Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
@@ -207,7 +203,6 @@ namespace Silphid.Showzup
 
         private void StartChange()
         {
-         	_isNavigating.Value = true;
             MutableState.Value = PresenterState.Loading;
         }
 
@@ -233,7 +228,6 @@ namespace Silphid.Showzup
 
         private void CompleteChange(Nav nav)
         {
-        	_isNavigating.Value = false;
             MutableState.Value = PresenterState.Ready;
             (nav.Target as IPostNavigate)?.OnPostNavigate();
         }
