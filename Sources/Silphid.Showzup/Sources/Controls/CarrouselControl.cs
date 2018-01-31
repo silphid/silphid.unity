@@ -1,11 +1,9 @@
 using System.Linq;
-using DG.Tweening;
 using Silphid.Extensions;
 using Silphid.Tweenzup;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using Tween = Silphid.Tweenzup.Tween;
 
 namespace Silphid.Showzup
 {
@@ -66,7 +64,7 @@ namespace Silphid.Showzup
                     FindShortestPath(_items.Value[x.Value].ReferencePosition);
                     
                     _motionDisposable.Disposable = _currentPosition
-                        .TweenTo(_items.Value[x.Value].ReferencePosition, MotionDuration)
+                        .TweenTo(_items.Value[x.Value].ReferencePosition, MotionDuration, Easer.OutQuadratic)
                         .SubscribeAndForget();
                 })
                 .AddTo(this);

@@ -78,6 +78,13 @@ namespace Silphid.Extensions
             new DateTime(This.Lerp(source.Ticks, target.Ticks));
 
         /// <summary>
+        /// Uses This as ratio to linearly interpolate between source and target.
+        /// </summary>
+        [Pure]
+        public static TimeSpan Lerp(this float This, TimeSpan source, TimeSpan target) =>
+            new TimeSpan(This.Lerp(source.Ticks, target.Ticks));
+
+        /// <summary>
         /// Uses This value as ratio and a single control handle to interpolate between source and target (quadratic Bézier).
         /// </summary>
         [Pure]
@@ -95,7 +102,7 @@ namespace Silphid.Extensions
             var c = This.Lerp(targetHandle, target);
             return This.Lerp(This.Lerp(a, b), This.Lerp(b, c));
         }
-
+        
         /// <summary>
         /// Smooths this (new) value compared to its previous value to reduce noise or sudden peaks.
         /// Note that smoothness is affected by the rate at which this method is invoked and should be adjusted
@@ -105,7 +112,7 @@ namespace Silphid.Extensions
         /// <param name="previousValue">The previous value to smooth relatively from.</param>
         /// <param name="smoothness">A number between 0 (no smoothing) and 1 (ignores new values).</param>
         [Pure]
-        public static float Smooth(this float This, float previousValue, float smoothness) =>
+        public static float Smooth(this float This, float previousValue, float smoothness = Smoothness.Default) =>
             smoothness.Lerp(This, previousValue);
 
         #endregion
@@ -215,6 +222,30 @@ namespace Silphid.Extensions
         /// </summary>
         [Pure]
         public static float Clamp(this float This) => This.Clamp(0, 1);
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static float ElasticClamp(this float This, float min, float max, float elasticity)
+        {
+            if (min > max)
+            {
+                var tmp = min;
+                min = max;
+                max = tmp;
+            }
+
+            if (This > max)
+                return max + (This - max) * elasticity;
+            
+            if (This < min)
+                return min - (min - This) * elasticity;
+
+            return This;
+        }
 
         /// <summary>
         /// Returns the minimum value between this and another value

@@ -57,33 +57,135 @@ namespace Silphid.Tweenzup
                     ? Observable.Return(target)
                     : Range(duration, easer).Lerp(source, target);
             });
+
+        public static IObservable<DateTime> Range(Func<DateTime> selector, DateTime target, float duration, IEaser easer = null) =>
+            Observable.Defer(() =>
+            {
+                var source = selector();
+                return source == target
+                    ? Observable.Return(target)
+                    : Range(duration, easer).Lerp(source, target);
+            });
+
+        public static IObservable<TimeSpan> Range(Func<TimeSpan> selector, TimeSpan target, float duration, IEaser easer = null) =>
+            Observable.Defer(() =>
+            {
+                var source = selector();
+                return source == target
+                    ? Observable.Return(target)
+                    : Range(duration, easer).Lerp(source, target);
+            });
         
         #endregion
 
         #region ReactiveProperty TweenTo
-
-        public static ICompletable TweenTo(this ReactiveProperty<float> This, float target, float duration, IEaser easer = null) =>
+        
+        public static ICompletable TweenTo(this IReactiveProperty<float> This, float target, float duration, IEaser easer = null) =>
             Range(() => This.Value, target, duration, easer)
                 .Do(x => This.Value = x)
                 .AsCompletable();
 
-        public static ICompletable TweenTo(this ReactiveProperty<Vector2> This, Vector2 target, float duration, IEaser easer = null) =>
+        public static ICompletable TweenTo(this IReactiveProperty<float?> This, float target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<float> This, float target, float duration, Func<float> velocitySelector, IEaser easer = null) =>
+            new TweenFloatWithInitialVelocityObservable(() => This.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<float?> This, float target, float duration, Func<float> velocitySelector, IEaser easer = null) =>
+            new TweenFloatWithInitialVelocityObservable(() => This.Value.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenToShiftingTarget(this IReactiveProperty<float> This, IObservable<float> target, float duration, IEaser easer = null) =>
+            new TweenFloatToShiftingTargetCompletable(This, target, duration, easer);
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector2> This, Vector2 target, float duration, IEaser easer = null) =>
             Range(() => This.Value, target, duration, easer)
                 .Do(x => This.Value = x)
                 .AsCompletable();
 
-        public static ICompletable TweenTo(this ReactiveProperty<Vector3> This, Vector3 target, float duration, IEaser easer = null) =>
+        public static ICompletable TweenTo(this IReactiveProperty<Vector2?> This, Vector2 target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector2> This, Vector2 target, float duration, Func<Vector2> velocitySelector, IEaser easer = null) =>
+            new TweenVector2WithInitialVelocityObservable(() => This.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector2?> This, Vector2 target, float duration, Func<Vector2> velocitySelector, IEaser easer = null) =>
+            new TweenVector2WithInitialVelocityObservable(() => This.Value.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenToShiftingTarget(this IReactiveProperty<Vector2> This, IObservable<Vector2> target, float duration, IEaser easer = null) =>
+            new TweenVector2ToShiftingTargetCompletable(This, target, duration, easer);
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector3> This, Vector3 target, float duration, IEaser easer = null) =>
             Range(() => This.Value, target, duration, easer)
                 .Do(x => This.Value = x)
                 .AsCompletable();
 
-        public static ICompletable TweenTo(this ReactiveProperty<Quaternion> This, Quaternion target, float duration, IEaser easer = null) =>
+        public static ICompletable TweenTo(this IReactiveProperty<Vector3?> This, Vector3 target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector3> This, Vector3 target, float duration, Func<Vector3> velocitySelector, IEaser easer = null) =>
+            new TweenVector3WithInitialVelocityObservable(() => This.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Vector3?> This, Vector3 target, float duration, Func<Vector3> velocitySelector, IEaser easer = null) =>
+            new TweenVector3WithInitialVelocityObservable(() => This.Value.Value, velocitySelector, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenToShiftingTarget(this IReactiveProperty<Vector3> This, IObservable<Vector3> target, float duration, IEaser easer = null) =>
+            new TweenVector3ToShiftingTargetCompletable(This, target, duration, easer);
+
+        public static ICompletable TweenTo(this IReactiveProperty<Quaternion> This, Quaternion target, float duration, IEaser easer = null) =>
             Range(() => This.Value, target, duration, easer)
                 .Do(x => This.Value = x)
                 .AsCompletable();
 
-        public static ICompletable TweenTo(this ReactiveProperty<Color> This, Color target, float duration, IEaser easer = null) =>
+        public static ICompletable TweenTo(this IReactiveProperty<Quaternion?> This, Quaternion target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Color> This, Color target, float duration, IEaser easer = null) =>
             Range(() => This.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<Color?> This, Color target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<DateTime> This, DateTime target, float duration, IEaser easer = null) =>
+            Range(() => This.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<DateTime?> This, DateTime target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<TimeSpan> This, TimeSpan target, float duration, IEaser easer = null) =>
+            Range(() => This.Value, target, duration, easer)
+                .Do(x => This.Value = x)
+                .AsCompletable();
+
+        public static ICompletable TweenTo(this IReactiveProperty<TimeSpan?> This, TimeSpan target, float duration, IEaser easer = null) =>
+            Range(() => This.Value.Value, target, duration, easer)
                 .Do(x => This.Value = x)
                 .AsCompletable();
 
@@ -115,6 +217,27 @@ namespace Silphid.Tweenzup
             Range(() => This.localPosition, target, duration, easer)
                 .Do(x => This.localPosition = x)
                 .AsCompletable();
+
+        public static ICompletable MoveXBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.right, duration, easer);
+
+        public static ICompletable MoveYBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.up, duration, easer);
+
+        public static ICompletable MoveZBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.forward, duration, easer);
+
+        public static ICompletable MoveBy(this Transform This, Vector3 delta, float duration, IEaser easer = null) =>
+            Completable.Defer(() =>
+            {
+                var source = This.localPosition;
+                var target = source + delta;
+
+                return Range(duration, easer)
+                    .Lerp(source, target)
+                    .Do(x => This.localPosition = x)
+                    .AsCompletable();
+            });
 
         public static ICompletable WorldMoveTo(this Transform This, Vector3 target, float duration, IEaser easer = null) =>
             Range(() => This.position, target, duration, easer)
