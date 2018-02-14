@@ -168,7 +168,7 @@ namespace Silphid.Showzup.Navigation
                            (x.BackwardCondition?.Invoke() ?? true);
                     
                     if(isHandled)
-                        x.OnHandledAction?.Invoke(x.Direction);
+                        x.OnHandledAction?.Invoke(x.Direction.Opposite());
 
                     return isHandled;
                 })
