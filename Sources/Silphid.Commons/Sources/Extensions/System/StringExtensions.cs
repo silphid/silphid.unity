@@ -52,30 +52,33 @@ namespace Silphid.Extensions
 
         public static string Capitalize(this string value)
         {
-            if (value == string.Empty)
-            {
+            if (value.Length == 0)
                 return value;
-            }
+
+            if (value.Length == 1)
+                return value.ToUpper();
 
             return value.Substring(0, 1).ToUpper() + value.Substring(1).ToLower();
         }
 
         public static string ToUpperFirst(this string value)
         {
-            if (value == string.Empty)
-            {
+            if (value.Length == 0)
                 return value;
-            }
+
+            if (value.Length == 1)
+                return value.ToUpper();
 
             return value.Substring(0, 1).ToUpper() + value.Substring(1);
         }
 
         public static string ToLowerFirst(this string value)
         {
-            if (value == string.Empty)
-            {
+            if (value.Length == 0)
                 return value;
-            }
+
+            if (value.Length == 1)
+                return value.ToLower();
 
             return value.Substring(0, 1).ToLower() + value.Substring(1);
         }

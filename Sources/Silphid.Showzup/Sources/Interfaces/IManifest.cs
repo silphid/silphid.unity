@@ -6,6 +6,6 @@ namespace Silphid.Showzup
     {
         List<TypeToTypeMapping> ModelsToViewModels { get; }
         List<TypeToTypeMapping> ViewModelsToViews { get; }
-        List<TypeToUriMapping> ViewsToPrefabs { get; }
+        List<ViewToPrefabMapping> ViewsToPrefabs { get; }
     }
 }

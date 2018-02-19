@@ -12,10 +12,10 @@ namespace Silphid.Showzup
 
         [SerializeField] private List<TypeToTypeMapping> _modelsToViewModels = new List<TypeToTypeMapping>();
         [SerializeField] private List<TypeToTypeMapping> _viewModelsToViews = new List<TypeToTypeMapping>();
-        [SerializeField] private List<TypeToUriMapping> _viewsToPrefabs = new List<TypeToUriMapping>();
+        [SerializeField] private List<ViewToPrefabMapping> _viewsToPrefabs = new List<ViewToPrefabMapping>();
 
         public List<TypeToTypeMapping> ModelsToViewModels => _modelsToViewModels;
         public List<TypeToTypeMapping> ViewModelsToViews => _viewModelsToViews;
-        public List<TypeToUriMapping> ViewsToPrefabs => _viewsToPrefabs;
+        public List<ViewToPrefabMapping> ViewsToPrefabs => _viewsToPrefabs;
     }
 }

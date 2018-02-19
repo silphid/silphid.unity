@@ -146,18 +146,17 @@ public class ManifestBuilder
         var assetVariants = GetVariantsFromRelativePath(relativePath, manifest, allVariants);
 
         foreach (var view in views)
-            MapViewToRelativePath(view.GetType(), relativePath, assetVariants, allVariants, manifest);
+            MapViewToRelativePath(view.GetType(), relativePath, guid, assetVariants, allVariants, manifest);
     }
 
-    private static void MapViewToRelativePath(Type viewType, string relativePath, VariantSet assetVariants,
-        VariantSet allVariants,
-        Manifest manifest)
+    private static void MapViewToRelativePath(Type viewType, string relativePath, string guid,
+        VariantSet assetVariants, VariantSet allVariants, Manifest manifest)
     {
         var viewVariants = GetVariantsFromType(viewType, allVariants);
         var variants = viewVariants.UnionWith(assetVariants);
         var uri = GetUriFromRelativePath(relativePath, manifest.UriPrefix);
 
-        var mapping = new TypeToUriMapping(viewType, uri, variants);
+        var mapping = new ViewToPrefabMapping(viewType, uri, guid, variants);
         manifest.ViewsToPrefabs.Add(mapping);
     }
 

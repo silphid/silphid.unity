@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 #if UNITY_WSA && !UNITY_EDITOR
@@ -25,54 +26,72 @@ namespace Silphid.Extensions
             return typeof(T).IsAssignableFrom(This);
         }
 
+        public static IEnumerable<Type> WhereAssignableFrom(this IEnumerable<Type> This, Type type) =>
+            This.Where(x => x.IsAssignableFrom(type));
+
+        public static IEnumerable<Type> WhereAssignableFrom<T>(this IEnumerable<Type> This) =>
+            This.WhereAssignableFrom(typeof(T));
+
+        public static IEnumerable<Type> WhereAssignableTo(this IEnumerable<Type> This, Type type) =>
+            This.Where(x => x.IsAssignableTo(type));
+
+        public static IEnumerable<Type> WhereAssignableTo<T>(this IEnumerable<Type> This) =>
+            This.WhereAssignableTo(typeof(T));
+
         public static bool Is<T>(this Type This)
         {
             return This == typeof(T);
         }
 
-        public static IEnumerable<Type> Ancestors(this Type type)
+        public static IEnumerable<Type> Ancestors(this Type This)
         {
-            type = type?.GetBaseType();
-            while (type != null)
+            This = This?.GetBaseType();
+            while (This != null)
             {
-                yield return type;
-                type = type.GetBaseType();
+                yield return This;
+                This = This.GetBaseType();
             }
         }
 
-        public static IEnumerable<Type> SelfAndAncestors(this Type type)
+        public static IEnumerable<Type> Ancestors<T>(this Type This) =>
+            This.Ancestors().Where(x => x.IsAssignableTo<T>());
+
+        public static IEnumerable<Type> SelfAndAncestors(this Type This)
         {
-            while (type != null)
+            while (This != null)
             {
-                yield return type;
-                type = type.GetBaseType();
+                yield return This;
+                This = This.GetBaseType();
             }
         }
 
-        public static IEnumerable<FieldInfo> GetAllInstanceFields(this Type type)
+        public static IEnumerable<Type> SelfAndAncestors<T>(this Type This) =>
+            This.SelfAndAncestors().Where(x => x.IsAssignableTo<T>());
+
+        public static IEnumerable<FieldInfo> GetAllInstanceFields(this Type This)
         {
             while (true)
             {
-                foreach (var fieldInfo in type.GetDeclaredInstanceFields())
+                foreach (var fieldInfo in This.GetDeclaredInstanceFields())
                     yield return fieldInfo;
 
-                var baseType = type.GetBaseType();
+                var baseType = This.GetBaseType();
                 if (baseType == null || baseType == typeof(object))
                     break;
                 
-                type = baseType;
+                This = baseType;
             }
         }
 
-        public static FieldInfo[] GetDeclaredInstanceFields(this Type type)
+        public static FieldInfo[] GetDeclaredInstanceFields(this Type This)
         {
 #if UNITY_WSA && !UNITY_EDITOR
-            return type
+            return This
                 .GetRuntimeFields()
-                .Where(x => x.DeclaringType == type && !x.IsStatic)
+                .Where(x => x.DeclaringType == This && !x.IsStatic)
                 .ToArray();
 #else
-            return type.GetFields(
+            return This.GetFields(
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 #endif
         }

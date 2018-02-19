@@ -6,7 +6,7 @@ namespace Silphid.Showzup
     {
         public List<TypeToTypeMapping> ModelToViewModelMappings { get; } = new List<TypeToTypeMapping>();
         public List<TypeToTypeMapping> ViewModelToViewMappings { get; } = new List<TypeToTypeMapping>();
-        public List<TypeToUriMapping> ViewToUriMappings { get; } = new List<TypeToUriMapping>();
+        public List<ViewToPrefabMapping> ViewToUriMappings { get; } = new List<ViewToPrefabMapping>();
         public List<Segue> Segues { get; } = new List<Segue>();
     }
 }
