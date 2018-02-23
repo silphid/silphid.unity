@@ -13,11 +13,47 @@ namespace Silphid.Showzup
     public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
     {      
         private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
+        private ReactiveProperty<object> _selectedModel;
 
         public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
         public bool WrapAround;
         public bool HandlesSelectRequest;
+        
+        public IReactiveProperty<object> SelectedModel
+        {
+            get
+            {
+                if (_selectedModel != null)
+                    return _selectedModel;
+                
+                bool isUpdating = false;
+            
+                _selectedModel = new ReactiveProperty<object>();
+
+                SelectedView
+                    .Where(_ => !isUpdating)
+                    .Subscribe(x =>
+                    {
+                        isUpdating = true;
+                        _selectedModel.Value = x?.ViewModel.Model;
+                        isUpdating = false;
+                    })
+                    .AddTo(this);
+
+                _selectedModel
+                    .Where(_ => !isUpdating)
+                    .Subscribe(x =>
+                    {
+                        isUpdating = true;
+                        SelectModel(x);
+                        isUpdating = false;
+                    })
+                    .AddTo(this);
+
+                return _selectedModel;
+            }
+        }
 
         protected override void Start()
         {
