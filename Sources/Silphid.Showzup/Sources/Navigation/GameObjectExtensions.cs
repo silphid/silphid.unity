@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup.Navigation
@@ -24,6 +26,17 @@ namespace Silphid.Showzup.Navigation
 
         public static bool IsSelected(this IView This) =>
             This.GameObject.IsSelected();
+
+        public static IObservable<bool> Selected(this GameObject This) =>
+            NavigationService.Instance.Selection
+                .Select(x => x == This)
+                .StartWith(This.IsSelected());
+
+        public static IObservable<bool> Selected(this Component This) =>
+            This.gameObject.Selected();
+        
+        public static IObservable<bool> Selected(this IView This) =>
+            This.GameObject.Selected();
 
         public static bool IsDescendantSelected(this GameObject This) =>
             NavigationService.Instance.Selection.Value != This &&
