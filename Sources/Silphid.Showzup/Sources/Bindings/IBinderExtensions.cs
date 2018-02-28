@@ -15,8 +15,11 @@ namespace Silphid.Showzup
     {
         public static void AddTo(this IDisposable This, IBinder binder) => binder.Add(This);
         
-        public static void BindActive(this IBinder This, IObservable<bool> source, GameObject target) =>
-            source.Subscribe(target.SetActive).AddTo(This);
+        public static void BindActive(this IBinder This, IObservable<bool> source, GameObject target)
+        {
+            if (target != null)
+                source.Subscribe(target.SetActive).AddTo(This);
+        }
 
         public static void Bind<T>(this IBinder This, IObservable<T> source, IReactiveProperty<T> target) =>
             source.Subscribe(x => target.Value = x).AddTo(This);
@@ -58,7 +61,7 @@ namespace Silphid.Showzup
             source.Subscribe(x => target.Present(x).SubscribeAndForget()).AddTo(This);
 
         public static void Bind(this IBinder This, Button source, IRequest target) =>
-            source.OnClickAsObservable().Subscribe(_ => source.Send(target)).AddTo(This);
+            source?.OnClickAsObservable().Subscribe(_ => source.Send(target)).AddTo(This);
 
         public static void Bind<TRequest>(this IBinder This, Button source) where TRequest : IRequest, new() =>
             source.OnClickAsObservable().Subscribe(_ => source.Send<TRequest>()).AddTo(This);
