@@ -15,6 +15,9 @@ namespace Silphid.Showzup
     {
         public static void AddTo(this IDisposable This, IBinder binder) => binder.Add(This);
         
+        public static void BindActive(this IBinder This, IObservable<bool> source, GameObject target) =>
+            source.Subscribe(target.SetActive).AddTo(This);
+
         public static void Bind<T>(this IBinder This, IObservable<T> source, IReactiveProperty<T> target) =>
             source.Subscribe(x => target.Value = x).AddTo(This);
 
@@ -80,6 +83,17 @@ namespace Silphid.Showzup
                 target.text = source;
         }
 
+        public static ICompletable BindAsCompletable(this IBinder This, object source, IPresenter target)
+        {
+            if (source == null || target == null)
+                return Completable.Empty();
+
+            return target
+                .Present(source)
+                .AutoDetach()
+                .AsCompletable();
+        }
+
         public static void Bind(this IBinder This, object source, IPresenter target)
         {
             if (source != null)
@@ -105,12 +119,25 @@ namespace Silphid.Showzup
                 .AutoDetach()
             ?? Completable.Empty();
 
+        public static void Bind(this IBinder This, string source, Image target, bool keepVisible = false, float? fadeDuration = null) =>
+            This.Bind(new Uri(source), target, keepVisible, fadeDuration);
+
         public static void Bind(this IBinder This, Uri source, Image target, bool keepVisible = false, float? fadeDuration = null)
         {
             if (target != null)
                 This.BindAsCompletable(source, target, false, null, keepVisible, fadeDuration)
                     .Subscribe()
                     .AddTo(This);
+        }
+
+        public static ICompletable BindAsCompletable(this IBinder This, string source, Image target, bool isOptional = false,
+            Loadzup.Options options = null,
+            bool keepVisible = false, float? fadeDuration = null)
+        {
+            if (source == null || target == null)
+                return Completable.Empty();
+            
+            return This.BindAsCompletable(new Uri(source), target, isOptional, options, keepVisible, fadeDuration);
         }
 
         public static ICompletable BindAsCompletable(this IBinder This, Uri source, Image target, bool isOptional = false,

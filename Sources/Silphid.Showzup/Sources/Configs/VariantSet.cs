@@ -120,7 +120,9 @@ namespace Silphid.Showzup
         public void OnAfterDeserialize()
         {
             _hashSet.Clear();
-            _serializableVariants.ForEach(x => _hashSet.Add(x.Variant));
+            _serializableVariants
+                .SelectNotNull(x => x.Variant)
+                .ForEach(x => _hashSet.Add(x));
         }
 
         #endregion

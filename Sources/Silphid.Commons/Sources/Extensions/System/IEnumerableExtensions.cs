@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace Silphid.Extensions
 {
@@ -352,5 +353,10 @@ namespace Silphid.Extensions
 
             return default(T);
         }
+
+        [Pure]
+        public static IEnumerable<TR> SelectNotNull<T, TR>(this IEnumerable<T> This, Func<T, TR> selector) =>
+            This.Select(selector)
+                .WhereNotNull();
     }
 }

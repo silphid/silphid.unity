@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using log4net;
 using UnityEngine;
 
 namespace Silphid.Showzup
@@ -7,6 +8,8 @@ namespace Silphid.Showzup
     [Serializable]
     public class SerializableVariant
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SerializableVariant));
+        
         [SerializeField] private ClassTypeReference _typeRef;
         [SerializeField] private string _name;
 
@@ -21,7 +24,11 @@ namespace Silphid.Showzup
             get
             {
                 var field = _typeRef.Type.GetField(_name, BindingFlags.Static | BindingFlags.Public);
-                return (IVariant) field.GetValue(null);
+                
+                if (field == null)
+                    Log.Warn($"Unrecognized variant {_name}");
+                
+                return (IVariant) field?.GetValue(null);
             }
         }
     }
