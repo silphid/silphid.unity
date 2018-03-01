@@ -24,12 +24,12 @@ namespace Silphid.Extensions.DataTypes
 
             typeof(T)
                 .GetFields(BindingFlags.Static | BindingFlags.Public)
-                .Where(x => x.FieldType.IsAssignableTo<T>())
                 .Select(x => new
-                    {
-                        Value = (T)x.GetValue(null),
-                        x.Name
-                    })
+                {
+                    Value = (T) x.GetValue(null),
+                    x.Name
+                })
+                .Where(x => x.Value?.GetType().IsAssignableTo<T>() ?? false)
                 .ForEach((i, x) => InitializeIdAndName(x.Value, i, x.Name));
 
             s_isInitialized = true;
@@ -71,12 +71,12 @@ namespace Silphid.Extensions.DataTypes
         #region All
 
         private static List<T> _all;
-        
+
         public static List<T> All =>
             _all ?? (_all = typeof(T)
                 .GetFields(BindingFlags.Static | BindingFlags.Public)
-                .Where(x => x.FieldType.IsAssignableTo<T>())
                 .Select(x => (T) x.GetValue(null))
+                .Where(x => x?.GetType().IsAssignableTo<T>() ?? false)
                 .ToList());
 
         #endregion
