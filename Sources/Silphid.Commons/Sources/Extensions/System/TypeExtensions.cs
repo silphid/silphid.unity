@@ -11,6 +11,9 @@ namespace Silphid.Extensions
 {
     public static class TypeExtensions
     {
+        public static T CreateInstance<T>(this Type This) =>
+            (T) Activator.CreateInstance(This);
+
         public static bool IsAssignableFrom<T>(this Type This)
         {
             return This.IsAssignableFrom(typeof(T));

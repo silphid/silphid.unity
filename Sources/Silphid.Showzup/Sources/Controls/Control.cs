@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Silphid.Extensions;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public abstract class Control : MonoBehaviour, ISelectHandler, IDeselectHandler
+    public abstract class Control : MonoBehaviour, ISelectable
     {
-        protected readonly ReactiveProperty<bool> IsSelected = new ReactiveProperty<bool>();
+        public ReactiveProperty<bool> IsSelected { get; } = new ReactiveProperty<bool>();
+        public ReactiveProperty<bool> IsSelfOrDescendantSelected { get; } = new ReactiveProperty<bool>();
 
         protected virtual void RemoveAllViews(GameObject container, GameObject except = null)
         {
@@ -55,16 +56,6 @@ namespace Silphid.Showzup
 
             SetViewParent(container, view.GameObject);
             view.GameObject.transform.SetSiblingIndex(index);
-        }
-
-        public virtual void OnSelect(BaseEventData eventData)
-        {
-            IsSelected.Value = true;
-        }
-
-        public virtual void OnDeselect(BaseEventData eventData)
-        {
-            IsSelected.Value = false;
         }
     }
 }

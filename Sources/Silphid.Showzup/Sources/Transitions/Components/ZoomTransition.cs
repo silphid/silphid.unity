@@ -9,6 +9,7 @@
             new Showzup.ZoomTransition
             {
                 Duration = Duration,
+                IsSequential = IsSequential,
                 Ease = Ease,
                 FadeOutSource = FadeOutSource,
                 FadeInTarget = FadeInTarget,

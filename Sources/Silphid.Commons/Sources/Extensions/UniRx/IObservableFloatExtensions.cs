@@ -185,6 +185,15 @@ namespace Silphid.Extensions
             This.Select(x => x.Clamp(min, max));
 
         /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static IObservable<float> ElasticClamp(this IObservable<float> This, float min, float max, float elasticity) =>
+            This.Select(x => x.ElasticClamp(min, max, elasticity));
+
+        /// <summary>
         /// Returns value clamped to the [0, 1] interval
         /// </summary>
         [Pure]
@@ -204,6 +213,26 @@ namespace Silphid.Extensions
         [Pure]
         public static IObservable<float> Maximum(this IObservable<float> This, float max) =>
             This.Select(x => x.AtMost(max));
+
+        #endregion
+
+        #region Velocity
+
+        /// <summary>
+        /// Returns an observable that outputs the varying velocity of input values, every time a new input value is
+        /// received, while smoothing that velocity to avoid peaks or abnormalities.
+        /// <param name="This">Input values to calculate velocity of.</param>
+        /// <param name="smoothness">Amount of smoothness to apply to output velocities. A float from 0f (none) to some
+        /// value less than 1f (or some predefined value from the Smoothness class).</param>
+        /// <param name="rawVelocities">Optional input velocities that can be used to instantly reset current
+        /// velocity to a specific value and output it as is. If that observable completes or errors, the output observable
+        /// will also complete or error.</param>
+        /// <param name="getTime">Optional time selector that can be used to provide an arbitrary time
+        /// (ie: time-scale-independent, etc). Defaults to "() => Time.time"</param>
+        /// </summary>
+        [Pure]
+        public static IObservable<float> Velocity(this IObservable<float> This, float smoothness = Smoothness.Responsive, IObservable<float> rawVelocities = null, Func<float> getTime = null) =>
+            new FloatVelocityObservable(This, smoothness, rawVelocities, getTime);
 
         #endregion
     }

@@ -347,13 +347,13 @@
     <Compile Include="Sources\Log4Net\Log4NetUnityImpl\UnityObjectPair.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Sources\Extensions" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sources\Extensions" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

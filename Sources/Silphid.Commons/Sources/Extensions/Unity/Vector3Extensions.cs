@@ -100,7 +100,7 @@ namespace Silphid.Extensions
         /// <param name="previousValue">The previous value to smooth relatively from.</param>
         /// <param name="smoothness">A number between 0 (no smoothing) and 1 (ignores new values).</param>
         [Pure]
-        public static Vector3 Smooth(this Vector3 This, Vector3 previousValue, float smoothness) =>
+        public static Vector3 Smooth(this Vector3 This, Vector3 previousValue, float smoothness = Smoothness.Default) =>
             smoothness.Lerp(This, previousValue);
 
         #endregion
@@ -179,19 +179,40 @@ namespace Silphid.Extensions
 
         #region Clamping
 
-        [Pure]
-        public static Vector3 Clamp(this Vector3 This, Bounds bounds) =>
-            new Vector3(
-                This.x.Clamp(bounds.min.x, bounds.max.x),
-                This.y.Clamp(bounds.min.y, bounds.max.y),
-                This.z.Clamp(bounds.min.z, bounds.max.z));
-
         /// <summary>
         /// Returns value clamped to the [min, max] interval
         /// </summary>
         [Pure]
         public static Vector3 Clamp(this Vector3 This, Vector3 min, Vector3 max) =>
-            new Vector3(This.x.Clamp(min.x, max.x), This.y.Clamp(min.y, max.y));
+            new Vector3(
+                This.x.Clamp(min.x, max.x),
+                This.y.Clamp(min.y, max.y),
+                This.z.Clamp(min.z, max.z));
+
+        [Pure]
+        public static Vector3 Clamp(this Vector3 This, Bounds bounds) =>
+            This.Clamp(bounds.min, bounds.max);
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static Vector3 ElasticClamp(this Vector3 This, Vector3 min, Vector3 max, float elasticity) =>
+            new Vector3(
+                This.x.ElasticClamp(min.x, max.x, elasticity),
+                This.y.ElasticClamp(min.y, max.y, elasticity),
+                This.z.ElasticClamp(min.z, max.z, elasticity));
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static Vector3 ElasticClamp(this Vector3 This, Bounds bounds, float elasticity) =>
+            This.ElasticClamp(bounds.min, bounds.max, elasticity);
 
         #endregion
 

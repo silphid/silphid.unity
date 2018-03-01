@@ -1,5 +1,4 @@
 ﻿using System;
-using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
 
@@ -8,7 +7,6 @@ namespace Silphid.Showzup
     public class ItemControl : SinglePresenterControl
     {
         public GameObject Container;
-        public bool AutoSelect = true;
 
         protected override ICompletable Present(Presentation presentation)
         {
@@ -29,19 +27,6 @@ namespace Silphid.Showzup
             PostShow(targetView, options);
 
             return Completable.Empty();
-        }
-
-        protected virtual void Start()
-        {
-            if (AutoSelect)
-                _view
-                    .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                    .Subscribe(SelectView);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view.GameObject.SelectDeferred();
         }
 
         private void PreHide(IView view, Options options)

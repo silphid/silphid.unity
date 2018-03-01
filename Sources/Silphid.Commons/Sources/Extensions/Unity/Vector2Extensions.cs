@@ -94,7 +94,7 @@ namespace Silphid.Extensions
         /// <param name="previousValue">The previous value to smooth relatively from.</param>
         /// <param name="smoothness">A number between 0 (no smoothing) and 1 (ignores new values).</param>
         [Pure]
-        public static Vector2 Smooth(this Vector2 This, Vector2 previousValue, float smoothness) =>
+        public static Vector2 Smooth(this Vector2 This, Vector2 previousValue, float smoothness = Smoothness.Default) =>
             smoothness.Lerp(This, previousValue);
 
         #endregion
@@ -172,6 +172,26 @@ namespace Silphid.Extensions
         [Pure]
         public static Vector2 Clamp(this Vector2 This, Vector2 min, Vector2 max) =>
             new Vector2(This.x.Clamp(min.x, max.x), This.y.Clamp(min.y, max.y));
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static Vector2 ElasticClamp(this Vector2 This, Vector2 min, Vector2 max, float elasticity) =>
+            new Vector2(
+                This.x.ElasticClamp(min.x, max.x, elasticity),
+                This.y.ElasticClamp(min.y, max.y, elasticity));
+
+        /// <summary>
+        /// Returns value, either within the [min, max] interval or otherwise
+        /// applying a certain percentage of elasticity to the excess.
+        /// <param name="elasticity">0f is like normal clamping, 1f is like no clamping.</param>
+        /// </summary>
+        [Pure]
+        public static Vector2 ElasticClamp(this Vector2 This, Rect rect, float elasticity) =>
+            This.ElasticClamp(rect.min, rect.max, elasticity);
 
         #endregion
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using Silphid.Extensions;
-using Silphid.Requests;
 using Silphid.Showzup.Navigation;
 using UniRx;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
@@ -28,13 +28,16 @@ namespace Silphid.Showzup
         public SelectionControl TabSelectionControl;
         public PresenterControl ContentTransitionControl;
         public TabPlacement TabPlacement = TabPlacement.Top;
+        public bool UseIntuitiveTransitionDirection = true;
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
         public IObservable<object> PresentingContent => _presentingContent;
+        
+        public override GameObject ForwardSelection() => TabSelectionControl.gameObject;
 
         public void Start()
         {
             _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
-            
+
             TabSelectionControl.SelectedIndex
                 .WhereNotNull()
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
@@ -46,15 +49,13 @@ namespace Silphid.Showzup
             _moveHandler.BindBidirectional(
                 ContentTransitionControl,
                 TabSelectionControl,
-                (MoveDirection) TabPlacement);
-
-            // Combining with view to select gameobject when view is loaded
-            _moveHandler.SelectedGameObject
-                .WhereNotNull()
-                .CombineLatest(ContentTransitionControl.FirstView, (x, y) => x)
-                .Where(x => x == ContentTransitionControl.gameObject)
-                .Subscribe(x => ContentTransitionControl.FirstView.Value?.SelectDeferred())
-                .AddTo(this);
+                (MoveDirection) TabPlacement,
+                () => _currentIndex == TabSelectionControl.SelectedIndex.Value && MutableState.Value != PresenterState.Presenting
+                      && ContentTransitionControl.FirstView.Value != null);
+            
+            _moveHandler.BindCancel(
+                ContentTransitionControl,
+                TabSelectionControl);
         }
 
         protected override IObservable<IView> PresentView(object input, Options options = null) =>
@@ -76,11 +77,6 @@ namespace Silphid.Showzup
                 })
                 .ToReadOnlyReactiveProperty());
 
-        public override void OnSelect(BaseEventData eventData)
-        {
-            base.OnSelect(eventData);
-            TabSelectionControl.SelectFirst();
-        }
 
         public void OnMove(AxisEventData eventData)
         {
@@ -89,17 +85,16 @@ namespace Silphid.Showzup
 
         public void OnCancel(BaseEventData eventData)
         {
-            if (!TabSelectionControl.IsSelfOrDescendantSelected())
-            {
-                _moveHandler.OnMove(new AxisEventData(EventSystem.current) {moveDir = MoveDirection.Up});
-                eventData.Use();
-            }
+            _moveHandler.OnCancel(eventData);
         }
 
         private IObservable<IView> ShowContent(int index)
         {
             var view = TabSelectionControl.GetViewAtIndex(index);
-            var direction = _currentIndex > index ? Direction.Backward : Direction.Forward;
+            var direction = _currentIndex > index && UseIntuitiveTransitionDirection
+                ? Direction.Backward
+                : Direction.Forward;
+            
             _currentIndex = index;
             var model = (view?.ViewModel as IContentProvider)?.GetContent() ?? view?.ViewModel?.Model;
             _presentingContent.OnNext(model);

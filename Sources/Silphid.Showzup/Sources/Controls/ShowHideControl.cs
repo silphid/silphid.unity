@@ -26,7 +26,7 @@ namespace Silphid.Showzup
         private readonly ISubject<InputAndOptions> _inputAndOptions = new ReplaySubject<InputAndOptions>(1);
         private bool _isFirstPresent = true;
 
-        internal void Start()
+        protected override void Start()
         {
             Show.Value = ShowInitially;
             Show.CombineLatest(_inputAndOptions, (show, inputAndOptions) => show
@@ -34,6 +34,8 @@ namespace Silphid.Showzup
                     : new InputAndOptions(null, inputAndOptions.Options.With(Direction.Backward)))
                 .Subscribe(x => PresentInternal(x).SubscribeAndForget(view => _presentedView.OnNext(view)))
                 .AddTo(this);
+            
+            base.Start();
         }
 
         protected override IObservable<IView> PresentView(object input, Options options = null)

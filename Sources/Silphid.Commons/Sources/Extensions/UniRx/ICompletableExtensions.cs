@@ -37,13 +37,13 @@ namespace Silphid.Extensions
         public static IDisposable SubscribeAndForget(this ICompletable This, ICompletableObserver observer) =>
             AutoDetach(This).Subscribe(observer);
 
-        public static IDisposable SubscribeAndForget<T>(this ICompletable This, Action<Exception> onError) =>
+        public static IDisposable SubscribeAndForget(this ICompletable This, Action<Exception> onError) =>
             AutoDetach(This).Subscribe(onError);
 
-        public static IDisposable SubscribeAndForget<T>(this ICompletable This, Action onCompleted) =>
+        public static IDisposable SubscribeAndForget(this ICompletable This, Action onCompleted) =>
             AutoDetach(This).Subscribe(onCompleted);
 
-        public static IDisposable SubscribeAndForget<T>(this ICompletable This, Action<Exception> onError, Action onCompleted) =>
+        public static IDisposable SubscribeAndForget(this ICompletable This, Action<Exception> onError, Action onCompleted) =>
             AutoDetach(This).Subscribe(onError, onCompleted);
 
         #endregion

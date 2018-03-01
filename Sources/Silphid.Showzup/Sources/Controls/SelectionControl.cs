@@ -1,5 +1,6 @@
-﻿﻿using System;
+﻿using System;
 using System.Linq;
+using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Requests;
 using Silphid.Showzup.Navigation;
@@ -11,13 +12,16 @@ using UnityEngine.EventSystems;
 namespace Silphid.Showzup
 {
     public class SelectionControl : ListControl, IMoveHandler, IRequestHandler
-    {      
+    {
         private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
         private ReactiveProperty<object> _selectedModel;
 
         public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
         public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
+
         public bool WrapAround;
+        public int RowsOrColumns = 1;
+        public bool AutoSelectFirst = true;
         public bool HandlesSelectRequest;
         
         public IReactiveProperty<object> SelectedModel
@@ -55,19 +59,36 @@ namespace Silphid.Showzup
             }
         }
 
+        public override GameObject ForwardSelection() => _selectedView.Value?.GameObject;
+
         protected override void Start()
         {
             if (Orientation == NavigationOrientation.None)
                 throw new InvalidOperationException(
                     $"SelectionControl is missing orientation value on gameObject {gameObject.ToHierarchyPath()}");
-            
+
             Views
                 .CombineLatest(SelectedIndex, (views, selectedIndex) => new {views, selectedIndex})
-                .Subscribe(x => _selectedView.Value = x.views.GetAtOrDefault(x.selectedIndex))
+                .Subscribe(x =>
+                {
+                    _selectedView.Value = x.views.GetAtOrDefault(x.selectedIndex);
+
+                    if (IsSelfOrDescendantSelected.Value)
+                        _selectedView.Value?.Select();
+                })
                 .AddTo(this);
 
             SubscribeToUpdateFocusables(SelectedView);
         }
+
+        [Pure]
+        protected override IObservable<IView> PresentView(object input, Options options = null) =>
+            base.PresentView(input, options)
+                .DoOnCompleted(() =>
+                {
+                    if (AutoSelectFirst)
+                        SelectFirst();
+                });
 
         protected override void RemoveAllViews(GameObject container, GameObject except = null)
         {
@@ -104,7 +125,7 @@ namespace Silphid.Showzup
             focusable.IsFocused.Value = false;
         }
 
-        protected override void SelectView(IView view)
+        public void SelectView(IView view)
         {
             SelectedIndex.Value = IndexOfView(view);
         }
@@ -219,18 +240,26 @@ namespace Silphid.Showzup
 
         public void OnMove(AxisEventData eventData)
         {
-            if (Orientation == NavigationOrientation.Horizontal)
-            {
-                if (eventData.moveDir == MoveDirection.Left && SelectPrevious() ||
-                    eventData.moveDir == MoveDirection.Right && SelectNext())
-                    eventData.Use();
-            }
-            else if (Orientation == NavigationOrientation.Vertical)
-            {
-                if (eventData.moveDir == MoveDirection.Up && SelectPrevious() ||
-                    eventData.moveDir == MoveDirection.Down && SelectNext())
-                    eventData.Use();
-            }
+            if (!HasItems || SelectedIndex.Value == null)
+                return;
+
+            var moveDirection = Orientation == NavigationOrientation.Vertical
+                ? eventData.moveDir.FlipXY()
+                : eventData.moveDir;
+
+            if (moveDirection == MoveDirection.Up && SelectedIndex.Value % RowsOrColumns > 0 &&
+                SelectIndex(SelectedIndex.Value.Value - 1) ||
+                moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 &&
+                SelectIndex(SelectedIndex.Value.Value + 1) ||
+                moveDirection == MoveDirection.Left && WrapAround && SelectedIndex.Value == 0 &&
+                SelectIndex(Views.Value.Count - 1) ||
+                moveDirection == MoveDirection.Right && WrapAround && SelectedIndex.Value == Views.Value.Count - 1 &&
+                SelectIndex(0) ||
+                moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns &&
+                SelectIndex(SelectedIndex.Value.Value - RowsOrColumns) ||
+                moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Value.Count &&
+                SelectIndex(SelectedIndex.Value.Value + RowsOrColumns))
+                eventData.Use();
         }
 
         public bool Handle(IRequest request)

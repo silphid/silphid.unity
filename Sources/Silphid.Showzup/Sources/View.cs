@@ -87,13 +87,13 @@ namespace Silphid.Showzup
 
         #region Request helpers
 
-        protected void Send(IRequest request) =>
+        protected bool Send(IRequest request) =>
             gameObject.Send(request);
 
-        protected void Send(Exception exception) =>
+        protected bool Send(Exception exception) =>
             gameObject.Send(exception);
 
-        protected void Send<TRequest>() where TRequest : IRequest, new() =>
+        protected bool Send<TRequest>() where TRequest : IRequest, new() =>
             gameObject.Send(new TRequest());
 
         #endregion

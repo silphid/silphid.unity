@@ -40,7 +40,7 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region Injected properties
 
         [Inject] internal IViewResolver ViewResolver { get; set; }
@@ -53,7 +53,6 @@ namespace Silphid.Showzup
 
         public GameObject Container;
         public string[] Variants;
-        public bool AutoSelect = true;
         public Comparer<IView> ViewComparer { get; set; }
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }
@@ -77,8 +76,11 @@ namespace Silphid.Showzup
         protected List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
+
         private VariantSet _variantSet;
-        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
+
+        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>())
+            ;
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -97,7 +99,7 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region IPresenter members
 
         [Pure]
@@ -116,13 +118,14 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region Public methods
 
         public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
             ViewComparer = Comparer<IView>.Create((x, y) => comparer((TView) x, (TView) y));
 
-        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer) where TViewModel : IViewModel =>
+        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer)
+            where TViewModel : IViewModel =>
             ViewModelComparer = Comparer<IViewModel>.Create((x, y) => comparer((TViewModel) x, (TViewModel) y));
 
         public void SetModelComparer<TModel>(Func<TModel, TModel, int> comparer) =>
@@ -176,7 +179,7 @@ namespace Silphid.Showzup
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??
                          new List<object>();
-            
+
             _models.Value = models;
             RemoveViews(Container, _views);
             _views.Clear();
@@ -215,7 +218,7 @@ namespace Silphid.Showzup
 
         protected void UpdateReactiveViews() =>
             _reactiveViews.Value = _views.AsReadOnly();
-        
+
         private int? GetSortedIndex(IView view)
         {
             if (_views.Count == 0)
@@ -252,21 +255,17 @@ namespace Silphid.Showzup
         #endregion
 
         #region Protected/virtual methods
-        
+
         protected virtual void Start()
         {
             Views
                 .Select(x => x.FirstOrDefault())
-                .Do(x => MutableFirstView.Value = x)
-                .Where(x => AutoSelect)
-                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                .Subscribe(SelectView)
+                .Subscribe(x =>
+                {
+                    if (IsSelfOrDescendantSelected.Value)
+                        x?.Select();
+                })
                 .AddTo(this);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view?.SelectDeferred();
         }
 
         protected virtual void AddView(int index, IView view)
