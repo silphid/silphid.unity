@@ -27,16 +27,13 @@ namespace Silphid.Showzup.Navigation
         public static bool IsSelected(this IView This) =>
             This.GameObject.IsSelected();
 
-        public static IObservable<bool> Selected(this GameObject This) =>
+        public static IObservable<bool> IsSelectedObservable(this GameObject This) =>
             NavigationService.Instance.Selection
                 .Select(x => x == This)
                 .StartWith(This.IsSelected());
-
-        public static IObservable<bool> Selected(this Component This) =>
-            This.gameObject.Selected();
         
-        public static IObservable<bool> Selected(this IView This) =>
-            This.GameObject.Selected();
+        public static IObservable<bool> IsSelectedObservable(this IView This) =>
+            This.GameObject.IsSelectedObservable();
 
         public static bool IsDescendantSelected(this GameObject This) =>
             NavigationService.Instance.Selection.Value != This &&
