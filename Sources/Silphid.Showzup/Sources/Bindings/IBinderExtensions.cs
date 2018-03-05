@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Requests;
@@ -106,21 +105,6 @@ namespace Silphid.Showzup
                     .Subscribe()
                     .AddTo(This);
         }
-
-        public static void Bind(this IBinder This, IEnumerable source, ListControl target)
-        {
-            if (target != null)
-                This.BindAsCompletable(source, target)
-                    .Subscribe()
-                    .AddTo(This);
-        }
-
-        public static ICompletable BindAsCompletable(this IBinder This, IEnumerable source, ListControl target) =>
-            target
-                ?.Present(source)
-                .AsCompletable()
-                .AutoDetach()
-            ?? Completable.Empty();
 
         public static void Bind(this IBinder This, string source, Image target, bool keepVisible = false, float? fadeDuration = null) =>
             This.Bind(new Uri(source), target, keepVisible, fadeDuration);
