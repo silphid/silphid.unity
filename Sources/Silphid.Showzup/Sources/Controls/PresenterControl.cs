@@ -30,7 +30,7 @@ namespace Silphid.Showzup
         #region Protected
 
         protected IReactiveProperty<PresenterState> MutableState { get; } = new ReactiveProperty<PresenterState>();
-        protected IReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
+        protected readonly IReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
 
         protected Transform GetInstantiationContainer()
         {

@@ -7,19 +7,21 @@ using System.Threading;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Requests;
 using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class ListControl : PresenterControl, IListPresenter
+    public class ListControl : PresenterControl, IListPresenter, IMoveHandler, IRequestHandler
     {
         #region Entry private class
 
         protected class Entry
         {
-            public int Index { get; set; }
+            public int Index { get; }
             public object Model { get; }
             public ViewInfo? ViewInfo { get; set; }
             public IView View { get; set; }
@@ -43,9 +45,9 @@ namespace Silphid.Showzup
 
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject, UsedImplicitly] internal IViewResolver ViewResolver { get; set; }
+        [Inject, UsedImplicitly] internal IViewLoader ViewLoader { get; set; }
+        [Inject, UsedImplicitly] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -57,6 +59,10 @@ namespace Silphid.Showzup
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }
         public NavigationOrientation Orientation;
+        public bool WrapAround;
+        public int RowsOrColumns = 1;
+        public bool AutoSelectFirst = true;
+        public bool HandlesSelectRequest;
 
         #endregion
 
@@ -70,10 +76,11 @@ namespace Silphid.Showzup
         public int? FirstIndex => HasItems ? 0 : (int?) null;
 
         #endregion
-
+        
         #region Protected/private fields/properties
 
-        protected List<IView> _views = new List<IView>();
+        private SelectionHelper _selectionHelper;
+        protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
 
@@ -98,6 +105,11 @@ namespace Silphid.Showzup
                 .ToReadOnlyReactiveProperty();
         }
 
+        private void Awake()
+        {
+            _selectionHelper = new SelectionHelper(this);
+        }
+
         #endregion
 
         #region IPresenter members
@@ -114,11 +126,93 @@ namespace Silphid.Showzup
             
             options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
-            return Observable.Defer(() => PresentInternal(input, options));
+            return Observable.Defer(() =>
+                PresentInternal(input, options)
+                    .DoOnCompleted(() =>
+                    {
+                        if (AutoSelectFirst)
+                            _selectionHelper.SelectFirst();
+                    }));
         }
 
         #endregion
 
+        #region Selection
+        
+        public void OnMove(AxisEventData eventData) => _selectionHelper.OnMove(eventData);
+        
+        public bool Handle(IRequest request) => _selectionHelper.Handle(request);
+
+        public override GameObject ForwardSelection() => _selectionHelper.SelectedView.Value?.GameObject;
+
+        public IReadOnlyReactiveProperty<IView> SelectedView => _selectionHelper.SelectedView;
+
+        public ReactiveProperty<int?> SelectedIndex => _selectionHelper.SelectedIndex;
+
+        public IReactiveProperty<object> SelectedModel => _selectionHelper.SelectedModel;
+
+        public void SelectView(IView view)
+        {
+            _selectionHelper.SelectView(view);
+        }
+
+        public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
+        {
+            _selectionHelper.SelectView(predicate);
+        }
+
+        public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        {
+            _selectionHelper.SelectViewModel(viewModel);
+        }
+
+        public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        {
+            _selectionHelper.SelectViewModel(predicate);
+        }
+
+        public void SelectModel<TModel>(TModel model)
+        {
+            _selectionHelper.SelectModel(model);
+        }
+
+        public void SelectModel<TModel>(Func<TModel, bool> predicate)
+        {
+            _selectionHelper.SelectModel(predicate);
+        }
+
+        public bool SelectIndex(int index)
+        {
+            return _selectionHelper.SelectIndex(index);
+        }
+
+        public bool SelectFirst()
+        {
+            return _selectionHelper.SelectFirst();
+        }
+
+        public bool SelectLast()
+        {
+            return _selectionHelper.SelectLast();
+        }
+
+        public void SelectNone()
+        {
+            _selectionHelper.SelectNone();
+        }
+
+        public bool SelectPrevious()
+        {
+            return _selectionHelper.SelectPrevious();
+        }
+
+        public bool SelectNext()
+        {
+            return _selectionHelper.SelectNext();
+        }
+
+        #endregion
+        
         #region Public methods
 
         public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
@@ -167,6 +261,13 @@ namespace Silphid.Showzup
             _views.Remove(view);
             RemoveView(view.GameObject);
             UpdateReactiveViews();
+        }
+
+        protected override void RemoveAllViews(GameObject container, GameObject except = null)
+        {
+            base.RemoveAllViews(container, except);
+
+            _selectionHelper.SelectNone();
         }
 
         #endregion
