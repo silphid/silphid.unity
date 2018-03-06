@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public abstract class PresenterControl : Control, IPresenter, IForwardSelectable
+    public abstract class PresenterControl : Control, IPresenter, ISelectableContainer
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(PresenterControl));
         
@@ -17,7 +17,7 @@ namespace Silphid.Showzup
         private Transform _instantiationContainer;
         private readonly Subject<Exception> _errorsSubject = new Subject<Exception>();
 
-        public virtual GameObject ForwardSelection() => FirstView.Value?.GameObject;
+        public virtual GameObject SelectableContent => FirstView.Value?.GameObject;
 
         private void Awake()
         {

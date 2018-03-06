@@ -55,7 +55,7 @@ namespace Silphid.Showzup
 
             _items
                 .WhereNotNull()
-                .CombineLatest(SelectedIndex, (x, y) => y)
+                .CombineLatest(ChosenIndex, (x, y) => y)
                 .Subscribe(x =>
                 {
                     if (x == null)

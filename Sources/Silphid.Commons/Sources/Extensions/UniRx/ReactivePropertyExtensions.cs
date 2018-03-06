@@ -8,8 +8,31 @@ namespace Silphid.Extensions
 {
     public static class ReactivePropertyExtensions
     {
-        public static IDisposable BindTo<TSource, TTarget>(this IObservable<TSource> This, IReactiveProperty<TTarget> target) where TSource : TTarget =>
-            This.Subscribe(x => target.Value = x);
+        public static IDisposable BindTwoWayTo<TSource, TTarget>(this IReactiveProperty<TSource> This, IReactiveProperty<TTarget> target)
+        {
+            if (This == null || target == null)
+                return Disposable.Empty;
+            
+            bool isUpdating = false;
+
+            return new CompositeDisposable(
+                This
+                    .Where(_ => !isUpdating)
+                    .Subscribe(x =>
+                    {
+                        isUpdating = true;
+                        target.Value = (TTarget) (object) x;
+                        isUpdating = false;
+                    }),
+                target
+                    .Where(_ => !isUpdating)
+                    .Subscribe(x =>
+                    {
+                        isUpdating = true;
+                        This.Value = (TSource) (object) x;
+                        isUpdating = false;
+                    }));
+        }
 
         public static IDisposable BindToInteractable(this IObservable<bool> This, Selectable selectable) =>
             This.Subscribe(x => selectable.interactable = x);

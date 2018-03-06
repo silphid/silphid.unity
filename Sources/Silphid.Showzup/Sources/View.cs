@@ -1,8 +1,11 @@
 ﻿using System;
+using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
 using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
+using Silphid.Showzup.InputLayers;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -18,6 +21,8 @@ namespace Silphid.Showzup
         View, IView<TViewModel>, IDisposable,
         ILoadable where TViewModel : IViewModel
     {
+        public IReactiveProperty<bool> IsSelected { get; } = new ReactiveProperty<bool>(false);
+        public IReactiveProperty<bool> IsSelfOrDescendantSelected { get; } = new ReactiveProperty<bool>(false);
         protected bool IsDisposed { get; private set; }
         public bool DisposeViewModelOnDestroy = true;
 
@@ -62,7 +67,20 @@ namespace Silphid.Showzup
         IViewModel IView.ViewModel
         {
             get { return _viewModel; }
-            set { _viewModel = value; }
+            set
+            {
+                if (_viewModel != null)
+                    throw new InvalidOperationException("ViewModel can only be set once on a given View.");
+                
+                _viewModel = value;
+
+                var chooseable = _viewModel as IChooseable;
+                if (chooseable != null)
+                {
+                    IsSelected.BindTo(chooseable.IsChosen).AddTo(this);
+                    IsSelfOrDescendantSelected.BindTo(chooseable.IsChosen).AddTo(this);                    
+                }
+            }
         }
 
         public GameObject GameObject => gameObject;

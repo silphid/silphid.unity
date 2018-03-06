@@ -13,11 +13,11 @@ namespace Silphid.Showzup
     internal class SelectionHelper : IDisposable
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly ReactiveProperty<IView> _selectedView = new ReactiveProperty<IView>();
-        private ReactiveProperty<object> _selectedModel;
+        private readonly ReactiveProperty<IView> _chosenView = new ReactiveProperty<IView>();
+        private ReactiveProperty<object> _chosenModel;
 
-        public IReadOnlyReactiveProperty<IView> SelectedView => _selectedView;
-        public ReactiveProperty<int?> SelectedIndex { get; } = new ReactiveProperty<int?>();
+        public IReadOnlyReactiveProperty<IView> ChosenView => _chosenView;
+        public ReactiveProperty<int?> ChosenIndex { get; } = new ReactiveProperty<int?>();
 
         private readonly ListControl _list;
 
@@ -30,17 +30,17 @@ namespace Silphid.Showzup
             _list = list;
 
             _list.Views
-                .CombineLatest(SelectedIndex, (views, selectedIndex) => new {views, selectedIndex})
+                .CombineLatest(ChosenIndex, (views, selectedIndex) => new {views, selectedIndex})
                 .Subscribe(x =>
                 {
-                    _selectedView.Value = x.views.GetAtOrDefault(x.selectedIndex);
+                    _chosenView.Value = x.views.GetAtOrDefault(x.selectedIndex);
 
                     if (_list.IsSelfOrDescendantSelected.Value)
-                        _selectedView.Value?.Select();
+                        _chosenView.Value?.Select();
                 })
                 .AddTo(_disposables);
 
-            SubscribeToUpdateFocusables(SelectedView);
+            SubscribeToUpdateFocusables(ChosenView);
         }
 
         private int? IndexOfView(IView view) => _list.IndexOfView(view);
@@ -50,38 +50,38 @@ namespace Silphid.Showzup
         private int? FirstIndex => _list.FirstIndex;
         private int RowsOrColumns => _list.RowsOrColumns;
 
-        public IReactiveProperty<object> SelectedModel
+        public IReactiveProperty<object> ChosenModel
         {
             get
             {
-                if (_selectedModel != null)
-                    return _selectedModel;
+                if (_chosenModel != null)
+                    return _chosenModel;
                 
                 bool isUpdating = false;
             
-                _selectedModel = new ReactiveProperty<object>();
+                _chosenModel = new ReactiveProperty<object>();
 
-                SelectedView
+                ChosenView
                     .Where(_ => !isUpdating)
                     .Subscribe(x =>
                     {
                         isUpdating = true;
-                        _selectedModel.Value = x?.ViewModel.Model;
+                        _chosenModel.Value = x?.ViewModel.Model;
                         isUpdating = false;
                     })
                     .AddTo(_disposables);
 
-                _selectedModel
+                _chosenModel
                     .Where(_ => !isUpdating)
                     .Subscribe(x =>
                     {
                         isUpdating = true;
-                        SelectModel(x);
+                        ChooseModel(x);
                         isUpdating = false;
                     })
                     .AddTo(_disposables);
 
-                return _selectedModel;
+                return _chosenModel;
             }
         }
 
@@ -91,156 +91,156 @@ namespace Silphid.Showzup
                 .PairWithPreviousOrDefault()
                 .Subscribe(x =>
                 {
-                    RemoveFocus(x.Item1 as IFocusable);
-                    SetFocus(x.Item2 as IFocusable);
+                    RemoveFocus(x.Item1 as IChooseable);
+                    SetFocus(x.Item2 as IChooseable);
                 })
                 .AddTo(_disposables);
         }
 
-        private void SetFocus(IFocusable focusable)
+        private void SetFocus(IChooseable chooseable)
         {
-            if (focusable == null)
+            if (chooseable == null)
                 return;
 
-            focusable.IsFocused.Value = true;
+            chooseable.IsChosen.Value = true;
         }
 
-        private void RemoveFocus(IFocusable focusable)
+        private void RemoveFocus(IChooseable chooseable)
         {
-            if (focusable == null)
+            if (chooseable == null)
                 return;
 
-            focusable.IsFocused.Value = false;
+            chooseable.IsChosen.Value = false;
         }
 
-        public void SelectView(IView view)
+        public void ChooseView(IView view)
         {
-            SelectedIndex.Value = IndexOfView(view);
+            ChosenIndex.Value = IndexOfView(view);
         }
 
-        public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
+        public void ChooseView<TView>(Func<TView, bool> predicate) where TView : IView
         {
-            SelectedIndex.Value = IndexOfView(Views
+            ChosenIndex.Value = IndexOfView(Views
                 .OfType<TView>()
                 .FirstOrDefault(predicate));
         }
 
-        public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        public void ChooseViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
         {
-            SelectedIndex.Value = IndexOfView(Views
+            ChosenIndex.Value = IndexOfView(Views
                 .Where(x => x.ViewModel is TViewModel)
                 .FirstOrDefault(x => ReferenceEquals(x.ViewModel, viewModel)));
         }
 
-        public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        public void ChooseViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
         {
-            SelectedIndex.Value = IndexOfView(Views
+            ChosenIndex.Value = IndexOfView(Views
                 .Where(x => x.ViewModel is TViewModel)
                 .FirstOrDefault(x => predicate((TViewModel) x.ViewModel)));
         }
 
-        public void SelectModel<TModel>(TModel model)
+        public void ChooseModel<TModel>(TModel model)
         {
-            SelectedIndex.Value = IndexOfView(Views
+            ChosenIndex.Value = IndexOfView(Views
                 .Where(x => x.ViewModel?.Model is TModel)
                 .FirstOrDefault(x => ReferenceEquals(x.ViewModel.Model, model)));
         }
 
-        public void SelectModel<TModel>(Func<TModel, bool> predicate)
+        public void ChooseModel<TModel>(Func<TModel, bool> predicate)
         {
-            SelectedIndex.Value = IndexOfView(Views
+            ChosenIndex.Value = IndexOfView(Views
                 .Where(x => x.ViewModel?.Model is TModel)
                 .FirstOrDefault(x => predicate((TModel) x.ViewModel.Model)));
         }
 
-        public bool SelectIndex(int index)
+        public bool ChooseIndex(int index)
         {
             if (index >= Views.Count)
                 return false;
 
-            SelectedIndex.Value = index;
+            ChosenIndex.Value = index;
 
             return true;
         }
 
-        public bool SelectFirst()
+        public bool ChooseFirst()
         {
             if (!HasItems)
                 return false;
 
-            SelectedIndex.Value = FirstIndex;
+            ChosenIndex.Value = FirstIndex;
             return true;
         }
 
-        public bool SelectLast()
+        public bool ChooseLast()
         {
             if (!HasItems)
                 return false;
 
-            SelectedIndex.Value = LastIndex;
+            ChosenIndex.Value = LastIndex;
             return true;
         }
 
-        public void SelectNone()
+        public void ChooseNone()
         {
-            SelectedIndex.Value = null;
+            ChosenIndex.Value = null;
         }
 
-        public bool SelectPrevious()
+        public bool ChoosePrevious()
         {
             if (!HasItems)
                 return false;
 
-            if (SelectedIndex.Value == FirstIndex)
+            if (ChosenIndex.Value == FirstIndex)
             {
                 if (_list.WrapAround)
                 {
-                    SelectedIndex.Value = LastIndex;
+                    ChosenIndex.Value = LastIndex;
                     return true;
                 }
 
                 return false;
             }
 
-            SelectedIndex.Value--;
+            ChosenIndex.Value--;
             return true;
         }
 
-        public bool SelectNext()
+        public bool ChooseNext()
         {
             if (!HasItems)
                 return false;
 
-            if (SelectedIndex.Value == LastIndex)
+            if (ChosenIndex.Value == LastIndex)
             {
                 if (_list.WrapAround)
                 {
-                    SelectedIndex.Value = 0;
+                    ChosenIndex.Value = 0;
                     return true;
                 }
 
                 return false;
             }
 
-            SelectedIndex.Value++;
+            ChosenIndex.Value++;
             return true;
         }
 
         public void OnMove(AxisEventData eventData)
         {
-            if (!HasItems || SelectedIndex.Value == null)
+            if (!HasItems || ChosenIndex.Value == null)
                 return;
 
             var moveDirection = _list.Orientation == NavigationOrientation.Vertical
                 ? eventData.moveDir.FlipXY()
                 : eventData.moveDir;
 
-            if (moveDirection == MoveDirection.Up && SelectedIndex.Value % RowsOrColumns > 0 && SelectIndex(SelectedIndex.Value.Value - 1) ||
-                moveDirection == MoveDirection.Down && SelectedIndex.Value % RowsOrColumns < RowsOrColumns - 1 && SelectIndex(SelectedIndex.Value.Value + 1) ||
-                moveDirection == MoveDirection.Left && _list.WrapAround && SelectedIndex.Value == 0 && SelectIndex(Views.Count - 1) ||
-                moveDirection == MoveDirection.Right && _list.WrapAround && SelectedIndex.Value == Views.Count - 1 && SelectIndex(0) ||
-                moveDirection == MoveDirection.Left && SelectedIndex.Value >= RowsOrColumns && SelectIndex(SelectedIndex.Value.Value - RowsOrColumns) ||
-                moveDirection == MoveDirection.Right && SelectedIndex.Value + RowsOrColumns < Views.Count && SelectIndex(SelectedIndex.Value.Value + RowsOrColumns))
+            if (moveDirection == MoveDirection.Up && ChosenIndex.Value % RowsOrColumns > 0 && ChooseIndex(ChosenIndex.Value.Value - 1) ||
+                moveDirection == MoveDirection.Down && ChosenIndex.Value % RowsOrColumns < RowsOrColumns - 1 && ChooseIndex(ChosenIndex.Value.Value + 1) ||
+                moveDirection == MoveDirection.Left && _list.WrapAround && ChosenIndex.Value == 0 && ChooseIndex(Views.Count - 1) ||
+                moveDirection == MoveDirection.Right && _list.WrapAround && ChosenIndex.Value == Views.Count - 1 && ChooseIndex(0) ||
+                moveDirection == MoveDirection.Left && ChosenIndex.Value >= RowsOrColumns && ChooseIndex(ChosenIndex.Value.Value - RowsOrColumns) ||
+                moveDirection == MoveDirection.Right && ChosenIndex.Value + RowsOrColumns < Views.Count && ChooseIndex(ChosenIndex.Value.Value + RowsOrColumns))
                 eventData.Use();
         }
 
@@ -256,27 +256,27 @@ namespace Silphid.Showzup
             var view = req.Input as IView;
             if (view != null)
             {
-                SelectView(view);
+                ChooseView(view);
                 return true;
             }
 
             var viewModel = req.Input as IViewModel;
             if (viewModel != null)
             {
-                SelectViewModel(viewModel);
+                ChooseViewModel(viewModel);
                 return true;
             }
 
-            SelectModel(req.Input);
+            ChooseModel(req.Input);
             return true;
         }
 
         public void Dispose()
         {
             _disposables?.Dispose();
-            _selectedView?.Dispose();
-            _selectedModel?.Dispose();
-            SelectedIndex?.Dispose();
+            _chosenView?.Dispose();
+            _chosenModel?.Dispose();
+            ChosenIndex?.Dispose();
         }
     }
 }

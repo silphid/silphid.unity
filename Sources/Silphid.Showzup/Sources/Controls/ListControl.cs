@@ -86,8 +86,7 @@ namespace Silphid.Showzup
 
         private VariantSet _variantSet;
 
-        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>())
-            ;
+        private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
 
         protected VariantSet VariantSet =>
             _variantSet ??
@@ -103,11 +102,6 @@ namespace Silphid.Showzup
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
                 .ToReadOnlyReactiveProperty();
-        }
-
-        private void Awake()
-        {
-            _selectionHelper = new SelectionHelper(this);
         }
 
         #endregion
@@ -131,7 +125,7 @@ namespace Silphid.Showzup
                     .DoOnCompleted(() =>
                     {
                         if (AutoSelectFirst)
-                            _selectionHelper.SelectFirst();
+                            _selectionHelper.ChooseFirst();
                     }));
         }
 
@@ -143,72 +137,72 @@ namespace Silphid.Showzup
         
         public bool Handle(IRequest request) => _selectionHelper.Handle(request);
 
-        public override GameObject ForwardSelection() => _selectionHelper.SelectedView.Value?.GameObject;
+        public override GameObject SelectableContent => _selectionHelper?.ChosenView.Value?.GameObject;
 
-        public IReadOnlyReactiveProperty<IView> SelectedView => _selectionHelper.SelectedView;
+        public IReadOnlyReactiveProperty<IView> ChosenView => _selectionHelper.ChosenView;
 
-        public ReactiveProperty<int?> SelectedIndex => _selectionHelper.SelectedIndex;
+        public ReactiveProperty<int?> ChosenIndex => _selectionHelper.ChosenIndex;
 
-        public IReactiveProperty<object> SelectedModel => _selectionHelper.SelectedModel;
+        public IReactiveProperty<object> ChosenModel => _selectionHelper.ChosenModel;
 
-        public void SelectView(IView view)
+        public void ChooseView(IView view)
         {
-            _selectionHelper.SelectView(view);
+            _selectionHelper.ChooseView(view);
         }
 
-        public void SelectView<TView>(Func<TView, bool> predicate) where TView : IView
+        public void ChooseView<TView>(Func<TView, bool> predicate) where TView : IView
         {
-            _selectionHelper.SelectView(predicate);
+            _selectionHelper.ChooseView(predicate);
         }
 
-        public void SelectViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        public void ChooseViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
         {
-            _selectionHelper.SelectViewModel(viewModel);
+            _selectionHelper.ChooseViewModel(viewModel);
         }
 
-        public void SelectViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        public void ChooseViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
         {
-            _selectionHelper.SelectViewModel(predicate);
+            _selectionHelper.ChooseViewModel(predicate);
         }
 
-        public void SelectModel<TModel>(TModel model)
+        public void ChooseModel<TModel>(TModel model)
         {
-            _selectionHelper.SelectModel(model);
+            _selectionHelper.ChooseModel(model);
         }
 
-        public void SelectModel<TModel>(Func<TModel, bool> predicate)
+        public void ChooseModel<TModel>(Func<TModel, bool> predicate)
         {
-            _selectionHelper.SelectModel(predicate);
+            _selectionHelper.ChooseModel(predicate);
         }
 
-        public bool SelectIndex(int index)
+        public bool ChooseIndex(int index)
         {
-            return _selectionHelper.SelectIndex(index);
+            return _selectionHelper.ChooseIndex(index);
         }
 
-        public bool SelectFirst()
+        public bool ChooseFirst()
         {
-            return _selectionHelper.SelectFirst();
+            return _selectionHelper.ChooseFirst();
         }
 
-        public bool SelectLast()
+        public bool ChooseLast()
         {
-            return _selectionHelper.SelectLast();
+            return _selectionHelper.ChooseLast();
         }
 
-        public void SelectNone()
+        public void ChooseNone()
         {
-            _selectionHelper.SelectNone();
+            _selectionHelper.ChooseNone();
         }
 
-        public bool SelectPrevious()
+        public bool ChoosePrevious()
         {
-            return _selectionHelper.SelectPrevious();
+            return _selectionHelper.ChoosePrevious();
         }
 
-        public bool SelectNext()
+        public bool ChooseNext()
         {
-            return _selectionHelper.SelectNext();
+            return _selectionHelper.ChooseNext();
         }
 
         #endregion
@@ -267,7 +261,7 @@ namespace Silphid.Showzup
         {
             base.RemoveAllViews(container, except);
 
-            _selectionHelper.SelectNone();
+            _selectionHelper.ChooseNone();
         }
 
         #endregion
@@ -359,14 +353,8 @@ namespace Silphid.Showzup
 
         protected virtual void Start()
         {
-            Views
-                .Select(x => x.FirstOrDefault())
-                .Subscribe(x =>
-                {
-                    if (IsSelfOrDescendantSelected.Value)
-                        x?.Select();
-                })
-                .AddTo(this);
+            _selectionHelper = new SelectionHelper(this);
+            _selectionHelper.AddTo(this);
         }
 
         protected virtual void AddView(int index, IView view)

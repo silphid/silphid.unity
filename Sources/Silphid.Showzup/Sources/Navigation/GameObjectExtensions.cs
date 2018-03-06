@@ -24,16 +24,10 @@ namespace Silphid.Showzup.Navigation
         public static bool IsSelected(this Component This) =>
             This.gameObject.IsSelected();
 
-        public static bool IsSelected(this IView This) =>
-            This.GameObject.IsSelected();
-
         public static IObservable<bool> IsSelectedObservable(this GameObject This) =>
             NavigationService.Instance.Selection
                 .Select(x => x == This)
                 .StartWith(This.IsSelected());
-        
-        public static IObservable<bool> IsSelectedObservable(this IView This) =>
-            This.GameObject.IsSelectedObservable();
 
         public static bool IsDescendantSelected(this GameObject This) =>
             NavigationService.Instance.Selection.Value != This &&
@@ -42,17 +36,11 @@ namespace Silphid.Showzup.Navigation
         public static bool IsDescendantSelected(this Component This) =>
             This.gameObject.IsDescendantSelected();
 
-        public static bool IsDescendantSelected(this IView This) =>
-            This.GameObject.IsDescendantSelected();
-
         public static bool IsSelfOrDescendantSelected(this GameObject This) =>
             NavigationService.Instance.SelectionAndAncestors.Value.Contains(This);
         
         public static bool IsSelfOrDescendantSelected(this Component This) =>
             This.gameObject.IsSelfOrDescendantSelected();
-        
-        public static bool IsSelfOrDescendantSelected(this IView This) =>
-            This.GameObject.IsSelfOrDescendantSelected();
 
         #endregion
     }

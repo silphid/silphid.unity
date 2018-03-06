@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using log4net;
 using Silphid.Extensions;
 using UniRx;
 using UnityEngine;
@@ -9,10 +10,9 @@ namespace Silphid.Showzup.Navigation
 {
     public class NavigationService : INavigationService, IDisposable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NavigationService));
+        
         #region Fields
-
-        // TODO: To be replaced with Log4net
-        private const bool IsLogEnabled = false;
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly EventSystem _eventSystem;
@@ -42,11 +42,9 @@ namespace Silphid.Showzup.Navigation
                 .PairWithPrevious()
                 .Subscribe(OnSelectionChanged);
 
-            if (IsLogEnabled)
-            {
+            if (Log.IsDebugEnabled)
                 SelectionAndAncestors.Subscribe(x =>
                     Debug.Log($"Selection: {x.JoinAsString(" > ")}"));
-            }
         }
 
         #endregion
@@ -66,20 +64,23 @@ namespace Silphid.Showzup.Navigation
 
         public void SetSelection(GameObject gameObject)
         {
-            _selection.Value = ForwardSelection(gameObject);
+            _selection.Value = GetSelectable(gameObject);
         }
 
-        private GameObject ForwardSelection(GameObject gameObject)
+        private GameObject GetSelectable(GameObject gameObject)
         {
             if (gameObject == null)
                 return null;
-            
-            var redirectFocus = gameObject.GetComponent<IForwardSelectable>()?.ForwardSelection();
 
-            if (redirectFocus == gameObject)
-                throw new InvalidOperationException($"{gameObject.name} is forwarding selection to the same gameObject");
+            var selectableContainer = gameObject.GetComponent<ISelectableContainer>();
+            if (selectableContainer == null)
+                return gameObject;
+                
+            var selectableContent = selectableContainer.SelectableContent;
+            if (selectableContent == null || selectableContent == gameObject)
+                return gameObject;
 
-            return redirectFocus ? ForwardSelection(redirectFocus) : gameObject;
+            return GetSelectable(selectableContent);
         }
 
         private readonly ReactiveProperty<GameObject> _selection = new ReactiveProperty<GameObject>();

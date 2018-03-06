@@ -31,14 +31,14 @@ namespace Silphid.Showzup
         public bool UseIntuitiveTransitionDirection = true;
         public ReadOnlyReactiveProperty<IView> ContentView => _contentView.ToReadOnlyReactiveProperty();
         public IObservable<object> PresentingContent => _presentingContent;
-        
-        public override GameObject ForwardSelection() => TabSelectionControl.gameObject;
+
+        public override GameObject SelectableContent => TabSelectionControl.gameObject;
 
         public void Start()
         {
-            _currentIndex = TabSelectionControl.SelectedIndex.Value ?? 0;
+            _currentIndex = TabSelectionControl.ChosenIndex.Value ?? 0;
 
-            TabSelectionControl.SelectedIndex
+            TabSelectionControl.ChosenIndex
                 .WhereNotNull()
                 .LazyThrottle(TimeSpan.FromSeconds(SelectionDelay))
                 .DistinctUntilChanged()
@@ -50,7 +50,7 @@ namespace Silphid.Showzup
                 ContentTransitionControl,
                 TabSelectionControl,
                 (MoveDirection) TabPlacement,
-                () => _currentIndex == TabSelectionControl.SelectedIndex.Value && MutableState.Value != PresenterState.Presenting
+                () => _currentIndex == TabSelectionControl.ChosenIndex.Value && MutableState.Value != PresenterState.Presenting
                       && ContentTransitionControl.FirstView.Value != null);
             
             _moveHandler.BindCancel(

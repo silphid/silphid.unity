@@ -14,77 +14,59 @@ namespace Silphid.Showzup
     {
         public static void AddTo(this IDisposable This, IBinder binder) => binder.Add(This);
         
-        public static void BindActive(this IBinder This, IObservable<bool> source, GameObject target)
+        public static void BindSetActive(this IBinder This, IObservable<bool> source, GameObject target)
         {
             if (target != null)
                 source.Subscribe(target.SetActive).AddTo(This);
         }
 
-        public static void Bind<T>(this IBinder This, IObservable<T> source, IReactiveProperty<T> target) =>
-            source.Subscribe(x => target.Value = x).AddTo(This);
+        public static void Bind<TSource, TTarget>(this IBinder This, IObservable<TSource> source, IReactiveProperty<TTarget> target)
+            where TTarget : TSource  =>
+            source.BindTo(target).AddTo(This);
 
-        public static void Bind<T>(this IBinder This, IReactiveProperty<T> source, IReactiveProperty<T> target) where T : class =>
-            This.Bind<T, T>(source, target);
-        
-        public static void Bind<TSource, TTarget>(this IBinder This, IReactiveProperty<TSource> source, IReactiveProperty<TTarget> target)
-            where TSource : class
-            where TTarget : class
+        public static void BindTwoWay<TSource, TTarget>(this IBinder This, IReactiveProperty<TSource> source, IReactiveProperty<TTarget> target) =>
+            source.BindTwoWayTo(target).AddTo(This);
+
+        public static void Bind<T>(this IBinder This, IObservable<T> source, IPresenter target)
         {
-            if (source == null || target == null)
-                return;
-
-            bool isUpdating = false;
-
-            source
-                .Where(_ => !isUpdating)
-                .Subscribe(x =>
-                {
-                    isUpdating = true;
-                    target.Value = x as TTarget;
-                    isUpdating = false;
-                })
-                .AddTo(This);
-
-            target
-                .Where(_ => !isUpdating)
-                .Subscribe(x =>
-                {
-                    isUpdating = true;
-                    source.Value = x as TSource;
-                    isUpdating = false;
-                })
-                .AddTo(This);
+            if (target != null)
+                source.BindTo(target).AddTo(This);
         }
-
-        public static void Bind<T>(this IBinder This, IObservable<T> source, IPresenter target) =>
-            source.Subscribe(x => target.Present(x).SubscribeAndForget()).AddTo(This);
 
         public static void Bind(this IBinder This, Button source, IRequest target) =>
             source?.OnClickAsObservable().Subscribe(_ => source.Send(target)).AddTo(This);
 
         public static void Bind<TRequest>(this IBinder This, Button source) where TRequest : IRequest, new() =>
-            source.OnClickAsObservable().Subscribe(_ => source.Send<TRequest>()).AddTo(This);
+            source?.OnClickAsObservable().Subscribe(_ => source.Send<TRequest>()).AddTo(This);
 
-        public static void Bind<T>(this IBinder This, IReadOnlyReactiveCollection<T> source, ListControl target) =>
-            This.Bind(source.ObserveCurrentAddRemove(), target);
+        public static void Bind<T>(this IBinder This, IReadOnlyReactiveCollection<T> source, ListControl target)
+        {
+            if (target != null)
+                This.Bind(source.ObserveCurrentAddRemove(), target);
+        }
 
-        public static void Bind<T>(this IBinder This, IObservable<CollectionAddRemoveEvent<T>> source, ListControl target) =>
-            source
-                .Subscribe(x =>
-                {
-                    if (x.IsAdded)
-                        target.Add(x.Value).SubscribeAndForget();
-                    else
-                        target.Remove(x.Value);
-                })
-                .AddTo(This);
-        
+        public static void Bind<T>(this IBinder This, IObservable<CollectionAddRemoveEvent<T>> source, ListControl target)
+        {
+            if (target != null)
+                source
+                    .Subscribe(x =>
+                    {
+                        if (x.IsAdded)
+                            target.Add(x.Value).SubscribeAndForget();
+                        else
+                            target.Remove(x.Value);
+                    })
+                    .AddTo(This);
+            }
+
+        // ReSharper disable once UnusedParameter.Global
         public static void Bind(this IBinder This, string source, Text target)
         {
             if (target != null)
                 target.text = source;
         }
 
+        // ReSharper disable once UnusedParameter.Global
         public static ICompletable BindAsCompletable(this IBinder This, object source, IPresenter target)
         {
             if (source == null || target == null)
@@ -111,7 +93,7 @@ namespace Silphid.Showzup
 
         public static void Bind(this IBinder This, Uri source, Image target, bool keepVisible = false, float? fadeDuration = null)
         {
-            if (target != null)
+            if (source != null && target != null)
                 This.BindAsCompletable(source, target, false, null, keepVisible, fadeDuration)
                     .Subscribe()
                     .AddTo(This);

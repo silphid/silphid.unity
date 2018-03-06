@@ -72,9 +72,9 @@ namespace Silphid.Showzup
             View.Subscribe(x => MutableFirstView.Value = x);
         }
 
-        public override GameObject ForwardSelection()
+        public override GameObject SelectableContent
         {
-            return View.Value?.GameObject;
+            get { return View.Value?.GameObject; }
         }
 
         protected virtual void Start()
