@@ -98,10 +98,16 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
+            _selectionHelper = new SelectionHelper(this);
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
                 .ToReadOnlyReactiveProperty();
+        }
+        
+        protected virtual void Start()
+        {
+            _selectionHelper.Start();
         }
 
         #endregion
@@ -137,7 +143,7 @@ namespace Silphid.Showzup
         
         public bool Handle(IRequest request) => _selectionHelper.Handle(request);
 
-        public override GameObject SelectableContent => _selectionHelper?.ChosenView.Value?.GameObject;
+        public override GameObject SelectableContent => _selectionHelper.ChosenView.Value?.GameObject;
 
         public IReadOnlyReactiveProperty<IView> ChosenView => _selectionHelper.ChosenView;
 
@@ -350,12 +356,6 @@ namespace Silphid.Showzup
         #endregion
 
         #region Protected/virtual methods
-
-        protected virtual void Start()
-        {
-            _selectionHelper = new SelectionHelper(this);
-            _selectionHelper.AddTo(this);
-        }
 
         protected virtual void AddView(int index, IView view)
         {

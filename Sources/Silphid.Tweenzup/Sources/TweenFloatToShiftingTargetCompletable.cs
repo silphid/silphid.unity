@@ -15,6 +15,6 @@ namespace Silphid.Tweenzup
             property.Velocity();
 
         protected override ICompletable Tween(IReactiveProperty<float> property, float target, float duration, float velocity, IEaser easer) =>
-            property.TweenTo(target, duration, easer);
+            property.TweenTo(target, duration, () => velocity, easer);
     }
 }

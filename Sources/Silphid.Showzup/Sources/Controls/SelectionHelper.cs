@@ -10,7 +10,7 @@ using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    internal class SelectionHelper : IDisposable
+    internal class SelectionHelper
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly ReactiveProperty<IView> _chosenView = new ReactiveProperty<IView>();
@@ -23,11 +23,14 @@ namespace Silphid.Showzup
 
         public SelectionHelper(ListControl list)
         {
-            if (list.Orientation == NavigationOrientation.None)
-                throw new InvalidOperationException(
-                    $"SelectionControl is missing orientation value on gameObject {_list.gameObject.ToHierarchyPath()}");
+            _list = list;            
+        }
 
-            _list = list;
+        public void Start()
+        {
+            if (_list.Orientation == NavigationOrientation.None)
+                throw new InvalidOperationException(
+                    $"ListControl is missing orientation value on gameObject {_list.gameObject.ToHierarchyPath()}");
 
             _list.Views
                 .CombineLatest(ChosenIndex, (views, selectedIndex) => new {views, selectedIndex})
@@ -41,6 +44,10 @@ namespace Silphid.Showzup
                 .AddTo(_disposables);
 
             SubscribeToUpdateFocusables(ChosenView);
+            
+            _disposables.AddTo(_list);
+            _chosenView.AddTo(_list);
+            ChosenIndex.AddTo(_list);
         }
 
         private int? IndexOfView(IView view) => _list.IndexOfView(view);
@@ -60,6 +67,7 @@ namespace Silphid.Showzup
                 bool isUpdating = false;
             
                 _chosenModel = new ReactiveProperty<object>();
+                _chosenModel.AddTo(_list);
 
                 ChosenView
                     .Where(_ => !isUpdating)
@@ -269,14 +277,6 @@ namespace Silphid.Showzup
 
             ChooseModel(req.Input);
             return true;
-        }
-
-        public void Dispose()
-        {
-            _disposables?.Dispose();
-            _chosenView?.Dispose();
-            _chosenModel?.Dispose();
-            ChosenIndex?.Dispose();
         }
     }
 }

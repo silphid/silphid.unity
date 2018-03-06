@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup.Navigation
 {
-    public class MoveHandler : IMoveHandler, ICancelHandler
+    public class NavigationHandler : IMoveHandler, ICancelHandler
     {
         private class MoveBinding
         {
