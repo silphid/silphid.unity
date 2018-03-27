@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using Silphid.Extensions;
@@ -38,7 +39,7 @@ namespace Silphid.Showzup
             Log.Debug("ClearHistory()");
             This.AssertCanAlterHistory();
 
-            This.History.Value = This.History.Value.Last().ToSingleItemList();
+            This.History.Value = This.History.Value.LastOrDefault()?.ToSingleItemList() ?? new List<IView>();
         }
 
         private static void AssertCanAlterHistory(this INavigationPresenter This)

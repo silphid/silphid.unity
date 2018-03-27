@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public class CarrouselControl : SelectionControl
+    public class CarrouselControl : ListControl
     {
         private readonly SerialDisposable _motionDisposable = new SerialDisposable();
         private readonly ReactiveProperty<Item[]> _items = new ReactiveProperty<Item[]>();
