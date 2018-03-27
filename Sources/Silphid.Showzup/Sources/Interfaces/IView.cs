@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Silphid.Showzup.Navigation;
+using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public interface IView
+    public interface IView : ISelectable
     {
         IViewModel ViewModel { get; set; }
         GameObject GameObject { get; }

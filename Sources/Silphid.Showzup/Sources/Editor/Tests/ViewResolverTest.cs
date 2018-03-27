@@ -18,7 +18,7 @@ namespace Silphid.Showzup.Test
         {
             public List<TypeToTypeMapping> ModelsToViewModels { get; } = new List<TypeToTypeMapping>();
             public List<TypeToTypeMapping> ViewModelsToViews { get; } = new List<TypeToTypeMapping>();
-            public List<TypeToUriMapping> ViewsToPrefabs { get; } = new List<TypeToUriMapping>();
+            public List<ViewToPrefabMapping> ViewsToPrefabs { get; } = new List<ViewToPrefabMapping>();
         }
 
         #endregion
@@ -160,7 +160,7 @@ namespace Silphid.Showzup.Test
         private TypeToTypeMapping CreateMapping<T, U>(VariantSet explicitVariants = null, VariantSet implicitVariants = null) =>
             new TypeToTypeMapping(typeof(T), typeof(U), explicitVariants ?? Empty) {ImplicitVariants = implicitVariants ?? Empty};
 
-        private TypeToUriMapping CreateMapping<T>(Uri prefabUri, VariantSet explicitVariants = null) =>
-            new TypeToUriMapping(typeof(T), prefabUri, explicitVariants ?? Empty);
+        private ViewToPrefabMapping CreateMapping<T>(Uri prefabUri, VariantSet explicitVariants = null) =>
+            new ViewToPrefabMapping(typeof(T), prefabUri, null, explicitVariants ?? Empty);
     }
 }

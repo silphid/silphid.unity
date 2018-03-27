@@ -5,8 +5,10 @@ using log4net;
 using Silphid.Extensions;
 using Silphid.Injexit;
 using Silphid.Requests;
+using Silphid.Showzup.Navigation;
 using Silphid.Showzup.Requests;
 using UniRx;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Silphid.Showzup
@@ -68,6 +70,23 @@ namespace Silphid.Showzup
         {
             View = _view.ToReadOnlyReactiveProperty();
             View.Subscribe(x => MutableFirstView.Value = x);
+        }
+
+        public override GameObject SelectableContent
+        {
+            get { return View.Value?.GameObject; }
+        }
+
+        protected virtual void Start()
+        {
+            View
+                .WhereNotNull()
+                .Subscribe(x =>
+                {
+                    if (IsSelfOrDescendantSelected.Value)
+                        x.Select();
+                })
+                .AddTo(this);
         }
 
         #region IPresenter members

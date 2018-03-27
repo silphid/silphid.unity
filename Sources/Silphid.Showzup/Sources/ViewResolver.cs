@@ -247,7 +247,7 @@ namespace Silphid.Showzup
                 .ToList();
             
             var resolved = candidates
-                .Select(candidate => new CandidateMapping<TypeToUriMapping>(candidate,
+                .Select(candidate => new CandidateMapping<ViewToPrefabMapping>(candidate,
                     _scoreEvaluator.GetVariantScore(requestedVariants, candidate.Variants, VariantSet.Empty)))
                 .Where(candidate => candidate.Score.HasValue)
                 .WithMax(candidate => candidate.Score.Value)

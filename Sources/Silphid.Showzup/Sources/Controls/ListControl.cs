@@ -7,19 +7,21 @@ using System.Threading;
 using JetBrains.Annotations;
 using Silphid.Extensions;
 using Silphid.Injexit;
+using Silphid.Requests;
 using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    public class ListControl : PresenterControl, IListPresenter
+    public class ListControl : PresenterControl, IListPresenter, IMoveHandler, IRequestHandler
     {
         #region Entry private class
 
         protected class Entry
         {
-            public int Index { get; set; }
+            public int Index { get; }
             public object Model { get; }
             public ViewInfo? ViewInfo { get; set; }
             public IView View { get; set; }
@@ -40,12 +42,12 @@ namespace Silphid.Showzup
         }
 
         #endregion
-        
+
         #region Injected properties
 
-        [Inject] internal IViewResolver ViewResolver { get; set; }
-        [Inject] internal IViewLoader ViewLoader { get; set; }
-        [Inject] internal IVariantProvider VariantProvider { get; set; }
+        [Inject, UsedImplicitly] internal IViewResolver ViewResolver { get; set; }
+        [Inject, UsedImplicitly] internal IViewLoader ViewLoader { get; set; }
+        [Inject, UsedImplicitly] internal IVariantProvider VariantProvider { get; set; }
 
         #endregion
 
@@ -53,11 +55,14 @@ namespace Silphid.Showzup
 
         public GameObject Container;
         public string[] Variants;
-        public bool AutoSelect = true;
         public Comparer<IView> ViewComparer { get; set; }
         public Comparer<IViewModel> ViewModelComparer { get; set; }
         public Comparer<object> ModelComparer { get; set; }
         public NavigationOrientation Orientation;
+        public bool WrapAround;
+        public int RowsOrColumns = 1;
+        public bool AutoSelectFirst = true;
+        public bool HandlesSelectRequest;
 
         #endregion
 
@@ -71,13 +76,16 @@ namespace Silphid.Showzup
         public int? FirstIndex => HasItems ? 0 : (int?) null;
 
         #endregion
-
+        
         #region Protected/private fields/properties
 
-        protected List<IView> _views = new List<IView>();
+        private SelectionHelper _selectionHelper;
+        protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
+
         private VariantSet _variantSet;
+
         private readonly ReactiveProperty<List<object>> _models = new ReactiveProperty<List<object>>(new List<object>());
 
         protected VariantSet VariantSet =>
@@ -90,14 +98,20 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
+            _selectionHelper = new SelectionHelper(this);
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
                 .ToReadOnlyReactiveProperty();
         }
+        
+        protected virtual void Start()
+        {
+            _selectionHelper.Start();
+        }
 
         #endregion
-        
+
         #region IPresenter members
 
         [Pure]
@@ -112,7 +126,89 @@ namespace Silphid.Showzup
             
             options = options.With(VariantProvider.GetVariantsNamed(Variants));
 
-            return Observable.Defer(() => PresentInternal(input, options));
+            return Observable.Defer(() =>
+                PresentInternal(input, options)
+                    .DoOnCompleted(() =>
+                    {
+                        if (AutoSelectFirst)
+                            _selectionHelper.ChooseFirst();
+                    }));
+        }
+
+        #endregion
+
+        #region Selection
+        
+        public void OnMove(AxisEventData eventData) => _selectionHelper.OnMove(eventData);
+        
+        public bool Handle(IRequest request) => _selectionHelper.Handle(request);
+
+        public override GameObject SelectableContent => _selectionHelper.ChosenView.Value?.GameObject;
+
+        public IReadOnlyReactiveProperty<IView> ChosenView => _selectionHelper.ChosenView;
+
+        public ReactiveProperty<int?> ChosenIndex => _selectionHelper.ChosenIndex;
+
+        public IReactiveProperty<object> ChosenModel => _selectionHelper.ChosenModel;
+
+        public void ChooseView(IView view)
+        {
+            _selectionHelper.ChooseView(view);
+        }
+
+        public void ChooseView<TView>(Func<TView, bool> predicate) where TView : IView
+        {
+            _selectionHelper.ChooseView(predicate);
+        }
+
+        public void ChooseViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
+        {
+            _selectionHelper.ChooseViewModel(viewModel);
+        }
+
+        public void ChooseViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
+        {
+            _selectionHelper.ChooseViewModel(predicate);
+        }
+
+        public void ChooseModel<TModel>(TModel model)
+        {
+            _selectionHelper.ChooseModel(model);
+        }
+
+        public void ChooseModel<TModel>(Func<TModel, bool> predicate)
+        {
+            _selectionHelper.ChooseModel(predicate);
+        }
+
+        public bool ChooseIndex(int index)
+        {
+            return _selectionHelper.ChooseIndex(index);
+        }
+
+        public bool ChooseFirst()
+        {
+            return _selectionHelper.ChooseFirst();
+        }
+
+        public bool ChooseLast()
+        {
+            return _selectionHelper.ChooseLast();
+        }
+
+        public void ChooseNone()
+        {
+            _selectionHelper.ChooseNone();
+        }
+
+        public bool ChoosePrevious()
+        {
+            return _selectionHelper.ChoosePrevious();
+        }
+
+        public bool ChooseNext()
+        {
+            return _selectionHelper.ChooseNext();
         }
 
         #endregion
@@ -122,7 +218,8 @@ namespace Silphid.Showzup
         public void SetViewComparer<TView>(Func<TView, TView, int> comparer) where TView : IView =>
             ViewComparer = Comparer<IView>.Create((x, y) => comparer((TView) x, (TView) y));
 
-        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer) where TViewModel : IViewModel =>
+        public void SetViewModelComparer<TViewModel>(Func<TViewModel, TViewModel, int> comparer)
+            where TViewModel : IViewModel =>
             ViewModelComparer = Comparer<IViewModel>.Create((x, y) => comparer((TViewModel) x, (TViewModel) y));
 
         public void SetModelComparer<TModel>(Func<TModel, TModel, int> comparer) =>
@@ -166,6 +263,13 @@ namespace Silphid.Showzup
             UpdateReactiveViews();
         }
 
+        protected override void RemoveAllViews(GameObject container, GameObject except = null)
+        {
+            base.RemoveAllViews(container, except);
+
+            _selectionHelper.ChooseNone();
+        }
+
         #endregion
 
         #region Private methods
@@ -176,7 +280,7 @@ namespace Silphid.Showzup
                          (input as IEnumerable)?.Cast<object>().ToList() ??
                          input?.ToSingleItemList() ??
                          new List<object>();
-            
+
             _models.Value = models;
             RemoveViews(Container, _views);
             _views.Clear();
@@ -215,7 +319,7 @@ namespace Silphid.Showzup
 
         protected void UpdateReactiveViews() =>
             _reactiveViews.Value = _views.AsReadOnly();
-        
+
         private int? GetSortedIndex(IView view)
         {
             if (_views.Count == 0)
@@ -252,22 +356,6 @@ namespace Silphid.Showzup
         #endregion
 
         #region Protected/virtual methods
-        
-        protected virtual void Start()
-        {
-            Views
-                .Select(x => x.FirstOrDefault())
-                .Do(x => MutableFirstView.Value = x)
-                .Where(x => AutoSelect)
-                .CombineLatest(IsSelected.WhereTrue(), (x, y) => x)
-                .Subscribe(SelectView)
-                .AddTo(this);
-        }
-
-        protected virtual void SelectView(IView view)
-        {
-            view?.SelectDeferred();
-        }
 
         protected virtual void AddView(int index, IView view)
         {

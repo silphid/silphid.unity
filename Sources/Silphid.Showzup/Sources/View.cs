@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections;
 using Silphid.Extensions;
 using Silphid.Loadzup;
 using Silphid.Injexit;
 using Silphid.Loadzup.Http.Caching;
 using Silphid.Requests;
-using Silphid.Tweenzup;
+using Silphid.Showzup.InputLayers;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Silphid.Showzup
@@ -22,6 +21,8 @@ namespace Silphid.Showzup
         View, IView<TViewModel>, IDisposable,
         ILoadable where TViewModel : IViewModel
     {
+        public IReactiveProperty<bool> IsSelected { get; } = new ReactiveProperty<bool>(false);
+        public IReactiveProperty<bool> IsSelfOrDescendantSelected { get; } = new ReactiveProperty<bool>(false);
         protected bool IsDisposed { get; private set; }
         public bool DisposeViewModelOnDestroy = true;
 
@@ -66,7 +67,20 @@ namespace Silphid.Showzup
         IViewModel IView.ViewModel
         {
             get { return _viewModel; }
-            set { _viewModel = value; }
+            set
+            {
+                if (_viewModel != null)
+                    throw new InvalidOperationException("ViewModel can only be set once on a given View.");
+                
+                _viewModel = value;
+
+                var chooseable = _viewModel as IChooseable;
+                if (chooseable != null)
+                {
+                    IsSelected.BindTo(chooseable.IsChosen).AddTo(this);
+                    IsSelfOrDescendantSelected.BindTo(chooseable.IsChosen).AddTo(this);                    
+                }
+            }
         }
 
         public GameObject GameObject => gameObject;
@@ -89,173 +103,24 @@ namespace Silphid.Showzup
 
         #endregion
 
-        #region Binding helpers
+        #region Request helpers
 
-        protected void Bind(Text text, string value)
-        {
-            if (text != null)
-                text.text = value;
-        }
+        protected bool Send(IRequest request) =>
+            gameObject.Send(request);
 
-        protected void Bind(IPresenter presenter, object content)
-        {
-            presenter?
-                .Present(content)
-                .AutoDetach()
-                .Subscribe()
-                .AddTo(this);
-        }
+        protected bool Send(Exception exception) =>
+            gameObject.Send(exception);
 
-        protected void Bind(ListControl listControl, IEnumerable items)
-        {
-            if (listControl != null)
-                BindAsync(listControl, items)
-                    .Subscribe()
-                    .AddTo(this);
-        }
-
-        protected ICompletable BindAsync(ListControl listControl, IEnumerable items) =>
-            listControl
-                ?.Present(items)
-                .AsCompletable()
-                .AutoDetach()
-            ?? Completable.Empty();
-
-        protected void Bind(Image image, Uri uri, bool keepVisible = false, float? fadeDuration = null)
-        {
-            if (image != null)
-                BindAsync(image, uri, false, null, keepVisible, fadeDuration)
-                    .Subscribe()
-                    .AddTo(this);
-        }
-
-        protected ICompletable BindAsync(Image image, Uri uri, bool isOptional = false,
-            Loadzup.Options options = null,
-            bool keepVisible = false, float? fadeDuration = null)
-        {
-            if (image == null)
-                return Completable.Empty();
-
-            if (uri == null)
-            {
-                if (isOptional)
-                    return Completable.Empty();
-
-                return Completable.Throw(
-                    new BindException(
-                        $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
-            }
-
-            if (fadeDuration != null)
-                image.color = Color.clear;
-            else
-                image.enabled = keepVisible;
-
-            return Loader
-                .With(DefaultImageHttpCachePolicy)
-                .Load<DisposableSprite>(uri, options)
-                .Catch<DisposableSprite, Exception>(ex =>
-                    Observable.Throw<DisposableSprite>(
-                        new BindException(
-                            $"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
-                .Do(x =>
-                {
-                    if (image == null)
-                    {
-                        if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
-                            uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
-                            x.Dispose();
-                        return;
-                    }
-
-                    image.sprite = x.Sprite;
-                    image.enabled = true;
-
-                    if (fadeDuration != null)
-                        Observable.NextFrame()
-                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
-                            .SubscribeAndForget()
-                            .AddTo(this);
-
-                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https || uri.Scheme == Scheme.StreamingAsset
-                        || uri.Scheme == Scheme.StreamingFile)
-                        x.AddTo(this);
-                })
-                .AutoDetach()
-                .AsCompletable();
-        }
-
-        protected ICompletable BindAsync(RawImage image, Uri uri, bool isOptional = false,
-            Loadzup.Options options = null,
-            bool keepVisible = false, float? fadeDuration = null)
-        {
-            if (image == null)
-                return Completable.Empty();
-
-            if (uri == null)
-            {
-                if (isOptional)
-                    return Completable.Empty();
-
-                return Completable.Throw(
-                    new BindException(
-                        $"Cannot bind required image {image.gameObject.name} in view {gameObject.name} to null Uri."));
-            }
-
-            if (fadeDuration != null)
-                image.color = Color.clear;
-            else
-                image.enabled = keepVisible;
-
-            return Loader
-                .With(DefaultImageHttpCachePolicy)
-                .Load<Texture2D>(uri, options)
-                .Catch<Texture2D, Exception>(ex => Observable
-                    .Throw<Texture2D>(new BindException(
-                        $"Failed to load image {image.gameObject.name} in view {GetType().Name} from {uri}", ex)))
-                .Do(x =>
-                {
-                    if (image == null)
-                    {
-                        if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
-                            uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
-                            Destroy(x);
-                        return;
-                    }
-
-                    image.texture = x;
-                    image.enabled = true;
-
-                    if (fadeDuration != null)
-                        Observable.NextFrame()
-                            .Then(_ => image.TweenColorTo(Color.white, fadeDuration.Value))
-                            .SubscribeAndForget()
-                            .AddTo(this);
-
-                    if (uri.Scheme == Scheme.Http || uri.Scheme == Scheme.Https ||
-                        uri.Scheme == Scheme.StreamingAsset || uri.Scheme == Scheme.StreamingFile)
-                    {
-                        Disposable
-                            .Create(() => Destroy(x))
-                            .AddTo(this);
-                    }
-                })
-                .AutoDetach()
-                .AsCompletable();
-        }
+        protected bool Send<TRequest>() where TRequest : IRequest, new() =>
+            gameObject.Send(new TRequest());
 
         #endregion
 
-        #region Request helpers
+        #region Binding
 
-        protected void Send(IRequest request) =>
-            gameObject.Send(request);
+        private IBinder _binder;
 
-        protected void Send(Exception exception) =>
-            gameObject.Send(exception);
-
-        protected void Send<TRequest>() where TRequest : IRequest, new() =>
-            gameObject.Send(new TRequest());
+        protected IBinder Binder => _binder ?? (_binder = new Binder(this, Loader, DefaultImageHttpCachePolicy));
 
         #endregion
     }

@@ -218,6 +218,27 @@ namespace Silphid.Tweenzup
                 .Do(x => This.localPosition = x)
                 .AsCompletable();
 
+        public static ICompletable MoveXBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.right, duration, easer);
+
+        public static ICompletable MoveYBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.up, duration, easer);
+
+        public static ICompletable MoveZBy(this Transform This, float delta, float duration, IEaser easer = null) =>
+            This.MoveBy(delta * Vector3.forward, duration, easer);
+
+        public static ICompletable MoveBy(this Transform This, Vector3 delta, float duration, IEaser easer = null) =>
+            Completable.Defer(() =>
+            {
+                var source = This.localPosition;
+                var target = source + delta;
+
+                return Range(duration, easer)
+                    .Lerp(source, target)
+                    .Do(x => This.localPosition = x)
+                    .AsCompletable();
+            });
+
         public static ICompletable WorldMoveTo(this Transform This, Vector3 target, float duration, IEaser easer = null) =>
             Range(() => This.position, target, duration, easer)
                 .Do(x => This.position = x)

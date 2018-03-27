@@ -1,38 +1,10 @@
 ﻿using System;
-using Silphid.Extensions;
-using Silphid.Requests;
 using UniRx;
-using UnityEngine.UI;
 
 namespace Silphid.Showzup
 {
     public static class IObservableExtensions
     {
-        #region IObservable<object>
-
-        public static IDisposable BindTo(this IObservable<object> This, IPresenter target) =>
-            This.Subscribe(x => target.Present(x).SubscribeAndForget());
-
-        public static IDisposable BindTo(this Button This, IRequest request) =>
-            This.OnClickAsObservable().Subscribe(_ => This.Send(request));
-
-        public static IDisposable BindTo<TRequest>(this Button This) where TRequest : IRequest, new() =>
-            This.OnClickAsObservable().Subscribe(_ => This.Send<TRequest>());
-
-        public static IDisposable BindTo<T>(this IReadOnlyReactiveCollection<T> This, ListControl listControl) =>
-            This.ObserveCurrentAddRemove().BindTo(listControl);
-
-        public static IDisposable BindTo<T>(this IObservable<CollectionAddRemoveEvent<T>> This, ListControl listControl) =>
-            This.Subscribe(x =>
-                {
-                    if (x.IsAdded)
-                        listControl.Add(x.Value).SubscribeAndForget();
-                    else
-                        listControl.Remove(x.Value);
-                });
-        
-        #endregion
-
         #region IObservable<Nav>
 
         public static IObservable<ViewNav<TView>> From<TView>(this IObservable<Nav> This) where TView : IView =>

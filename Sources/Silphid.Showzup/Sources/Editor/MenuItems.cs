@@ -51,7 +51,7 @@ namespace Silphid.Showzup
         {
             var go = Create<TabControl>(x =>
             {
-                x.TabSelectionControl = CreateListControl<SelectionControl>(x.gameObject)
+                x.TabListControl = CreateListControl<SelectionControl>(x.gameObject)
                     .GetComponent<SelectionControl>();
                 x.ContentTransitionControl = CreateTransitionControl<TransitionControl>(x.gameObject)
                     .GetComponent<TransitionControl>();

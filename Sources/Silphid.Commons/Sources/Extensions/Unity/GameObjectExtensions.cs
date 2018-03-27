@@ -72,6 +72,9 @@ namespace Silphid.Extensions
         public static GameObject CommonAncestorWith(this GameObject This, GameObject other) =>
             This.transform.CommonAncestorWith(other?.transform);
 
+        public static Tuple<List<GameObject>, List<GameObject>> DivergingBranchesWith(this GameObject This, GameObject other) =>
+            This.transform.DivergingBranchesWith(other?.transform);
+        
         #endregion
 
         #region Filtering
@@ -102,48 +105,6 @@ namespace Silphid.Extensions
                 .Reverse()
                 .Select(x => x.name)
                 .JoinAsString(" > ");
-
-        #endregion
-
-        #region Selection
-
-        public static void Select(this GameObject This)
-        {
-            EventSystem.current.SetSelectedGameObject(This);
-        }
-
-        public static void Select(this Component This)
-        {
-            This.gameObject.Select();
-        }
-
-        public static void SelectDeferred(this GameObject This)
-        {
-            Scheduler.MainThreadEndOfFrame.Schedule(This.Select);
-        }
-
-        public static void SelectDeferred(this Component This)
-        {
-            This.gameObject.SelectDeferred();
-        }
-
-        public static bool IsSelected(this GameObject This) =>
-            EventSystem.current.currentSelectedGameObject == This;
-
-        public static bool IsSelected(this Component This) =>
-            This.gameObject.IsSelected();
-
-        public static bool IsDescendantSelected(this GameObject This) =>
-            EventSystem.current.currentSelectedGameObject?.IsDescendantOf(This) ?? false;
-
-        public static bool IsSelfOrDescendantSelected(this GameObject This) =>
-            EventSystem.current.currentSelectedGameObject?.IsSelfOrDescendantOf(This) ?? false;
-
-        public static bool IsDescendantSelected(this Component This) =>
-            This.gameObject.IsDescendantSelected();
-        
-        public static bool IsSelfOrDescendantSelected(this Component This) =>
-            This.gameObject.IsSelfOrDescendantSelected();
 
         #endregion
     }

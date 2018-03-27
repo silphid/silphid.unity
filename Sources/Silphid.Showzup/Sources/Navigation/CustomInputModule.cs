@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
-using Silphid.Extensions;
-using UniRx;
+using Silphid.Injexit;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
@@ -11,6 +9,7 @@ namespace Silphid.Showzup.Navigation
     [AddComponentMenu("Event/Custom Input Module")]
     public class CustomInputModule : PointerInputModule
     {
+        [Inject] private NavigationService _navigationService;
         private const float AxisDeadZone = 0.6f;
 
         private float m_PrevActionTime;
@@ -20,17 +19,6 @@ namespace Silphid.Showzup.Navigation
         private Vector2 m_LastMousePosition;
         private Vector2 m_MousePosition;
 
-        protected CustomInputModule()
-        {
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            InitCustomCode();
-        }
-
         [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
         public enum InputMode
         {
@@ -39,10 +27,7 @@ namespace Silphid.Showzup.Navigation
         }
 
         [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
-        public InputMode inputMode
-        {
-            get { return InputMode.Mouse; }
-        }
+        public InputMode inputMode => InputMode.Mouse;
 
         [SerializeField]
         private string m_HorizontalAxis = "Horizontal";
@@ -203,10 +188,10 @@ namespace Silphid.Showzup.Navigation
 
             var data = GetBaseEventData();
             if (Input.GetButtonDown(m_SubmitButton))
-                ExecuteBubbling(eventSystem.currentSelectedGameObject, data, ExecuteEvents.submitHandler);
+                _navigationService.ExecuteBubbling(eventSystem.currentSelectedGameObject, data, ExecuteEvents.submitHandler);
 
             if (Input.GetButtonDown(m_CancelButton))
-                ExecuteBubbling(eventSystem.currentSelectedGameObject, data, ExecuteEvents.cancelHandler);
+                _navigationService.ExecuteBubbling(eventSystem.currentSelectedGameObject, data, ExecuteEvents.cancelHandler);
             return data.used;
         }
 
@@ -265,7 +250,7 @@ namespace Silphid.Showzup.Navigation
 
             // Debug.Log(m_ProcessingEvent.rawType + " axis:" + m_AllowAxisEvents + " value:" + "(" + x + "," + y + ")");
             var axisEventData = GetAxisEventData(movement.x, movement.y, AxisDeadZone);
-            ExecuteBubbling(eventSystem.currentSelectedGameObject, axisEventData, ExecuteEvents.moveHandler);
+            _navigationService.ExecuteBubbling(eventSystem.currentSelectedGameObject, axisEventData, ExecuteEvents.moveHandler);
 
             if (!similarDir)
                 m_ConsecutiveMoveCount = 0;
@@ -343,8 +328,6 @@ namespace Silphid.Showzup.Navigation
                 var newPressed = ExecuteEvents.ExecuteHierarchy(currentOverGo, pointerEvent, ExecuteEvents.pointerDownHandler) ??
                                  ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo);
 
-                // Debug.Log("Pressed: " + newPressed);
-
                 float time = Time.unscaledTime;
 
                 if (newPressed == pointerEvent.lastPress)
@@ -416,73 +399,5 @@ namespace Silphid.Showzup.Navigation
                 }
             }
         }
-
-        #region Custom Code
-
-        public bool LogSelection;
-        public bool NestedSelection;
-
-        private void InitCustomCode()
-        {
-            Observable
-                .EveryUpdate()
-                .Select(_ => eventSystem.currentSelectedGameObject)
-                .DistinctUntilChanged()
-                .PairWithPrevious()
-                .Subscribe(OnSelectionChanged);
-        }
-
-        private void OnSelectionChanged(Tuple<GameObject, GameObject> selection)
-        {
-            if (LogSelection)
-                Debug.Log($"Selection: {selection.Item2?.SelfAndAncestors().Reverse().JoinAsString(" > ") ?? "(null)"}");
-
-            if (NestedSelection)
-                UpdateNestedSelection(selection);
-        }
-
-        private static void UpdateNestedSelection(Tuple<GameObject, GameObject> selection)
-        {
-            var commonAncestor = selection.Item1?.CommonAncestorWith(selection.Item2);
-            var deselectedObjects = selection.Item1?.SelfAndAncestors().TakeWhile(x => x != commonAncestor);
-            var selectedObjects = selection.Item2?.SelfAndAncestors().TakeWhile(x => x != commonAncestor);
-
-            deselectedObjects
-                ?.SelectMany(x => x.GetComponents<INestedDeselectHandler>())
-                .ForEach(x => x.OnNestedDeselect());
-
-            selectedObjects
-                ?.SelectMany(x => x.GetComponents<INestedSelectHandler>())
-                .ForEach(x => x.OnNestedSelect());
-        }
-
-        private static void ExecuteBubbling<T>(GameObject target, BaseEventData eventData,
-            ExecuteEvents.EventFunction<T> functor) where T : IEventSystemHandler
-        {
-            var current = target;
-            while (current != null)
-            {
-                var oldSelectedObject = eventData.selectedObject;
-                ExecuteEvents.Execute(current, eventData, functor);
-                if (eventData.used || eventData.selectedObject != oldSelectedObject)
-                    return;
-
-                current = current.transform.parent?.gameObject;
-            }
-        }
-
-        public void SendMoveEvent(Vector2 direction)
-        {
-            // Get the axis move event
-            direction.Normalize();
-            var axisEventData = GetAxisEventData(direction.x, direction.y, 0.6f);
-            if (axisEventData.moveDir == MoveDirection.None)
-                return; // input vector was not enough to move this cycle, done
-
-            // Execute the move
-            ExecuteBubbling(eventSystem.currentSelectedGameObject, axisEventData, ExecuteEvents.moveHandler);
-        }
-
-        #endregion
     }
 }

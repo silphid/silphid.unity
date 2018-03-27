@@ -38,7 +38,7 @@ namespace Silphid.Showzup
         [Inject]
         public void Inject()
         {
-            History.PairWithPrevious().Subscribe(DisposeDroppedViews).AddTo(_disposables);
+            History.PairWithPrevious().Skip(1).Subscribe(DisposeDroppedViews).AddTo(_disposables);
         }
 
         private void Awake()
@@ -92,8 +92,7 @@ namespace Silphid.Showzup
 
             return Observable
                 .Defer(() => StartPushAndLoadView(input, options))
-                .ContinueWith(NavigateAndCompletePush)
-                .DoOnTerminate(CompleteChange);
+                .ContinueWith(NavigateAndCompletePush);
         }
 
         private IObservable<Presentation> StartPushAndLoadView(object input, Options options, bool recursiveCall = false)
@@ -128,6 +127,7 @@ namespace Silphid.Showzup
                 {
                     History.Value = GetNewHistory(presentation.TargetView, presentation.Options.GetPushModeOrDefault());
                     CompleteNavigation(nav);
+                    CompleteChange(nav);
                 })
                 .ThenReturn(presentation.TargetView);
         }
@@ -157,9 +157,8 @@ namespace Silphid.Showzup
         {
             AssertCanPop();
 
-            var view = History.Value.First();
-            Log.Debug($"PopToRoot({view})");
-            var history = History.Value.Take(1).ToList();
+            var view = CanPopTopLevelView ? null : History.Value.First();
+            var history = CanPopTopLevelView ? new List<IView>() : History.Value.Take(1).ToList();
 
             return PopInternal(view, history);
         }
@@ -193,7 +192,7 @@ namespace Silphid.Showzup
                 {
                     History.Value = history;
                     CompleteNavigation(nav);
-                    CompleteChange();
+                    CompleteChange(nav);
                 })
                 .ThenReturn(view);
         }
@@ -227,9 +226,10 @@ namespace Silphid.Showzup
             _navigated.OnNext(nav);
         }
 
-        private void CompleteChange()
+        private void CompleteChange(Nav nav)
         {
             MutableState.Value = PresenterState.Ready;
+            (nav.Target as IPostNavigate)?.OnPostNavigate();
         }
 
         private void AssertCanPresent(object input, Options options)

@@ -2,19 +2,22 @@
 using log4net;
 using Silphid.Extensions;
 using Silphid.Requests;
+using Silphid.Showzup.Navigation;
 using UniRx;
 using UnityEngine;
 
 namespace Silphid.Showzup
 {
-    public abstract class PresenterControl : Control, IPresenter
+    public abstract class PresenterControl : Control, IPresenter, ISelectableContainer
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(PresenterControl));
         
         #region Private
 
         private Transform _instantiationContainer;
-        private readonly Subject<Exception> _errorsSubject = new Subject<Exception>(); 
+        private readonly Subject<Exception> _errorsSubject = new Subject<Exception>();
+
+        public virtual GameObject SelectableContent => FirstView.Value?.GameObject;
 
         private void Awake()
         {
@@ -27,7 +30,7 @@ namespace Silphid.Showzup
         #region Protected
 
         protected IReactiveProperty<PresenterState> MutableState { get; } = new ReactiveProperty<PresenterState>();
-        protected IReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
+        protected readonly IReactiveProperty<IView> MutableFirstView = new ReactiveProperty<IView>((IView) null);
 
         protected Transform GetInstantiationContainer()
         {

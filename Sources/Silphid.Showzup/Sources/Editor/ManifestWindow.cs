@@ -124,7 +124,7 @@ namespace Silphid.Showzup
             if (mapping is TypeToTypeMapping)
                 Label((TypeToTypeMapping) mapping);
             else
-                Label((TypeToUriMapping) mapping);
+                Label((ViewToPrefabMapping) mapping);
         }
 
         private void Label(TypeToTypeMapping mapping)
@@ -143,7 +143,7 @@ namespace Silphid.Showzup
             EditorGUILayout.EndHorizontal();
         }
 
-        private void Label(TypeToUriMapping mapping)
+        private void Label(ViewToPrefabMapping mapping)
         {
             EditorGUILayout.BeginHorizontal();
             

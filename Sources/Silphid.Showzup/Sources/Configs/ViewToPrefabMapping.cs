@@ -6,18 +6,21 @@ using UnityEngine;
 namespace Silphid.Showzup
 {
     [Serializable]
-    public class TypeToUriMapping : Mapping
+    public class ViewToPrefabMapping : Mapping
     {
         [SerializeField] private string _target;
+        [SerializeField] private string _guid;
 
         public Uri Target => new Uri(_target);
+        public string Guid => _guid;
 
-        public TypeToUriMapping(Type source, Uri target, VariantSet variants) : base(source, variants)
+        public ViewToPrefabMapping(Type source, Uri target, string guid, VariantSet variants) : base(source, variants)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
             _target = target.ToString();
+            _guid = guid;
         }
 
         public override bool Matches(string filter) =>
