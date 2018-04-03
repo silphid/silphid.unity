@@ -79,7 +79,7 @@ namespace Silphid.Showzup
         
         #region Protected/private fields/properties
 
-        private SelectionHelper _selectionHelper;
+        private readonly SelectionHelper _selectionHelper;
         protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
