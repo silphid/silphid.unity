@@ -20,13 +20,6 @@ namespace Silphid.Showzup
             var go = CreateListControl<ListControl>();
             Complete(go);
         }
-                
-        [MenuItem("GameObject/Showzup/SelectionControl", false, 3)]
-        private static void CreateSelectionControl()
-        {
-            var go = CreateListControl<SelectionControl>();
-            Complete(go);
-        }
 
         [MenuItem("GameObject/Showzup/TransitionControl", false, 4)]
         private static void CreateTransitionControl()

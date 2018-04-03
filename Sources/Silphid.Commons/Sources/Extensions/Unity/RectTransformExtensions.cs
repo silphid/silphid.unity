@@ -162,5 +162,11 @@ namespace Silphid.Extensions
         {
             SetSize(trans, new Vector2(trans.rect.size.x, newSize));
         }
+
+        public static void SetStretchWithTopOffset(this RectTransform trans, float offset)
+        {
+            trans.anchoredPosition = trans.anchoredPosition.WithY(-offset * 0.5f);
+            trans.sizeDelta = trans.sizeDelta.WithY(-offset);
+        }
     }
 }
