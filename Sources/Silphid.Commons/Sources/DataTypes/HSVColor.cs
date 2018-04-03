@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Silphid.Extensions.DataTypes
+namespace Silphid.DataTypes
 {
     public struct HSVColor
     {

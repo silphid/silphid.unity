@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Silphid.Extensions;
+
 // ReSharper disable StaticMemberInGenericType
 
-namespace Silphid.Extensions.DataTypes
+namespace Silphid.DataTypes
 {
     [DebuggerDisplay("{Name} ({Id})")]
     public abstract class ObjectEnum<T> where T : ObjectEnum<T>

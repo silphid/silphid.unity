@@ -62,29 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sources\DataTypes\Benchmark.cs" />
-    <Compile Include="Sources\DataTypes\FloatRange.cs" />
     <Compile Include="Sources\DataTypes\HSVColor.cs" />
-    <Compile Include="Sources\DataTypes\IntRange.cs" />
-    <Compile Include="Sources\DataTypes\ObjectEnum.cs" />
     <Compile Include="Sources\DOTween\DOTweenExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\ArrayExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\CollectionExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\DateTimeExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\DecimalExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\DictionaryExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\DoubleExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\ExceptionExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\FloatExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\ICustomAttributeProviderExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\IEnumerableExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\Int32Extensions.cs" />
-    <Compile Include="Sources\Extensions\System\LongExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\ObjectExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\RandomExtension.cs" />
-    <Compile Include="Sources\Extensions\System\StringExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\TimeSpanExtensions.cs" />
-    <Compile Include="Sources\Extensions\System\TypeExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\AsyncOperationExtensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\FloatVelocityObservable.cs" />
     <Compile Include="Sources\Extensions\UniRx\ICompletableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IEnumerableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableColorExtensions.cs" />
@@ -100,6 +81,7 @@
     <Compile Include="Sources\Extensions\UniRx\Schedulers\TestScheduler.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\TestSchedulerProvider.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\VirtualTimeScheduler.cs" />
+    <Compile Include="Sources\Extensions\UniRx\VelocityObservableBase.cs" />
     <Compile Include="Sources\Extensions\Unity\ColorExtensions.cs" />
     <Compile Include="Sources\Extensions\Unity\ComponentExtensions.cs" />
     <Compile Include="Sources\Extensions\Unity\GameObjectExtensions.cs" />
@@ -350,6 +332,10 @@
     <Folder Include="Sources\Extensions" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Silphid.System\Silphid.System.csproj">
+      <Project>{8043053c-3d8d-4d4a-8bde-31ed00117458}</Project>
+      <Name>Silphid.System</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>

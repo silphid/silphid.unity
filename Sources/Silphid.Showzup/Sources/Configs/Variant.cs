@@ -1,4 +1,4 @@
-using Silphid.Extensions.DataTypes;
+using Silphid.DataTypes;
 
 namespace Silphid.Showzup
 {

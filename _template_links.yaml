@@ -1,3 +1,6 @@
+- source: UnityProject/Assets/Plugins/Silphid/System
+  target: Silphid.Unity/Sources/Silphid.System/Sources
+
 - source: UnityProject/Assets/Plugins/Silphid/Commons
   target: Silphid.Unity/Sources/Silphid.Commons/Sources
 

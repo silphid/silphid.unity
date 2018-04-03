@@ -1,5 +1,5 @@
 ﻿using System;
-using Silphid.Extensions.DataTypes;
+using Silphid.DataTypes;
 
 namespace Silphid.Tweenzup
 {

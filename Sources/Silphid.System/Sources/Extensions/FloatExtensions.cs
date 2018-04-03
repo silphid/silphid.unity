@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Silphid.Extensions
 {
@@ -187,10 +186,10 @@ namespace Silphid.Extensions
         #region Rounding
 
         [Pure]
-        public static float Round(this float This) => Mathf.Round(This);
+        public static float Round(this float This) => (float) Math.Round(This);
 
         [Pure]
-        public static int RoundToInt(this float This) => Mathf.RoundToInt(This);
+        public static int RoundToInt(this float This) => (int) Math.Round(This);
 
         [Pure]
         public static float RoundToInterval(this float This, float interval) =>
