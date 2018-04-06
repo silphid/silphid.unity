@@ -47,6 +47,7 @@
     <Compile Include="Sources\DataTypes\FloatRange.cs" />
     <Compile Include="Sources\DataTypes\IntRange.cs" />
     <Compile Include="Sources\DataTypes\ObjectEnum.cs" />
+    <Compile Include="Sources\DataTypes\TypeSafeEnum.cs" />
     <Compile Include="Sources\Extensions\ArrayExtensions.cs" />
     <Compile Include="Sources\Extensions\AssemblyExtensions.cs" />
     <Compile Include="Sources\Extensions\CollectionExtensions.cs" />

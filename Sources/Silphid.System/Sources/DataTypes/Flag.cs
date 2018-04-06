@@ -2,18 +2,15 @@
 
 namespace Silphid.DataTypes
 {
-    public class Flag<T> : ObjectEnum<T> where T : Flag<T>
+    public class Flag<T> : TypeSafeEnum<T> where T : Flag<T>
     {
-        public static T[] FromBits<T>(ulong bits) =>
-            All
-                .Where(x => x.IsIncludedIn(bits))
-                .Cast<T>()
-                .ToArray();
+        public static T[] FromBits(ulong bits) =>
+            All.Where(x => x.IsMatching(bits)).ToArray();
         
-        public ulong BitMask => 1ul << Id;
-        public bool IsIncludedIn(ulong bits) => (BitMask & bits) != 0ul;
+        public ulong BitMask => 1ul << Value;
+        public bool IsMatching(ulong bits) => (BitMask & bits) != 0ul;
         
-        protected Flag(int id, string name = null) : base(id, name)
+        protected Flag(int value, string name) : base(value, name)
         {
         }
     }
