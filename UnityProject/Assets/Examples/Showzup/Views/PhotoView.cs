@@ -9,8 +9,8 @@ public class PhotoView : View<PhotoViewModel>
     
     public override ICompletable Load()
     {
-        Bind(Image, ViewModel.ImageUri, true, 0.3f);
-        Bind(PhotographerName, ViewModel.Photographer.Name);
+        Binder.Bind(ViewModel.ImageUri, Image, true, 0.3f);
+        Binder.Bind(ViewModel.Photographer.Name, PhotographerName);
         return null;
     }
 }
