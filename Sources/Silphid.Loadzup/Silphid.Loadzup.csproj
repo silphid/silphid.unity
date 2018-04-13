@@ -149,6 +149,10 @@
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Commons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Silphid.System\Silphid.System.csproj">
+      <Project>{8043053c-3d8d-4d4a-8bde-31ed00117458}</Project>
+      <Name>Silphid.System</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>

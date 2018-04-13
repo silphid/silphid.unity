@@ -53,10 +53,22 @@
     <Compile Include="Sources\Easer.cs" />
     <Compile Include="Sources\EasingExtensions.cs" />
     <Compile Include="Sources\IEaser.cs" />
+    <Compile Include="Sources\TweenFloatToShiftingTargetCompletable.cs" />
+    <Compile Include="Sources\TweenFloatWithInitialVelocityObservable.cs" />
     <Compile Include="Sources\TweenObservable.cs" />
     <Compile Include="Sources\Tween.cs" />
+    <Compile Include="Sources\TweenToShiftingTargetCompletableBase.cs" />
+    <Compile Include="Sources\TweenVector2ToShiftingTargetCompletable.cs" />
+    <Compile Include="Sources\TweenVector2WithInitialVelocityObservable.cs" />
+    <Compile Include="Sources\TweenVector3ToShiftingTargetCompletable.cs" />
+    <Compile Include="Sources\TweenVector3WithInitialVelocityObservable.cs" />
+    <Compile Include="Sources\TweenWithInitialVelocityObservableBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Silphid.System\Silphid.System.csproj">
+      <Project>{8043053c-3d8d-4d4a-8bde-31ed00117458}</Project>
+      <Name>Silphid.System</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sources\Silphid.Commons\Silphid.Commons.csproj">
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Commons</Name>

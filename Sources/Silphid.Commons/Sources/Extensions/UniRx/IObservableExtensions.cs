@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx.Operators;
 using UniRx;
-using IPresenter = Silphid.Showzup.IPresenter;
 
 namespace Silphid.Extensions
 {
@@ -237,9 +236,6 @@ namespace Silphid.Extensions
         public static IDisposable BindTo<TSource, TTarget>(this IObservable<TSource> This, IReactiveProperty<TTarget> target)
             where TTarget : TSource  =>
                 This.Subscribe(x => target.Value = (TTarget) x);
-
-        public static IDisposable BindTo<T>(this IObservable<T> This, IPresenter target) =>
-            This.Subscribe(x => target.Present(x).SubscribeAndForget());
 
         #endregion
     }

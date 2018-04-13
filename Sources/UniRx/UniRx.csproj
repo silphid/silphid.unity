@@ -88,6 +88,7 @@
     <Compile Include="Sources\Completables\Operators\Switch.cs" />
     <Compile Include="Sources\Completables\Operators\Synchronize.cs" />
     <Compile Include="Sources\Completables\Operators\SynchronizedCompletableObserver.cs" />
+    <Compile Include="Sources\Completables\Operators\Then.cs" />
     <Compile Include="Sources\Completables\Operators\Until.cs" />
     <Compile Include="Sources\Completables\Operators\Throw.cs" />
     <Compile Include="Sources\Completables\Operators\Timeout.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using Silphid.Extensions;
 using UniRx;
 
 namespace Silphid.Showzup
@@ -27,6 +28,13 @@ namespace Silphid.Showzup
         public static IObservable<TModel> AsModel<TModel>(this IObservable<IViewModel> This) =>
             This.OfType<IViewModel, ViewModel<TModel>>()
                 .Select(v => v.Model);
+
+        #endregion
+
+        #region Binding
+
+        public static IDisposable BindTo<T>(this IObservable<T> This, IPresenter target) =>
+            This.Subscribe(x => target.Present(x).SubscribeAndForget());
 
         #endregion
     }

@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\AtSequencer.cs" />
     <Compile Include="Sources\DOTween\TweenExtensions.cs" />
     <Compile Include="Sources\Editor\Tests\GateTest.cs" />
     <Compile Include="Sources\Editor\Tests\ISequencerExtensionsTest.cs" />
@@ -68,10 +69,10 @@
     <Compile Include="Sources\Editor\Tests\TestSchedulerTest.cs" />
     <Compile Include="Sources\Extensions\LiveSequenceExtensions.cs" />
     <Compile Include="Sources\Instant.cs" />
+    <Compile Include="Sources\ISequencer.cs" />
     <Compile Include="Sources\Lapse.cs" />
     <Compile Include="Sources\Extensions\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\ISequencerExtensions.cs" />
-    <Compile Include="Sources\Interfaces\ISequencer.cs" />
     <Compile Include="Sources\Parallel.cs" />
     <Compile Include="Sources\Sequence.cs" />
     <Compile Include="Sources\LiveSequence.cs" />
@@ -82,6 +83,10 @@
     <ProjectReference Include="..\Silphid.Commons\Silphid.Commons.csproj">
       <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
       <Name>Silphid.Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Silphid.System\Silphid.System.csproj">
+      <Project>{8043053c-3d8d-4d4a-8bde-31ed00117458}</Project>
+      <Name>Silphid.System</Name>
     </ProjectReference>
     <ProjectReference Include="..\UniRx\UniRx.csproj">
       <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>

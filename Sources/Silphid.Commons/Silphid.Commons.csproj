@@ -32,18 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DOTween, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween\DOTween.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween43, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween\DOTween43.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween46, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween\DOTween46.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween50, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Dependencies\DOTween\DOTween50.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -69,9 +57,11 @@
     <Compile Include="Sources\Extensions\UniRx\ICompletableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IEnumerableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableColorExtensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\IObservableDateTimeExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableFloatExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableQuaternionExtensions.cs" />
+    <Compile Include="Sources\Extensions\UniRx\IObservableTimeSpanExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableVector2Extensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\IObservableVector3Extensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\ReactiveCollectionExtensions.cs" />
@@ -93,7 +83,9 @@
     <Compile Include="Sources\Extensions\Unity\TransformExtensions.cs" />
     <Compile Include="Sources\Extensions\Unity\UIExtensions.cs" />
     <Compile Include="Sources\Extensions\Unity\Vector2Extensions.cs" />
+    <Compile Include="Sources\Extensions\Unity\Vector2VelocityObservable.cs" />
     <Compile Include="Sources\Extensions\Unity\Vector3Extensions.cs" />
+    <Compile Include="Sources\Extensions\Unity\Vector3VelocityObservable.cs" />
     <Compile Include="Sources\Log4Net\Log4NetSrc\Appender\AspNetTraceAppender.cs" />
     <Compile Include="Sources\Log4Net\Log4NetSrc\Layout\Pattern\AspNetCachePatternConverter.cs" />
     <Compile Include="Sources\Log4Net\Log4NetSrc\Layout\Pattern\AspNetContextPatternConverter.cs" />
