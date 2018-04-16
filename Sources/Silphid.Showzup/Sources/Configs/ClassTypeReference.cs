@@ -83,9 +83,6 @@ namespace Silphid.Showzup
             get { return _type; }
             set
             {
-                if (value != null && !value.IsClass)
-                    throw new ArgumentException($"'{value.FullName}' is not a class type.", nameof(value));
-
                 _type = value;
                 _classRef = GetClassRef(value);
             }

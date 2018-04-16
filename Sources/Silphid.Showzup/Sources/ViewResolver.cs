@@ -123,9 +123,10 @@ namespace Silphid.Showzup
             if (Log.IsDebugEnabled)
                 Log.Debug($"Resolving model: {model}");
 
-            var modelType = model.GetType();
-            var viewModelType = ResolveTargetType(modelType, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
-            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var viewModelTypeMapping = ResolveViewModelFromModel(model.GetType(), requestedVariants);
+            var modelType = viewModelTypeMapping.Source;
+            var viewModelType = viewModelTypeMapping.Target;
+            var viewType = ResolveViewFromViewModel(viewModelType, requestedVariants).Target;
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
 
             return new ViewInfo
@@ -152,7 +153,7 @@ namespace Silphid.Showzup
                 Log.Debug($"Resolving viewModel: {viewModel}");
 
             var viewModelType = viewModel.GetType();
-            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var viewType = ResolveViewFromViewModel(viewModelType, requestedVariants).Target;
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
             return new ViewInfo
@@ -185,7 +186,7 @@ namespace Silphid.Showzup
             if (Log.IsDebugEnabled)
                 Log.Debug($"Resolving viewModelType: {viewModelType}");
 
-            var viewType = ResolveTargetType(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+            var viewType = ResolveViewFromViewModel(viewModelType, requestedVariants).Target;
             var prefabUri = ResolvePrefabFromViewType(viewType, requestedVariants);
             
             return new ViewInfo
@@ -210,7 +211,13 @@ namespace Silphid.Showzup
             };
         }
 
-        private Type ResolveTargetType(Type type, string sourceKind, string targetKind, List<TypeToTypeMapping> mappings, VariantSet requestedVariants)
+        private TypeToTypeMapping ResolveViewModelFromModel(Type type, VariantSet requestedVariants) =>
+            ResolveTypeMapping(type, "Model", "ViewModel", _manifest.ModelsToViewModels, requestedVariants);
+
+        private TypeToTypeMapping ResolveViewFromViewModel(Type viewModelType, VariantSet requestedVariants) =>
+            ResolveTypeMapping(viewModelType, "ViewModel", "View", _manifest.ViewModelsToViews, requestedVariants);
+
+        private TypeToTypeMapping ResolveTypeMapping(Type type, string sourceKind, string targetKind, IEnumerable<TypeToTypeMapping> mappings, VariantSet requestedVariants)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -237,7 +244,7 @@ namespace Silphid.Showzup
                 Log.Debug($"Other candidates were:{Environment.NewLine}" +
                           $"{candidates.Except(resolved).JoinAsString(Environment.NewLine)}");
             
-            return resolved.Target;
+            return resolved;
         }
 
         private Uri ResolvePrefabFromViewType(Type viewType, VariantSet requestedVariants)

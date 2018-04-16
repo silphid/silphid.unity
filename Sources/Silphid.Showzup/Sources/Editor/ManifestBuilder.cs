@@ -45,10 +45,15 @@ public class ManifestBuilder
 
         GetAllTypesInAppDomain()
             .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract && !type.IsGenericType)
-            .ForEach(viewModelType => MapModelToViewModel(
-                manifest,
-                GetModelForViewModel(viewModelType), viewModelType,
-                manifest.AllVariants));
+            .ForEach(viewModelType =>
+            {
+                var modelForViewModel = GetModelForViewModel(viewModelType);
+                
+                MapModelToViewModel(
+                    manifest,
+                    modelForViewModel, viewModelType,
+                    manifest.AllVariants);
+            });
         
         manifest.ModelsToViewModels.Sort(MappingSortingComparison);
     }

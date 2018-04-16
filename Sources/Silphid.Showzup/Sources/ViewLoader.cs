@@ -31,7 +31,7 @@ namespace Silphid.Showzup
                 return Load(parent, viewInfo.ViewModel, viewInfo.View, viewInfo.Parameters);
 
             if (viewInfo.Model != null && viewInfo.ViewModelType != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
-                return LoadFromModel(parent, viewInfo.Model, viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
+                return LoadFromModel(parent, viewInfo.Model, viewInfo.ModelType, viewInfo.ViewModelType, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
 
             if (viewInfo.ViewModel != null && viewInfo.ViewType != null && viewInfo.PrefabUri != null)
                 return LoadFromViewModel(parent, viewInfo.ViewModel, viewInfo.ViewType, viewInfo.PrefabUri, viewInfo.Parameters, cancellationToken);
@@ -49,7 +49,7 @@ namespace Silphid.Showzup
                 .ContinueWith(x => LoadLoadable(x).ThenReturn(view));
         }
 
-        private IObservable<IView> LoadFromModel(Transform parent, object model, Type viewModelType, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
+        private IObservable<IView> LoadFromModel(Transform parent, object model, Type modelType, Type viewModelType, Type viewType, Uri uri, IDictionary<Type, object> parameters, CancellationToken cancellationToken)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Silphid.Showzup
                 parameters = parameters != null
                     ? new Dictionary<Type, object>(parameters)
                     : new Dictionary<Type, object>();
-                parameters[model.GetType()] = model;
+                parameters[modelType] = model;
 
                 var viewModel = (IViewModel) _injectionAdaptor.Resolve(viewModelType, parameters);
                 return LoadFromViewModel(parent, viewModel, viewType, uri, parameters, cancellationToken);
@@ -68,7 +68,7 @@ namespace Silphid.Showzup
             }
             catch (DependencyException ex)
             {
-                throw new LoadException($"Failed to resolve {viewModelType.Name} (with Model {model.GetType().Name}) for View {viewType.Name}", ex);
+                throw new LoadException($"Failed to resolve {viewModelType.Name} (with Model {modelType.Name}) for View {viewType.Name}", ex);
             }
         }
 
