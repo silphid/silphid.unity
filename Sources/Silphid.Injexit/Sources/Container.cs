@@ -53,7 +53,10 @@ namespace Silphid.Injexit
             return binding;
         }
 
-        public IBinding BindInstance(Type abstractionType, object instance)
+        public IBinding BindInstance(Type abstractionType, object instance) =>
+            BindInstance(abstractionType, instance, false);
+
+        private IBinding BindInstance(Type abstractionType, object instance, bool recursiveCall)
         {
             if (abstractionType == null)
                 throw new ArgumentNullException(nameof(abstractionType));
@@ -61,21 +64,33 @@ namespace Silphid.Injexit
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
-            if (!instance.GetType().IsAssignableTo(abstractionType))
+            var instanceType = instance.GetType();
+            if (!instanceType.IsAssignableTo(abstractionType))
                 throw new InvalidOperationException(
-                    $"Instance type {instance.GetType().Name} must be assignable to abstraction type {abstractionType.Name}.");
+                    $"Instance type {instanceType.Name} must be assignable to abstraction type {abstractionType.Name}.");
 
-            var binding = new Binding(this, abstractionType, instance.GetType())
+            var binding = new Binding(this, abstractionType, instanceType)
             {
                 Instance = instance,
                 Lifetime = Lifetime.Single
             };
             _bindings.Add(binding);
 
-            abstractionType.GetAttributes<KnownTypeAttribute>()
+/*            abstractionType.GetAttributes<KnownTypeAttribute>()
                 .Select(x => x.Type)
                 .Where(x => x != abstractionType && x.IsInstanceOfType(instance))
-                .ForEach(x => BindInstance(x, instance));
+                .ForEach(x => BindInstance(x, instance));*/
+
+
+//            instanceType.GetAttributes<KnownTypeAttribute>()
+//                .Select(x => x.Type)
+//                .Where(x => !_bindings.Any(y => y.AbstractionType == abstractionType && y.ConcretionType == instance)) // Todo Can be heavy on performance
+//                .ForEach(x => BindInstance(x, instance));
+
+            instanceType.GetAttributes<KnownTypeAttribute>()
+                .Select(x => x.Type)
+                .Where(x => !recursiveCall && x != abstractionType)
+                .ForEach(x => BindInstance(x, instance, true));
 
             return binding;
         }
@@ -477,9 +492,9 @@ namespace Silphid.Injexit
 
         public void Dispose()
         {
-            if (_isDisposed) 
+            if (_isDisposed)
                 return;
-            
+
             _isDisposed = true;
             _bindings
                 .Select(x => x.Instance)
