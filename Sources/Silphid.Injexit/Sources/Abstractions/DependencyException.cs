@@ -45,9 +45,9 @@ namespace Silphid.Injexit
 
         public override string Message =>
             $"{base.Message}\r\n" +
-            $"Abstraction: {Type.Name}\r\n" +
+            $"Abstraction: {Type.FullName}\r\n" +
             $"Name: {Name}\r\n" +
-            $"Dependent(s): {DependentTypes.Select(x => x.Name).JoinAsString(" > ")}\r\n" +
+            $"Dependent(s): {DependentTypes.Select(x => x.FullName).JoinAsString(" > ")}\r\n" +
             "----------\r\n" +
             $"{Resolver}\r\n" +
             "----------";
