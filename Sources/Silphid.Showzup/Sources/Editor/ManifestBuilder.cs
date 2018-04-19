@@ -12,7 +12,7 @@ using UnityEngine;
 public class ManifestBuilder
 {
     private static readonly Regex ExcludedNamespacesRegex = new Regex(@"\bTest\b");
-    
+
     [MenuItem("Assets/Build Showzup Manifest %#&s")]
     public static void Build()
     {
@@ -44,34 +44,41 @@ public class ManifestBuilder
         manifest.ModelsToViewModels.Clear();
 
         GetAllTypesInAppDomain()
-            .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract && !type.IsGenericType)
+            .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract && !type.IsGenericType &&
+                           type.GetAttribute<IgnoreAttribute>() == null)
             .ForEach(viewModelType =>
             {
                 var modelForViewModel = GetModelForViewModel(viewModelType);
-                
+
                 MapModelToViewModel(
                     manifest,
                     modelForViewModel, viewModelType,
                     manifest.AllVariants);
             });
-        
+
         manifest.ModelsToViewModels.Sort(MappingSortingComparison);
     }
 
     private static Comparison<Mapping> MappingSortingComparison =>
         (x, y) => string.Compare(x.Source.Name, y.Source.Name, StringComparison.Ordinal);
 
-    private static Type GetModelForViewModel(Type viewModelType) =>
-        viewModelType.GetInterfaces()
-            .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
-            ?.GetGenericArguments()
-            .FirstOrDefault();
+    private static Type GetModelForViewModel(Type viewModelType)
+    {
+        var modelTypeAttribute = viewModelType.GetAttribute<ModelTypeAttribute>();
 
-    private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType, VariantSet allVariants)
+        return modelTypeAttribute?.Type
+               ?? viewModelType.GetInterfaces()
+                   .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IViewModel<>))
+                   ?.GetGenericArguments()
+                   .FirstOrDefault();
+    }
+
+    private static void MapModelToViewModel(Manifest manifest, Type modelType, Type viewModelType,
+        VariantSet allVariants)
     {
         if (modelType == null)
             return;
-        
+
         var variants = GetVariantsFromTypes(modelType, viewModelType, allVariants);
         var mapping = new TypeToTypeMapping(modelType, viewModelType, variants);
         manifest.ModelsToViewModels.Add(mapping);
@@ -86,12 +93,13 @@ public class ManifestBuilder
         manifest.ViewModelsToViews.Clear();
 
         GetAllTypesInAppDomain()
-            .Where(type => type.IsAssignableTo<IView>() && !type.IsAbstract)
+            .Where(type =>
+                type.IsAssignableTo<IView>() && !type.IsAbstract && type.GetAttribute<IgnoreAttribute>() == null)
             .ForEach(viewType => MapViewModelToView(
                 manifest,
                 GetViewModelForView(viewType), viewType,
                 manifest.AllVariants));
-        
+
         manifest.ViewModelsToViews.Sort(MappingSortingComparison);
     }
 
@@ -99,7 +107,12 @@ public class ManifestBuilder
     {
         try
         {
-            return viewType.GetInterfaces()
+            var ViewModelTypeAttribute = viewType.GetAttribute<ViewModelTypeAttribute>();
+            
+            return 
+                ViewModelTypeAttribute?.Type
+                ??
+                viewType.GetInterfaces()
                 .First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IView<>))
                 .GetGenericArguments()
                 .First();
@@ -130,7 +143,7 @@ public class ManifestBuilder
             guids.ForEach(x => MapViewsToPrefabWithGuid(x, manifest, manifest.AllVariants));
         else
             Debug.Log($"No view prefab could be found in path: {manifest.PrefabsPath}");
-                        
+
         manifest.ViewsToPrefabs.Sort(MappingSortingComparison);
     }
 
@@ -188,7 +201,8 @@ public class ManifestBuilder
 
     #region Variants
 
-    private static VariantSet GetVariantsFromRelativePath(string relativePath, Manifest manifest, VariantSet allVariants)
+    private static VariantSet GetVariantsFromRelativePath(string relativePath, Manifest manifest,
+        VariantSet allVariants)
     {
         var allTokens = relativePath
             .Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
@@ -234,7 +248,7 @@ public class ManifestBuilder
                 .Aggregate(VariantSet.Empty, (acc, vToP) => acc
                     .UnionWith(vToP.Variants));
         });
-        
+
         manifest.ModelsToViewModels.ForEach(vToVm =>
         {
             vToVm.ImplicitVariants = manifest.ViewModelsToViews
@@ -246,7 +260,7 @@ public class ManifestBuilder
     }
 
     #endregion
-    
+
     #region Helpers
 
     private static IEnumerable<Type> GetAllTypesInAppDomain() =>
