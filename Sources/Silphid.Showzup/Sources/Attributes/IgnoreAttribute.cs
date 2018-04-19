@@ -2,7 +2,7 @@
 
 namespace Silphid.Showzup
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class IgnoreAttribute : Attribute
     {
     }
