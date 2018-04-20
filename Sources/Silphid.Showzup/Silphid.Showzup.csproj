@@ -76,7 +76,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Attributes\AssetAttribute.cs" />
-    <Compile Include="Sources\Attributes\IgnoreAttribute.cs" />
+    <Compile Include="Sources\Attributes\IgnoreInManifestAttribute.cs" />
     <Compile Include="Sources\Attributes\ModelTypeAttribute.cs" />
     <Compile Include="Sources\Attributes\VariantAttribute.cs" />
     <Compile Include="Sources\Attributes\ViewModelTypeAttribute.cs" />
