@@ -244,7 +244,7 @@ public class ManifestBuilder
         manifest.ViewModelsToViews.ForEach(vmToV =>
         {
             vmToV.ImplicitVariants = manifest.ViewsToPrefabs
-                .Where(vToP => vmToV.Target.IsAssignableTo(vToP.Source))
+                .Where(vToP => vmToV.Target == vToP.Source)
                 .Aggregate(VariantSet.Empty, (acc, vToP) => acc
                     .UnionWith(vToP.Variants));
         });
@@ -252,7 +252,7 @@ public class ManifestBuilder
         manifest.ModelsToViewModels.ForEach(vToVm =>
         {
             vToVm.ImplicitVariants = manifest.ViewModelsToViews
-                .Where(vmToV => vToVm.Target.IsAssignableTo(vmToV.Source))
+                .Where(vmToV => vToVm.Target == vmToV.Source)
                 .Aggregate(VariantSet.Empty, (acc, vToP) => acc
                     .UnionWith(vToP.Variants)
                     .UnionWith(vToP.ImplicitVariants));
