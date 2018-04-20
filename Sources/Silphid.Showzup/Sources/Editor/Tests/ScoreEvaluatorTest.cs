@@ -17,8 +17,10 @@ namespace Silphid.Showzup.Test
             public static readonly Speed Fast = new Speed();
         }
 
-        private class Animal {}
-        private class Dog : Animal {}
+        private class Animal : IAnimal {}
+        private class Dog : Animal, IDog {}
+        private interface IAnimal {}
+        private interface IDog : IAnimal {}
         
         private readonly ScoreEvaluator _fixture = new ScoreEvaluator();
 
@@ -44,6 +46,24 @@ namespace Silphid.Showzup.Test
             var score = _fixture.GetTypeScore(typeof(Animal), typeof(Dog));
             
             Assert.That(score, Is.Null);
+        }
+        
+        [Test]
+        public void InterfaceType_MatchesWithLowerScore()
+        {
+            var matchTypeScore = _fixture.GetTypeScore(typeof(Dog), typeof(Dog));
+            var interfaceTypeScore = _fixture.GetTypeScore(typeof(Dog), typeof(IAnimal));
+            
+            Assert.That(matchTypeScore, Is.GreaterThan(interfaceTypeScore));
+        }
+        
+        [Test]
+        public void ParentInterfaceType_MatchesWithLowerScore()
+        {
+            var interfaceTypeScore = _fixture.GetTypeScore(typeof(Dog), typeof(IDog));
+            var parentInterfaceTypeScore = _fixture.GetTypeScore(typeof(Dog), typeof(IAnimal));
+            
+            Assert.That(interfaceTypeScore, Is.GreaterThan(parentInterfaceTypeScore));
         }
 
         private readonly VariantSet Empty = VariantSet.Empty;

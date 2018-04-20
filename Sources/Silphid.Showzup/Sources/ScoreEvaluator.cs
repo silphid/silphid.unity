@@ -14,6 +14,7 @@ namespace Silphid.Showzup
         public const int IncorrectImplicitVariantPenality = 5;
         public const int TypeScore = 80;
         public const int InheritanceDepthPenality = 5;
+        public const int InterfaceDepthPenality = 2;
         public const int FallbackVariantScore = 50;
         public const int ExcessVariantPenality = 5;
 
@@ -78,7 +79,7 @@ namespace Silphid.Showzup
 
         private static int? GetInterfaceScore(Type candidateInterface, Type requestedType)
         {
-            var score = TypeScore;
+            var score = TypeScore - InterfaceDepthPenality;
             IEnumerable<Type> interfaces = requestedType.GetInterfaces().ToList();
             
             while (interfaces.Any())
