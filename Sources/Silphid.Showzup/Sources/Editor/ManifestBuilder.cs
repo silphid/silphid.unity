@@ -45,7 +45,7 @@ public class ManifestBuilder
 
         GetAllTypesInAppDomain()
             .Where(type => type.IsAssignableTo<IViewModel>() && !type.IsAbstract && !type.IsGenericType &&
-                           type.GetAttribute<IgnoreAttribute>() == null)
+                           type.GetAttribute<IgnoreInManifestAttribute>() == null)
             .ForEach(viewModelType =>
             {
                 var modelForViewModel = GetModelForViewModel(viewModelType);
@@ -94,7 +94,7 @@ public class ManifestBuilder
 
         GetAllTypesInAppDomain()
             .Where(type =>
-                type.IsAssignableTo<IView>() && !type.IsAbstract && type.GetAttribute<IgnoreAttribute>() == null)
+                type.IsAssignableTo<IView>() && !type.IsAbstract && type.GetAttribute<IgnoreInManifestAttribute>() == null)
             .ForEach(viewType => MapViewModelToView(
                 manifest,
                 GetViewModelForView(viewType), viewType,
