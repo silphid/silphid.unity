@@ -37,6 +37,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -65,16 +68,16 @@
     <Compile Include="Sources\TweenWithInitialVelocityObservableBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Silphid.Commons\Silphid.Commons.csproj">
+      <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
+      <Name>Silphid.Commons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Silphid.System\Silphid.System.csproj">
       <Project>{8043053c-3d8d-4d4a-8bde-31ed00117458}</Project>
       <Name>Silphid.System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sources\Silphid.Commons\Silphid.Commons.csproj">
-      <Project>{503103e3-c216-4c5e-bda7-3268d401e185}</Project>
-      <Name>Silphid.Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sources\UniRx\UniRx.csproj">
-      <Project>{DA6CC0E1-89D7-491A-A5EB-CCCE80F0F0A5}</Project>
+    <ProjectReference Include="..\UniRx\UniRx.csproj">
+      <Project>{da6cc0e1-89d7-491a-a5eb-ccce80f0f0a5}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
   </ItemGroup>

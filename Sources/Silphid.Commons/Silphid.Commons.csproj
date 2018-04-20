@@ -68,9 +68,7 @@
     <Compile Include="Sources\Extensions\UniRx\ReactivePropertyExtensions.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\ISchedulerProvider.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\SchedulerProvider.cs" />
-    <Compile Include="Sources\Extensions\UniRx\Schedulers\TestScheduler.cs" />
     <Compile Include="Sources\Extensions\UniRx\Schedulers\TestSchedulerProvider.cs" />
-    <Compile Include="Sources\Extensions\UniRx\Schedulers\VirtualTimeScheduler.cs" />
     <Compile Include="Sources\Extensions\UniRx\VelocityObservableBase.cs" />
     <Compile Include="Sources\Extensions\Unity\ColorExtensions.cs" />
     <Compile Include="Sources\Extensions\Unity\ComponentExtensions.cs" />

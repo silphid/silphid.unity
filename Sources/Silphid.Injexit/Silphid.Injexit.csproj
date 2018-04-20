@@ -61,7 +61,6 @@
     <Compile Include="Sources\Abstractions\IResolver.cs" />
     <Compile Include="Sources\Abstractions\Result.cs" />
     <Compile Include="Sources\Abstractions\DependencyException.cs" />
-    <Compile Include="Sources\Attributes\BindAttribute.cs" />
     <Compile Include="Sources\Attributes\InjectAttribute.cs" />
     <Compile Include="Sources\Attributes\OptionalAttribute.cs" />
     <Compile Include="Sources\Composites\CompositeBinding.cs" />
