@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Silphid.Extensions;
 using Silphid.Loadzup.Caching;
 using Silphid.Loadzup.Http;
 using Silphid.Loadzup.Http.Caching;
+using UniRx;
 using UnityEngine;
 
 namespace Silphid.Loadzup
@@ -20,6 +22,7 @@ namespace Silphid.Loadzup
         public WWWForm PostForm;
         public string PutBody;
         public TimeSpan? Timeout;
+        public ICancelable CancellationToken;
 
         public void SetHeader(string key, string value)
         {
