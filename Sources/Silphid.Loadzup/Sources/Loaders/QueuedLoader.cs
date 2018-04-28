@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
@@ -7,27 +8,47 @@ namespace Silphid.Loadzup
 {
     public class QueuedLoader : ILoader
     {
-        private class QueuedItem<T>
+        private interface IQueuedItem
+        {
+            ICompletable Load();
+        }
+
+        private class QueuedItem<T> : IQueuedItem
         {
             private readonly Subject<T> _subject = new Subject<T>();
+            private readonly IObservable<T> _loadRequest;
+            private readonly ICancelable _cancellation;
+            private bool _isCancelled => _cancellation != null && _cancellation.IsDisposed;
 
-            public readonly Uri Uri;
-            public readonly Options Options;
-            
-            public IObservable<T> Loader => _subject;
-            public bool IsCancelled => Options.CancellationToken.IsDisposed;
+            public IObservable<T> QueuedLoad => _subject;
 
-            public QueuedItem(Uri uri, Options options)
+            public QueuedItem(IObservable<T> loadRequest, ICancelable cancellation)
             {
-                Uri = uri;
-                Options = options;
+                _loadRequest = loadRequest;
+                _cancellation = cancellation;
+            }
+
+            public ICompletable Load()
+            {
+                if (_isCancelled)
+                {
+                    _subject.Dispose();
+                    return Completable.Empty();
+                }
+
+                return _loadRequest
+                    .Do(_subject.OnNext, _subject.OnError, _subject.OnCompleted)
+                    .CatchIgnore()
+                    .AsCompletable();
             }
         }
-        
-        private readonly ILoader _loader;
-        private readonly int _simulatenousLoading;
 
-        private readonly Type[] _supportedTypes = 
+        private readonly ILoader _loader;
+        private int _simultaneousLoadingItemsLimit;
+        private int _currentLoadingItems;
+        private readonly Queue<IQueuedItem> _queue = new Queue<IQueuedItem>();
+
+        private readonly Type[] _supportedTypes =
         {
             typeof(Texture2D),
             typeof(Sprite),
@@ -40,20 +61,65 @@ namespace Silphid.Loadzup
         public bool Supports<T>(Uri uri) =>
             _loader.Supports<T>(uri);
 
-        public QueuedLoader(ILoader loader, int simulatenousLoading)
+        public QueuedLoader(ILoader loader, int simultaneousLoadingItemsLimit)
         {
             _loader = loader;
-            _simulatenousLoading = simulatenousLoading;
+            _simultaneousLoadingItemsLimit = simultaneousLoadingItemsLimit;
+        }
+        
+        public void SetSimultaneousLoadingItemsLimit(int limit)
+        {
+            lock (this)
+            {
+                _simultaneousLoadingItemsLimit = limit;
+                UpdateLoading();
+            }
         }
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
             if (!_isSupportedType<T>())
                 return _loader.Load<T>(uri, options);
-            
-            var queuedItem = new QueuedItem<T>(uri, options);
 
-            return queuedItem.Loader;
+            var queuedItem = new QueuedItem<T>(_loader.Load<T>(uri, options), options?.CancellationToken);
+
+            return queuedItem.QueuedLoad
+                .DoOnSubscribe(() => AddToQueue(queuedItem));
+        }
+
+        private void AddToQueue(IQueuedItem queuedItem)
+        {
+            lock (this)
+            {
+                _queue.Enqueue(queuedItem);
+                UpdateLoading();
+            }
+        }
+
+        private void UpdateLoading()
+        {
+            if (_queue.Count == 0)
+                return;
+
+            lock (this)
+            {
+                while (_currentLoadingItems < _simultaneousLoadingItemsLimit && _currentLoadingItems < _queue.Count)
+                {
+                    _currentLoadingItems++;
+                    _queue.Dequeue()
+                        .Load()
+                        .Subscribe(QueuedItemCompleted);
+                }
+            }
+        }
+
+        private void QueuedItemCompleted()
+        {
+            lock (this)
+            {
+                _currentLoadingItems--;
+                UpdateLoading();
+            }
         }
     }
 }
