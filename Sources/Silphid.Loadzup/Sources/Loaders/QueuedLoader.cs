@@ -46,7 +46,7 @@ namespace Silphid.Loadzup
         private readonly ILoader _loader;
         private int _simultaneousLoadingItemsLimit;
         private int _currentLoadingItems;
-        private readonly Queue<IQueuedItem> _queue = new Queue<IQueuedItem>();
+        private readonly LinkedList<IQueuedItem> _queue = new LinkedList<IQueuedItem>();
 
         private readonly Type[] _supportedTypes =
         {
@@ -78,20 +78,24 @@ namespace Silphid.Loadzup
 
         public IObservable<T> Load<T>(Uri uri, Options options = null)
         {
-            if (!_isSupportedType<T>())
+            if (_simultaneousLoadingItemsLimit == 0 || !_isSupportedType<T>())
                 return _loader.Load<T>(uri, options);
 
             var queuedItem = new QueuedItem<T>(_loader.Load<T>(uri, options), options?.CancellationToken);
 
             return queuedItem.QueuedLoad
-                .DoOnSubscribe(() => AddToQueue(queuedItem));
+                .DoOnSubscribe(() => AddToQueue(queuedItem, options?.IsPriority ?? false));
         }
 
-        private void AddToQueue(IQueuedItem queuedItem)
+        private void AddToQueue(IQueuedItem queuedItem, bool isPriority)
         {
             lock (this)
             {
-                _queue.Enqueue(queuedItem);
+                if (isPriority)
+                    _queue.AddFirst(queuedItem);
+                else
+                    _queue.AddLast(queuedItem);
+
                 UpdateLoading();
             }
         }
@@ -106,9 +110,10 @@ namespace Silphid.Loadzup
                 while (_currentLoadingItems < _simultaneousLoadingItemsLimit && _currentLoadingItems < _queue.Count)
                 {
                     _currentLoadingItems++;
-                    _queue.Dequeue()
+                    _queue.First.Value
                         .Load()
                         .Subscribe(QueuedItemCompleted);
+                    _queue.RemoveFirst();
                 }
             }
         }

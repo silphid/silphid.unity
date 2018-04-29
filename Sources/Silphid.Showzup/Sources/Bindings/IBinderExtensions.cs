@@ -88,30 +88,32 @@ namespace Silphid.Showzup
                     .AddTo(This);
         }
 
-        public static void Bind(this IBinder This, string source, Image target, bool keepVisible = false, float? fadeDuration = null) =>
-            This.Bind(new Uri(source), target, keepVisible, fadeDuration);
+        public static void Bind(this IBinder This, string source, Image target, bool keepVisible = false, float? fadeDuration = null,
+            bool isPriority = false) =>
+            This.Bind(new Uri(source), target, keepVisible, fadeDuration, isPriority);
 
-        public static void Bind(this IBinder This, Uri source, Image target, bool keepVisible = false, float? fadeDuration = null)
+        public static void Bind(this IBinder This, Uri source, Image target, bool keepVisible = false, float? fadeDuration = null,
+            bool isPriority = false)
         {
             if (source != null && target != null)
-                This.BindAsCompletable(source, target, false, null, keepVisible, fadeDuration)
+                This.BindAsCompletable(source, target, false, null, keepVisible, fadeDuration, isPriority)
                     .Subscribe()
                     .AddTo(This);
         }
 
         public static ICompletable BindAsCompletable(this IBinder This, string source, Image target, bool isOptional = false,
             Loadzup.Options options = null,
-            bool keepVisible = false, float? fadeDuration = null)
+            bool keepVisible = false, float? fadeDuration = null, bool isPriority = false)
         {
             if (source == null || target == null)
                 return Completable.Empty();
             
-            return This.BindAsCompletable(new Uri(source), target, isOptional, options, keepVisible, fadeDuration);
+            return This.BindAsCompletable(new Uri(source), target, isOptional, options, keepVisible, fadeDuration, isPriority);
         }
 
         public static ICompletable BindAsCompletable(this IBinder This, Uri source, Image target, bool isOptional = false,
             Loadzup.Options options = null,
-            bool keepVisible = false, float? fadeDuration = null)
+            bool keepVisible = false, float? fadeDuration = null, bool isPriority = false)
         {
             if (target == null)
                 return Completable.Empty();
@@ -134,6 +136,7 @@ namespace Silphid.Showzup
             return This.Loader
                 .With(This.DefaultImageHttpCachePolicy)
                 .WithCancellationOnDestroy(This.View)
+                .WithPriority(isPriority)
                 .Load<DisposableSprite>(source, options)
                 .Catch<DisposableSprite, Exception>(ex =>
                     Observable.Throw<DisposableSprite>(
@@ -167,8 +170,7 @@ namespace Silphid.Showzup
         }
 
         public static ICompletable BindAsCompletable(this IBinder This, RawImage image, Uri uri, bool isOptional = false,
-            Loadzup.Options options = null,
-            bool keepVisible = false, float? fadeDuration = null)
+            Loadzup.Options options = null, bool keepVisible = false, float? fadeDuration = null, bool isPriority = false)
         {
             if (image == null)
                 return Completable.Empty();
@@ -191,6 +193,7 @@ namespace Silphid.Showzup
             return This.Loader
                 .With(This.DefaultImageHttpCachePolicy)
                 .WithCancellationOnDestroy(This.View)
+                .WithPriority(isPriority)
                 .Load<Texture2D>(uri, options)
                 .Catch<Texture2D, Exception>(ex => Observable
                     .Throw<Texture2D>(new BindException(

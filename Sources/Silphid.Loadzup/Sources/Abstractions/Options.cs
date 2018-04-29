@@ -23,6 +23,7 @@ namespace Silphid.Loadzup
         public string PutBody;
         public TimeSpan? Timeout;
         public ICancelable CancellationToken;
+        public bool IsPriority;
 
         public void SetHeader(string key, string value)
         {
