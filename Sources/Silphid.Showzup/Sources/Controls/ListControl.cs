@@ -61,8 +61,8 @@ namespace Silphid.Showzup
         public NavigationOrientation Orientation;
         public bool WrapAround;
         public int RowsOrColumns = 1;
-        public bool AutoSelectFirst = true;
-        public bool HandlesSelectRequest;
+        public bool AutoChooseFirst = true;
+        public bool HandlesChooseRequest;
 
         #endregion
 
@@ -79,7 +79,7 @@ namespace Silphid.Showzup
         
         #region Protected/private fields/properties
 
-        private readonly SelectionHelper _selectionHelper;
+        private readonly ChoiceHelper _choiceHelper;
         protected readonly List<IView> _views = new List<IView>();
         private readonly ReactiveProperty<ReadOnlyCollection<IView>> _reactiveViews =
             new ReactiveProperty<ReadOnlyCollection<IView>>(new ReadOnlyCollection<IView>(Array.Empty<IView>()));
@@ -98,7 +98,7 @@ namespace Silphid.Showzup
 
         public ListControl()
         {
-            _selectionHelper = new SelectionHelper(this);
+            _choiceHelper = new ChoiceHelper(this);
             Views = _reactiveViews.ToReadOnlyReactiveProperty();
             Models = _models
                 .Select(x => new ReadOnlyCollection<object>(x))
@@ -107,7 +107,7 @@ namespace Silphid.Showzup
         
         protected virtual void Start()
         {
-            _selectionHelper.Start();
+            _choiceHelper.Start();
         }
 
         #endregion
@@ -130,8 +130,8 @@ namespace Silphid.Showzup
                 PresentInternal(input, options)
                     .DoOnCompleted(() =>
                     {
-                        if (AutoSelectFirst)
-                            _selectionHelper.ChooseFirst();
+                        if (AutoChooseFirst)
+                            _choiceHelper.ChooseFirst();
                     }));
         }
 
@@ -139,76 +139,76 @@ namespace Silphid.Showzup
 
         #region Selection
         
-        public void OnMove(AxisEventData eventData) => _selectionHelper.OnMove(eventData);
+        public void OnMove(AxisEventData eventData) => _choiceHelper.OnMove(eventData);
         
-        public bool Handle(IRequest request) => _selectionHelper.Handle(request);
+        public bool Handle(IRequest request) => _choiceHelper.Handle(request);
 
-        public override GameObject SelectableContent => _selectionHelper.ChosenView.Value?.GameObject;
+        public override GameObject SelectableContent => _choiceHelper.ChosenView.Value?.GameObject;
 
-        public IReadOnlyReactiveProperty<IView> ChosenView => _selectionHelper.ChosenView;
+        public IReadOnlyReactiveProperty<IView> ChosenView => _choiceHelper.ChosenView;
 
-        public ReactiveProperty<int?> ChosenIndex => _selectionHelper.ChosenIndex;
+        public ReactiveProperty<int?> ChosenIndex => _choiceHelper.ChosenIndex;
 
-        public IReactiveProperty<object> ChosenModel => _selectionHelper.ChosenModel;
+        public IReactiveProperty<object> ChosenModel => _choiceHelper.ChosenModel;
 
         public void ChooseView(IView view)
         {
-            _selectionHelper.ChooseView(view);
+            _choiceHelper.ChooseView(view);
         }
 
         public void ChooseView<TView>(Func<TView, bool> predicate) where TView : IView
         {
-            _selectionHelper.ChooseView(predicate);
+            _choiceHelper.ChooseView(predicate);
         }
 
         public void ChooseViewModel<TViewModel>(TViewModel viewModel) where TViewModel : IViewModel
         {
-            _selectionHelper.ChooseViewModel(viewModel);
+            _choiceHelper.ChooseViewModel(viewModel);
         }
 
         public void ChooseViewModel<TViewModel>(Func<TViewModel, bool> predicate) where TViewModel : IViewModel
         {
-            _selectionHelper.ChooseViewModel(predicate);
+            _choiceHelper.ChooseViewModel(predicate);
         }
 
         public void ChooseModel<TModel>(TModel model)
         {
-            _selectionHelper.ChooseModel(model);
+            _choiceHelper.ChooseModel(model);
         }
 
         public void ChooseModel<TModel>(Func<TModel, bool> predicate)
         {
-            _selectionHelper.ChooseModel(predicate);
+            _choiceHelper.ChooseModel(predicate);
         }
 
         public bool ChooseIndex(int index)
         {
-            return _selectionHelper.ChooseIndex(index);
+            return _choiceHelper.ChooseIndex(index);
         }
 
         public bool ChooseFirst()
         {
-            return _selectionHelper.ChooseFirst();
+            return _choiceHelper.ChooseFirst();
         }
 
         public bool ChooseLast()
         {
-            return _selectionHelper.ChooseLast();
+            return _choiceHelper.ChooseLast();
         }
 
         public void ChooseNone()
         {
-            _selectionHelper.ChooseNone();
+            _choiceHelper.ChooseNone();
         }
 
         public bool ChoosePrevious()
         {
-            return _selectionHelper.ChoosePrevious();
+            return _choiceHelper.ChoosePrevious();
         }
 
         public bool ChooseNext()
         {
-            return _selectionHelper.ChooseNext();
+            return _choiceHelper.ChooseNext();
         }
 
         #endregion
@@ -267,7 +267,7 @@ namespace Silphid.Showzup
         {
             base.RemoveAllViews(container, except);
 
-            _selectionHelper.ChooseNone();
+            _choiceHelper.ChooseNone();
         }
 
         #endregion

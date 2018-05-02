@@ -10,7 +10,7 @@ using UnityEngine.EventSystems;
 
 namespace Silphid.Showzup
 {
-    internal class SelectionHelper
+    internal class ChoiceHelper
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly ReactiveProperty<IView> _chosenView = new ReactiveProperty<IView>();
@@ -21,7 +21,7 @@ namespace Silphid.Showzup
 
         private readonly ListControl _list;
 
-        public SelectionHelper(ListControl list)
+        public ChoiceHelper(ListControl list)
         {
             _list = list;            
         }
@@ -254,10 +254,10 @@ namespace Silphid.Showzup
 
         public bool Handle(IRequest request)
         {
-            if (!_list.HandlesSelectRequest)
+            if (!_list.HandlesChooseRequest)
                 return false;
 
-            var req = request as SelectRequest;
+            var req = request as ChooseRequest;
             if (req == null)
                 return false;
 

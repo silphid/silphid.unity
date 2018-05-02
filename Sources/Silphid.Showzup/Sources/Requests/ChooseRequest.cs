@@ -2,11 +2,11 @@
 
 namespace Silphid.Showzup.Requests
 {
-    public class SelectRequest : Request
+    public class ChooseRequest : Request
     {
         public object Input { get; }
 
-        public SelectRequest(object input)
+        public ChooseRequest(object input)
         {
             Input = input;
         }
