@@ -42,10 +42,14 @@ namespace Silphid.Loadzup.Http
                     _status.Value = NetworkStatus.Online;
                 })
                 .Select(x => new Response(x.WWW.responseCode, x.WWW.downloadHandler.data,
-                    x.Headers ?? new Dictionary<string, string>(), options));
+                    x.Headers ?? new Dictionary<string, string>(), options, 
+                    (x.WWW.downloadHandler as DownloadHandlerTexture)?.texture));
 
         private IObservable<UnityWebRequest> RequestInternal(string url, Options options = null)
         {
+            if (options?.CustomValues != null && options.CustomValues.ContainsKey("TextureRequested"))
+                return ObservableWebRequest.GetTexture(url, options?.Headers, options?.Timeout);
+            
             if (options == null || options.Method == HttpMethod.Get)
                 return ObservableWebRequest.Get(url, options?.Headers, options?.Timeout);
 

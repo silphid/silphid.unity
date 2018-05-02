@@ -42,6 +42,17 @@ namespace Silphid.Loadzup.Http
                 return Send(request);
             });
         }
+        
+        public static IObservable<UnityWebRequest> GetTexture(string url, IDictionary<string, string> headers = null, TimeSpan? timeout = null)
+        {
+            return Observable.Defer(() =>
+            {
+                var request = UnityWebRequestTexture.GetTexture(url);
+                SetTimeout(request, timeout);
+                headers?.ForEach(x => request.SetRequestHeader(x.Key, x.Value));
+                return Send(request);
+            });
+        }
 
         private static void SetTimeout(UnityWebRequest request, TimeSpan? timeout)
         {

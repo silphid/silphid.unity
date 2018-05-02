@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Silphid.Extensions;
 using Silphid.Loadzup.Http;
+using UnityEngine;
 
 namespace Silphid.Loadzup
 {
@@ -14,13 +15,16 @@ namespace Silphid.Loadzup
 
         public long StatusCode { get; }
         public byte[] Bytes { get; }
+        public Texture2D Texture { get; }
         public readonly Dictionary<string, string> Headers;
 
-        public Response(long statusCode, byte[] bytes, IDictionary<string, string> headers, Options options = null)
+        public Response(long statusCode, byte[] bytes, IDictionary<string, string> headers, Options options = null,
+            Texture2D texture = null)
         {
             _options = options;
             StatusCode = statusCode;
             Bytes = bytes;
+            Texture = texture;
             if (headers != null)
                 Headers = new Dictionary<string, string>(headers, StringComparer.OrdinalIgnoreCase);
         }

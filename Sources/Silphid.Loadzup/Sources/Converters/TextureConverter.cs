@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Silphid.Loadzup
 {
-    public class TextureConverter : ConverterBase<byte[]>
+    public class TextureConverter : ConverterBase<Texture2D, byte[]>
     {
         public TextureConverter()
         {
@@ -17,9 +17,14 @@ namespace Silphid.Loadzup
             {
                 wrapMode = TextureWrapMode.Clamp
             };
-            
+                        
             texture.LoadImage(input);
             return texture;
+        }
+        
+        protected override object ConvertSync<T>(Texture2D input, ContentType contentType, Encoding encoding)
+        {
+            return input;
         }
     }
 }
