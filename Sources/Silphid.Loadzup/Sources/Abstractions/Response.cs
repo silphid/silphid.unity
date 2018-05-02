@@ -9,22 +9,26 @@ namespace Silphid.Loadzup
 {
     public class Response
     {
+        private readonly Func<byte[]> _bytesSelector;
+        private readonly Func<Texture2D> _textureSelector;
         private readonly Options _options;
         private ContentType _contentType;
         private Encoding _encoding;
+        private byte[] _bytes;
+        private Texture2D _texture;
 
         public long StatusCode { get; }
-        public byte[] Bytes { get; }
-        public Texture2D Texture { get; }
+        public byte[] Bytes => _bytes ?? (_bytes = _bytesSelector());
+        public Texture2D Texture => _texture ?? (_texture = _textureSelector());
         public readonly Dictionary<string, string> Headers;
 
-        public Response(long statusCode, byte[] bytes, IDictionary<string, string> headers, Options options = null,
-            Texture2D texture = null)
+        public Response(long statusCode, Func<byte[]> bytesSelector, IDictionary<string, string> headers, Options options = null,
+            Func<Texture2D> textureSelector = null)
         {
+            _bytesSelector = bytesSelector;
             _options = options;
+            _textureSelector = textureSelector;
             StatusCode = statusCode;
-            Bytes = bytes;
-            Texture = texture;
             if (headers != null)
                 Headers = new Dictionary<string, string>(headers, StringComparer.OrdinalIgnoreCase);
         }

@@ -45,7 +45,7 @@ namespace Silphid.Loadzup.Test.Caching
 		{
 			_innerRequester.Request(uri, Arg.Any<Options>())
 				.Returns(Observable.Return(
-					new Response(200, bytes,
+					new Response(200, () => bytes,
 						new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 						{
 							[KnownHttpHeaders.ContentType] = contentType.ToString(),

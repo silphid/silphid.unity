@@ -134,7 +134,7 @@ namespace Silphid.Loadzup.Http.Caching
             Log.Debug($"{policy} - Loading resource from cache: {uri}");
             return _httpCache
                 .Load(uri)
-                .Select(bytes => new Response(KnownStatusCode.Ok, bytes, responseHeaders));
+                .Select(bytes => new Response(KnownStatusCode.Ok, () => bytes, responseHeaders));
         }
 
         private IObservable<Response> LoadFromOrigin(HttpCachePolicy policy, Uri uri, Options options)

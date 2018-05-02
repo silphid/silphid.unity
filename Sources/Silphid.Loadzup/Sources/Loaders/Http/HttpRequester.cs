@@ -41,9 +41,9 @@ namespace Silphid.Loadzup.Http
                         
                     _status.Value = NetworkStatus.Online;
                 })
-                .Select(x => new Response(x.WWW.responseCode, x.WWW.downloadHandler.data,
+                .Select(x => new Response(x.WWW.responseCode, () => x.WWW.downloadHandler.data,
                     x.Headers ?? new Dictionary<string, string>(), options, 
-                    (x.WWW.downloadHandler as DownloadHandlerTexture)?.texture));
+                    () => (x.WWW.downloadHandler as DownloadHandlerTexture)?.texture));
 
         private IObservable<UnityWebRequest> RequestInternal(string url, Options options = null)
         {

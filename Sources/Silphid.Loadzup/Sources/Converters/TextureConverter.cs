@@ -24,6 +24,7 @@ namespace Silphid.Loadzup
         
         protected override object ConvertSync<T>(Texture2D input, ContentType contentType, Encoding encoding)
         {
+            input.wrapMode = TextureWrapMode.Clamp;
             return input;
         }
     }
