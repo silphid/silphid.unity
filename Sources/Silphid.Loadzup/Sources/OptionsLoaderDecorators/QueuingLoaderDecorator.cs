@@ -1,10 +1,10 @@
 ﻿namespace Silphid.Loadzup
 {
-    public class PriorityLoaderDecorator : OptionsLoaderDecoratorBase
+    public class QueuingLoaderDecorator : OptionsLoaderDecoratorBase
     {
         private readonly bool _isPriority;
 
-        public PriorityLoaderDecorator(ILoader loader, bool isPriority) : base(loader)
+        public QueuingLoaderDecorator(ILoader loader, bool isPriority) : base(loader)
         {
             _isPriority = isPriority;
         }

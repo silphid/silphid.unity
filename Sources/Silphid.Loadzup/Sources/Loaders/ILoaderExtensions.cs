@@ -65,7 +65,7 @@ namespace Silphid.Loadzup
         public static ILoader WithTimeout(this ILoader This, TimeSpan timeout) =>
             new TimeoutLoaderDecorator(This, timeout);
         
-        public static ILoader WithPriority(this ILoader This, bool isPriority = true) =>
-            new PriorityLoaderDecorator(This, isPriority);
+        public static ILoader WithQueuing(this ILoader This, bool isPriority = true) =>
+            new QueuingLoaderDecorator(This, isPriority);
     }
 }

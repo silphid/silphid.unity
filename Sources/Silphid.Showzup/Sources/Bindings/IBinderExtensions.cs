@@ -136,7 +136,7 @@ namespace Silphid.Showzup
             return This.Loader
                 .With(This.DefaultImageHttpCachePolicy)
                 .WithCancellationOnDestroy(This.View)
-                .WithPriority(isPriority)
+                .WithQueuing(isPriority)
                 .Load<DisposableSprite>(source, options)
                 .Catch<DisposableSprite, Exception>(ex =>
                     Observable.Throw<DisposableSprite>(
@@ -193,7 +193,7 @@ namespace Silphid.Showzup
             return This.Loader
                 .With(This.DefaultImageHttpCachePolicy)
                 .WithCancellationOnDestroy(This.View)
-                .WithPriority(isPriority)
+                .WithQueuing(isPriority)
                 .Load<Texture2D>(uri, options)
                 .Catch<Texture2D, Exception>(ex => Observable
                     .Throw<Texture2D>(new BindException(

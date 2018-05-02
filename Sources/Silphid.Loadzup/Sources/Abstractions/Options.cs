@@ -24,6 +24,7 @@ namespace Silphid.Loadzup
         public TimeSpan? Timeout;
         public ICancelable CancellationToken;
         public bool IsPriority;
+        public bool IsQueued;
 
         public void SetHeader(string key, string value)
         {
