@@ -50,7 +50,7 @@ public class ManifestLoaderTest
     {
         CreateFixture();
         SetupLoaderReturn(Observable.Throw<IBundle>(new InvalidOperationException()));
-        SetupBundleReturn(Observable.Return(new AssetBundleManifest()));
+//        SetupBundleReturn(Observable.Return(new AssetBundleManifest()));
 
         Assert.Throws<InvalidOperationException>(() => _fixture.Load().Wait());
 

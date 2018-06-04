@@ -169,6 +169,7 @@ namespace Silphid.Extensions
             return true;
         }
 
+#if !UNITY_2018_1_OR_NEWER
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> source, T obj)
         {
             T[] array = {obj};
@@ -180,6 +181,7 @@ namespace Silphid.Extensions
             T[] array = {obj};
             return source.Concat(array);
         }
+#endif
 
         public static IEnumerable<T> Repeat<T>(this IEnumerable<T> source, int count)
         {
