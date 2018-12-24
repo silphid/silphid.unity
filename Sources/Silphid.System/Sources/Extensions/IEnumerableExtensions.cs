@@ -170,18 +170,6 @@ namespace Silphid.Extensions
             return true;
         }
 
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> source, T obj)
-        {
-            T[] array = {obj};
-            return array.Concat(source);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T obj)
-        {
-            T[] array = {obj};
-            return source.Concat(array);
-        }
-
         public static IEnumerable<T> Repeat<T>(this IEnumerable<T> source, int count)
         {
             source = source as T[] ?? source as IList<T> ?? source.ToList();
