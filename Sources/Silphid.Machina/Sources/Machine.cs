@@ -8,7 +8,7 @@ using UniRx;
 
 namespace Silphid.Machina
 {
-    public class Machine<TState> : IMachine<TState>, IDisposable
+    public class Machine<TState> : IMachine, IDisposable
     {
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ILog Log = LogManager.GetLogger(typeof(IMachine));
@@ -17,8 +17,7 @@ namespace Silphid.Machina
         private readonly bool _disposeOnCompleted;
         private readonly List<Rule> _rules = new List<Rule>();
         private readonly ReactiveProperty<object> _state;
-        public ReadOnlyReactiveProperty<object> State { get; }
-        public IObservable<Transition> Transitions { get; }
+        public IReadOnlyReactiveProperty<object> State => _state;
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
         protected bool IsDisposed { get; private set; }
@@ -28,11 +27,6 @@ namespace Silphid.Machina
             _initialState = initialState;
             _disposeOnCompleted = disposeOnCompleted;
             _state = new ReactiveProperty<object>(initialState);
-            State = _state.ToReadOnlyReactiveProperty();
-            Transitions = _state
-                .DistinctUntilChanged()
-                .PairWithPrevious()
-                .Select(x => new Transition(x.Item1, x.Item2));
 
             this.Entering<IMachine>()
                 .Subscribe(x => x.Start())
@@ -42,13 +36,23 @@ namespace Silphid.Machina
                 .Subscribe(x => x.Complete())
                 .AddTo(Disposables);
             
-            Transitions
-                .Subscribe(x => Log.Debug($"{Name} - {x.Source ?? "null"} -> {x.Target ?? "null"}"))
+            State
+                .PairWithPreviousOrDefault()
+                .Subscribe(x => Log.Debug($"{Name} - {x.Item1 ?? "null"} -> {x.Item2 ?? "null"}"))
                 .AddTo(Disposables);
         }
 
         public virtual string Name => GetType().Name;
-        public override string ToString() => Name;
+        public override string ToString() => GetType().Name;
+
+        #region IDisposer members
+
+        public void Add(IDisposable disposable)
+        {
+            Disposables.Add(disposable);
+        }
+
+        #endregion
 
         public void Start(object initialState = null)
         {
@@ -57,25 +61,10 @@ namespace Silphid.Machina
             OnStarting(initialState);
         }
 
-        public void Enter(TState state)
-        {
-            EnterInternal(state);
-        }
-
-        public void Enter(IMachine machine)
-        {
-            EnterInternal(machine);
-        }
-
-        public void ExitState()
-        {
-            EnterInternal(null);
-        }
-
-        private void EnterInternal(object state)
+        public virtual void SetState(object state)
         {
             AssertNotDisposed();
-            OnEnter(state);
+            _state.Value = state;
         }
 
         void IMachine.Complete()
@@ -175,11 +164,6 @@ namespace Silphid.Machina
             _state.Value = initialState ?? _initialState;
         }
 
-        protected virtual void OnEnter(object state)
-        {
-            _state.Value = state;
-        }
-
         protected virtual void OnCompleted()
         {
             _state.Value = null;
@@ -195,7 +179,6 @@ namespace Silphid.Machina
             
             Disposables.Dispose();
             _state.Dispose();
-            State.Dispose();
             IsDisposed = true;
         }
     }

@@ -78,20 +78,20 @@ namespace Silphid.Showzup
 
         private void FindShortestPath(float targetPosition)
         {
-            var deltaToPosition = targetPosition.Delta(_currentPosition.Value);
+            var deltaToPosition = targetPosition.Distance(_currentPosition.Value);
 
             // Which side is the target?
             if (targetPosition < _currentPosition.Value)
             {
                 // Left
-                var deltaToRight = (targetPosition + _totalWidth).Delta(_currentPosition.Value);
+                var deltaToRight = (targetPosition + _totalWidth).Distance(_currentPosition.Value);
                 if (deltaToRight < deltaToPosition)
                     _currentPosition.Value -= _totalWidth;
             }
             else
             {
                 // Right
-                var deltaToLeft = (targetPosition - _totalWidth).Delta(_currentPosition.Value);
+                var deltaToLeft = (targetPosition - _totalWidth).Distance(_currentPosition.Value);
                 if (deltaToLeft < deltaToPosition)
                     _currentPosition.Value += _totalWidth;
             }

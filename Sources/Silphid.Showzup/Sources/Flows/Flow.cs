@@ -26,12 +26,12 @@ namespace Silphid.Showzup.Flows
             
             WhenSubFlow()
                 .Handle<CompleteSubFlowRequest>(_ =>
-                    ExitState());
+                    SetState(null));
         }
 
         protected void StartFlow(Type flowType, params object[] parameters)
         {
-            Enter(FlowFactory.Create(flowType, parameters));
+            SetState(FlowFactory.Create(flowType, parameters));
         }
 
         protected void StartFlow<TFlow>(params object[] parameters)
@@ -71,7 +71,7 @@ namespace Silphid.Showzup.Flows
             var viewChangedRequest = request as ViewChangedRequest;
             if (viewChangedRequest != null)
             {
-                Enter(viewChangedRequest.View);
+                SetState(viewChangedRequest.View);
                 return true;
             }
             

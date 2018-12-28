@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -13,7 +12,9 @@ namespace Silphid.Extensions
             This.gameObject.GetRequiredComponent<TComponent>();
 
         public static GameObject Parent(this Transform This) =>
-            This.parent?.gameObject;
+            This && This.parent
+                ? This.parent.gameObject
+                : null;
 
         public static GameObject Child(this Transform This, string name) =>
             (from Transform t in This
@@ -116,13 +117,10 @@ namespace Silphid.Extensions
             return common;
         }
 
-        public static Tuple<List<GameObject>, List<GameObject>> DivergingBranchesWith(this Transform This, Transform other)
+        public static (List<GameObject>, List<GameObject>) DivergingBranchesWith(this Transform This, Transform other)
         {
-            if (This == null || other == null)
-                return null;
-            
-            if (This == other)
-                return Tuple.Create(new List<GameObject>(), new List<GameObject>());
+            if (This == null || other == null || This == other)
+                return (new List<GameObject>(), new List<GameObject>());
             
             var list1 = This.SelfAndAncestors().ToList();
             var list2 = other.SelfAndAncestors().ToList();
@@ -139,7 +137,7 @@ namespace Silphid.Extensions
                 list2.RemoveAt(i2);
             }
 
-            return Tuple.Create(list1, list2);
+            return (list1, list2);
         }
 
         public static void SetX(this Transform This, float x)
@@ -226,11 +224,11 @@ namespace Silphid.Extensions
             var bounds2 = bounds.Translate(vector);
 
             if (bounds2.xMin < parentBound.xMin)
-                vector.x += (parentBound.xMin - bounds2.xMin);
+                vector.x += parentBound.xMin - bounds2.xMin;
             if (bounds2.yMin < parentBound.yMin)
-                vector.y += (parentBound.yMin - bounds2.yMin);
+                vector.y += parentBound.yMin - bounds2.yMin;
             if (bounds2.xMax > parentBound.xMax)
-                vector.x += (parentBound.xMax - bounds2.xMax);
+                vector.x += parentBound.xMax - bounds2.xMax;
 
             This.Translate(vector);
         }

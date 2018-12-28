@@ -6,21 +6,38 @@ using Silphid.Extensions;
 
 namespace Silphid.DataTypes
 {
+    public static class TypeSafeEnum
+    {
+        /// <summary>
+        /// Forces static constructor of type T to run.
+        /// Should be called to initialize all TypeSafeEnums that extend another one,
+        /// excluding those extending TypeSafeEnum&lt;T&gt; directly.
+        /// </summary>
+        public static void Initialize<T>()
+        {
+            System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(T).TypeHandle);
+        }
+    }
+    
     [DebuggerDisplay("{Name} ({Value})")]
     public abstract class TypeSafeEnum<T> where T : TypeSafeEnum<T>
     {
         #region Statics
 
+        static TypeSafeEnum()
+        {
+            TypeSafeEnum.Initialize<T>();
+        }
+        
         private static readonly List<T> _items = new List<T>();
         private static int _autoValue;
 
-        protected static TCustom Add<TCustom>(TCustom item) where TCustom : T
+        private static void Add(T item)
         {
             if (item._value == null)
                 item._value = _autoValue++;
 
             _items.Add(item);
-            return item;
         }
 
         public static IReadOnlyList<T> All { get; } = _items.AsReadOnly();
@@ -50,11 +67,13 @@ namespace Silphid.DataTypes
         {
             _value = value;
             Name = name;
+            Add((T) this);
         }
 
         protected TypeSafeEnum(string name)
         {
             Name = name;
+            Add((T) this);
         }
 
         #endregion

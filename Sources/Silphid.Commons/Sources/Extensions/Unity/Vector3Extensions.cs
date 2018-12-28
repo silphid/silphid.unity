@@ -31,7 +31,7 @@ namespace Silphid.Extensions
             new Vector3(This.x / other.x, This.y / other.y, This.z / other.z);
 
         [Pure]
-        public static float Delta(this Vector3 This, Vector3 other) => Vector3.Distance(This, other);
+        public static float Distance(this Vector3 This, Vector3 other) => Vector3.Distance(This, other);
 
         [Pure]
         public static Vector3 Average(this Vector3 This, Vector3 other) => (This + other) / 2;

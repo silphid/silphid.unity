@@ -1,22 +1,15 @@
-﻿using System;
+﻿using Silphid.Extensions;
 using Silphid.Requests;
 using UniRx;
 
 namespace Silphid.Machina
 {
-	public interface IMachine : IRequestHandler
+	public interface IMachine : IRequestHandler, IDisposer
 	{
-		ReadOnlyReactiveProperty<object> State { get; }
-		IObservable<Transition> Transitions { get; }
+		IReadOnlyReactiveProperty<object> State { get; }
 
 		void Start(object initialState = null);
 		void Complete();
-		void Enter(IMachine machine);
-		void ExitState();
-	}
-	
-	public interface IMachine<in TState> : IMachine
-	{
-		void Enter(TState state);
+		void SetState(object state);
 	}
 }

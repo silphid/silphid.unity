@@ -1,23 +1,23 @@
 ﻿namespace Silphid.Machina
 {
-	public class Transition
+	public class StateTransition
     {
         public object Source { get; }
         public object Target { get; }
 
-        public Transition(object source, object target)
+        public StateTransition(object source, object target)
         {
             Source = source;
             Target = target;
         }
     }
 
-    public class Transition<TSource, TTarget>
+    public class StateTransition<TSource, TTarget>
     {
         public TSource Source { get; }
         public TTarget Target { get; }
 
-        public Transition(TSource source, TTarget target)
+        public StateTransition(TSource source, TTarget target)
         {
             Source = source;
             Target = target;

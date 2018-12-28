@@ -39,7 +39,7 @@ namespace Silphid.Extensions
         /// Returns absolute delta between two values.
         /// </summary>
         [Pure]
-        public static float Delta(this float This, float other) => Math.Abs(This - other);
+        public static float Distance(this float This, float other) => Math.Abs(This - other);
 
         [Pure]
         public static float Average(this float This, float other) => (This + other) / 2;

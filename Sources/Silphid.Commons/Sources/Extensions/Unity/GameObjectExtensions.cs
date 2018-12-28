@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
 namespace Silphid.Extensions
@@ -58,10 +56,10 @@ namespace Silphid.Extensions
             This.transform.SelfAndDescendants<TComponent>();
 
         public static bool IsDescendantOf(this GameObject This, GameObject other) =>
-            other != null && (This?.transform.Ancestors().Any(x => x == other) ?? false);
+            other != null && This && This.transform.Ancestors().Any(x => x == other);
 
         public static bool IsAncestorOf(this GameObject This, GameObject other) =>
-            This != null && (other?.transform.Ancestors().Any(x => x == This) ?? false);
+            This != null && other && other.transform.Ancestors().Any(x => x == This);
 
         public static bool IsSelfOrDescendantOf(this GameObject This, GameObject other) =>
             This == other || This.IsDescendantOf(other);
@@ -70,10 +68,10 @@ namespace Silphid.Extensions
             This == other || This.IsAncestorOf(other);
 
         public static GameObject CommonAncestorWith(this GameObject This, GameObject other) =>
-            This.transform.CommonAncestorWith(other?.transform);
+            This.transform.CommonAncestorWith(other.transform);
 
-        public static Tuple<List<GameObject>, List<GameObject>> DivergingBranchesWith(this GameObject This, GameObject other) =>
-            This.transform.DivergingBranchesWith(other?.transform);
+        public static (List<GameObject>, List<GameObject>) DivergingBranchesWith(this GameObject This, GameObject other) =>
+            This.transform.DivergingBranchesWith(other.transform);
         
         #endregion
 
