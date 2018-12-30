@@ -2,7 +2,7 @@
 
 namespace Silphid.Injexit
 {
-    public interface IBinder
+    public interface IBinder : IResolver
     {
         /// <summary>
         /// Adds a binding to resolve all requests for a given abstraction type
