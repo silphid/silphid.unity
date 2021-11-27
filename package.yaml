@@ -2,12 +2,9 @@ links:
   imports: UnityProject/Assets/Plugins
   exports: Sources
 dependencies:
-  - repo: 'git@gitlab.com:crazydadz_lvlstudio/e2/log4net.git'
-    branch: feature/dracine/2019_3_2
-    commit: 955af93ac0bf2e3c3fdfe4c888948b01be20728b
-  - repo: 'git@gitlab.com:crazydadz_lvlstudio/e2/unirx.git'
-    branch: feature/dracine/2019_3_2
-    commit: 5eeba7689882b1cff512908e74cac08b5ddf236d
-  - repo: 'git@gitlab.com:crazydadz_lvlstudio/e2/yamldotnet.git'
-    branch: feature/dracine/2019_3_2
-    commit: 6fc48cae7195b2dc4b771bff9d053e14023f780b
+  - repo: "git@github.com:silphid/silphid.log4net.git"
+    branch: master
+  - repo: "git@github.com:silphid/silphid.unirx.git"
+    branch: master
+  - repo: "git@github.com:silphid/silphid.yamldotnet.git"
+    branch: master
