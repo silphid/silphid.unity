@@ -65,7 +65,7 @@ namespace App
             // some equivalent).  Have a look at these three classes to see what variants are part of
             // each group.
             
-            Container.BindInstance(VariantProvider.From<Display, Form, Platform>());
+            Container.BindInstance(VariantProvider.From<Display, FormFactor, PlatformType>());
         }
 
         private void BindLoadzup()

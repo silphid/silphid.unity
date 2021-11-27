@@ -16,41 +16,38 @@ MonoBehaviour:
   AllVariants:
     _serializableVariants:
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Page
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Background
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Panel
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Tile
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Thumbnail
     - _typeRef:
-        _classRef: Display, Assembly-CSharp
+        _classRef: App.Display, Assembly-CSharp
       _name: Item
     - _typeRef:
-        _classRef: Form, Assembly-CSharp
+        _classRef: App.FormFactor, Assembly-CSharp
       _name: Mobile
     - _typeRef:
-        _classRef: Form, Assembly-CSharp
+        _classRef: App.FormFactor, Assembly-CSharp
       _name: Tablet
     - _typeRef:
-        _classRef: Form, Assembly-CSharp
-      _name: TV
+        _classRef: App.FormFactor, Assembly-CSharp
+      _name: Tv
     - _typeRef:
-        _classRef: Platform, Assembly-CSharp
-      _name: iOS
-    - _typeRef:
-        _classRef: Platform, Assembly-CSharp
+        _classRef: App.PlatformType, Assembly-CSharp
       _name: Android
     - _typeRef:
-        _classRef: Platform, Assembly-CSharp
-      _name: WSA
+        _classRef: App.PlatformType, Assembly-CSharp
+      _name: IOS
   _modelsToViewModels:
   - _source:
       _classRef: Catalog, Assembly-CSharp
@@ -61,7 +58,7 @@ MonoBehaviour:
     _implicitVariants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
   - _source:
       _classRef: Photo, Assembly-CSharp
@@ -72,10 +69,10 @@ MonoBehaviour:
     _implicitVariants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Tile
   - _source:
       _classRef: Photographer, Assembly-CSharp
@@ -95,7 +92,7 @@ MonoBehaviour:
     _implicitVariants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
   - _source:
       _classRef: PhotoViewModel, Assembly-CSharp
@@ -106,10 +103,10 @@ MonoBehaviour:
     _implicitVariants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Tile
   _viewsToPrefabs:
   - _source:
@@ -117,22 +114,25 @@ MonoBehaviour:
     _variants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
     _target: res://page/CatalogPage
+    _guid: c6c0b7073ec234d83a324ebf62b519d4
   - _source:
       _classRef: PhotoView, Assembly-CSharp
     _variants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Page
     _target: res://page/PhotoPage
+    _guid: 87028bc8b5a9f41a7a2715faacd9c4e2
   - _source:
       _classRef: PhotoView, Assembly-CSharp
     _variants:
       _serializableVariants:
       - _typeRef:
-          _classRef: Display, Assembly-CSharp
+          _classRef: App.Display, Assembly-CSharp
         _name: Tile
     _target: res://tile/PhotoTile
+    _guid: 0f0f1983f3a1e47b79454b43e4bfb25b

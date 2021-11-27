@@ -1,6 +1,0 @@
-[submodule "Submodules/UniRx"]
-	path = Submodules/UniRx
-	url = ../UniRx.git
-[submodule "Submodules/Log4Net"]
-	path = Submodules/Log4Net
-	url = ../UnityLog4Net.git
