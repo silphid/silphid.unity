@@ -1,9 +1,10 @@
 {
     "name": "silphid.unity.tests",
+    "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
         "silphid.unity",
-        "UniRx",
+        "silphid.unirx",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
@@ -19,5 +20,6 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

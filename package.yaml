@@ -8,3 +8,5 @@ dependencies:
     branch: master
   - repo: "git@github.com:silphid/silphid.yamldotnet.git"
     branch: master
+  - repo: "git@github.com:silphid/silphid.json.git"
+    branch: master

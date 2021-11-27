@@ -36,6 +36,12 @@ namespace Silphid.DataTypes
                 ? Empty
                 : new FloatRange(Start - value, End + value);
 
+        public static FloatRange operator +(FloatRange This, float value) =>
+            new FloatRange(This.Start + value, This.End + value);
+
+        public static FloatRange operator -(FloatRange This, float value) =>
+            new FloatRange(This.Start - value, This.End - value);
+            
         public bool Equals(FloatRange other) =>
             Start.IsAlmostEqualTo(other.Start) && End.IsAlmostEqualTo(other.End);
 

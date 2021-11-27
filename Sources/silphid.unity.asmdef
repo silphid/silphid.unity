@@ -1,17 +1,19 @@
 {
     "name": "silphid.unity",
+    "rootNamespace": "",
     "references": [
+        "silphid.unirx",
+        "silphid.unirx.async",
         "log4net",
-        "UniRx",
-        "UniRx.Async",
-        "yamldotnet"
+        "silphid.yamldotnet"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
