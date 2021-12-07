@@ -2,14 +2,17 @@
 
 namespace Silphid.DataTypes
 {
-    public struct FloatRange
+    public readonly struct FloatRange
     {
         public static FloatRange Empty = new FloatRange(-1, -1);
+        public static FloatRange InfiniteStartToEnd(float end) => new FloatRange(float.MinValue, end);
+        public static FloatRange InfiniteEndFromStart(float start) => new FloatRange(start, float.MaxValue);
 
         public readonly float Start;
         public readonly float End;
 
         public float Size => End - Start;
+        public float Middle => Start + Size / 2;
         public bool IsEmpty => Start.IsAlmostEqualTo(End);
 
         public FloatRange(float start, float end)
