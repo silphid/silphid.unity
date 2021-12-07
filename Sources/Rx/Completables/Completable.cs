@@ -4,7 +4,7 @@ using UniRx.Completables.Operators;
 
 namespace UniRx
 {
-    public static class Completable
+    public static partial class Completable
     {
         #region Internal helpers
 
