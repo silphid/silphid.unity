@@ -34,7 +34,12 @@ namespace Silphid.DataTypes
                 ? Empty
                 : new FloatRange(Start.Max(other.Start), End.Min(other.End));
 
-        public FloatRange ExpandStartAndEndBy(float value) =>
+        public FloatRange Contract(float value) =>
+            IsEmpty
+                ? Empty
+                : new FloatRange(Start + value, End - value);
+
+        public FloatRange Expand(float value) =>
             IsEmpty
                 ? Empty
                 : new FloatRange(Start - value, End + value);
