@@ -4,7 +4,7 @@ using Silphid.Extensions;
 
 namespace Silphid.DataTypes
 {
-    public struct IntRange : IEnumerable<int>
+    public readonly struct IntRange : IEnumerable<int>
     {
         public static IntRange Empty = new IntRange(int.MaxValue, int.MinValue);
 
@@ -25,13 +25,22 @@ namespace Silphid.DataTypes
         }
 
         public IntRange Union(int index) =>
-            new IntRange(Start.Min(index), End.Max(index + 1));
+            IsEmpty
+                ? new IntRange(index, index + 1)
+                : new IntRange(Start.Min(index), End.Max(index + 1));
 
         public IntRange Union(IntRange range) =>
-            new IntRange(Start.Min(range.Start), End.Max(range.End));
+            IsEmpty
+                ? range
+                : range.IsEmpty
+                    ? this
+                    : new IntRange(Start.Min(range.Start), End.Max(range.End));
 
         public bool Contains(int index) =>
             index >= Start && index < End;
+
+        public bool Contains(IntRange other) =>
+            other.Start >= Start && other.End <= End;
 
         public bool IntersectsWith(IntRange other) =>
             !IsEmpty &&
@@ -58,7 +67,7 @@ namespace Silphid.DataTypes
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public override bool Equals(object obj) =>
-            obj is IntRange && Equals((IntRange) obj);
+            obj is IntRange && Equals((IntRange)obj);
 
         public override int GetHashCode()
         {
@@ -71,6 +80,6 @@ namespace Silphid.DataTypes
         public override string ToString() =>
             IsEmpty
                 ? "Empty"
-                : $"[{Start}, {End - 1}]";
+                : $"[{Start}, {End}[";
     }
 }
