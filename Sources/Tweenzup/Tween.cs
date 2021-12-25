@@ -366,6 +366,17 @@ namespace Silphid.Tweenzup
                .Do(x => This.position = x)
                .AsCompletable();
 
+        public static ICompletable LocalMoveToWorld(this Transform This,
+                                               Vector3 target,
+                                               float duration,
+                                               IEaser easer = null)
+        {
+            var localTarget = This.parent.InverseTransformPoint(target);
+            return Range(() => This.localPosition, localTarget, duration, easer)
+                .Do(x => This.localPosition = x)
+                .AsCompletable();
+        }
+
         public static ICompletable RotateTo(this Transform This,
                                             Quaternion target,
                                             float duration,

@@ -156,7 +156,7 @@ namespace Silphid.Extensions
 
         #endregion
 
-        #region Component overriding
+        #region Components overriding
 
         [Pure]
         public static Vector3 WithX(this Vector3 This, float x) => new Vector3(x, This.y, This.z);
@@ -166,6 +166,16 @@ namespace Silphid.Extensions
 
         [Pure]
         public static Vector3 WithZ(this Vector3 This, float z) => new Vector3(This.x, This.y, z);
+
+        #endregion
+
+        #region Swizzling
+        
+        [Pure]
+        public static Vector2 XZ(this Vector3 This) => new Vector2(This.x, This.z);
+        
+        [Pure]
+        public static Vector3 AsXZWithY(this Vector2 This, float y) => new Vector3(This.x, y, This.y);
 
         #endregion
 
